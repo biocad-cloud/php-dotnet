@@ -1,6 +1,6 @@
 <?php
 
-require_once("../ICollection.php")
+require_once("../ICollection.php");
 
 /**
  * A dynamics array object.
