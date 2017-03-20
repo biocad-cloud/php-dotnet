@@ -1,16 +1,12 @@
 <?php
 
+require_once("../ICollection.php")
+
 /**
  * 模拟VB.NET之中的字典对象
  */
-class Dictionary {
+class Dictionary extends ICollection {
 	
-	private $__data;
-	
-	function __construct(){
-		$this->__data = array();
-	}
-
 	public function Keys() {
 		return array_keys($this->__data);
 	}
@@ -38,13 +34,6 @@ class Dictionary {
 	 */
 	public function Add($key, $value) {
 		$this->__data[$key] = $value;
-	}
-
-	/**
-	 * 将当前的这个字典对象序列化为json字符串，以返回给客户端浏览器
-	 */
-	public function GetJson() {
-		return json_encode($this->__data);
 	}
 }
 
