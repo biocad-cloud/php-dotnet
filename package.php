@@ -14,6 +14,8 @@ class dotnet {
     public static function Imports($mod) {
     
         $stack = debug_backtrace();
+        // -1: 调用者的文件位置
+        // -2: package.php的文件位置
         $firstFrame = $stack[count($stack) - 2];
         $initialFile = $firstFrame['file'];
         $DIR = dotnet::ParentDirectory($initialFile);
@@ -47,6 +49,10 @@ class dotnet {
         dotnet::ShowAllMessage();
 
         return $file;
+    }
+
+    public static function ThrowException($message) {
+        
     }
 
     /**
