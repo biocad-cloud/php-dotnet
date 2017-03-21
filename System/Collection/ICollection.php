@@ -23,12 +23,12 @@ abstract class ICollection {
 		$this->__data = array();
 	}
 
-    /**
-     * 使用已经存在的array数组数据构建一个集合对象类型
-     */
-    function __construct($source){
-        $this->__data = $source;
-    }
+    // /**
+    //  * 使用已经存在的array数组数据构建一个集合对象类型
+    //  */
+    // function __construct($source){
+    //     $this->__data = $source;
+    // }
 
     /**
      * 这个函数定义当前的这个集合对象与字符串函数交互的默认行为

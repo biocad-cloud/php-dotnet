@@ -1,6 +1,6 @@
 <?php
 
-// require('Dictionary.php');
+dotnet::Imports('../../../System/Collection/Generic/Dictionary.php');
 
 class IndexOf {
 

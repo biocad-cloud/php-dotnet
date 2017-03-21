@@ -1,6 +1,6 @@
 <?php
 
-require_once("../ICollection.php");
+dotnet::Imports("../ICollection.php");
 
 /**
  * A dynamics array object.

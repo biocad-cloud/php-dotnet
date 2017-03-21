@@ -1,6 +1,5 @@
 <?php
 
-require_once("../../../package.php");
 dotnet::Imports("../ICollection.php");
 
 /**
