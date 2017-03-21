@@ -1,3 +1,5 @@
+> [WARNING] This project is a work in progress and is not recommended for production use.
+
 # php-dotnet
 dotnet class simulation in php language
 
