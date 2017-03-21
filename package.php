@@ -31,6 +31,9 @@ class dotnet {
         return $mod;
     }
 
+    /**
+     * 获取得到某一个文件的其所处的父文件夹的全路径
+     */
     public static function ParentDirectory($file) {
 
         dotnet::SuppressWarningMessage();   
