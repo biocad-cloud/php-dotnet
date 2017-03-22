@@ -6,6 +6,14 @@
 class dotnet {
 
     /**
+     * This method have not implemented yet!
+     * 
+     * Usage:
+     *      die(dotnet::$MethodNotImplemented);
+     */
+    public static $MethodNotImplemented = "This method have not implemented yet!";
+
+    /**
      * 对于这个函数额调用者而言，就是获取调用者所在的脚本的文件夹位置
      * 这个函数是使用require_once来进行模块调用的
      *
