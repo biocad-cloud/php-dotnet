@@ -68,7 +68,14 @@ class dotnet {
     }
 
     public static function ThrowException($message) {
-
+		// 不能够显示调用的堆栈路径？？？
+		$stack = debug_backtrace();
+		$firstFrame = $stack[count($stack) - 1];
+        $initialFile = $firstFrame['file'];
+		$firstFrame = $stack[count($stack) - 2];
+        $initialFile2 = $firstFrame['file'];
+		$message = $message.'<br/>'.$initialFile.'<br/>'.$initialFile2;
+		die($message);
     }
 
     /**
