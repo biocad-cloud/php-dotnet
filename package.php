@@ -2,6 +2,14 @@
 
 /**
  * dotnet package manager, you must include this module at first.
+ * 
+ * 在php之中有一个DOTNET类型：http://php.net/manual/en/class.dotnet.php
+ * 但是这个模块的使用有诸多的限制，假若使用本项目的时候，发现出现错误:
+ * 
+ * Fatal error: Cannot redeclare class dotnet in "mod\php.NET\package.php" on line 6
+ * 
+ * 则应该要检查一下你的php服务器的设置是否是区分大小写的？
+ * 因为这个类名称dotnet假若不区分大小写的话，是和系统自带的DOTNET类型同名的
  */
 class dotnet {
 
@@ -22,6 +30,8 @@ class dotnet {
     public static function Imports($mod) {
     
         $stack = debug_backtrace();
+        // -1: 调用者的文件位置
+        // -2: package.php的文件位置
         $firstFrame = $stack[count($stack) - 2];
         $initialFile = $firstFrame['file'];
         $DIR = dotnet::ParentDirectory($initialFile);
@@ -55,6 +65,10 @@ class dotnet {
         dotnet::ShowAllMessage();
 
         return $file;
+    }
+
+    public static function ThrowException($message) {
+
     }
 
     /**
