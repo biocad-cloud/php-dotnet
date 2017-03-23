@@ -1,6 +1,6 @@
 <?php
 
-dotnet::Imports('../../../System/Collection/Generic/Dictionary.php');
+dotnet::Imports('System.Collection.Generic.Dictionary');
 
 class IndexOf {
 

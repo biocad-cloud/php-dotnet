@@ -1,6 +1,6 @@
 <?php
 
-dotnet::Imports("../ICollection.php");
+dotnet::Imports("System.Collection.ICollection");
 
 /**
  * A dynamics array object.

@@ -1,6 +1,6 @@
 <?php
 
-dotnet::Imports("../ICollection.php");
+dotnet::Imports("System.Collection.ICollection");
 
 /**
  * Represents a collection of keys and values.To browse the .NET Framework source code for this type, see the Reference Source.

@@ -1,12 +1,5 @@
 <?php
 
-
-function stack2() {
-echo StackTrace::GetCallStack();
-}
-
-stack2();
-
 /**
  * Represents a stack trace, which is an ordered collection of one or more stack frames.
  */
@@ -57,6 +50,28 @@ class StackTrace {
         $trace.="</code>";
 
         return $trace;
+    }
+
+    /**
+     * Get caller file path
+     * 
+     * @return string
+     */
+    public static function GetCallerFile() {
+        $caller = False;
+
+        foreach(debug_backtrace() as $k=>$v) {
+
+            if ($caller) {
+                // 这里是第二个栈片段
+                extract($v); 
+                return $file;
+            } else {
+                // 第一个栈片段是GetCallerFile这个函数，所以跳过
+                // 第二个站片段才是我们所需要的Caller所在的文件路径
+                $caller = True;
+            }
+        }
     }
 }
 
