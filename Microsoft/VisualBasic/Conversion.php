@@ -1,6 +1,6 @@
 <?php 
 
-dotnet::Imports("Microsoft.VisualBasic.Strings")
+dotnet::Imports("Microsoft.VisualBasic.Strings");
 
 /**
  * 模拟VisualBasic之中的一些简单的数据类型转换关键词
@@ -50,7 +50,7 @@ class Conversion {
 
         if(array_key_exists($key, Conversion::$TRUEs)) {
             return True;
-        } elseif (array_key_exists($key, Conversion::$FALSEs) {
+        } else if (array_key_exists($key, Conversion::$FALSEs) {
             return False;
         } else {
             return boolval($str);
