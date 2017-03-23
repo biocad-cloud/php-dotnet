@@ -14,6 +14,30 @@
 class dotnet {
 
     /**
+     * 只需要修改这个参数的逻辑值就可以打开或者关闭调试器的输出行为
+     */
+    public static $system_DEBUG = False;
+
+    /**
+     * 更改调试器的输出行为
+     */
+    function setup_debugger() {
+        if (False == dotnet::$system_DEBUG) {
+            dotnet::SuppressWarningMessage();
+        } else {
+            dotnet::ShowAllMessage();
+        }
+    }
+
+    /**
+     * This method have not implemented yet!
+     * 
+     * Usage:
+     *      die(dotnet::$MethodNotImplemented);
+     */
+    public static $MethodNotImplemented = "This method have not implemented yet!";
+
+    /**
      * 对于这个函数额调用者而言，就是获取调用者所在的脚本的文件夹位置
      * 这个函数是使用require_once来进行模块调用的
      *
@@ -60,7 +84,14 @@ class dotnet {
     }
 
     public static function ThrowException($message) {
-
+		// 不能够显示调用的堆栈路径？？？
+		$stack = debug_backtrace();
+		$firstFrame = $stack[count($stack) - 1];
+        $initialFile = $firstFrame['file'];
+		$firstFrame = $stack[count($stack) - 2];
+        $initialFile2 = $firstFrame['file'];
+		$message = $message.'<br/>'.$initialFile.'<br/>'.$initialFile2;
+		die($message);
     }
 
     /**
@@ -71,7 +102,12 @@ class dotnet {
 
         // 阻止php输出警告信息
         // http://php.net/manual/en/function.error-reporting.php
-        error_reporting(E_WARNING);
+
+        // 不显示任何错误信息以及警告信息
+        error_reporting(0);
+
+        // 显示出警告信息
+        // error_reporting(E_WARNING);
     }
 
     /**

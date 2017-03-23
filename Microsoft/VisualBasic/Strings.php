@@ -39,9 +39,7 @@ class Strings {
 	}
 
 	public static function Mid($str, $start, $len) {
-
 		return substr($str, $start, $len);
-
 	}
 
 	public static function Replace($str, $find, $replacement) {
