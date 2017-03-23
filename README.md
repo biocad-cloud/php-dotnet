@@ -27,3 +27,6 @@ dotnet class simulation in php language
    ?>
    ```
 4. Enjoy yourself coding with this package
+
+## The improved Debugger
+
