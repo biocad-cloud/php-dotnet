@@ -45,12 +45,15 @@ class Conversion {
      */
     private static $FALSEs = array("f", "n", "false", "no", "cancel", "fail", "wrong");
 
+    /**
+     * 将具有特定含义的字符串表达式转换为逻辑值
+     */
     public static function CBool($str) {
         $key = Strings::LCase($str);
 
-        if(array_key_exists($key, Conversion::$TRUEs)) {
+        if (array_key_exists($key, Conversion::$TRUEs)) {
             return True;
-        } else if (array_key_exists($key, Conversion::$FALSEs) {
+        } elseif (array_key_exists($key, Conversion::$FALSEs)) {
             return False;
         } else {
             return boolval($str);

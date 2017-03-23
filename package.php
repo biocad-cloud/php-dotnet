@@ -14,6 +14,22 @@
 class dotnet {
 
     /**
+     * 只需要修改这个参数的逻辑值就可以打开或者关闭调试器的输出行为
+     */
+    public static $system_DEBUG = False;
+
+    /**
+     * 更改调试器的输出行为
+     */
+    function setup_debugger() {
+        if (False == dotnet::$system_DEBUG) {
+            dotnet::SuppressWarningMessage();
+        } else {
+            dotnet::ShowAllMessage();
+        }
+    }
+
+    /**
      * This method have not implemented yet!
      * 
      * Usage:
@@ -86,7 +102,12 @@ class dotnet {
 
         // 阻止php输出警告信息
         // http://php.net/manual/en/function.error-reporting.php
-        error_reporting(E_WARNING);
+
+        // 不显示任何错误信息以及警告信息
+        error_reporting(0);
+
+        // 显示出警告信息
+        // error_reporting(E_WARNING);
     }
 
     /**
