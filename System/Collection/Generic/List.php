@@ -8,7 +8,7 @@ dotnet::Imports("System.Collection.ICollection");
 class List extends ICollection {
 
     public function Add($obj) {
-        array_push($this->__data;, $obj);
+        array_push($this->__data, $obj);
     }
 
     public function AddRange($array) {
