@@ -65,19 +65,22 @@ class dotnet {
      */
     public static function Imports($mod) {         
         $initialFile = dotnet::GetDotnetManagerLocation();
-        $DIR = dotnet::ParentDirectory($initialFile);
+        $DIR         = dotnet::ParentDirectory($initialFile);
         // $DIR = dotnet::ParentDirectory($DIR);
 
         // echo basename($mod)."<br/>";
         // echo $initialFile."<br/>";
-        $mod = str_replace(".", "/", $mod);    
+        // 因为WithSuffixExtension这个函数会需要依赖小数点来判断文件拓展名，
+        // 所以替换操作要在if判断之后进行  
         if (dotnet::WithSuffixExtension($mod, "php")) {
+            $mod = str_replace(".", "/", $mod); 
             $mod = "{$DIR}/{$mod}";
         } else {
+            $mod = str_replace(".", "/", $mod); 
             $mod = "{$DIR}/{$mod}.php";
         }   
                 
-        echo $mod."<br/>";
+        // echo $mod."<br/>";
 
         // 在这里导入需要导入的模块文件
         include_once($mod);
@@ -89,9 +92,12 @@ class dotnet {
      * 判断这个文件路径是否是以特定的文件拓展名结尾的？这个函数大小写不敏感
      */
     public static function WithSuffixExtension($path, $ext) {
-        $array = Strings::Split("\\.", $path);
+        $array  = Strings::Split($path, "\.");
         $lastEl = array_values(array_slice($array, -1));
         $lastEl = $lastEl[0];
+
+        // echo $lastEl . "<br />";
+        // echo $ext;
 
         return Strings::LCase($lastEl) == Strings::LCase($ext);
     }
