@@ -38,6 +38,19 @@ class dotnet {
     public static $MethodNotImplemented = "This method have not implemented yet!";
 
     /**
+     * 经过格式化的var_dump输出
+     */
+    public static function VarDump($o) {
+
+        // var_dump函数并不会返回任何数据，而是直接将结果输出到网页上面了，
+        // 所以在这里为了能够显示出格式化的var_dump结果，在这里前后都
+        // 添加<code>标签。
+        echo "<code><pre>";
+        $string = var_dump($o);    
+        echo "</pre></code>";    
+    }
+
+    /**
      * 对于这个函数额调用者而言，就是获取调用者所在的脚本的文件夹位置
      * 这个函数是使用require_once来进行模块调用的
      *
@@ -46,6 +59,9 @@ class dotnet {
     public static function Imports($mod) {
     
         $stack = debug_backtrace();
+
+        dotnet::VarDump($stack);
+
         // -1: 调用者的文件位置
         // -2: package.php的文件位置
         $firstFrame = $stack[count($stack) - 2];
