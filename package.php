@@ -1,5 +1,7 @@
 <?php
 
+include_once(dotnet::GetDotnetManagerDirectory() . "/Microsoft/VisualBasic/Strings.php");
+
 /**
  * dotnet package manager, you must include this module at first.
  * 
@@ -61,26 +63,21 @@ class dotnet {
      * @return string 这个函数返回所导入的模块的完整的文件路径
      * 
      */
-    public static function Imports($mod) {
-    
-        $stack = debug_backtrace();
-
-        dotnet::VarDump($stack);
-
-        // -1: 调用者的文件位置
-        // -2: package.php的文件位置
-        $firstFrame = $stack[count($stack) - 2];
-        $initialFile = $firstFrame['file'];
-    public static function Imports($mod) {       
-        $initialFile = dotnet::GetThisFileLocation();
+    public static function Imports($mod) {         
+        $initialFile = dotnet::GetDotnetManagerLocation();
         $DIR = dotnet::ParentDirectory($initialFile);
         // $DIR = dotnet::ParentDirectory($DIR);
 
         // echo basename($mod)."<br/>";
         // echo $initialFile."<br/>";
-        $mod = str_replace(".", "/", $mod);
-        $mod = "{$DIR}/{$mod}.php";
-        // echo $mod."<br/>";//
+        $mod = str_replace(".", "/", $mod);    
+        if (dotnet::WithSuffixExtension($mod, "php")) {
+            $mod = "{$DIR}/{$mod}";
+        } else {
+            $mod = "{$DIR}/{$mod}.php";
+        }   
+                
+        echo $mod."<br/>";
 
         // 在这里导入需要导入的模块文件
         include_once($mod);
@@ -89,17 +86,36 @@ class dotnet {
     }
 
     /**
+     * 判断这个文件路径是否是以特定的文件拓展名结尾的？这个函数大小写不敏感
+     */
+    public static function WithSuffixExtension($path, $ext) {
+        $array = Strings::Split("\\.", $path);
+        $lastEl = array_values(array_slice($array, -1));
+        $lastEl = $lastEl[0];
+
+        return Strings::LCase($lastEl) == Strings::LCase($ext);
+    }
+
+    /**
      * 获取得到package.php这个文件的文件路径
      * 
      * @return string
      */
-    private static function GetThisFileLocation() {     
+    public static function GetDotnetManagerLocation() {     
 
         // 第一个栈片段就是当前的函数调用所在的文件位置，直接return获取得到这个文件位置信息
         foreach(debug_backtrace() as $k=>$v) {
             extract($v); 
             return $file;
         }
+    }
+
+    /**
+     * 获取得到package.php这个文件的所处的文件夹的位置
+     */
+    public static function GetDotnetManagerDirectory() {
+        return dotnet::ParentDirectory(
+               dotnet::GetDotnetManagerLocation());
     }
 
     /**
