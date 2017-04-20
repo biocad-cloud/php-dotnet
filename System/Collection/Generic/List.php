@@ -1,6 +1,6 @@
 <?php
 
-dotnet::Imports("../ICollection.php");
+dotnet::Imports("System.Collection.ICollection");
 
 /**
  * A dynamics array object.
@@ -8,7 +8,7 @@ dotnet::Imports("../ICollection.php");
 class List extends ICollection {
 
     public function Add($obj) {
-        array_push($this->__data;, $obj);
+        array_push($this->__data, $obj);
     }
 
     public function AddRange($array) {
