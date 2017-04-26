@@ -8,9 +8,10 @@ class Strings {
 		
 		// split the phrase by any number of commas or space characters,
 		// which include " ", \r, \t, \n and \f
-		$words = preg_split("/" . $deli . "/", $str);
-		return $words;
+		$deli  = "/{$deli}/";
+		$words = preg_split($deli, $str);
 
+		return $words;
 	}
 	
 	// 如果查找不到字串在目标字符串之上的位置，则函数返回0

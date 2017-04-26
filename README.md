@@ -30,3 +30,17 @@ dotnet class simulation in php language
 
 ## The improved Debugger
 
+.NET system like stack trace information, example as:
+
+```php
+<?php
+   dotnet::Imports('System.Diagnostics.StackTrace');
+?>
+
+at GetCallStack in D:\Develop\mod\php.NET\test\index.php:line 7
+at stackTraceTest in D:\Develop\mod\php.NET\test\index.php:line 11
+at __caller2 in D:\Develop\mod\php.NET\test\index.php:line 15
+at __caller3 in D:\Develop\mod\php.NET\test\index.php:line 19
+at __initCaller in D:\Develop\mod\php.NET\test\index.php:line 22
+--- End of inner exception stack trace ---
+```
