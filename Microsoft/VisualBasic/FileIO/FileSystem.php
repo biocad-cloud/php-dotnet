@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Provides properties and methods for working with drives, files, and directories.
+ *
+ */
 class FileSystem {
 	
 	/**
@@ -73,10 +77,9 @@ class FileSystem {
 			}
 
 			// Deep copy directories
-			gitbook_writer::xcopy(
-				"$source/$entry", 
-				"$dest/$entry", 
-				$permissions);
+			$a = "$source/$entry";
+			$b = "$dest/$entry";
+			FileSystem::xcopy($a, $b, $permissions);
 		}
 
 		// Clean up
@@ -85,5 +88,4 @@ class FileSystem {
 		return true;
 	}	
 }
-
 ?>
