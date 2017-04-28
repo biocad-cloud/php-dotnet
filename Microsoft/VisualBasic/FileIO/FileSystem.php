@@ -1,6 +1,39 @@
 <?php
 
 class FileSystem {
+	
+	/**
+	 * Writes text to a file.
+	 *
+	 */
+	public static void WriteAllText(string $file, string $text, bool $append) {
+		if ($append) {
+			file_put_contents($file, $text, FILE_APPEND);
+		} else {
+			file_put_contents($file, $text);
+		}		
+	}
+		
+	/**
+	 * Returns the contents of a text file as a String.
+	 *
+	 * @param file: Name and path of the file to read.
+	 */
+	public static string ReadAllText(string $file) {
+		$text = file_get_contents($file);
+		return $text;
+	}
+		
+	/**
+	 * Renames a file.
+	 *
+	 * @param file:    File to be renamed.
+	 * @param newName: New name of file.
+	 *
+	 */
+	public static void RenameFile(string $file, string $newName) {
+		rename($file, $newName);
+	}
 		
 	/**
 	 * Copy a file, or recursively copy a folder and its contents
