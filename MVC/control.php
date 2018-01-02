@@ -21,10 +21,9 @@ class Control {
 			$page = "index";
 		} else {
 			$page = $_GET["app"];
-		}
+		}		
 		
-		print_r($argv);
-		print_r($page);
+		$app->{$page}();
 	}
 		
 	/**
