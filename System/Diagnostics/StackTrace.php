@@ -73,6 +73,16 @@ class StackTrace {
             }
         }
     }
+	
+	public static function GetCallerMethodName() {
+		// 得到了当前函数的调用函数堆栈
+		// 1. current -> GetCallerMethodName()
+		// 2. caller -> current -> GetCallerMethodName()
+		$trace  = debug_backtrace();
+		$caller = $trace[2];
+
+		return $caller['function'];
+	}
 }
 
 ?>
