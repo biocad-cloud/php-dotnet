@@ -80,7 +80,7 @@ class StackTrace {
 		// 2. caller -> current -> GetCallerMethodName()
 		$trace  = debug_backtrace();
 		$caller = $trace[2];
-
+		
 		return $caller['function'];
 	}
 }

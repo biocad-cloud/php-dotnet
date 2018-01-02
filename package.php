@@ -12,13 +12,16 @@ include_once(dotnet::GetDotnetManagerDirectory() . "/Microsoft/VisualBasic/Strin
  * 
  * 则应该要检查一下你的php服务器的设置是否是区分大小写的？
  * 因为这个类名称dotnet假若不区分大小写的话，是和系统自带的DOTNET类型同名的
+ *
+ * php 不像VB.NET一样允许函数重载，所以同一个class模块之中不可以出现相同名字的函数
+ *
  */
 class dotnet {
 
     /**
      * 只需要修改这个参数的逻辑值就可以打开或者关闭调试器的输出行为
      */
-    public static $system_DEBUG = False;
+    public static $system_DEBUG = True;
 
     /**
      * 更改调试器的输出行为
@@ -52,6 +55,13 @@ class dotnet {
         echo "</pre></code>";    
     }
 
+	public static function AutoLoad() {
+		dotnet::Imports("MVC.config");
+		dotnet::Imports("MVC.view");
+		dotnet::Imports("MVC.model");
+		dotnet::Imports("MVC.control");
+	}
+	
     /**
      * 对于这个函数额调用者而言，就是获取调用者所在的脚本的文件夹位置
      * 这个函数是使用require_once来进行模块调用的
@@ -63,13 +73,15 @@ class dotnet {
      * @return string 这个函数返回所导入的模块的完整的文件路径
      * 
      */
-    public static function Imports($mod) {         
+    public static function Imports($mod) {  
+
+		// echo $mod;
+	
         $initialFile = dotnet::GetDotnetManagerLocation();
         $DIR         = dotnet::ParentDirectory($initialFile);
-        // $DIR = dotnet::ParentDirectory($DIR);
-
-        // echo basename($mod)."<br/>";
-        // echo $initialFile."<br/>";
+        
+		// echo $DIR;
+		
         // 因为WithSuffixExtension这个函数会需要依赖小数点来判断文件拓展名，
         // 所以替换操作要在if判断之后进行  
         if (dotnet::WithSuffixExtension($mod, "php")) {
