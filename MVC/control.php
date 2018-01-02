@@ -14,8 +14,48 @@ class Control {
 	 *
 	 */
 	public static function HandleRequest($app) {
+		$argv = $_GET;
 		
+		if (!$_GET || count($_GET) == 0) {
+			# index.html as default
+			$page = "index";
+		} else {
+			$page = $_GET["app"];
+		}
+		
+		print_r($argv);
+		print_r($page);
 	}
+		
+	/**
+     * UTF-8 aware parse_url() replacement.
+     * 
+     * @return array
+     */
+    private static function mb_parse_url($url) {
+        $enc_url = preg_replace_callback(
+            '%[^:/@?&=#]+%usD',
+            function ($matches)
+            {
+                return urlencode($matches[0]);
+            },
+            $url
+        );
+        
+        $parts = parse_url($enc_url);
+        
+        if($parts === false)
+        {
+            throw new \InvalidArgumentException('Malformed URL: ' . $url);
+        }
+        
+        foreach($parts as $name => $value)
+        {
+            $parts[$name] = urldecode($value);
+        }
+        
+        return $parts;
+    }
 }
 
 ?>
