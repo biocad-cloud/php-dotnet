@@ -10,6 +10,7 @@ dotnet::Imports("Microsoft.VisualBasic.Strings");
 class View {
 	
 	public static function Display($vars = NULL) {
+
 		$name = StackTrace::GetCallerMethodName();
 		# 假若直接放在和index.php相同文件夹之下，那么apache服务器会优先读取
 		# index.html这个文件的，这就导致无法正确的通过这个框架来启动Web程序了
@@ -39,7 +40,7 @@ class View {
 			return strlen($key);
 		});	
 		
-		print_r($vars);
+		// print_r($vars);
 
 		# 变量的名称$name的值为名称字符串，例如 id
 		# 而在html文件之中需要进行申明的形式则是 {$id}
