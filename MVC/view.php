@@ -33,8 +33,8 @@ class View {
 		
 		# 在这里需要按照键名称长度倒叙排序，防止出现可能的错误替换
 		$names = array_keys($vars);
-		$names = Enumerable::OrderByDescending($vars, function($k) {
-			return $k;
+		$names = Enumerable::OrderByKeyDescending($vars, function($key) {
+			return strlen($key);
 		});
 		
 		$reorder = array();
@@ -80,7 +80,10 @@ class View {
 				$file   = $tokens[0];
 				$app    = $tokens[1];
 				$url    = "$file.php?app=$app";
-				$find   = "\{$s\}";
+				# 双引号下{}会被识别为字符串插值的操作
+				# 但是在单引号直接插入变量进行插值却失效了
+				# 所以在这里使用单引号加字符串连接来构建查找对象
+				$find   = '{'. $s .'}';
 
 				$html   = Strings::Replace($html, $find, $url);
 			}
