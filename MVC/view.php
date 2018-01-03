@@ -31,24 +31,19 @@ class View {
 	 */
 	public static function Assign($html, $vars) {
 		
-		# 在这里需要按照键名称长度倒叙排序，防止出现可能的错误替换
-		$names = array_keys($vars);
-		$names = Enumerable::OrderByKeyDescending($vars, function($key) {
+		# 在这里需要按照键名称长度倒叙排序，防止出现可能的错误替换		
+		$vars = Enumerable::OrderByKeyDescending($vars, function($key) {
 			return strlen($key);
-		});
+		});	
 		
-		$reorder = array();
-		
-		foreach ($names as $key => $value) {
-			$reorder[$key] = $value;
-		}
-		
+		print_r($vars);
+
 		# 变量的名称$name的值为名称字符串，例如 id
 		# 而在html文件之中需要进行申明的形式则是 {$id}
 		# 需要在这里需要进行额外的字符串链接操作才能够正常的替换掉目标		
-		foreach ($reorder as $name => $value) {
+		foreach ($vars as $name => $value) {
 			$name = '{$' . $name . '}';
-			$html = str_replace($name, $value, $html);
+			$html = Strings::Replace($html, $name, $value);
 		}
 		
 		return $html;
