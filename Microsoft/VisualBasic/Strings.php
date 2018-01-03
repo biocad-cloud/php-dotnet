@@ -4,13 +4,9 @@
 
 class Strings {
 	
+	// 进行非正则表达式的替换
 	public static function Split($str, $deli) {
-		
-		// split the phrase by any number of commas or space characters,
-		// which include " ", \r, \t, \n and \f
-		$deli  = "/{$deli}/";
-		$words = preg_split($deli, $str);
-
+		$words = explode($deli, $str);
 		return $words;
 	}
 	
@@ -44,7 +40,7 @@ class Strings {
 	}
 
 	public static function Replace($str, $find, $replacement) {
-
+		return str_replace($find, $replacement, $str);
 	}
 
 	public static function UCase($str) {

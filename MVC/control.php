@@ -7,6 +7,8 @@
  */
 class Control {
 	
+	public static $debug;
+	
 	/*
 	 * 进行自动处理请求主要是用户通过实例化一个class之后
 	 * 这个函数会对url的解析结果从class实例对象之中匹配出
@@ -22,6 +24,11 @@ class Control {
 		} else {
 			$page = $_GET["app"];
 		}		
+		
+		if (self::$debug) {
+			print_r($argv);
+			print_r($page);
+		}
 		
 		$app->{$page}();
 	}
