@@ -26,8 +26,8 @@ class Control {
 		}		
 		
 		if (self::$debug) {
-			print_r($argv);
-			print_r($page);
+			# print_r($argv);
+			# print_r($page);
 		}
 		
 		$app->{$page}();
