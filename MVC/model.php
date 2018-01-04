@@ -128,7 +128,26 @@ class Table {
 				
 				array_push($fields, "`$fieldName`");
 				array_push($values, "'$value'");
-			}
+			} else {
+
+                # 检查一下这个字段是否是需要值的？如果需要，就将默认值填上
+                if ($def["Null"] == "NO") {
+                    # 这个字段是需要有值的，则尝试获取默认值
+                    $default = $def["Default"];
+
+                    if ($default) {
+
+                        array_push($fields, "`$fieldName`");
+                        array_push($values, "'$default'");
+
+                    } else {
+                        # 这个字段需要有值，但是用户没有提供值，而且也不存在默认值
+                        # 则肯定无法将这条记录插入数据库
+                        # 需要抛出错误？？
+
+                    }
+                }
+            }
 		}
 		
 		$fields = join(", ", $fields);
@@ -142,6 +161,10 @@ class Table {
 		$mysqli_exec = $this->driver->__init_MySql(); 
         
         if (!mysqli_query($mysqli_exec, $SQL)) {
+
+            // 可能有错误，给出错误信息
+
+
             return false;
         } else {
             # 没有办法得到最后插入的数据？

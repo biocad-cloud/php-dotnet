@@ -31,6 +31,11 @@ class Control {
 		}
 		
 		$app->{$page}();
+
+		# 在末尾输出调试信息？
+		if (dotnet::$debug) {
+			
+		}
 	}
 		
 	/**
