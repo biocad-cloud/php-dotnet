@@ -22,16 +22,31 @@ class Model {
     }
 
     public function Describe($tableName) {
+        $SQL = "DESCRIBE $tableName";
 
+        
     }
 }
 
 class Table {
 
     private $tableName;
+    private $driver;
+    private $schema;
 
     function __construct($tableName) {
         $this->tableName = $tableName;
+        $this->driver    = dotnet::config;
+        $this->driver    = new Model(
+            $this->driver["DB_NAME"], 
+            $this->driver["DB_USER"],
+            $this->driver["DB_PWD"],
+            $this->driver["DB_HOST"],
+            $this->driver["DB_PORT"]
+        );
+
+        # 获取数据库的目标数据表的表结构
+        $this->schema = $this->driver->Describe($tableName);
     }
 
     // select all
