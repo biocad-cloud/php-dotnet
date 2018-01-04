@@ -156,7 +156,7 @@ class Table {
 		# INSERT INTO `metacardio`.`xcms_files` (`task_id`) VALUES ('ABC');
 		$SQL = "INSERT INTO `{$table}` ($fields) VALUES ($values);";
         
-        print_r($SQL);
+        // print_r($SQL);
 
 		$mysqli_exec = $this->driver->__init_MySql(); 
         
