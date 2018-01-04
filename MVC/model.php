@@ -28,11 +28,13 @@ class Model {
     /*
 	 * 使用这个函数来打开和mysql数据库的链接
 	 */
-	private function __init_MySql() {	
+	public function __init_MySql() {	
 		$db = mysqli_connect(
-			$this->host.":".$this->port,   // 格式要求： ipaddress:port
+			$this->host,   
 			$this->user,
-			$this->password) or die("Database error: ". mysqli_error()); 
+            $this->password, 
+            $this->database, 
+            $this->port) or die("Database error: ". mysqli_error()); 
 					
 		if (False == $db) {
 			die("Database connection fail!");
@@ -157,7 +159,7 @@ class Table {
     public function select() {
         $table  = $this->tableName;
         $assert = $this->getWhere();
-        $mysqli_exec = $mysqli->__init_MySql();       
+        $mysqli_exec = $this->driver->__init_MySql();       
 
         if ($assert) {
             $SQL = "SELECT * FROM `$table` WHERE $assert;";
@@ -191,7 +193,7 @@ class Table {
     public function find() {
         $table  = $this->tableName;
         $assert = $this->getWhere();
-        $mysqli_exec = $mysqli->__init_MySql();       
+        $mysqli_exec = $this->driver->__init_MySql();       
 
         if ($assert) {
             $SQL = "SELECT * FROM `$table` WHERE $assert LIMIT 1;";
