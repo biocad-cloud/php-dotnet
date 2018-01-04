@@ -179,19 +179,25 @@ class dotnet {
         // http://php.net/manual/en/function.error-reporting.php
 
         // 不显示任何错误信息以及警告信息
-        error_reporting(0);
+        // error_reporting(0);
 
         // 显示出警告信息
         // error_reporting(E_WARNING);
+        // Report all errors except E_NOTICE
+        error_reporting ((E_ERROR | E_PARSE) & ~E_WARNING & ~E_NOTICE & ~E_DEPRECATED) ;
     }
 
     /**
      * 使用这个函数将会显示出所有的错误消息
      */ 
     public static function ShowAllMessage() {
-
         // Report all PHP errors (see changelog)
         error_reporting(E_ALL);
+    }
+
+    public static function SuppressAllMessage() {
+        // Turn off all error reporting
+        error_reporting(0);
     }
 }
 

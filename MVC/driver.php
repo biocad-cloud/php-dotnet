@@ -11,6 +11,7 @@ class Model {
     private $host;
     private $port;
 
+	// display debug message or not?
     private $debug;
 
     // 显示mysql表的结构
@@ -22,7 +23,7 @@ class Model {
         $this->host     = $host;
         $this->port     = $port;
 
-        $this->debug    = true;
+        $this->debug    = dotnet::$debug;
     }
 
     /*
