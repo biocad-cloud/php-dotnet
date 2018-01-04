@@ -22,7 +22,7 @@ class Model {
         $this->host     = $host;
         $this->port     = $port;
 
-        $this->debug    = false;
+        $this->debug    = true;
     }
 
     /*
@@ -71,7 +71,7 @@ class Model {
 		$data = mysqli_query($mysql_exec, $SQL); 
 
 		if ($this->debug) {
-			// $this->printCode($SQL);
+			dotnet::printCode($SQL);
 		}
 		
 		if($data) {
@@ -99,7 +99,7 @@ class Model {
 		$data = mysqli_query($mysql_exec, $SQL); 
 
 		if ($this->debug) {
-			// $this->printCode($SQL);
+			dotnet::printCode($SQL);
 		}
 		
 		if ($data) {

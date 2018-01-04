@@ -56,6 +56,12 @@ class dotnet {
         echo "</pre></code>";    
     }
 
+    public static function printCode($code) {
+        echo "<code><pre>";
+        echo $code;
+        echo "</pre></code>";
+    }
+
 	public static function AutoLoad($config) {		
 		dotnet::Imports("MVC.view");
 		dotnet::Imports("MVC.model");
