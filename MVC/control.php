@@ -75,5 +75,4 @@ class Control {
 			'info' => $msg));
 	}
 }
-
 ?>

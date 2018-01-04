@@ -22,7 +22,8 @@ class dotnet {
      * 只需要修改这个参数的逻辑值就可以打开或者关闭调试器的输出行为
      */
     public static $system_DEBUG = True;
-
+	public static $config;
+	
     /**
      * 更改调试器的输出行为
      */
@@ -55,11 +56,12 @@ class dotnet {
         echo "</pre></code>";    
     }
 
-	public static function AutoLoad() {
-		dotnet::Imports("MVC.config");
+	public static function AutoLoad($config) {		
 		dotnet::Imports("MVC.view");
 		dotnet::Imports("MVC.model");
 		dotnet::Imports("MVC.control");
+		
+		dotnet::$config = include $config;
 	}
 	
     /**

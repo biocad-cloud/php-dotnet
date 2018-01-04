@@ -91,5 +91,4 @@ class View {
 		return $html;
 	}
 }
-
 ?>
