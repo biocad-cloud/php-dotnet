@@ -53,8 +53,13 @@ class Model {
     }
 
     public function exec($SQL) {
-        $mysqli_exec = $this->__init_MySql();                        
-        $out = $this->ExecuteSQL($mysqli_exec, $SQL);
+		$mysqli_exec = $this->__init_MySql();    
+
+		mysqli_select_db($mysql_exec, $this->database); 
+		mysqli_query($mysql_exec, "SET names 'utf8'");
+
+		$out = mysqli_query($mysql_exec, $SQL);                     
+        
         return $out;
     }
 

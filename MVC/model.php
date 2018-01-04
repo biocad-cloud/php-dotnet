@@ -86,7 +86,7 @@ class Table {
             // print_r($assert);
         }
 
-        $assert = join(" ", $assert);
+        $assert = join(" AND ", $assert);
 
         return $assert;
     }
@@ -118,6 +118,37 @@ class Table {
     // insert into
     public function add($data) {
 
+		$table  = $this->tableName;
+		$fields = array();
+		$values = array();
+		
+		foreach ($this->schema as $fieldName => $def) {
+			if (array_key_exists($fieldName, $data)) {
+				$value = $data[$fieldName];
+				
+				array_push($fields, "`$fieldName`");
+				array_push($values, "'$value'");
+			}
+		}
+		
+		$fields = join(", ", $fields);
+		$values = join(", ", $values);
+		
+		# INSERT INTO `metacardio`.`xcms_files` (`task_id`) VALUES ('ABC');
+		$SQL = "INSERT INTO `{$table}` ($fields) VALUES ($values);";
+        
+        print_r($SQL);
+
+		$mysqli_exec = $this->driver->__init_MySql(); 
+        
+        if (!mysqli_query($mysqli_exec, $SQL)) {
+            return false;
+        } else {
+            # 没有办法得到最后插入的数据？
+            # $id  = mysql_insert_id($mysqli_exec);
+            # $SQL = "SELECT * FROM `$table` WHERE "; 
+            return true;
+        }	
     }
 
     // update table
