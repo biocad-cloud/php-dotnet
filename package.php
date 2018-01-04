@@ -66,6 +66,7 @@ class dotnet {
 		dotnet::Imports("MVC.view");
 		dotnet::Imports("MVC.model");
 		dotnet::Imports("MVC.control");
+		dotnet::Imports("MVC.driver");
 		
 		dotnet::$config = include $config;
 	}
