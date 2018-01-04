@@ -51,7 +51,7 @@ class Table {
             $SQL = "SELECT * FROM `$table`;";
         }
         
-        return $this->driver->ExecuteScalar($mysqli_exec, $SQL);
+        return $this->driver->ExecuteSQL($mysqli_exec, $SQL);
     }
 
     private function getWhere() {		
