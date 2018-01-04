@@ -43,15 +43,15 @@ class Model {
 
     public function Describe($tableName) {
         $SQL = "DESCRIBE `$tableName`;";
-        $mysqli_exec = $mysqli->__init_MySql();                        
-        $schema = $mysqli->ExecuteSQL($mysqli_exec, $SQL);
+        $mysqli_exec = $this->__init_MySql();                        
+        $schema = $this->ExecuteSQL($mysqli_exec, $SQL);
 
         return $schema;
     }
 
     public function exec($SQL) {
-        $mysqli_exec = $mysqli->__init_MySql();                        
-        $out = $mysqli->ExecuteSQL($mysqli_exec, $SQL);
+        $mysqli_exec = $this->__init_MySql();                        
+        $out = $this->ExecuteSQL($mysqli_exec, $SQL);
         return $out;
     }
 
@@ -123,7 +123,7 @@ class Table {
 
     function __construct($tableName, $condition = null) {
         $this->tableName = $tableName;
-        $this->driver    = dotnet::config;
+        $this->driver    = dotnet::$config;
         $this->driver    = new Model(
             $this->driver["DB_NAME"], 
             $this->driver["DB_USER"],
