@@ -69,18 +69,21 @@ class Table {
 			// print_r($field);
 			
             if (array_key_exists($field, $schema)) {
-                $assert = array_push($assert, "`$field` = '$value'");
+                array_push($assert, "`$field` = '$value'");
             }
         }
 
         if (count($assert) == 0) {
-            if (dotnet::debug) {
+            if (dotnet::$debug) {
                 echo("Where condition requested! But no assert expression can be build: \n");
 				echo "Here is the condition that you give me:\n";
 				print_r($this->condition);
 				echo "This is the table structure of target mysql table:\n";
 				print_r($this->schema);
             }
+        } else {
+            // echo "view result";
+            // print_r($assert);
         }
 
         $assert = join(" ", $assert);
