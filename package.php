@@ -21,14 +21,14 @@ class dotnet {
     /**
      * 只需要修改这个参数的逻辑值就可以打开或者关闭调试器的输出行为
      */
-    public static $system_DEBUG = True;
+    public static $debug = True;
 	public static $config;
 	
     /**
      * 更改调试器的输出行为
      */
     function setup_debugger() {
-        if (False == dotnet::$system_DEBUG) {
+        if (False == dotnet::$debug) {
             dotnet::SuppressWarningMessage();
         } else {
             dotnet::ShowAllMessage();

@@ -21,7 +21,7 @@ class Table {
         # 获取数据库的目标数据表的表结构
         $this->schema    = $this->driver->Describe($tableName);
         $this->schema    = $this->schemaArray();
-        $this->condition = $condition;        
+        $this->condition = $condition;
     }
 
     private function schemaArray() {
@@ -54,17 +54,32 @@ class Table {
         return $this->driver->ExecuteScalar($mysqli_exec, $SQL);
     }
 
-    private function getWhere() {
+    private function getWhere() {		
         if (!$this->condition || count($this->condition) == 0) {
             return null;
-        }
-        
+        } else {
+			// echo "create expression for ";
+			// print_r($this->condition);
+		}
+		
         $assert = array();
-        $schema = $this->schema;
-
+        $schema = $this->schema;		
+		
         foreach ($this->condition as $field => $value) {
+			// print_r($field);
+			
             if (array_key_exists($field, $schema)) {
                 $assert = array_push($assert, "`$field` = '$value'");
+            }
+        }
+
+        if (count($assert) == 0) {
+            if (dotnet::debug) {
+                echo("Where condition requested! But no assert expression can be build: \n");
+				echo "Here is the condition that you give me:\n";
+				print_r($this->condition);
+				echo "This is the table structure of target mysql table:\n";
+				print_r($this->schema);
             }
         }
 
