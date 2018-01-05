@@ -175,8 +175,7 @@ class dotnet {
 		$html = file_get_contents($html);		
 		$html = Strings::Replace($html, '$message', $exc);
 		
-		echo $html;
-		die;
+		echo $html;		
     }
 
     /**
