@@ -1,6 +1,7 @@
 <?php
 
 include_once(dotnet::GetDotnetManagerDirectory() . "/Microsoft/VisualBasic/Strings.php");
+include_once(dotnet::GetDotnetManagerDirectory() . "/System/Diagnostics/StackTrace.php");
 
 /**
  * dotnet package manager, you must include this module at first.
@@ -168,12 +169,14 @@ class dotnet {
 	 */
     public static function ThrowException($message) {
         # throw new dotnetException($message);
-		$ex   = new dotnetException($message);
-		$html = file_get_contents(dotnet::GetDotnetManagerLocation()."/RFC7231/500.html");
-		$html = Strings::Replace($html, "$message", $ex);
+		
+		$exc  = dotnetException::FormatOutput($message, StackTrace::GetCallStack());
+		$html = dotnet::GetDotnetManagerDirectory()."/RFC7231/500.html";
+		$html = file_get_contents($html);		
+		$html = Strings::Replace($html, '$message', $exc);
 		
 		echo $html;
-		die  $ex;
+		die;
     }
 
     /**
@@ -214,18 +217,31 @@ class dotnetException extends Exception {
 	public $message;
 	
 	function __constructor($message) {
-		$this->message = $message;
+		$this->message    = $message;
 		$this->stackTrace = StackTrace::GetCallStack();
 	}	
 	
-	public function __toString() {
-		$str = "<p>" . $message . "</p>";
-		$str = $str . "<br />\n\n";
-		$str = $str . "<p><code><pre>\n";
-		$str = $str . $this->stackTrace;
-		$str = $str . "</pre></code></p>";
+	public static function FormatOutput($message, $stackTrace) {
+		$str = "<div class='dotnet-exception'>";
+		$str = $str . "<p><span style='color:red'>" . $message . "</span>" ;
+		$str = $str . "\n";
+		$str = $str . "<p>";
+		$str = $str . $stackTrace;
+		$str = $str . "</p></p>";
+		$str = $str . "</div>";
 		
 		return $str;
+	}
+	
+	public static function FormatExceptionOutput($ex) {
+		return self::FormatOutput($ex->message, $ex->stackTrace);
+	}
+	
+	public function __toString() {
+		return self::FormatExceptionOutput(
+			$this->message, 
+			$this->stackTrace
+		);
 	}
 }
 

@@ -13,5 +13,3 @@ php_value error_log  /var/www/html/PHP_errors.log
  Deny from all
  Satisfy All
 </Files>
-
-ErrorDocument 500 RFC7231/500.html
