@@ -1,10 +1,11 @@
 <?php
 
-    // include '../package.php';
-	include '../System/Diagnostics/StackTrace.php';
+    include '../package.php';
+	
+	dotnet::Imports("System.Diagnostics.StackTrace");
 	
 	function stackTraceTest() {
-			echo StackTrace::GetCallStack();
+			dotnet::ThrowException("test error message");
 	}
 	
 	function __caller2() {
@@ -21,5 +22,5 @@
 	
 	__initCaller();
 	
-    // dotnet::ThrowException("test error message");
+    
 ?>

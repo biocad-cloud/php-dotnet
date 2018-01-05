@@ -163,10 +163,17 @@ class dotnet {
         return $file;
     }
 
+	/*
+	 * PHP throw exception helper
+	 */
     public static function ThrowException($message) {
-        $stackTrace = StackTrace::GetCallStack();
-		$message = $message.'<br/>'.$stackTrace;
-		die($message);
+        # throw new dotnetException($message);
+		$ex   = new dotnetException($message);
+		$html = file_get_contents(dotnet::GetDotnetManagerLocation()."/RFC7231/500.html");
+		$html = Strings::Replace($html, "$message", $ex);
+		
+		echo $html;
+		die  $ex;
     }
 
     /**
@@ -199,6 +206,27 @@ class dotnet {
         // Turn off all error reporting
         error_reporting(0);
     }
+}
+
+class dotnetException extends Exception {
+	
+	public $stackTrace;
+	public $message;
+	
+	function __constructor($message) {
+		$this->message = $message;
+		$this->stackTrace = StackTrace::GetCallStack();
+	}	
+	
+	public function __toString() {
+		$str = "<p>" . $message . "</p>";
+		$str = $str . "<br />\n\n";
+		$str = $str . "<p><code><pre>\n";
+		$str = $str . $this->stackTrace;
+		$str = $str . "</pre></code></p>";
+		
+		return $str;
+	}
 }
 
 ?>
