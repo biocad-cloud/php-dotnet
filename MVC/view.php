@@ -32,14 +32,14 @@ class View {
 	}
 	
 	private static function interpolate_includes($html) {
-		$pattern = "[$]\{.+?\}";
+		$pattern = "#[$]\{.+?\}#";
 		
 		if (preg_match_all($pattern, $html, $matches, PREG_PATTERN_ORDER) > 0) { 
 			$matches = $matches[0];
 			
 			# ${includes/head.html}
 			foreach ($matches as $s) { 
-				$path    = Strings::Mid($s, 3, strlen($s) - 3);
+				$path    = Strings::Mid($s, 2, strlen($s) - 3);
 				$path    = "html/$path";
 				$include = file_get_contents($path);
 				$html    = Strings::Replace($html, $s, $include);				
