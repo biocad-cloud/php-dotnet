@@ -16,6 +16,11 @@ class View {
 		# index.html这个文件的，这就导致无法正确的通过这个框架来启动Web程序了
 		# 所以html文件规定放在html文件夹之中
 		$path = "html/$name.html";
+				
+		View::Show($path, $vars);
+	}
+	
+	public static function Show($path, $vars = NULL) {
 		$html = file_get_contents($path);
 		
 		# 将html片段合并为一个完整的html文档
@@ -28,7 +33,7 @@ class View {
 			echo $html;			
 		} else {
 			echo View::Assign($html, $vars);
-		}			
+		}
 	}
 	
 	private static function interpolate_includes($html) {
