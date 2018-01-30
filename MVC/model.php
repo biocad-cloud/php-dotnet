@@ -129,9 +129,9 @@ class Table {
 		$fields      = array();
 		$values      = array();
 		$uid         = null;
-				
+					
 		# 检查自增字段
-		if (!$this->AI) {
+		if ($this->AI) {
 			$key = $this->AI;
 			
 			if (!$data[$key]) {
@@ -149,6 +149,8 @@ class Table {
 			} else {
 				$uid = $data[$key];
 			}
+			
+			# print("$key => $uid");
 		}
 		
 		foreach ($this->schema as $fieldName => $def) {
@@ -187,8 +189,8 @@ class Table {
 		$values = join(", ", $values);
 		
 		# INSERT INTO `metacardio`.`xcms_files` (`task_id`) VALUES ('ABC');
-		$SQL = "INSERT INTO `{$table}` ($fields) VALUES ($values);";
-        
+		$SQL = "INSERT INTO `{$table}` ($fields) VALUES ($values);";	
+		
         if (!mysqli_query($mysqli_exec, $SQL)) {
 
             // 可能有错误，给出错误信息

@@ -12,7 +12,7 @@ class Strings {
 	
 	// 如果查找不到字串在目标字符串之上的位置，则函数返回0
 	// 假若能够查找得到，则会返回以1为准的位置
-	public static function InStr(string $str, string $find_subString, int $begin) {
+	public static function InStr($str, $find_subString, $begin = 0) {
 
 		$pos = strpos($str, $find_subString, $begin);
 
