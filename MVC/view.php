@@ -16,8 +16,10 @@ class View {
 		# index.html这个文件的，这就导致无法正确的通过这个框架来启动Web程序了
 		# 所以html文件规定放在html文件夹之中
 		$path = "html/$name.html";
-		$html = file_get_contents($path);		
+		$html = file_get_contents($path);
 		
+		# 将html片段合并为一个完整的html文档
+		$html = View::interpolate_includes($html);
 		# 假设在html文档里面总是会存在url简写的，则在这里需要进行替换处理
 		$html = View::AssignController($html);
 
@@ -27,6 +29,24 @@ class View {
 		} else {
 			echo View::Assign($html, $vars);
 		}			
+	}
+	
+	private static function interpolate_includes($html) {
+		$pattern = "[$]\{.+?\}";
+		
+		if (preg_match_all($pattern, $html, $matches, PREG_PATTERN_ORDER) > 0) { 
+			$matches = $matches[0];
+			
+			# ${includes/head.html}
+			foreach ($matches as $s) { 
+				$path    = Strings::Mid($s, 3, strlen($s) - 3);
+				$path    = "html/$path";
+				$include = file_get_contents($path);
+				$html    = Strings::Replace($html, $s, $include);				
+			}
+		}
+		
+		return $html;
 	}
 	
 	/*
