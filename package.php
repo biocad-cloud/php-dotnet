@@ -2,6 +2,7 @@
 
 include_once(dotnet::GetDotnetManagerDirectory() . "/Microsoft/VisualBasic/Strings.php");
 include_once(dotnet::GetDotnetManagerDirectory() . "/System/Diagnostics/StackTrace.php");
+include_once(dotnet::GetDotnetManagerDirectory() . "/RFC7231/index.php");
 
 /**
  * dotnet package manager, you must include this module at first.
