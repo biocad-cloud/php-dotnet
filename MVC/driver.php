@@ -77,10 +77,6 @@ class Model {
 		mysqli_query($mysql_exec, "SET names 'utf8'");
 
 		$data = mysqli_query($mysql_exec, $SQL); 
-
-		if ($this->debug) {
-			dotnet::printCode($SQL);
-		}
 		
 		if($data) {
 			$out = array();
@@ -105,10 +101,6 @@ class Model {
 		mysqli_query($mysql_exec, "SET names 'utf8'");
 
 		$data = mysqli_query($mysql_exec, $SQL); 
-
-		if ($this->debug) {
-			dotnet::printCode($SQL);
-		}
 		
 		if ($data) {
 			

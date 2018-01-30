@@ -4,6 +4,8 @@ include_once(dotnet::GetDotnetManagerDirectory() . "/Microsoft/VisualBasic/Strin
 include_once(dotnet::GetDotnetManagerDirectory() . "/System/Diagnostics/StackTrace.php");
 include_once(dotnet::GetDotnetManagerDirectory() . "/RFC7231/index.php");
 
+session_start();
+
 /**
  * dotnet package manager, you must include this module at first.
  * 
