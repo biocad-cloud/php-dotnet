@@ -9,7 +9,7 @@ class Error {
 	private static function display($code) {
 		header(Error::getRFC($code));
 		echo file_get_contents(Error::getPath($code));
-		die;
+		exit;
 	}
 	
 	private static function getRFC($code) {
