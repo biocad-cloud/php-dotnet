@@ -6,7 +6,8 @@ class Table {
     private $driver;
     private $schema;
     private $condition;
-
+	private $AI;
+	
     function __construct($tableName, $condition = null) {
         $this->tableName = $tableName;
         $this->driver    = dotnet::$config;
@@ -22,6 +23,7 @@ class Table {
         $this->schema    = $this->driver->Describe($tableName);
         $this->schema    = $this->schemaArray();
         $this->condition = $condition;
+		$this->AI        = Model::getAIKey($this);
     }
 
     private function schemaArray() {
@@ -35,6 +37,10 @@ class Table {
         return $array;
     }
 
+	public function getSchema() {
+		return $this->schema;
+	}
+	
     public function exec($SQL) {
         return $this->driver->exec($SQL);
     }
@@ -118,9 +124,32 @@ class Table {
     // insert into
     public function add($data) {
 
-		$table  = $this->tableName;
-		$fields = array();
-		$values = array();
+		$mysqli_exec = $this->driver->__init_MySql(); 
+		$table       = $this->tableName;
+		$fields      = array();
+		$values      = array();
+		$uid         = null;
+				
+		# 检查自增字段
+		if (!$this->AI) {
+			$key = $this->AI;
+			
+			if (!$data[$key]) {
+				# 自增字段还没有值，则将表中目前最大的值+1
+				$SQL = "SELECT max(`$key`) as `uid` FROM `$table`;";
+				$uid  = $this->driver->ExecuteScalar($mysqli_exec, $SQL);
+				
+				if (!$uid) {
+					$uid = 1;
+				} else {
+					$uid = $uid["uid"] + 1;
+				}
+								
+				$data[$key] = $uid;
+			} else {
+				$uid = $data[$key];
+			}
+		}
 		
 		foreach ($this->schema as $fieldName => $def) {
 			if (array_key_exists($fieldName, $data)) {
@@ -160,21 +189,21 @@ class Table {
 		# INSERT INTO `metacardio`.`xcms_files` (`task_id`) VALUES ('ABC');
 		$SQL = "INSERT INTO `{$table}` ($fields) VALUES ($values);";
         
-        // print_r($SQL);
-
-		$mysqli_exec = $this->driver->__init_MySql(); 
-        
         if (!mysqli_query($mysqli_exec, $SQL)) {
 
             // 可能有错误，给出错误信息
-
-
             return false;
+			
         } else {
-            # 没有办法得到最后插入的数据？
-            # $id  = mysql_insert_id($mysqli_exec);
-            # $SQL = "SELECT * FROM `$table` WHERE "; 
-            return true;
+			
+            if (!$uid) {
+				# 这个表之中没有自增字段，则返回true
+				return true;
+			} else {
+				# 在这个表之中存在自增字段，则返回这个uid
+				# 方便进行后续的操作
+				return $uid;
+			}           
         }	
     }
 

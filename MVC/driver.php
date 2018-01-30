@@ -1,5 +1,7 @@
 <?php
 
+dotnet::Imports("Microsoft.VisualBasic.Strings");
+
 /*
  * MySQL data table model
  */
@@ -26,6 +28,23 @@ class Model {
         $this->debug    = dotnet::$debug;
     }
 
+	public static function getAIKey($model) {
+		$schema = $model->getSchema();
+		
+		foreach ($schema as $name => $type) {
+			$isInt32 = (Strings::InStr($type["Type"], "int") == 1);
+			$Null    = ($type["Null"] == "NO");
+			$Key     = ($type["Key"] == "PRI");
+			$isAI    = ($type["Extra"] == "auto_increment");
+			
+			if ($isInt32 && $isAI) {
+				return $name;
+			}
+		}
+		
+		return null;
+	}
+	
     /*
 	 * 使用这个函数来打开和mysql数据库的链接
 	 */
