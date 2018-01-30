@@ -124,14 +124,17 @@ class Table {
 		
 		foreach ($this->schema as $fieldName => $def) {
 			if (array_key_exists($fieldName, $data)) {
+				
 				$value = $data[$fieldName];
 				
 				array_push($fields, "`$fieldName`");
 				array_push($values, "'$value'");
+				
 			} else {
 
                 # 检查一下这个字段是否是需要值的？如果需要，就将默认值填上
                 if ($def["Null"] == "NO") {
+					
                     # 这个字段是需要有值的，则尝试获取默认值
                     $default = $def["Default"];
 
@@ -141,6 +144,7 @@ class Table {
                         array_push($values, "'$default'");
 
                     } else {
+						
                         # 这个字段需要有值，但是用户没有提供值，而且也不存在默认值
                         # 则肯定无法将这条记录插入数据库
                         # 需要抛出错误？？
