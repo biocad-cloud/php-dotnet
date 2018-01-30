@@ -26,16 +26,16 @@ class Error {
 		}
 	}
 	
-	public static function err404() {
-		echo file_get_contents(Error::getPath(404));
+	public static function err404($message = NULL) {
+		View::Show(Error::getPath(404), array("message" => $message));
 	}
 	
-	public static function err403() {
-		echo file_get_contents(Error::getPath(403));
+	public static function err403($message = NULL) {
+		View::Show(Error::getPath(403), array("message" => $message));
 	}
 	
-	public static function err500() {
-		echo file_get_contents(Error::getPath(500));
+	public static function err500($message = NULL) {
+		View::Show(Error::getPath(500), array("message" => $message));
 	}
 }
 

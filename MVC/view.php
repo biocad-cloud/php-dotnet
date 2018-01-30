@@ -24,7 +24,7 @@ class View {
 		$html = file_get_contents($path);
 		
 		# 将html片段合并为一个完整的html文档
-		$html = View::interpolate_includes($html);
+		$html = View::interpolate_includes($html, $path);
 		# 假设在html文档里面总是会存在url简写的，则在这里需要进行替换处理
 		$html = View::AssignController($html);
 
@@ -36,8 +36,9 @@ class View {
 		}
 	}
 	
-	private static function interpolate_includes($html) {
+	private static function interpolate_includes($html, $path) {
 		$pattern = "#[$]\{.+?\}#";
+		$dirName = dirname($path);
 		
 		if (preg_match_all($pattern, $html, $matches, PREG_PATTERN_ORDER) > 0) { 
 			$matches = $matches[0];
@@ -45,7 +46,7 @@ class View {
 			# ${includes/head.html}
 			foreach ($matches as $s) { 
 				$path    = Strings::Mid($s, 2, strlen($s) - 3);
-				$path    = "html/$path";
+				$path    = "$dirName/$path";
 				$include = file_get_contents($path);
 				$html    = Strings::Replace($html, $s, $include);				
 			}
