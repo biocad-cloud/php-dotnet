@@ -30,7 +30,7 @@ class Strings {
     		// echo " and exists at position $pos";
 
 			// found sub string, returns the 1 base position
-			return ($p + $begin + 1);
+			return ($pos + $begin + 1);
 		}
 
 	}
