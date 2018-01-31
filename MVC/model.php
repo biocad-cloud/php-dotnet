@@ -21,20 +21,9 @@ class Table {
 
         # 获取数据库的目标数据表的表结构
         $this->schema    = $this->driver->Describe($tableName);
-        $this->schema    = $this->schemaArray();
+        $this->schema    = Model::schemaArray($this->schema);
         $this->condition = $condition;
 		$this->AI        = Model::getAIKey($this);
-    }
-
-    private function schemaArray() {
-        $array = array();
-
-        foreach ($this->schema as $row) {
-            $field = $row["Field"];
-            $array[$field] = $row;
-        }
-
-        return $array;
     }
 
 	public function getSchema() {

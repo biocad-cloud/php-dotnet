@@ -170,15 +170,12 @@ class dotnet {
 	/*
 	 * PHP throw exception helper
 	 */
-    public static function ThrowException($message) {
-        # throw new dotnetException($message);
+    public static function ThrowException($message) {      
+		$trace = StackTrace::GetCallStack();
+		$exc   = dotnetException::FormatOutput($message, $trace);
 		
-		$exc  = dotnetException::FormatOutput($message, StackTrace::GetCallStack());
-		$html = dotnet::GetDotnetManagerDirectory()."/RFC7231/500.html";
-		$html = file_get_contents($html);		
-		$html = Strings::Replace($html, '$message', $exc);
-		
-		echo $html;		
+		Error::err500($exc);
+		exit(0);
     }
 
     /**

@@ -47,6 +47,17 @@ class Model {
 		return null;
 	}
 	
+	public static function schemaArray($schema) {
+        $array = array();
+
+        foreach ($schema as $row) {
+            $field = $row["Field"];
+            $array[$field] = $row;
+        }
+
+        return $array;
+    }
+	
     /*
 	 * 使用这个函数来打开和mysql数据库的链接
 	 */
