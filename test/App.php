@@ -8,6 +8,8 @@ class App {
 
     public function exceptionTest() {
         dotnet::ThrowException("Test for stack trace!");
+		
+		echo "This message will never show!";
     }
 }
 ?>

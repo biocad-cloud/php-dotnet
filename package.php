@@ -173,7 +173,7 @@ class dotnet {
     public static function ThrowException($message) {      
 		$trace = StackTrace::GetCallStack();
 		$exc   = dotnetException::FormatOutput($message, $trace);
-		
+				
 		Error::err500($exc);
 		exit(0);
     }
