@@ -213,13 +213,33 @@ class Table {
         $assert      = $this->getWhere();
         $mysqli_exec = $this->driver->__init_MySql();
 		$SQL         = "";
+		$updates     = array();
+		
+		# UPDATE `metacardio`.`experimental_batches` SET `workspace`='2018/01/31/02-36-49/2', `note`='22222', `status`='10' WHERE `id`='3';
+		
+		foreach ($this->schema as $fieldName => $def) {
+			# 只更新存在的数据，所以在这里只需要这一个if分支即可
+			if (array_key_exists($fieldName, $data)) {
+				$value = $data[$fieldName];
+				$set   = "`$fieldName` = '$value'";
+				
+				array_push($updates, $set);
+			}
+		}
+		
+		$updates = join(", ", $updates);
+		$SQL = "UPDATE `$table` SET $updates";
 		
 		if (!$assert) {
+			
 			# 更新所有的数据？？？要不要给出警告信息
+			$SQL = $SQL . ";";
 			
 		} else {
-			
+			$SQL = $SQL . " WHERE " . $assert . ";";
 		}
+		
+		print_r($SQL);
 		
 		if (!mysqli_query($mysqli_exec, $SQL)) {
 			return false;
