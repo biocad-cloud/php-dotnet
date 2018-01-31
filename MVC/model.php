@@ -236,10 +236,10 @@ class Table {
 			$SQL = $SQL . ";";
 			
 		} else {
-			$SQL = $SQL . " WHERE " . $assert . ";";
+			$SQL = $SQL . " WHERE " . $assert . " LIMIT 1;";
 		}
 		
-		print_r($SQL);
+		// print_r($SQL);
 		
 		if (!mysqli_query($mysqli_exec, $SQL)) {
 			return false;
@@ -250,7 +250,22 @@ class Table {
 
     // delete from
     public function delete($data) {
-
+		$table       = $this->tableName;
+        $assert      = $this->getWhere();
+        $mysqli_exec = $this->driver->__init_MySql();
+		
+		# DELETE FROM `metacardio`.`experimental_batches` WHERE `id`='4';
+		if (!$assert) {
+			dotnet::ThrowException("WHERE condition can not be null!");
+		} else {
+			$SQL     = "DELETE FROM `$table` WHERE $assert;";
+		}
+		
+		if (!mysqli_query($mysqli_exec, $SQL)) {
+			return false;
+		} else {
+			return true;
+		}
     }
 }
 ?>
