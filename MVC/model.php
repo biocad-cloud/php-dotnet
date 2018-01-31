@@ -1,5 +1,9 @@
 <?php
 
+/*
+ * 数据表模型，这个模块主要是根据schema字典构建出相应的SQL表达式
+ * 然后通过driver模型进行执行
+ */
 class Table {
 
     private $tableName;
@@ -49,7 +53,11 @@ class Table {
         return $this->driver->ExecuteSQL($mysqli_exec, $SQL);
     }
 
-    private function getWhere() {		
+    private function getWhere() {	
+
+		# 如果条件是空的话，就不再继续构建表达式了
+		# 这个SQL表达式可能是没有选择条件的
+		# 否则在下面会抛出错误的
         if (!$this->condition || count($this->condition) == 0) {
             return null;
         } else {
@@ -60,8 +68,7 @@ class Table {
         $assert = array();
         $schema = $this->schema;		
 		
-        foreach ($this->condition as $field => $value) {
-			// print_r($field);
+        foreach ($this->condition as $field => $value) {			
 			
             if (array_key_exists($field, $schema)) {
                 array_push($assert, "`$field` = '$value'");
@@ -69,16 +76,18 @@ class Table {
         }
 
         if (count($assert) == 0) {
-            if (dotnet::$debug) {
-                echo("Where condition requested! But no assert expression can be build: \n");
-				echo "Here is the condition that you give me:\n";
-				print_r($this->condition);
-				echo "This is the table structure of target mysql table:\n";
-				print_r($this->schema);
-            }
-        } else {
-            // echo "view result";
-            // print_r($assert);
+            $debug = "";
+			$debug = $debug . "Where condition requested! But no assert expression can be build: \n";
+			$debug = $debug . "Here is the condition that you give me:\n";
+			$debug = $debug . "<pre><code>";
+			$debug = $debug . json_encode($this->condition);
+			$debug = $debug . "</code></pre>";
+			$debug = $debug . "This is the table structure of target mysql table:\n";
+			$debug = $debug . "<pre><code>";
+			$debug = $debug . json_encode($this->schema);
+            $debug = $debug . "</code></pre>";
+			
+			dotnet::ThrowException($debug);        
         }
 
         $assert = join(" AND ", $assert);
@@ -200,7 +209,23 @@ class Table {
 
     // update table
     public function save($data) {
-
+		$table       = $this->tableName;
+        $assert      = $this->getWhere();
+        $mysqli_exec = $this->driver->__init_MySql();
+		$SQL         = "";
+		
+		if (!$assert) {
+			# 更新所有的数据？？？要不要给出警告信息
+			
+		} else {
+			
+		}
+		
+		if (!mysqli_query($mysqli_exec, $SQL)) {
+			return false;
+		} else {
+			return true;
+		}
     }
 
     // delete from

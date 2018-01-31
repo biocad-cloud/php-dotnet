@@ -28,6 +28,9 @@ class Model {
         $this->debug    = dotnet::$debug;
     }
 
+	/*
+	 * Get the field name of the auto increment field.
+	 */
 	public static function getAIKey($model) {
 		$schema = $model->getSchema();
 		
@@ -47,6 +50,9 @@ class Model {
 		return null;
 	}
 	
+	/*
+	 * Mysql schema table to php schema dictionary array, the key in the dictionary is the field name in table.
+	 */
 	public static function schemaArray($schema) {
         $array = array();
 
