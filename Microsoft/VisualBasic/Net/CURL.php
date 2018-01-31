@@ -21,7 +21,11 @@ class CURLExtensions {
 		curl_setopt($curl, CURLOPT_HEADER, 0);                              // 显示返回的Header区域内容
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);                      // 获取的信息以文件流的形式返回
 		
-		$tmpInfo = curl_exec($curl);                                        // 执行操作
+		return CURLExtensions::shell($curl);
+	}
+	
+	private static function shell($curl) {
+		$tmpInfo = curl_exec($curl);  
 		
 		if (curl_errno($curl)) {
 			# echo 'Errno'.curl_error($curl);
@@ -29,6 +33,15 @@ class CURLExtensions {
 		curl_close($curl); 
 		
 		return $tmpInfo; 
+	}
+	
+	public static function GET($url, $data = NULL) {
+		$res = curl_init($url);
+		
+		curl_setopt($res, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($res, CURLOPT_BINARYTRANSFER, true);
+
+		return CURLExtensions::shell($res);
 	}
 }
 
