@@ -16,7 +16,7 @@ class CURLExtensions {
 		curl_setopt($curl, CURLOPT_AUTOREFERER, 1);                         // 自动设置Referer
 		curl_setopt($curl, CURLOPT_POST, 1);                                // 发送一个常规的Post请求
 		curl_setopt($curl, CURLOPT_POSTFIELDS, $data);                      // Post提交的数据包
-		curl_setopt($curl, CURLOPT_COOKIEFILE, ‘cookie.txt’);               // 读取上面所储存的Cookie信息
+		curl_setopt($curl, CURLOPT_COOKIEFILE, 'cookie.txt');               // 读取上面所储存的Cookie信息
 		curl_setopt($curl, CURLOPT_TIMEOUT, 30);                            // 设置超时限制防止死循环
 		curl_setopt($curl, CURLOPT_HEADER, 0);                              // 显示返回的Header区域内容
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);                      // 获取的信息以文件流的形式返回
@@ -24,7 +24,7 @@ class CURLExtensions {
 		$tmpInfo = curl_exec($curl);                                        // 执行操作
 		
 		if (curl_errno($curl)) {
-			echo ‘Errno’.curl_error($curl);
+			echo 'Errno'.curl_error($curl);
 		}
 		curl_close($curl); 
 		
