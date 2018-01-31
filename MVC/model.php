@@ -50,6 +50,8 @@ class Table {
             $SQL = "SELECT * FROM `$table`;";
         }
         
+		// print_r($SQL);
+		
         return $this->driver->ExecuteSQL($mysqli_exec, $SQL);
     }
 
