@@ -24,7 +24,7 @@ class CURLExtensions {
 		$tmpInfo = curl_exec($curl);                                        // 执行操作
 		
 		if (curl_errno($curl)) {
-			echo 'Errno'.curl_error($curl);
+			# echo 'Errno'.curl_error($curl);
 		}
 		curl_close($curl); 
 		
