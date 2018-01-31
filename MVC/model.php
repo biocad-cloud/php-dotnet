@@ -121,12 +121,12 @@ class Table {
 					
 		# 检查自增字段
 		if ($this->AI) {
-			$key = $this->AI;
-			
+			$key = $this->AI;		
+						
 			if (!$data[$key]) {
 				# 自增字段还没有值，则将表中目前最大的值+1
 				$SQL = "SELECT max(`$key`) as `uid` FROM `$table`;";
-				$uid  = $this->driver->ExecuteScalar($mysqli_exec, $SQL);
+				$uid  = $this->driver->ExecuteScalar($mysqli_exec, $SQL);							
 				
 				if (!$uid) {
 					$uid = 1;
@@ -179,7 +179,7 @@ class Table {
 		
 		# INSERT INTO `metacardio`.`xcms_files` (`task_id`) VALUES ('ABC');
 		$SQL = "INSERT INTO `{$table}` ($fields) VALUES ($values);";	
-		
+				
         if (!mysqli_query($mysqli_exec, $SQL)) {
 
             // 可能有错误，给出错误信息
