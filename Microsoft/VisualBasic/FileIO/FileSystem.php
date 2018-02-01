@@ -39,6 +39,14 @@ class FileSystem {
 		rename($file, $newName);
 	}
 		
+	/*
+	 * Returns a collection of strings representing the path names of subdirectories within a directory.
+     *
+	 */
+	public static function GetDirectories($directory) {
+		return glob($directory . '/*', GLOB_ONLYDIR);
+	}
+		
 	/**
 	 * Copy a file, or recursively copy a folder and its contents
 	 * @author      Aidan Lister <aidan@php.net>
