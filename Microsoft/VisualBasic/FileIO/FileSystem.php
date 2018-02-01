@@ -10,7 +10,7 @@ class FileSystem {
 	 * Writes text to a file.
 	 *
 	 */
-	public static void WriteAllText(string $file, string $text, bool $append) {
+	public static function WriteAllText(string $file, string $text, bool $append) {
 		if ($append) {
 			file_put_contents($file, $text, FILE_APPEND);
 		} else {
@@ -23,7 +23,7 @@ class FileSystem {
 	 *
 	 * @param file: Name and path of the file to read.
 	 */
-	public static string ReadAllText(string $file) {
+	public static function ReadAllText(string $file) {
 		$text = file_get_contents($file);
 		return $text;
 	}
@@ -35,7 +35,7 @@ class FileSystem {
 	 * @param newName: New name of file.
 	 *
 	 */
-	public static void RenameFile(string $file, string $newName) {
+	public static function RenameFile(string $file, string $newName) {
 		rename($file, $newName);
 	}
 		
