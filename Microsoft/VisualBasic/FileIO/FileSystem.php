@@ -47,6 +47,15 @@ class FileSystem {
 		return glob($directory . '/*', GLOB_ONLYDIR);
 	}
 		
+	// FileSystem.GetFiles(String) As System.Collections.ObjectModel.ReadOnlyCollection(Of String)
+	
+	/*
+	 * Returns a read-only collection of strings representing the names of files within a directory.
+	 */
+	public static function GetFiles($directories) {
+		
+	}
+		
 	/**
 	 * Copy a file, or recursively copy a folder and its contents
 	 * @author      Aidan Lister <aidan@php.net>
