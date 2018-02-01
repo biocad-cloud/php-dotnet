@@ -10,9 +10,10 @@ class Table {
     private $driver;
     private $schema;
     private $condition;
+	private $condition_type;
 	private $AI;
 	
-    function __construct($tableName, $condition = null) {
+    function __construct($tableName, $condition = null, $type = "where") {
         $this->tableName = $tableName;
         $this->driver    = dotnet::$config;
         $this->driver    = new Model(
@@ -24,10 +25,11 @@ class Table {
         );
 
         # 获取数据库的目标数据表的表结构
-        $this->schema    = $this->driver->Describe($tableName);
-        $this->schema    = Model::schemaArray($this->schema);
-        $this->condition = $condition;
-		$this->AI        = Model::getAIKey($this);
+        $this->schema         = $this->driver->Describe($tableName);
+        $this->schema         = Model::schemaArray($this->schema);
+        $this->condition      = $condition;
+		$this->condition_type = $type;
+		$this->AI             = Model::getAIKey($this);
     }
 
 	public function getSchema() {
@@ -63,11 +65,57 @@ class Table {
         if (!$this->condition || count($this->condition) == 0) {
             return null;
         } else {
-			// echo "create expression for ";
-			// print_r($this->condition);
+			switch ($this->condition_type) {
+				
+				case "where":
+					return $this->whereGeneral();
+					break;
+				case "in":
+					return $this->whereIN();
+					break;
+				default:
+					dotnet::ThrowException("Invalid type value: " . $this->condition_type);
+			}
+		}
+    }
+
+	private function whereIN() {
+		$assert = array();
+		$schema = $this->schema;
+		
+		foreach ($this->condition as $field => $value) {
+			
+			if (array_key_exists($field, $schema)) {
+				$value = join("', '", $value);				
+				array_push($assert, "`$field` IN ('$value')");
+			}
 		}
 		
-        $assert = array();
+		if (count($assert) == 0) {
+            $this->throwEmpty();
+        } else {
+			$assert = join(" AND ", $assert);
+			return $assert;
+		}    
+	}
+	
+	private function throwEmpty() {
+		$debug = "";
+		$debug = $debug . "Where condition requested! But no assert expression can be build: \n";
+		$debug = $debug . "Here is the condition that you give me:\n";
+		$debug = $debug . "<pre><code>";
+		$debug = $debug . json_encode($this->condition);
+		$debug = $debug . "</code></pre>";
+		$debug = $debug . "This is the table structure of target mysql table:\n";
+		$debug = $debug . "<pre><code>";
+		$debug = $debug . json_encode($this->schema);
+		$debug = $debug . "</code></pre>";
+		
+		dotnet::ThrowException($debug);   
+	}
+	
+	private function whereGeneral() {
+		$assert = array();
         $schema = $this->schema;		
 		
         foreach ($this->condition as $field => $value) {			
@@ -78,25 +126,13 @@ class Table {
         }
 
         if (count($assert) == 0) {
-            $debug = "";
-			$debug = $debug . "Where condition requested! But no assert expression can be build: \n";
-			$debug = $debug . "Here is the condition that you give me:\n";
-			$debug = $debug . "<pre><code>";
-			$debug = $debug . json_encode($this->condition);
-			$debug = $debug . "</code></pre>";
-			$debug = $debug . "This is the table structure of target mysql table:\n";
-			$debug = $debug . "<pre><code>";
-			$debug = $debug . json_encode($this->schema);
-            $debug = $debug . "</code></pre>";
-			
-			dotnet::ThrowException($debug);        
-        }
-
-        $assert = join(" AND ", $assert);
-
-        return $assert;
-    }
-
+            $this->throwEmpty();
+        } else {
+			$assert = join(" AND ", $assert);
+			return $assert;
+		}        
+	}
+	
     // select but limit 1
     public function find() {
         $table  = $this->tableName;
@@ -117,10 +153,15 @@ class Table {
      * 
      */
     public function where($assert) {
-        $next = new Table($this->tableName, $assert);
+        $next = new Table($this->tableName, $assert, "where");
         return $next;
     }
 
+	public function in($assert) {
+		$next = new Table($this->tableName, $assert, "in");
+		return $next;
+	}
+	
     // insert into
     public function add($data) {
 
