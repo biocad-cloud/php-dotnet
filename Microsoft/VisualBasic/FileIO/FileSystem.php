@@ -1,5 +1,7 @@
 <?php
 
+dotnet::Imports("Microsoft.VisualBasic.Strings");
+
 /**
  * Provides properties and methods for working with drives, files, and directories.
  *
@@ -52,8 +54,35 @@ class FileSystem {
 	/*
 	 * Returns a read-only collection of strings representing the names of files within a directory.
 	 */
-	public static function GetFiles($directories) {
+	public static function GetFiles($directory, $suffix = "*") {
+		$list  = array_diff(scandir($directory), array('.', '..'));
+		$files = array();
+		$requireFilter = !$suffix || $suffix == "*" || $suffix == "*.*";
+		$requireFilter = !$requireFilter;
 		
+		if ($requireFilter) {
+			$suffix = explode(".", $suffix);
+			$suffix = Strings::LCase(end($suffix));
+		}
+		
+		foreach ($list as $i => $entry) {
+			if (!is_dir($entry)) {
+				
+				if ($requireFilter) {
+					$ext = pathinfo($entry, PATHINFO_EXTENSION);
+					
+					if (Strings::LCase($ext) == $suffix) {
+						# hit
+						array_push($files, realpath("$directory/$entry"));
+					}
+				} else {
+					# 不需要做筛选，直接添加
+					array_push($files, realpath("$directory/$entry"));
+				}				
+			}
+		}
+		
+		return $files;
 	}
 		
 	/**
