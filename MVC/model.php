@@ -148,6 +148,15 @@ class Table {
         return $this->driver->ExecuteScalar($mysqli_exec, $SQL);
     }
 
+	// select * from `table`;
+	public function all() {
+		$table       = $this->tableName;
+		$SQL         = "SELECT * FROM `$table`;";
+		$mysqli_exec = $this->driver->__init_MySql();    
+
+		return $this->driver->ExecuteSQL($mysqli_exec, $SQL);
+	}
+
     /*
      * @param $assert: The assert array of the where condition.
      * 
