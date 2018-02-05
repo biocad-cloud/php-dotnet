@@ -13,6 +13,13 @@ class Table {
 	private $condition_type;
 	private $AI;
 	
+	/**
+	 * Create an abstract table model.
+	 * 
+	 * @param mixed $type: where/in/expression
+	 * @param mixed $condition: default is nothing, means all, no filter
+	 * 
+	 */
     function __construct($tableName, $condition = null, $type = "where") {
         $this->tableName = $tableName;
         $this->driver    = dotnet::$config;
@@ -73,6 +80,10 @@ class Table {
 				case "in":
 					return $this->whereIN();
 					break;
+				case "expression":
+					return $this->condition;
+					break;
+
 				default:
 					dotnet::ThrowException("Invalid type value: " . $this->condition_type);
 			}
@@ -157,12 +168,21 @@ class Table {
 		return $this->driver->ExecuteSQL($mysqli_exec, $SQL);
 	}
 
-    /*
-     * @param $assert: The assert array of the where condition.
+    /**
+	 * Create a where condition filter for the next SQL expression.
+	 * 
+     * @param $assert: The assert array of the where condition or an string expression.
      * 
      */
     public function where($assert) {
-        $next = new Table($this->tableName, $assert, "where");
+		$next = null;
+
+		if (gettype($assert) === 'string') {
+			$next = new Table($this->tableName, $assert, "expression");
+		} else {
+			$next = new Table($this->tableName, $assert, "where");
+		}
+        
         return $next;
     }
 
