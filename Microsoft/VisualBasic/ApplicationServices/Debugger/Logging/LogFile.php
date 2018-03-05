@@ -11,6 +11,8 @@ class LogFile {
 		FileSystem::CreateDirectory(
 		FileSystem::GetParentPath($path));
 
+		echo $path . "\n";
+
 		$this->handle = $path;
 	}
 	
@@ -27,7 +29,7 @@ class LogFile {
 		echo $errfile . "\n";
 		echo $errline . "\n";
 
-		FileSystem::WriteAllText($handle, $log, TRUE);
+		FileSystem::WriteAllText($this->handle, $log, TRUE);
 		
 		/* Don't execute PHP internal error handler */
 		return true;

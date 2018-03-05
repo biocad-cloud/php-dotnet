@@ -78,10 +78,11 @@ class dotnet {
         
         if (!DotNetRegistry::DisableErrorHandler()) {
             // 使用本框架的错误处理工具
-            dotnet::$logs = new LogFile(DotNetRegistry::LogFile());
-                    $logs = dotnet::$logs;
+            dotnet::$logs = new LogFile(DotNetRegistry::LogFile());                    
 
             set_error_handler(function($errno, $errstr, $errfile, $errline) {
+                 # 2018-3-5 Call to a member function LoggingHandler() on a non-object
+                 $logs = dotnet::$logs;
                  $logs->LoggingHandler($errno, $errstr, $errfile, $errline);
             }, E_ALL);
         }
