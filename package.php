@@ -76,10 +76,14 @@ class dotnet {
 		
         DotNetRegistry::$config = include $config;
         
-        if (!DotNetRegistry::DisableErrorHandler())
+        if (!DotNetRegistry::DisableErrorHandler()) {
             // 使用本框架的错误处理工具
             dotnet::$logs = new LogFile(DotNetRegistry::LogFile());
-            set_error_handler(dotnet::$logs->LoggingHandler, E_ALL);
+                    $logs = dotnet::$logs;
+
+            set_error_handler(function($errno, $errstr, $errfile, $errline) {
+                 $logs->LoggingHandler($errno, $errstr, $errfile, $errline);
+            }, E_ALL);
         }
 	}
 	

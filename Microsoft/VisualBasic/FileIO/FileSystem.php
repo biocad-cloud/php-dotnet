@@ -53,14 +53,27 @@ class FileSystem {
 		return dirname($path);
 	}
 
+	/**
+	 * Creates a directory.
+	 *
+	 * @param directory Name and location of the directory.
+	 * 
+	 */
 	public static function CreateDirectory($directory) {
-		return mkdir($directory, 0777, true);
+		if (!file_exists($directory)) {
+			return mkdir($directory, 0777, true);
+		} else {
+			return TRUE;
+		}		
 	}
 
 	// FileSystem.GetFiles(String) As System.Collections.ObjectModel.ReadOnlyCollection(Of String)
 	
-	/*
+	/**
 	 * Returns a read-only collection of strings representing the names of files within a directory.
+	 * 
+	 * @param directory Name and location of the directory.
+	 * @param suffix The file extension name. By default is get all files in target directory.
 	 */
 	public static function GetFiles($directory, $suffix = "*") {
 		$list  = array_diff(scandir($directory), array('.', '..'));
