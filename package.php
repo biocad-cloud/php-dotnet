@@ -69,11 +69,14 @@ class dotnet {
     }
 
 	public static function AutoLoad($config) {		
+        
+        date_default_timezone_set('UTC');
+
 		dotnet::Imports("MVC.view");
 		dotnet::Imports("MVC.model");
 		dotnet::Imports("MVC.control");
-		dotnet::Imports("MVC.driver");
-		
+        dotnet::Imports("MVC.driver");       
+        
         DotNetRegistry::$config = include $config;
         
         if (!DotNetRegistry::DisableErrorHandler()) {

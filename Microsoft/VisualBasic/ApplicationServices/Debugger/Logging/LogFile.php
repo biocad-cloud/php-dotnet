@@ -25,13 +25,13 @@ class LogFile {
 		// 创建logentry对象和logbody，然后将数据拓展进入目标日志文件之中
 		$entry = new LogEntry($errno, $errfile, $errline);
 
-		$log = new StringBuilder()
-			->AppendLine($entry->__toString())
-			->AppendLine()
-			->AppendLine($errstr)
-			->AppendLine()
-			->AppendLine(StackTrace::GetCallStack())
-			->AppendLine();
+		$log = new StringBuilder();
+		$log ->AppendLine($entry->__toString())
+			 ->AppendLine()
+			 ->AppendLine($errstr)
+			 ->AppendLine()
+			 ->AppendLine(StackTrace::GetCallStack())
+			 ->AppendLine();
 
 		// echo $errno   . "\n";
 		// echo $errstr  . "\n";

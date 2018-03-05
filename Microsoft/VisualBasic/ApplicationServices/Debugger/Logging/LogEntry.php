@@ -6,7 +6,7 @@ class LogEntry {
 	
 	public $errNO;
 	public $errFile;
-	public $errLine$
+	public $errLine;
 	public $format;
 
 	public function __construct($no, $file, $line, $format = NULL) {
