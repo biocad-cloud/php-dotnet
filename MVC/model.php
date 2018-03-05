@@ -16,13 +16,13 @@ class Table {
 	/**
 	 * Create an abstract table model.
 	 * 
-	 * @param mixed $type: where/in/expression
-	 * @param mixed $condition: default is nothing, means all, no filter
+	 * @param type      where/in/expression
+	 * @param condition default is nothing, means all, no filter
 	 * 
 	 */
     function __construct($tableName, $condition = null, $type = "where") {
         $this->tableName = $tableName;
-        $this->driver    = dotnet::$config;
+        $this->driver    = DotNetRegistry::$config;
         $this->driver    = new Model(
             $this->driver["DB_NAME"], 
             $this->driver["DB_USER"],
@@ -171,7 +171,7 @@ class Table {
     /**
 	 * Create a where condition filter for the next SQL expression.
 	 * 
-     * @param $assert: The assert array of the where condition or an string expression.
+     * @param assert: The assert array of the where condition or an string expression.
      * 
      */
     public function where($assert) {
