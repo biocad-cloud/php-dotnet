@@ -227,7 +227,9 @@ class Table {
 			if (array_key_exists($fieldName, $data)) {
 				
 				$value = $data[$fieldName];
-				
+				# 使用转义函数进行特殊字符串的转义操作
+				# $value = mysqli_real_escape_string($mysqli_exec, $value);
+
 				array_push($fields, "`$fieldName`");
 				array_push($values, "'$value'");
 				
