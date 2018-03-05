@@ -8,6 +8,9 @@ class LogFile {
 	private $handle;
 	
 	public function __construct($path) {
+		FileSystem::CreateDirectory(
+		FileSystem::GetParentPath($path));
+
 		$this->handle = $path;
 	}
 	
@@ -19,6 +22,11 @@ class LogFile {
 		$entry = new LogEntry();
 		$log = "";
 		
+		echo $errno   . "\n";
+		echo $errstr  . "\n";
+		echo $errfile . "\n";
+		echo $errline . "\n";
+
 		FileSystem::WriteAllText($handle, $log, TRUE);
 		
 		/* Don't execute PHP internal error handler */

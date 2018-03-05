@@ -1,8 +1,10 @@
 <?php
 
-include_once(dotnet::GetDotnetManagerDirectory() . "/Microsoft/VisualBasic/Strings.php");
 include_once(dotnet::GetDotnetManagerDirectory() . "/System/Diagnostics/StackTrace.php");
+include_once(dotnet::GetDotnetManagerDirectory() . "/Microsoft/VisualBasic/Strings.php");
+include_once(dotnet::GetDotnetManagerDirectory() . "/Microsoft/VisualBasic/ApplicationServices/Debugger/Logging/LogFile.php");
 include_once(dotnet::GetDotnetManagerDirectory() . "/RFC7231/index.php");
+include_once(dotnet::GetDotnetManagerDirectory() . "/Registry.php");
 
 session_start();
 
@@ -26,8 +28,8 @@ class dotnet {
      * 只需要修改这个参数的逻辑值就可以打开或者关闭调试器的输出行为
      */
     public static $debug = True;
-	public static $config;
-	
+    public static $logs;
+
     /**
      * 更改调试器的输出行为
      */
@@ -72,7 +74,13 @@ class dotnet {
 		dotnet::Imports("MVC.control");
 		dotnet::Imports("MVC.driver");
 		
-		dotnet::$config = include $config;
+        DotNetRegistry::$config = include $config;
+        
+        if (!DotNetRegistry::DisableErrorHandler())
+            // 使用本框架的错误处理工具
+            dotnet::$logs = new LogFile(DotNetRegistry::LogFile());
+            set_error_handler(dotnet::$logs->LoggingHandler, E_ALL);
+        }
 	}
 	
     /**

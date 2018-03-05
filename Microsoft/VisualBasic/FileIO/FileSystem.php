@@ -49,6 +49,14 @@ class FileSystem {
 		return glob($directory . '/*', GLOB_ONLYDIR);
 	}
 		
+	public static function GetParentPath($path) {
+		return dirname($path);
+	}
+
+	public static function CreateDirectory($directory) {
+		return mkdir($directory, 0777, true);
+	}
+
 	// FileSystem.GetFiles(String) As System.Collections.ObjectModel.ReadOnlyCollection(Of String)
 	
 	/*
@@ -76,7 +84,7 @@ class FileSystem {
 						array_push($files, realpath("$directory/$entry"));
 					}
 				} else {
-					# ²»ĞèÒª×öÉ¸Ñ¡£¬Ö±½ÓÌí¼Ó
+					# ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½É¸Ñ¡ï¿½ï¿½Ö±ï¿½ï¿½ï¿½ï¿½ï¿½
 					array_push($files, realpath("$directory/$entry"));
 				}				
 			}
@@ -115,7 +123,7 @@ class FileSystem {
 		// Loop through the folder
 		$DIR = dir($source);
 		// echo $source;
-		// Ä¿±êÎÄ¼ş¼Ğ²»´æÔÚµÄÊ±ºò»á³ö´í
+		// Ä¿ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½Ğ²ï¿½ï¿½ï¿½ï¿½Úµï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		while (false !== ($entry = $DIR->read())) {
 			// Skip pointers
 			if ($entry == '.' || $entry == '..') {
