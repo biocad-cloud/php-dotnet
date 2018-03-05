@@ -60,6 +60,9 @@ class FileSystem {
 	 * 
 	 */
 	public static function CreateDirectory($directory) {
+		# echo realpath($directory) . "\n";
+		# echo file_exists(realpath($directory)) . "\n";
+
 		if (!file_exists($directory)) {
 			return mkdir($directory, 0777, true);
 		} else {
