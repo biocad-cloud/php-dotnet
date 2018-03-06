@@ -16,11 +16,16 @@ class taskhost {
         $this->interval = $interval;        
     }
 
-    public function run($task) {
+    public function run($task, $ticks = null) {
         self::signal_on($this->signal);
 
         while(true == self::check_signal($this->signal)) {
-            $task();
+
+            # 当ticks为空的时候说明不限制，则执行任务
+            # 或者当ticks不为空的时候进行检查，如果检查成功则执行任务
+            if (!$ticks || self::checkTaskTick($ticks)) {
+                $task();
+            }            
 
             if ($this->interval > 0) {
                 sleep($this->interval);
@@ -46,6 +51,26 @@ class taskhost {
 
     public static function signal_off($signal) {
         taskhost::set_signal($signal, "off");
+    }
+
+    public static function checkTaskTick($ticks) {
+    
+        # produces something like 03-12-2012 03:29:13
+        $t = date("d-m-Y h:i:s"); 
+        # https://stackoverflow.com/questions/4636166/only-variables-should-be-passed-by-reference
+        $s = explode(":", $t);
+        $s = end($s);
+
+        // 得到秒的最后一个数字
+        $s = intval(substr($s, -1));      
+        
+        foreach($ticks as $t) {
+            if ($t == $s) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
 ?>
