@@ -1,5 +1,6 @@
 <?php
 
+// 定时任务的宿主进程
 class taskhost {
 
     // 任务的时间间隔

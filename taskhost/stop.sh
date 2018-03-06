@@ -1,0 +1,1 @@
+echo off > /tmp/test_signals.txt
