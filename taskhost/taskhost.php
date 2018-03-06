@@ -19,7 +19,7 @@ class taskhost {
     public function run($task) {
         self::signal_on($this->signal);
 
-        while(true == self::check_signal($signal)) {
+        while(true == self::check_signal($this->signal)) {
             $task();
 
             if ($this->interval > 0) {
