@@ -14,9 +14,9 @@ class FileSystem {
 	 */
 	public static function WriteAllText($file, $text, $append) {
 		if ($append) {
-			echo ">>>>> append " . "\n";
-			echo $text;
-			echo ">>>>> to $file" . "\n";
+			// echo ">>>>> append " . "\n";
+			// echo $text;
+			// echo ">>>>> to $file" . "\n";
 			file_put_contents($file, $text, FILE_APPEND);
 		} else {
 			file_put_contents($file, $text);

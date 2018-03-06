@@ -13,12 +13,10 @@ class LogFile {
 		FileSystem::CreateDirectory(
 		FileSystem::GetParentPath($path));
 
-		// echo $path . "\n";
-
 		$this->handle = $path;
 
 		if (!file_exists($path)) {
-			echo "No log file exist!";
+			# echo "No log file exist!";
 			FileSystem::WriteAllText($path, "=======LogFile for php.NET=======\n\n");
 		}
 	}
@@ -46,7 +44,7 @@ class LogFile {
 		// echo $this->handle . "\n";
 
 		# echo $this->handle . "\n";
-		echo $log->ToString() . "\n";
+		# echo $log->ToString() . "\n";
 
 		FileSystem::WriteAllText($this->handle, $log->ToString(), TRUE);
 		
