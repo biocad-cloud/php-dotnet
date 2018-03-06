@@ -66,6 +66,8 @@ class dotnet {
         dotnet::Imports("MVC.driver");       
         
         DotNetRegistry::$config = include $config;
+
+        dotnet::$debugger = new dotnetDebugger();
         
         if (!DotNetRegistry::DisableErrorHandler()) {
             self::setupLogs();
@@ -88,7 +90,7 @@ class dotnet {
     }
     
     public static function printMySqlTransaction() {
-
+        echo debugView::GetMySQLView(self::$debugger);
     }
 
     /**

@@ -159,6 +159,10 @@ class Table {
         return $this->driver->ExecuteScalar($mysqli_exec, $SQL);
     }
 
+	public function findfield($name) {
+		return $this->find()["name"];
+	}
+
 	// select * from `table`;
 	public function all() {
 		$table       = $this->tableName;
@@ -261,8 +265,10 @@ class Table {
 		$values = join(", ", $values);
 		
 		# INSERT INTO `metacardio`.`xcms_files` (`task_id`) VALUES ('ABC');
-		$SQL = "INSERT INTO `{$table}` ($fields) VALUES ($values);";	
-				
+		$SQL = "INSERT INTO `{$table}` ($fields) VALUES ($values);";
+
+		dotnet::$debugger->add_mysql_history($SQL);
+
         if (!mysqli_query($mysqli_exec, $SQL)) {
 
             // 可能有错误，给出错误信息
@@ -313,7 +319,7 @@ class Table {
 			$SQL = $SQL . " WHERE " . $assert . " LIMIT 1;";
 		}
 		
-		// print_r($SQL);
+		dotnet::$debugger->add_mysql_history($SQL);
 		
 		if (!mysqli_query($mysqli_exec, $SQL)) {
 			return false;
@@ -335,6 +341,8 @@ class Table {
 			$SQL     = "DELETE FROM `$table` WHERE $assert;";
 		}
 		
+		dotnet::$debugger->add_mysql_history($SQL);
+
 		if (!mysqli_query($mysqli_exec, $SQL)) {
 			return false;
 		} else {

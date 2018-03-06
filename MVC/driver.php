@@ -90,6 +90,7 @@ class Model {
         return $schema;
     }
 
+	// 这个方法主要是用于执行一些无返回值的方法，例如INSERT, UPDATE, DELETE等
     public function exec($SQL) {
 		$mysqli_exec = $this->__init_MySql();    
 
@@ -97,7 +98,9 @@ class Model {
 		mysqli_query($mysql_exec, "SET names 'utf8'");
 
 		$out = mysqli_query($mysql_exec, $SQL);                     
-        
+		
+		dotnet::$debugger->add_mysql_history($SQL);
+		
         return $out;
     }
 
@@ -114,8 +117,9 @@ class Model {
 		mysqli_select_db($mysql_exec, $this->database); 
 		mysqli_query($mysql_exec, "SET names 'utf8'");
 
-		$data = mysqli_query($mysql_exec, $SQL); 
-		
+		$data = mysqli_query($mysql_exec, $SQL); 		
+		dotnet::$debugger->add_mysql_history($SQL);
+
 		if($data) {
 			$out = array();
 			
@@ -139,6 +143,7 @@ class Model {
 		mysqli_query($mysql_exec, "SET names 'utf8'");
 
 		$data = mysqli_query($mysql_exec, $SQL); 
+		dotnet::$debugger->add_mysql_history($SQL);
 		
 		if ($data) {
 			
