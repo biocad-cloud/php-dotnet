@@ -3,7 +3,6 @@
 include "../package.php";
 include "REST.php";
 
-dotnet::ShowAllMessage();
 dotnet::$debug = false;
 
 dotnet::Imports("System.Diagnostics.StackTrace");
