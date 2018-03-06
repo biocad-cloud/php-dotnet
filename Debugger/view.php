@@ -17,7 +17,7 @@ class debugView {
             if (!$error) {
                 $li = sprintf($template, $sql) . "\n";
             } else {
-                $li = $sql . "<code><pre>" . $error . "</pre></code>";
+                $li = $sql . "\n\n<code><pre>" . $error . "</pre></code>";
                 $li = sprintf($template, $li) . "\n";
             }
 			
