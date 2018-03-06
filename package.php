@@ -10,8 +10,12 @@ include_once dotnet::GetDotnetManagerDirectory() . "/Registry.php";
 
 session_start();
 
-function test233($str) {
-    echo "hello!  $str";
+/**
+ * Global function for load php.NET package 
+ * 
+ */
+function Imports($namespace) {
+    return dotnet::Imports($namespace);
 }
 
 /**
