@@ -7,6 +7,10 @@ dotnet::Imports("System.Collection.ICollection");
  */
 class List extends ICollection {
 
+    function __construct() {
+        parent::__construct();
+    }
+
     public function Add($obj) {
         array_push($this->__data, $obj);
     }

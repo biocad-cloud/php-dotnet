@@ -19,7 +19,7 @@ abstract class ICollection {
     /**
      * 使用默认的构造函数
      */
-    function __construct(){
+    function __construct() {
 		$this->__data = array();
 	}
 
