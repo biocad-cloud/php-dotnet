@@ -25,15 +25,15 @@ class List extends ICollection {
     }
 
     public function Remove($obj) {
-        die(dotnet::$MethodNotImplemented);
+        die(dotnet::MethodNotImplemented);
     }
 
     public function RemoveAt(int $index) {
-        die(dotnet::$MethodNotImplemented);
+        die(dotnet::MethodNotImplemented);
     }
 
     public function InsertAt(int $index, $obj) {
-        die(dotnet::$MethodNotImplemented);
+        die(dotnet::MethodNotImplemented);
     }
 }
 

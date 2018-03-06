@@ -42,7 +42,11 @@ abstract class ICollection {
 	 */
 	public function GetJson() {
 		return json_encode($this->__data);
-	}
+    }
+    
+    public function ToArray() {
+        return $this->__data;
+    }
 }
 
 ?>
