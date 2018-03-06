@@ -8,6 +8,8 @@ class taskhost {
     // 退出工作线程的信号文件的文件路径
     private $signal;
 
+    const ref = __FILE__;
+
     /**
      * @param interval 线程的休眠时间的间隔长度，单位为秒 
      **/

@@ -2,6 +2,9 @@
 
 include_once(dirname(__FILE__) . "/taskhost.php");
 
+echo __FILE__ . "\n";
+echo taskhost::ref . "\n";
+
 $signals = "/tmp/test_signals.txt";
 $host    = new taskhost($signals, 1);
 $i       = 0;

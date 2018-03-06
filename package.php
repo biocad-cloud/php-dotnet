@@ -31,23 +31,19 @@ class dotnet {
     public static $logs;
 
     /**
-     * 更改调试器的输出行为
-     */
-    function setup_debugger() {
-        if (False == dotnet::$debug) {
-            dotnet::SuppressWarningMessage();
-        } else {
-            dotnet::ShowAllMessage();
-        }
-    }
-
-    /**
      * This method have not implemented yet!
      * 
      * Usage:
      *      die(dotnet::$MethodNotImplemented);
      */
-    public static $MethodNotImplemented = "This method have not implemented yet!";
+    const MethodNotImplemented = "This method have not implemented yet!";
+    
+    /**
+     * 获取得到package.php这个文件的文件路径
+     * 
+     * @return string
+     */
+    const DotNetManagerFileLocation = __FILE__;
 
     /**
      * 经过格式化的var_dump输出
@@ -80,6 +76,9 @@ class dotnet {
         DotNetRegistry::$config = include $config;
         
         if (!DotNetRegistry::DisableErrorHandler()) {
+
+            // Report all PHP errors (see changelog)
+            error_reporting(E_ALL);
             // 使用本框架的错误处理工具
             dotnet::$logs = new LogFile(DotNetRegistry::LogFile());                    
 
@@ -102,17 +101,14 @@ class dotnet {
      * @return string 这个函数返回所导入的模块的完整的文件路径
      * 
      */
-    public static function Imports($mod) {  
-
-		// echo $mod;
-	
-        $initialFile = dotnet::GetDotnetManagerLocation();
-        $DIR         = dotnet::ParentDirectory($initialFile);
+    public static function Imports($mod) {  	
+        
+        $DIR = self::GetDotnetManagerDirectory();
         
 		// echo $DIR;
 		
         // 因为WithSuffixExtension这个函数会需要依赖小数点来判断文件拓展名，
-        // 所以替换操作要在if判断之后进行  
+        // 所以对小数点的替换操作要在if判断之后进行  
         if (dotnet::WithSuffixExtension($mod, "php")) {
             $mod = str_replace(".", "/", $mod); 
             $mod = "{$DIR}/{$mod}";
@@ -144,43 +140,10 @@ class dotnet {
     }
 
     /**
-     * 获取得到package.php这个文件的文件路径
-     * 
-     * @return string
-     */
-    public static function GetDotnetManagerLocation() {     
-
-        // 第一个栈片段就是当前的函数调用所在的文件位置，直接return获取得到这个文件位置信息
-        foreach(debug_backtrace() as $k=>$v) {
-            extract($v); 
-            return $file;
-        }
-    }
-
-    /**
      * 获取得到package.php这个文件的所处的文件夹的位置
      */
     public static function GetDotnetManagerDirectory() {
-        return dotnet::ParentDirectory(
-               dotnet::GetDotnetManagerLocation());
-    }
-
-    /**
-     * 获取得到某一个文件的其所处的父文件夹的全路径
-     */
-    public static function ParentDirectory($file) {
-
-        dotnet::SuppressWarningMessage();   
-
-        $file = str_replace("\\", "/", $file);
-        $file = split("/", $file);
-        // 去除最后一个元素，最后一个元素为文件名，这样子剩下的都是文件夹的单词了 
-        array_pop($file);
-        $file = join("/", $file);
-
-        dotnet::ShowAllMessage();
-
-        return $file;
+        return dirname(self::DotNetManagerFileLocation);
     }
 
 	/*
@@ -192,37 +155,6 @@ class dotnet {
 				
 		Error::err500($exc);
 		exit(0);
-    }
-
-    /**
-     * 调用这个函数之后，将会阻止继续输出警告信息，假若在调用了这个函数之后，
-     * 需要重新显示错误消息，则可以调用 dotnet::ShowAllMessage 函数
-     */
-    public static function SuppressWarningMessage() {
-
-        // 阻止php输出警告信息
-        // http://php.net/manual/en/function.error-reporting.php
-
-        // 不显示任何错误信息以及警告信息
-        // error_reporting(0);
-
-        // 显示出警告信息
-        // error_reporting(E_WARNING);
-        // Report all errors except E_NOTICE
-        error_reporting ((E_ERROR | E_PARSE) & ~E_WARNING & ~E_NOTICE & ~E_DEPRECATED) ;
-    }
-
-    /**
-     * 使用这个函数将会显示出所有的错误消息
-     */ 
-    public static function ShowAllMessage() {
-        // Report all PHP errors (see changelog)
-        error_reporting(E_ALL);
-    }
-
-    public static function SuppressAllMessage() {
-        // Turn off all error reporting
-        error_reporting(0);
     }
 }
 
