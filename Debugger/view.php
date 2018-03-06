@@ -11,8 +11,17 @@ class debugView {
 		$html     = "";
 		
 		foreach ($engine->mysql_history as $sql) {
-			$li   = sprintf($template, $sql) . "\n";
-			$html = $html . $li;
+            $error  = $sql[1];
+            $sql    = $sql[0];
+
+            if (!$error) {
+                $li = sprintf($template, $sql) . "\n";
+            } else {
+                $li = $sql . "<code><pre>" . $error . "</pre></code>";
+                $li = sprintf($template, $li) . "\n";
+            }
+			
+			$html  = $html . $li;
 		}
 		
 		return $html;

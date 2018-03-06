@@ -271,6 +271,7 @@ class Table {
 
         if (!mysqli_query($mysqli_exec, $SQL)) {
 
+			dotnet::$debugger->add_last_mysql_error(mysqli_error($mysqli_exec));
             // 可能有错误，给出错误信息
             return false;
 			
