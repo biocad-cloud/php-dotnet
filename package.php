@@ -65,6 +65,8 @@ class dotnet {
         // 使用本框架的错误处理工具
         dotnet::$logs = new LogFile(DotNetRegistry::LogFile());                    
 
+        # echo dotnet::$logs->handle . "\n";
+
         // Report all PHP errors (see changelog)
         error_reporting(E_ALL);
         set_error_handler(function($errno, $errstr, $errfile, $errline) {

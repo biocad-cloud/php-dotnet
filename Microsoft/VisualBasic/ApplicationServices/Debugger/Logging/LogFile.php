@@ -7,7 +7,7 @@ dotnet::Imports("Microsoft.VisualBasic.FileIO.FileSystem");
 
 class LogFile {
 	
-	private $handle;
+	public $handle;
 	
 	public function __construct($path) {
 		FileSystem::CreateDirectory(
@@ -16,6 +16,11 @@ class LogFile {
 		// echo $path . "\n";
 
 		$this->handle = $path;
+
+		if (!file_exists($path)) {
+			echo "No log file exist!";
+			FileSystem::WriteAllText($path, "=======LogFile for php.NET=======\n\n");
+		}
 	}
 	
 	/**
@@ -39,6 +44,9 @@ class LogFile {
 		// echo $errline . "\n";
 
 		// echo $this->handle . "\n";
+
+		# echo $this->handle . "\n";
+		echo $log->ToString() . "\n";
 
 		FileSystem::WriteAllText($this->handle, $log->ToString(), TRUE);
 		
