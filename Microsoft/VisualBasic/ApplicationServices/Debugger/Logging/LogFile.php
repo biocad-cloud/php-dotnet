@@ -9,7 +9,7 @@ class LogFile {
 	
 	public $handle;
 	
-	public function __construct($path) {
+	function __construct($path) {
 		FileSystem::CreateDirectory(
 		FileSystem::GetParentPath($path));
 

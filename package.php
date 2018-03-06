@@ -1,12 +1,18 @@
 <?php
 
-include_once(dotnet::GetDotnetManagerDirectory() . "/System/Diagnostics/StackTrace.php");
-include_once(dotnet::GetDotnetManagerDirectory() . "/Microsoft/VisualBasic/Strings.php");
-include_once(dotnet::GetDotnetManagerDirectory() . "/Microsoft/VisualBasic/ApplicationServices/Debugger/Logging/LogFile.php");
-include_once(dotnet::GetDotnetManagerDirectory() . "/RFC7231/index.php");
-include_once(dotnet::GetDotnetManagerDirectory() . "/Registry.php");
+include_once dotnet::GetDotnetManagerDirectory() . "/System/Diagnostics/StackTrace.php";
+include_once dotnet::GetDotnetManagerDirectory() . "/Debugger/engine.php";
+include_once dotnet::GetDotnetManagerDirectory() . "/Debugger/view.php";
+include_once dotnet::GetDotnetManagerDirectory() . "/Microsoft/VisualBasic/Strings.php";
+include_once dotnet::GetDotnetManagerDirectory() . "/Microsoft/VisualBasic/ApplicationServices/Debugger/Logging/LogFile.php";
+include_once dotnet::GetDotnetManagerDirectory() . "/RFC7231/index.php";
+include_once dotnet::GetDotnetManagerDirectory() . "/Registry.php";
 
 session_start();
+
+function test233($str) {
+    echo "hello!  $str";
+}
 
 /**
  * dotnet package manager, you must include this module at first.
@@ -28,7 +34,8 @@ class dotnet {
      * 只需要修改这个参数的逻辑值就可以打开或者关闭调试器的输出行为
      */
     public static $debug = True;
-    public static $logs;
+    public static $error_log;
+    public static $debugger;
 
     /**
      * This method have not implemented yet!
@@ -63,7 +70,7 @@ class dotnet {
     
     private static function setupLogs() {
         // 使用本框架的错误处理工具
-        dotnet::$logs = new LogFile(DotNetRegistry::LogFile());                    
+        dotnet::$error_log = new LogFile(DotNetRegistry::LogFile());                    
 
         # echo dotnet::$logs->handle . "\n";
 
@@ -71,11 +78,15 @@ class dotnet {
         error_reporting(E_ALL);
         set_error_handler(function($errno, $errstr, $errfile, $errline) {
              # 2018-3-5 Call to a member function LoggingHandler() on a non-object
-             $logs = dotnet::$logs;
+             $logs = dotnet::$error_log;
              $logs->LoggingHandler($errno, $errstr, $errfile, $errline);
         }, E_ALL);
     }
-	
+    
+    public static function printMySqlTransaction() {
+
+    }
+
     /**
      * 对于这个函数额调用者而言，就是获取调用者所在的脚本的文件夹位置
      * 这个函数是使用require_once来进行模块调用的
