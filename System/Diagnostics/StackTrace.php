@@ -1,5 +1,7 @@
 <?php
 
+dotnet::Imports("System.Text.StringBuilder");
+
 /**
  * Represents a stack trace, which is an ordered collection of one or more stack frames.
  */
@@ -37,19 +39,21 @@ class StackTrace {
      */
     public static function GetCallStack() {
   
-        $bt=debug_backtrace(); 
-        $trace="<code>"; 
+        $bt    = debug_backtrace(); 
+        $trace = new StringBuilder();
+        
+        $trace->AppendLine("<code>"); 
     
         foreach($bt as $k=>$v) { 
             // 解析出当前的栈片段信息
             extract($v); 
-            $trace.="    at $function in $file:line $line<br/>";        
+            $trace->AppendLine("    at $function in $file:line $line<br/>");    
         } 
      
-        $trace.="    --- End of inner exception stack trace ---<br/>";
-        $trace.="</code>";
+        $trace->AppendLine("    --- End of inner exception stack trace ---<br/>");
+              ->AppendLine("</code>");
 
-        return $trace;
+        return $trace->ToString();
     }
 
     /**
