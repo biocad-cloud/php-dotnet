@@ -108,9 +108,7 @@ class dotnet {
     public static function Imports($mod) {  	
         
         $DIR = self::GetDotnetManagerDirectory();
-        
-		// echo $DIR;
-		
+        	
         // 因为WithSuffixExtension这个函数会需要依赖小数点来判断文件拓展名，
         // 所以对小数点的替换操作要在if判断之后进行  
         if (dotnet::WithSuffixExtension($mod, "php")) {
@@ -120,11 +118,10 @@ class dotnet {
             $mod = str_replace(".", "/", $mod); 
             $mod = "{$DIR}/{$mod}.php";
         }   
-                
-        // echo $mod."<br/>";
 
         // 在这里导入需要导入的模块文件
         include_once($mod);
+
         // 返回所导入的文件的全路径名
         return $mod;
     }

@@ -3,7 +3,8 @@
 class debugView {
 	
 	public static function GetView($engine) {
-		
+        // 获取所加载的所有脚本列表
+        $includes = get_included_files();
 	}
 	
 	public static function GetMySQLView($engine) {
