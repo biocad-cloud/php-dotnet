@@ -50,7 +50,7 @@ class StackTrace {
             $trace->AppendLine("    at $function in $file:line $line<br/>");    
         } 
      
-        $trace->AppendLine("    --- End of inner exception stack trace ---<br/>");
+        $trace->AppendLine("    --- End of inner exception stack trace ---<br/>")
               ->AppendLine("</code>");
 
         return $trace->ToString();
