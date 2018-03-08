@@ -64,6 +64,25 @@ class Table {
         return $this->driver->ExecuteSQL($mysqli_exec, $SQL);
     }
 
+	// select count(*) from where ...;
+	public function count() {
+		$table  = $this->tableName;
+        $assert = $this->getWhere();
+        $mysqli_exec = $this->driver->__init_MySql();       
+		$count       = "COUNT(*)";
+
+        if ($assert) {
+            $SQL = "SELECT $count FROM `$table` WHERE $assert;";
+        } else {
+            $SQL = "SELECT $count FROM `$table`;";
+        }
+    		
+		$count = $this->driver->ExecuteScalar($mysqli_exec, $SQL);
+		$count = $count["COUNT(*)"];
+
+		return $count;
+	}
+
     private function getWhere() {	
 
 		# 如果条件是空的话，就不再继续构建表达式了
@@ -349,6 +368,6 @@ class Table {
 		} else {
 			return true;
 		}
-    }
+	}
 }
 ?>
