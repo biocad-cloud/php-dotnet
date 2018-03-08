@@ -1,6 +1,7 @@
 <?php
 
 include_once dotnet::GetDotnetManagerDirectory() . "/System/Diagnostics/StackTrace.php";
+include_once dotnet::GetDotnetManagerDirectory() . "/System/Text/StringBuilder.php";
 include_once dotnet::GetDotnetManagerDirectory() . "/Debugger/engine.php";
 include_once dotnet::GetDotnetManagerDirectory() . "/Debugger/view.php";
 include_once dotnet::GetDotnetManagerDirectory() . "/Microsoft/VisualBasic/Strings.php";
@@ -172,15 +173,16 @@ class dotnetException extends Exception {
 	}	
 	
 	public static function FormatOutput($message, $stackTrace) {
-		$str = "<div class='dotnet-exception'>";
-		$str = $str . "<p><span style='color:red'>" . $message . "</span>" ;
-		$str = $str . "\n";
-		$str = $str . "<p>";
-		$str = $str . $stackTrace;
-		$str = $str . "</p></p>";
-		$str = $str . "</div>";
+        $view = new StringBuilder();
+		$view->AppendLine("<div class='dotnet-exception'>")
+		     ->AppendLine("<p><span style='color:red'>" . $message . "</span>")
+		     ->AppendLine("<p>")
+		     ->AppendLine($stackTrace)
+             ->AppendLine("</p>")
+             ->AppendLine("</p>")
+		     ->AppendLine("</div>");
 		
-		return $str;
+		return $view->ToString();
 	}
 	
 	public static function FormatExceptionOutput($ex) {
