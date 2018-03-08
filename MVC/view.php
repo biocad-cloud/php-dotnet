@@ -9,6 +9,7 @@ dotnet::Imports("Microsoft.VisualBasic.Strings");
  */
 class View {
 	
+	// 从html文件夹之中读取和当前函数同名的文件并显示出来
 	public static function Display($vars = NULL) {
 
 		$name = StackTrace::GetCallerMethodName();
@@ -20,7 +21,14 @@ class View {
 		View::Show($path, $vars);
 	}
 	
+	// 显示指定的文件路径的html文本的内容
 	public static function Show($path, $vars = NULL) {
+		echo self::Load($path, $vars);
+	}
+	
+	// 加载指定路径的html文档并对其中的占位符利用vars字典进行填充
+	// 这个函数还会额外的处理includes关系
+	public static function Load($path, $vars = NULL) {
 		$html = file_get_contents($path);
 		
 		# 将html片段合并为一个完整的html文档
@@ -30,12 +38,12 @@ class View {
 
 		# 没有需要进行设置的变量字符串，则直接在这里返回html文件
 		if (!$vars) {
-			echo $html;			
+			return $html;			
 		} else {
-			echo View::Assign($html, $vars);
+			return View::Assign($html, $vars);
 		}
 	}
-	
+
 	private static function interpolate_includes($html, $path) {
 		$pattern = "#[$]\{.+?\}#";
 		$dirName = dirname($path);
