@@ -106,7 +106,7 @@ class dotnet {
      * 
      */
     public static function Imports($mod) {  	
-        
+                
         $DIR = self::GetDotnetManagerDirectory();
         	
         // 因为WithSuffixExtension这个函数会需要依赖小数点来判断文件拓展名，
@@ -130,6 +130,13 @@ class dotnet {
      * 判断这个文件路径是否是以特定的文件拓展名结尾的？这个函数大小写不敏感
      */
     public static function WithSuffixExtension($path, $ext) {
+
+        # 2018-3-8 因为这个函数之中需要调用Microsoft.VisualBasic.Strings模块
+        # 可能会因为在本脚本的头部进行引用其他的脚本文件的时候，这个模块的脚本还
+        # 没有被加载，所以会导致出现无法找到类Strings的错误
+        # 在这里显式的引入一次这个文件即可解决问题
+        include_once dotnet::GetDotnetManagerDirectory() . "/Microsoft/VisualBasic/Strings.php";
+
         $array  = Strings::Split($path, "\.");
         $lastEl = array_values(array_slice($array, -1));
         $lastEl = $lastEl[0];
