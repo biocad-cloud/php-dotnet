@@ -12,7 +12,7 @@ class FileSystem {
 	 * Writes text to a file.
 	 *
 	 */
-	public static function WriteAllText($file, $text, $append) {
+	public static function WriteAllText($file, $text, $append = FALSE) {
 		if ($append) {
 			// echo ">>>>> append " . "\n";
 			// echo $text;
