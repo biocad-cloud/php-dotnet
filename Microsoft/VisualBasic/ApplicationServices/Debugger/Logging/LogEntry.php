@@ -15,7 +15,7 @@ class LogEntry {
 		$this->errLine = $line;
 
 		if (!$format) {
-			$this->format = "[php::@no @time @file at line @line]<br />\n";
+			$this->format = "[php::@no @time <code>@file</code>:line @line]<br />\n";
 		} else {
 			$this->format = $format;
 		}

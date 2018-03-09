@@ -31,8 +31,8 @@ class LogFile {
 		$log = new StringBuilder();
 		$log ->AppendLine($entry->__toString())
 			 ->AppendLine()
-			 ->AppendLine($errstr . "<br />")
-			 ->AppendLine("<br />")
+			 ->AppendLine("<pre>" . $errstr . "</pre>")
+			 ->AppendLine("")
 			 ->AppendLine(StackTrace::GetCallStack())
 			 ->AppendLine("<br />");
 
