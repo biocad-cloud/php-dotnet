@@ -8,6 +8,10 @@ class dotnetDebugger {
 		$this->mysql_history = array();
 	}
 	
+	public function hasMySqlLogs() {
+		return count($this->mysql_history) > 0;
+	}
+
 	public function add_mysql_history($SQL) {
 		array_push($this->mysql_history, array($SQL, null));
 	}

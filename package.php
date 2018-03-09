@@ -95,9 +95,16 @@ class dotnet {
         echo debugView::GetMySQLView(self::$debugger);
     }
 
+    /**
+     * php写日志文件只能够写在自己的wwwroot文件夹之中 
+     **/
     public static function writeMySqlLogs() {
-        FileSystem::WriteAllText("./data/mysql.txt", Utils::URL() . "\n", TRUE);
-        FileSystem::WriteAllText("./data/mysql.txt", debugView::GetMySQLView(self::$debugger) . "\n\n", TRUE);
+        $log = "./data/mysql_logs.html";
+
+        if (self::$debugger->hasMySqlLogs()) {
+            FileSystem::WriteAllText($log, "<h3>" . Utils::URL() . "</h3>\n", TRUE);
+            FileSystem::WriteAllText($log, "<ul>" . debugView::GetMySQLView(self::$debugger) . "</ul>\n", TRUE);
+        }
     }
 
     /**

@@ -28,7 +28,7 @@ class DotNetRegistry {
         if (DotNetRegistry::hasValue(DotNetRegistry::ERR_HANDLER)) {
             $path = DotNetRegistry::$config[DotNetRegistry::ERR_HANDLER];
         } else {
-            $path = "/tmp/php.NET-error_logs.log";
+            $path = "./data/php.NET.log";
         }
 
         return $path;
