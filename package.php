@@ -6,6 +6,7 @@ include_once dotnet::GetDotnetManagerDirectory() . "/Debugger/engine.php";
 include_once dotnet::GetDotnetManagerDirectory() . "/Debugger/view.php";
 include_once dotnet::GetDotnetManagerDirectory() . "/Microsoft/VisualBasic/Strings.php";
 include_once dotnet::GetDotnetManagerDirectory() . "/Microsoft/VisualBasic/ApplicationServices/Debugger/Logging/LogFile.php";
+include_once dotnet::GetDotnetManagerDirectory() . "/php/Utils.php";
 include_once dotnet::GetDotnetManagerDirectory() . "/RFC7231/index.php";
 include_once dotnet::GetDotnetManagerDirectory() . "/Registry.php";
 
@@ -92,6 +93,11 @@ class dotnet {
     
     public static function printMySqlTransaction() {
         echo debugView::GetMySQLView(self::$debugger);
+    }
+
+    public static function writeMySqlLogs() {
+        FileSystem::WriteAllText("./data/mysql.txt", Utils::URL() . "\n", TRUE);
+        FileSystem::WriteAllText("./data/mysql.txt", debugView::GetMySQLView(self::$debugger) . "\n\n", TRUE);
     }
 
     /**
