@@ -15,7 +15,7 @@ class LogEntry {
 		$this->errLine = $line;
 
 		if (!$format) {
-			$this->format = "[php::@no @time @file at line @line]\n";
+			$this->format = "[php::@no @time @file at line @line]<br />\n";
 		} else {
 			$this->format = $format;
 		}
@@ -34,6 +34,10 @@ class LogEntry {
 		$out = Strings::Replace($out, "@file", $this->errFile); 
 
 		return $out;
+	}
+
+	public function ToString() {
+		return $this->__toString();
 	}
 }
 ?>

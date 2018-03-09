@@ -17,7 +17,7 @@ class LogFile {
 
 		if (!file_exists($path)) {
 			# echo "No log file exist!";
-			FileSystem::WriteAllText($path, "=======LogFile for php.NET=======\n\n");
+			FileSystem::WriteAllText($path, "=======LogFile for php.NET=======<br /><br />\n\n");
 		}
 	}
 	
@@ -31,10 +31,10 @@ class LogFile {
 		$log = new StringBuilder();
 		$log ->AppendLine($entry->__toString())
 			 ->AppendLine()
-			 ->AppendLine($errstr)
-			 ->AppendLine()
+			 ->AppendLine($errstr . "<br />")
+			 ->AppendLine("<br />")
 			 ->AppendLine(StackTrace::GetCallStack())
-			 ->AppendLine();
+			 ->AppendLine("<br />");
 
 		// echo $errno   . "\n";
 		// echo $errstr  . "\n";
