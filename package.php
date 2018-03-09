@@ -98,13 +98,23 @@ class dotnet {
     /**
      * php写日志文件只能够写在自己的wwwroot文件夹之中 
      **/
-    public static function writeMySqlLogs() {
+    public static function writeMySqlLogs($onlyErrors = FALSE) {      
+        if (self::$debugger->hasMySqlLogs()) {
+            if ($onlyErrors) {
+                if (self::$debugger->hasMySqlErrs()) {
+                    self::writeMySqlLogs2();
+                }
+            } else {
+                self::writeMySqlLogs2();
+            }            
+        }
+    }
+
+    private static function writeMySqlLogs2() {
         $log = "./data/mysql_logs.html";
 
-        if (self::$debugger->hasMySqlLogs()) {
-            FileSystem::WriteAllText($log, "<h3>" . Utils::URL() . "</h3>\n", TRUE);
-            FileSystem::WriteAllText($log, "<ul>" . debugView::GetMySQLView(self::$debugger) . "</ul>\n", TRUE);
-        }
+        FileSystem::WriteAllText($log, "<h5>API: $_SERVER[REQUEST_URI]</h5>\n", TRUE);
+        FileSystem::WriteAllText($log, "<ul>" . debugView::GetMySQLView(self::$debugger) . "</ul>\n", TRUE);
     }
 
     /**
