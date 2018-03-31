@@ -20,6 +20,10 @@ class View {
 		# 所以html文件规定放在html文件夹之中
 		$path = "$wwwroot/$name.html";
 
+		if (dotnet::$debug) {
+			echo $path . "\n\n";
+		}
+
 		View::Show($path, $vars);
 	}
 	
