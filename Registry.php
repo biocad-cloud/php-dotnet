@@ -43,6 +43,14 @@ class DotNetRegistry {
         }
     }
 
+    public static function SetMVCViewDocumentRoot($wwwroot) {
+        if (!self::$config) {
+            self::$config = array();
+        }
+
+        self::$config[DotNetRegistry::MVC_VIEW_ROOT] = $wwwroot;
+    }
+
     /**
      * 如果在配置文件之中设置的参数值为False，则这个函数会返回True，所以可能需要根据上下文添加!操作符进行反义 
      */

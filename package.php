@@ -43,7 +43,11 @@ class dotnet {
     public static $error_log;
     public static $debugger;
 
-    public static function HandleRequest($app) {
+    public static function HandleRequest($app, $wwwroot = NULL) {
+        if ($wwwroot) {
+            DotNetRegistry::SetMVCViewDocumentRoot($wwwroot);
+        }
+
         Control::HandleRequest($app);
     }
 
