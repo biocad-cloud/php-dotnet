@@ -43,6 +43,10 @@ class dotnet {
     public static $error_log;
     public static $debugger;
 
+    public static function HandleRequest($app) {
+        Control::HandleRequest($app);
+    }
+
     /**
      * This method have not implemented yet!
      * 
@@ -184,7 +188,7 @@ class dotnet {
 		$trace = StackTrace::GetCallStack();
 		$exc   = dotnetException::FormatOutput($message, $trace);
 				
-		Error::err500($exc);
+		RFC7231Error::err500($exc);
 		exit(0);
     }
 }
