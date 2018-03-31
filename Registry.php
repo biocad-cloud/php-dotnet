@@ -44,9 +44,9 @@ class DotNetRegistry {
     }
 
     public static function SetMVCViewDocumentRoot($wwwroot) {
-        if (!self::$config) {
+        if (is_int(self::$config) || !self::$config) {
             self::$config = array();
-        }
+        }       
 
         self::$config[DotNetRegistry::MVC_VIEW_ROOT] = $wwwroot;
     }
