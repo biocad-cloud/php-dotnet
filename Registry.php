@@ -43,8 +43,12 @@ class DotNetRegistry {
         }
     }
 
+    public static function ConfigIsNothing() {
+        return is_int(self::$config) || !self::$config;
+    }
+
     public static function SetMVCViewDocumentRoot($wwwroot) {
-        if (is_int(self::$config) || !self::$config) {
+        if (self::ConfigIsNothing()) {
             self::$config = array();
         }       
 
