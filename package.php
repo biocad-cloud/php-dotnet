@@ -44,12 +44,14 @@ class dotnet {
     public static $error_log;
     public static $debugger;
 
+    // 函数返回成功消息的json字符串
     public static function successMsg($msg) {	
 		return json_encode(array(
 			'code' => 0,
 			'info' => $msg));
 	}
-	
+    
+    // 函数返回失败消息的json字符串
 	public static function errorMsg($msg, $errorCode = 1) {
 		return json_encode(array(
 			'code' => $errorCode,
