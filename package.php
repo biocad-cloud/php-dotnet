@@ -22,6 +22,14 @@ function Imports($namespace) {
 }
 
 /**
+ * 对用户的浏览器进行重定向
+ * 
+*/
+function Redirect($URL) {
+    header("Location: $URL");
+}
+
+/**
  * dotnet package manager, you must include this module at first.
  * 
  * 在php之中有一个DOTNET类型：http://php.net/manual/en/class.dotnet.php
