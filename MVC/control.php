@@ -72,17 +72,5 @@ class Control {
         
         return $parts;
     }
-
-    public static function successMsg($msg) {	
-		return json_encode(array(
-			'code' => 0,
-			'info' => $msg));
-	}
-	
-	public static function errorMsg($msg, $errorCode = 1) {
-		return json_encode(array(
-			'code' => $errorCode,
-			'info' => $msg));
-	}
 }
 ?>

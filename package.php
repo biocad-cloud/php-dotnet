@@ -44,6 +44,18 @@ class dotnet {
     public static $error_log;
     public static $debugger;
 
+    public static function successMsg($msg) {	
+		return json_encode(array(
+			'code' => 0,
+			'info' => $msg));
+	}
+	
+	public static function errorMsg($msg, $errorCode = 1) {
+		return json_encode(array(
+			'code' => $errorCode,
+			'info' => $msg));
+	}
+
     public static function HandleRequest($app, $wwwroot = NULL) {
         if ($wwwroot) {
             DotNetRegistry::SetMVCViewDocumentRoot($wwwroot);
