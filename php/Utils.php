@@ -45,6 +45,13 @@ class Utils {
     public static function URL() {
         return (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
     }
+	
+	/*
+	 * 获取当前时间点的Unix时间戳
+	 */
+	public static function UnixTimeStamp() {
+		return time();
+	}
 }
 
 ?>
