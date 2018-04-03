@@ -56,14 +56,16 @@ class dotnet {
     public static function successMsg($msg) {	
 		return json_encode(array(
 			'code' => 0,
-			'info' => $msg));
+            'info' => $msg)
+        );
 	}
     
     // 函数返回失败消息的json字符串
 	public static function errorMsg($msg, $errorCode = 1) {
 		return json_encode(array(
 			'code' => $errorCode,
-			'info' => $msg));
+            'info' => $msg)
+        );
 	}
 
     public static function HandleRequest($app, $wwwroot = NULL) {
