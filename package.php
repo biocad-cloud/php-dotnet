@@ -8,6 +8,7 @@ include_once dotnet::GetDotnetManagerDirectory() . "/Microsoft/VisualBasic/Strin
 include_once dotnet::GetDotnetManagerDirectory() . "/Microsoft/VisualBasic/ApplicationServices/Debugger/Logging/LogFile.php";
 include_once dotnet::GetDotnetManagerDirectory() . "/php/Utils.php";
 include_once dotnet::GetDotnetManagerDirectory() . "/RFC7231/index.php";
+include_once dotnet::GetDotnetManagerDirectory() . "/dotnetException.php";
 include_once dotnet::GetDotnetManagerDirectory() . "/Registry.php";
 
 session_start();
@@ -18,6 +19,14 @@ session_start();
  */
 function Imports($namespace) {
     return dotnet::Imports($namespace);
+}
+
+/**
+ * 对用户的浏览器进行重定向
+ * 
+*/
+function Redirect($URL) {
+    header("Location: $URL");
 }
 
 /**
@@ -42,6 +51,28 @@ class dotnet {
     public static $debug = True;
     public static $error_log;
     public static $debugger;
+
+    // 函数返回成功消息的json字符串
+    public static function successMsg($msg) {	
+		return json_encode(array(
+			'code' => 0,
+			'info' => $msg));
+	}
+    
+    // 函数返回失败消息的json字符串
+	public static function errorMsg($msg, $errorCode = 1) {
+		return json_encode(array(
+			'code' => $errorCode,
+			'info' => $msg));
+	}
+
+    public static function HandleRequest($app, $wwwroot = NULL) {
+        if ($wwwroot) {
+            DotNetRegistry::SetMVCViewDocumentRoot($wwwroot);
+        }
+
+        Control::HandleRequest($app);
+    }
 
     /**
      * This method have not implemented yet!
@@ -184,44 +215,8 @@ class dotnet {
 		$trace = StackTrace::GetCallStack();
 		$exc   = dotnetException::FormatOutput($message, $trace);
 				
-		Error::err500($exc);
+		RFC7231Error::err500($exc);
 		exit(0);
     }
 }
-
-class dotnetException extends Exception {
-	
-	public $stackTrace;
-	public $message;
-	
-	function __constructor($message) {
-		$this->message    = $message;
-		$this->stackTrace = StackTrace::GetCallStack();
-	}	
-	
-	public static function FormatOutput($message, $stackTrace) {
-        $view = new StringBuilder();
-		$view->AppendLine("<div class='dotnet-exception'>")
-		     ->AppendLine("<p><span style='color:red'>" . $message . "</span>")
-		     ->AppendLine("<p>")
-		     ->AppendLine($stackTrace)
-             ->AppendLine("</p>")
-             ->AppendLine("</p>")
-		     ->AppendLine("</div>");
-		
-		return $view->ToString();
-	}
-	
-	public static function FormatExceptionOutput($ex) {
-		return self::FormatOutput($ex->message, $ex->stackTrace);
-	}
-	
-	public function __toString() {
-		return self::FormatExceptionOutput(
-			$this->message, 
-			$this->stackTrace
-		);
-	}
-}
-
 ?>

@@ -179,7 +179,27 @@ class Table {
     }
 
 	public function findfield($name) {
-		return $this->find()["name"];
+		return $this->find()[$name];
+	}
+
+	public function ExecuteScalar($aggregate) {
+		$table  = $this->tableName;
+        $assert = $this->getWhere();
+        $mysqli_exec = $this->driver->__init_MySql();       
+
+        if ($assert) {
+            $SQL = "SELECT $aggregate FROM `$table` WHERE $assert LIMIT 1;";
+        } else {
+            $SQL = "SELECT $aggregate FROM `$table` LIMIT 1;";
+        }
+        
+		$single = $this->driver->ExecuteScalar($mysqli_exec, $SQL);
+		
+		if ($single) {
+			return $single[$aggregate];
+		} else {
+			return false;
+		}
 	}
 
 	// select * from `table`;

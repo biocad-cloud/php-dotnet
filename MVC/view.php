@@ -12,12 +12,18 @@ class View {
 	// 从html文件夹之中读取和当前函数同名的文件并显示出来
 	public static function Display($vars = NULL) {
 
-		$name = StackTrace::GetCallerMethodName();
+		$name    = StackTrace::GetCallerMethodName();
+		$wwwroot = DotNetRegistry::GetMVCViewDocumentRoot();
+
 		# 假若直接放在和index.php相同文件夹之下，那么apache服务器会优先读取
 		# index.html这个文件的，这就导致无法正确的通过这个框架来启动Web程序了
 		# 所以html文件规定放在html文件夹之中
-		$path = "html/$name.html";
-				
+		$path = "$wwwroot/$name.html";
+
+		if (dotnet::$debug) {
+			echo $path . "\n\n";
+		}
+
 		View::Show($path, $vars);
 	}
 	
