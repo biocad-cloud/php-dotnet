@@ -73,7 +73,7 @@ class dotnet {
             DotNetRegistry::SetMVCViewDocumentRoot($wwwroot);
         }
 
-        Control::HandleRequest($app);
+        Router::HandleRequest($app);
     }
 
     /**
@@ -97,7 +97,7 @@ class dotnet {
 
 		dotnet::Imports("MVC.view");
 		dotnet::Imports("MVC.model");
-		dotnet::Imports("MVC.control");
+		dotnet::Imports("MVC.router");
         dotnet::Imports("MVC.driver");       
         
         DotNetRegistry::$config = include $config;

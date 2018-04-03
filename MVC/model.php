@@ -212,10 +212,9 @@ class Table {
 	}
 
     /**
-	 * Create a where condition filter for the next SQL expression.
-	 * 
+     * Create a where condition filter for the next SQL expression.
+     *	  
      * @param assert: The assert array of the where condition or an string expression.
-     * 
      */
     public function where($assert) {
 		$next = null;
@@ -234,7 +233,12 @@ class Table {
 		return $next;
 	}
 	
-    // insert into
+	/**
+	 * insert into.
+	 *
+	 * @param data: table row data in array type
+	 * 
+	 */ 
     public function add($data) {
 
 		$mysqli_exec = $this->driver->__init_MySql(); 
