@@ -60,7 +60,11 @@ class Utils {
         if ($MySqlStyle) {
             return date('Y-m-d H:i:s',   time());
         } else {
-            return date('Y-m-d H:i:s.v', time());
+            $milliseconds = time();
+            $seconds      = $milliseconds / 1000;
+            $remainder    = round($seconds - ($seconds >> 0), 3) * 1000;
+
+            return date('Y:m:d H:i:s.', $milliseconds) . $remainder;
         }        
     }
 }
