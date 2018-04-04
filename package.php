@@ -55,6 +55,7 @@ class dotnet {
 
     public static $error_log;
     public static $debugger;
+    public static $AppDebug;
 
     // 函数返回成功消息的json字符串
     public static function successMsg($msg) {	
@@ -105,10 +106,9 @@ class dotnet {
         define('APP_PATH',  dirname(__FILE__)."/");
         define("APP_DEBUG", $debug);
 
-        global $APP_DEBUG;
-        $APP_DEBUG = $debug;
+        self::$AppDebug = $debug;
 
-        if ($debug) {
+        if (self::$AppDebug) {
             # 调试器必须先于Imports函数调用，否则会出现错误：
             # PHP Fatal error:  Call to a member function add_loaded_script() on a non-object
             dotnet::$debugger = new dotnetDebugger();    
@@ -198,10 +198,8 @@ class dotnet {
 
         // 在这里导入需要导入的模块文件
         include_once($mod);
-
-        global $APP_DEBUG;
-
-        if (true == $APP_DEBUG) {
+        
+        if (self::$AppDebug) {
             $bt    = debug_backtrace();             
             $trace = array();
 

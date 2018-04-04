@@ -13,9 +13,6 @@ class Model {
     private $host;
     private $port;
 
-	// display debug message or not?
-    private $debug;
-
     // 显示mysql表的结构
     // DESCRIBE TableName
     function __construct($database, $user, $password, $host = "localhost", $port = 3306) {
@@ -24,8 +21,6 @@ class Model {
         $this->password = $password;
         $this->host     = $host;
         $this->port     = $port;
-
-        $this->debug    = dotnet::$debug;
     }
 
 	/*
