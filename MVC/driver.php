@@ -97,7 +97,7 @@ class Model {
 		if (dotnet::$AppDebug) {
 			dotnet::$debugger->add_mysql_history($SQL);
 		}
-		if (!$out) {
+		if (!$out && dotnet::$AppDebug) {
 			dotnet::$debugger->add_last_mysql_error(mysqli_error($mysqli_exec));
 		}		
 
