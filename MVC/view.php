@@ -35,10 +35,10 @@ class View {
 	// 加载指定路径的html文档并对其中的占位符利用vars字典进行填充
 	// 这个函数还会额外的处理includes关系
 	public static function Load($path, $vars = NULL) {
-		return View::InterpolateTemplate(file_get_contents($path), $vars);
+		return View::InterpolateTemplate(file_get_contents($path), $vars, $path);
 	}
 
-	public static function InterpolateTemplate($html, $vars) {
+	public static function InterpolateTemplate($html, $vars, $path = NULL) {
 		# 将html片段合并为一个完整的html文档
 		$html = View::interpolate_includes($html, $path);
 		# 假设在html文档里面总是会存在url简写的，则在这里需要进行替换处理
@@ -52,6 +52,12 @@ class View {
 		}
 	}
 
+	/**
+	 * 
+	 * 这个函数将html片段进行拼接，得到完整的html文档，函数需要使用文档所在的路径来获取文档碎片的引用文件位置
+	 * 
+	 * @param path: html模版文件的文件位置
+	 */
 	private static function interpolate_includes($html, $path) {
 		$pattern = "#[$]\{.+?\}#";
 		$dirName = dirname($path);
