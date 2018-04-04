@@ -35,8 +35,10 @@ class View {
 	// 加载指定路径的html文档并对其中的占位符利用vars字典进行填充
 	// 这个函数还会额外的处理includes关系
 	public static function Load($path, $vars = NULL) {
-		$html = file_get_contents($path);
-		
+		return View::InterpolateTemplate(file_get_contents($path), $vars);
+	}
+
+	public static function InterpolateTemplate($html, $vars) {
 		# 将html片段合并为一个完整的html文档
 		$html = View::interpolate_includes($html, $path);
 		# 假设在html文档里面总是会存在url简写的，则在这里需要进行替换处理
