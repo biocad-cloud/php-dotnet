@@ -1,5 +1,5 @@
 <?php
-dotnet::Imports("MVC.MySql");
+dotnet::Imports("php.Utils");
 dotnet::Imports("Microsoft.VisualBasic.Strings");
 
 class LogEntry {
@@ -28,7 +28,7 @@ class LogEntry {
 
 		$out = $this->format;
 
-		$out = Strings::Replace($out, "@time", MySqlExtensions::Now());
+		$out = Strings::Replace($out, "@time", Utils::Now(false));
 		$out = Strings::Replace($out, "@no",   $this->errNO);		
 		$out = Strings::Replace($out, "@line", $this->errLine);
 		$out = Strings::Replace($out, "@file", $this->errFile); 
