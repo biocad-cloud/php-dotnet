@@ -6,8 +6,10 @@
  */
 class Table {
 
-    private $tableName;
-    private $driver;
+	private $tableName;
+	private $databaseName;
+	private $driver;
+	// 数据表的表结构
     private $schema;
     private $condition;
 	private $condition_type;
@@ -37,6 +39,7 @@ class Table {
         $this->condition      = $condition;
 		$this->condition_type = $type;
 		$this->AI             = Model::getAIKey($this);
+		$this->databaseName   = $this->driver["DB_NAME"];
     }
 
 	public function getSchema() {
@@ -49,14 +52,15 @@ class Table {
 
     // select all
     public function select() {
-        $table  = $this->tableName;
+		$table  = $this->tableName;
+		$db     = $this->databaseName;
         $assert = $this->getWhere();
         $mysqli_exec = $this->driver->__init_MySql();       
 
         if ($assert) {
-            $SQL = "SELECT * FROM `$table` WHERE $assert;";
+            $SQL = "SELECT * FROM `$db`.`$table` WHERE $assert;";
         } else {
-            $SQL = "SELECT * FROM `$table`;";
+            $SQL = "SELECT * FROM `$db`.`$table`;";
         }
         
 		// print_r($SQL);
@@ -67,14 +71,15 @@ class Table {
 	// select count(*) from where ...;
 	public function count() {
 		$table  = $this->tableName;
+		$db     = $this->databaseName;
         $assert = $this->getWhere();
         $mysqli_exec = $this->driver->__init_MySql();       
 		$count       = "COUNT(*)";
 
         if ($assert) {
-            $SQL = "SELECT $count FROM `$table` WHERE $assert;";
+            $SQL = "SELECT $count FROM `$db`.`$table` WHERE $assert;";
         } else {
-            $SQL = "SELECT $count FROM `$table`;";
+            $SQL = "SELECT $count FROM `$db`.`$table`;";
         }
     		
 		$count = $this->driver->ExecuteScalar($mysqli_exec, $SQL);
@@ -165,14 +170,15 @@ class Table {
 	
     // select but limit 1
     public function find() {
-        $table  = $this->tableName;
+		$table  = $this->tableName;
+		$db     = $this->databaseName;
         $assert = $this->getWhere();
         $mysqli_exec = $this->driver->__init_MySql();       
 
         if ($assert) {
-            $SQL = "SELECT * FROM `$table` WHERE $assert LIMIT 1;";
+            $SQL = "SELECT * FROM `$db`.`$table` WHERE $assert LIMIT 1;";
         } else {
-            $SQL = "SELECT * FROM `$table` LIMIT 1;";
+            $SQL = "SELECT * FROM `$db`.`$table` LIMIT 1;";
         }
         
         return $this->driver->ExecuteScalar($mysqli_exec, $SQL);
@@ -184,13 +190,14 @@ class Table {
 
 	public function ExecuteScalar($aggregate) {
 		$table  = $this->tableName;
+		$db     = $this->databaseName;
         $assert = $this->getWhere();
         $mysqli_exec = $this->driver->__init_MySql();       
 
         if ($assert) {
-            $SQL = "SELECT $aggregate FROM `$table` WHERE $assert LIMIT 1;";
+            $SQL = "SELECT $aggregate FROM `$db`.`$table` WHERE $assert LIMIT 1;";
         } else {
-            $SQL = "SELECT $aggregate FROM `$table` LIMIT 1;";
+            $SQL = "SELECT $aggregate FROM `$db`.`$table` LIMIT 1;";
         }
         
 		$single = $this->driver->ExecuteScalar($mysqli_exec, $SQL);
@@ -205,7 +212,8 @@ class Table {
 	// select * from `table`;
 	public function all() {
 		$table       = $this->tableName;
-		$SQL         = "SELECT * FROM `$table`;";
+		$db          = $this->databaseName;
+		$SQL         = "SELECT * FROM `$db`.`$table`;";
 		$mysqli_exec = $this->driver->__init_MySql();    
 
 		return $this->driver->ExecuteSQL($mysqli_exec, $SQL);
@@ -243,6 +251,7 @@ class Table {
 
 		$mysqli_exec = $this->driver->__init_MySql(); 
 		$table       = $this->tableName;
+		$db          = $this->databaseName;
 		$fields      = array();
 		$values      = array();
 		$uid         = null;
@@ -308,7 +317,7 @@ class Table {
 		$values = join(", ", $values);
 		
 		# INSERT INTO `metacardio`.`xcms_files` (`task_id`) VALUES ('ABC');
-		$SQL = "INSERT INTO `{$table}` ($fields) VALUES ($values);";	
+		$SQL = "INSERT INTO `$db`.`{$table}` ($fields) VALUES ($values);";	
 		
         if (!$this->driver->exec($SQL)) {
 			
@@ -330,10 +339,11 @@ class Table {
 
     // update table
     public function save($data) {
-		$table       = $this->tableName;
-        $assert      = $this->getWhere();        
-		$SQL         = "";
-		$updates     = array();
+		$table   = $this->tableName;
+		$db      = $this->databaseName;
+        $assert  = $this->getWhere();        
+		$SQL     = "";
+		$updates = array();
 		
 		# UPDATE `metacardio`.`experimental_batches` SET `workspace`='2018/01/31/02-36-49/2', `note`='22222', `status`='10' WHERE `id`='3';
 		
@@ -348,7 +358,7 @@ class Table {
 		}
 		
 		$updates = join(", ", $updates);
-		$SQL = "UPDATE `$table` SET $updates";
+		$SQL = "UPDATE `$db`.`$table` SET $updates";
 		
 		if (!$assert) {
 			
@@ -368,14 +378,15 @@ class Table {
 
     // delete from
     public function delete($data) {
-		$table       = $this->tableName;
-        $assert      = $this->getWhere();        
+		$table  = $this->tableName;
+		$db     = $this->databaseName;
+        $assert = $this->getWhere();        
 		
 		# DELETE FROM `metacardio`.`experimental_batches` WHERE `id`='4';
 		if (!$assert) {
 			dotnet::ThrowException("WHERE condition can not be null in DELETE SQL!");
 		} else {
-			$SQL     = "DELETE FROM `$table` WHERE $assert;";
+			$SQL     = "DELETE FROM `$db`.`$table` WHERE $assert;";
 		}
 				
 		if (!$this->driver->exec($SQL)) {
