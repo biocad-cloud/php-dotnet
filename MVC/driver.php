@@ -97,17 +97,24 @@ class Model {
 		if (dotnet::$AppDebug) {
 			dotnet::$debugger->add_mysql_history($SQL);
 		}
-		
+		if (!$out) {
+			dotnet::$debugger->add_last_mysql_error(mysqli_error($mysqli_exec));
+		}		
+
         return $out;
     }
 
-    /*
+    /**
 	 * 执行一条SQL语句，假若SQL语句是SELECT语句的话，有查询结果的时候
 	 * 会返回记录查询结果的数组集合
 	 *
 	 * 但是对于UPDATE，INSERT和DELETE这类的数据修改语句而言，都是直接
 	 * 返回False的，所以执行这类数据修改的操作的时候就不需要获取返回值
 	 * 赋值到变量了
+	 *
+	 * @param mysqli mysql_exec: 来自于函数__init_MySql()所创建的数据库连接
+	 * @param string SQL
+	 * @return boolean|array 如果数据库查询出错，会返回逻辑值False，反之会返回相对应的结果值
 	 */
 	public function ExecuteSQL($mysql_exec, $SQL) {
 		
@@ -129,6 +136,12 @@ class Model {
 			
 			return $out;
 		} else {
+
+			// 这条SQL语句执行出错了，添加错误信息到sql记录之中
+			if (dotnet::$AppDebug) {
+				dotnet::$debugger->add_last_mysql_error(mysqli_error($mysqli_exec));
+			}
+
 			return false;
 		}
 	}

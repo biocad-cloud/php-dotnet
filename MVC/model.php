@@ -308,17 +308,9 @@ class Table {
 		$values = join(", ", $values);
 		
 		# INSERT INTO `metacardio`.`xcms_files` (`task_id`) VALUES ('ABC');
-		$SQL = "INSERT INTO `{$table}` ($fields) VALUES ($values);";
-
-		if (dotnet::$AppDebug) {
-			dotnet::$debugger->add_mysql_history($SQL);
-		}
+		$SQL = "INSERT INTO `{$table}` ($fields) VALUES ($values);";	
 		
-        if (!mysqli_query($mysqli_exec, $SQL)) {
-
-			if (dotnet::$AppDebug) {
-				dotnet::$debugger->add_last_mysql_error(mysqli_error($mysqli_exec));
-			}
+        if (!$this->driver->exec($SQL)) {
 			
             // 可能有错误，给出错误信息
             return false;
