@@ -97,17 +97,32 @@ class dotnet {
      */
     const DotNetManagerFileLocation = __FILE__;
 
-	public static function AutoLoad($config) {		       
+    /**
+     *  
+     * @param debug: 只需要修改这个参数的逻辑值就可以打开或者关闭调试器的输出行为
+     *
+     **/
+	public static function AutoLoad($config = NULL, $debug = FALSE) {		       
 
 		dotnet::Imports("MVC.view");
 		dotnet::Imports("MVC.model");
 		dotnet::Imports("MVC.control");
         dotnet::Imports("MVC.driver");       
         
-        DotNetRegistry::$config = include $config;
+        if ($config && file_exists($config)) {
+            DotNetRegistry::$config = include $config;
+        } else {
+            DotNetRegistry::$config = DotNetRegistry::DefaultConfig();
+        }      
 
-        dotnet::$debugger = new dotnetDebugger();
+        if ($debug) {
+            dotnet::$debugger = new dotnetDebugger();
+
+            define("APP_DEBUG", TRUE);
+        }       
         
+        define('APP_PATH', dirname(__FILE__)."/");
+
         if (!DotNetRegistry::DisableErrorHandler()) {
             self::setupLogs();
         }
@@ -192,10 +207,10 @@ class dotnet {
                 array_push($trace, $file);    
             } 
 
-            $initiatorOffset = count($trace) - (2 + $initiatorOffset);
+            $initiatorOffset = 1 + $initiatorOffset;
             $initiator       = $trace[$initiatorOffset];
 
-            self::$debugger->add_loaded_script($mod, );
+            self::$debugger->add_loaded_script($mod, $initiator);
         }
 
         // 返回所导入的文件的全路径名

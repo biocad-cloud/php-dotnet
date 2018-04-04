@@ -16,6 +16,14 @@ class DotNetRegistry {
      */
     public static $config;
     
+    /**
+     * The default config file data.
+     * 
+     **/
+    public static function DefaultConfig() {
+        return array();
+    }
+
     public static function DisableErrorHandler() {
         $hasValue = self::hasValue(DotNetRegistry::ERR_HANDLER_DISABLE); 
         $optFalse = self::optFalse(DotNetRegistry::ERR_HANDLER_DISABLE);
