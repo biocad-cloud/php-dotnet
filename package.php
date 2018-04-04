@@ -19,6 +19,8 @@ session_start();
 # but please set date.timezone to select your timezone.
 date_default_timezone_set('UTC');
 
+$APP_DEBUG = true;
+
 /**
  * Global function for load php.NET package 
  * 
@@ -51,10 +53,6 @@ function Redirect($URL) {
  */
 class dotnet {
 
-    /**
-     * 只需要修改这个参数的逻辑值就可以打开或者关闭调试器的输出行为
-     */
-    public static $debug = True;
     public static $error_log;
     public static $debugger;
 
@@ -104,14 +102,16 @@ class dotnet {
      **/
 	public static function AutoLoad($config = NULL, $debug = FALSE) {		       
 
-        define('APP_PATH', dirname(__FILE__)."/");
+        define('APP_PATH',  dirname(__FILE__)."/");
+        define("APP_DEBUG", $debug);
+
+        global $APP_DEBUG;
+        $APP_DEBUG = $debug;
 
         if ($debug) {
             # 调试器必须先于Imports函数调用，否则会出现错误：
             # PHP Fatal error:  Call to a member function add_loaded_script() on a non-object
-            dotnet::$debugger = new dotnetDebugger();
-
-            define("APP_DEBUG", TRUE);
+            dotnet::$debugger = new dotnetDebugger();    
         }   
 
 		dotnet::Imports("MVC.view");
@@ -199,7 +199,9 @@ class dotnet {
         // 在这里导入需要导入的模块文件
         include_once($mod);
 
-        if (true === APP_DEBUG) {
+        global $APP_DEBUG;
+
+        if (true == $APP_DEBUG) {
             $bt    = debug_backtrace();             
             $trace = array();
 
@@ -212,7 +214,7 @@ class dotnet {
             $initiatorOffset = 1 + $initiatorOffset;
             $initiator       = $trace[$initiatorOffset];
 
-            echo var_dump(self::$debugger);
+            # echo var_dump(self::$debugger);
 
             self::$debugger->add_loaded_script($mod, $initiator);
         }

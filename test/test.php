@@ -5,6 +5,13 @@ include "../package.php";
 
 dotnet::AutoLoad("", TRUE);
 
+
+echo "A:" . true === APP_DEBUG  .   "  \n\n\n";
+
+dotnet::AutoLoad("", FALSE);
+
+echo "B:" . true === APP_DEBUG  .   "  \n\n\n";
+
 Imports("System.Threading.Thread");
 Imports("php.Utils");
 Imports("Debugger.engine");
