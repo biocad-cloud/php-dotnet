@@ -2,12 +2,16 @@
 
 class dotnetDebugger {
 
+	public $script_loading;
 	public $mysql_history;
+
+	// Mysql query in current session has errors?
 	private $setError;
 
 	function __construct() {
-		$this->mysql_history = array();
-		$this->setError      = FALSE;
+		$this->mysql_history  = array();
+		$this->script_loading = array();
+		$this->setError       = FALSE;
 	}
 	
 	public function hasMySqlLogs() {
@@ -20,6 +24,16 @@ class dotnetDebugger {
 
 	public function add_mysql_history($SQL) {
 		array_push($this->mysql_history, array($SQL, null));
+	}
+
+	public function add_loaded_script($path, $refer) {
+		$info = array(
+			"module"    => $path, 
+			"size"      => filesize($path), 
+			"initiator" => $refer
+		);
+
+		array_push($this->script_loading, $info);
 	}
 
 	/**

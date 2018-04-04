@@ -24,7 +24,7 @@ date_default_timezone_set('UTC');
  * 
  */
 function Imports($namespace) {
-    return dotnet::Imports($namespace);
+    return dotnet::Imports($namespace, $initiatorOffset = 1);
 }
 
 /**
@@ -165,7 +165,7 @@ class dotnet {
      * @return string 这个函数返回所导入的模块的完整的文件路径
      * 
      */
-    public static function Imports($mod) {  	
+    public static function Imports($mod, $initiatorOffset = 0) {  	
                 
         $DIR = self::GetDotnetManagerDirectory();
         	
@@ -181,6 +181,22 @@ class dotnet {
 
         // 在这里导入需要导入的模块文件
         include_once($mod);
+
+        if (self::$debug) {
+            $bt    = debug_backtrace();             
+            $trace = array();
+
+            foreach($bt as $k=>$v) { 
+                // 解析出当前的栈片段信息
+                extract($v); 
+                array_push($trace, $file);    
+            } 
+
+            $initiatorOffset = count($trace) - (2 + $initiatorOffset);
+            $initiator       = $trace[$initiatorOffset];
+
+            self::$debugger->add_loaded_script($mod, );
+        }
 
         // 返回所导入的文件的全路径名
         return $mod;
