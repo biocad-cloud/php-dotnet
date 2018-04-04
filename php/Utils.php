@@ -51,7 +51,22 @@ class Utils {
 	 */
 	public static function UnixTimeStamp() {
 		return time();
-	}
+    }
+    
+    /**
+     * 返回符合MySql所要求的格式的当前时间的字符串值
+     */
+    public static function Now($MySqlStyle = TRUE) {
+        if ($MySqlStyle) {
+            return date('Y-m-d H:i:s',   time());
+        } else {
+            $milliseconds = time();
+            $seconds      = $milliseconds / 1000;
+            $remainder    = round($seconds - ($seconds >> 0), 3) * 1000;
+
+            return date('Y:m:d H:i:s.', $milliseconds) . $remainder;
+        }        
+    }
 }
 
 ?>

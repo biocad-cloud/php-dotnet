@@ -16,11 +16,17 @@ class DotNetRegistry {
      */
     public static $config;
     
-    public static function DisableErrorHandler() {
-        $hasValue = self::hasValue(DotNetRegistry::ERR_HANDLER_DISABLE); 
+    /**
+     * The default config file data.
+     * 
+     **/
+    public static function DefaultConfig() {
+        return array();
+    }
+
+    public static function DisableErrorHandler() {        
         $optFalse = self::optFalse(DotNetRegistry::ERR_HANDLER_DISABLE);
-        
-        return $hasValue && !$optFalse;
+        return !$optFalse;
     }
 
     public static function LogFile() {       
@@ -59,7 +65,12 @@ class DotNetRegistry {
      * 如果在配置文件之中设置的参数值为False，则这个函数会返回True，所以可能需要根据上下文添加!操作符进行反义 
      */
     private static function optFalse($key) {
-        return self::$config[$key] == "FALSE"; 
+        if (self::hasValue($key)) {
+            return self::$config[$key] == "FALSE"; 
+        } else {
+            # 键值对不存在，则肯定是False，返回True表示当前的键值是False
+            return true;
+        }        
     } 
 
     private static function hasValue($key) {
