@@ -19,6 +19,14 @@ class DataURI {
 		
 		return "data:$type;base64,$base64";
 	}
+
+	public function __toString() {
+		return $this->getURI();
+	}
+
+	public function ToString() {
+		return $this->getURI();
+	}
 }
 
 ?>

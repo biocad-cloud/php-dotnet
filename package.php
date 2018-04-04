@@ -12,13 +12,21 @@ include_once dotnet::GetDotnetManagerDirectory() . "/dotnetException.php";
 include_once dotnet::GetDotnetManagerDirectory() . "/Registry.php";
 
 session_start();
+# PHP Warning:  date(): It is not safe to rely on the system's timezone settings. 
+# You are *required* to use the date.timezone setting or the date_default_timezone_set() function. 
+# In case you used any of those methods and you are still getting this warning, you most likely 
+# misspelled the timezone identifier. We selected the timezone 'UTC' for now, 
+# but please set date.timezone to select your timezone.
+date_default_timezone_set('UTC');
+
+$APP_DEBUG = true;
 
 /**
  * Global function for load php.NET package 
  * 
  */
 function Imports($namespace) {
-    return dotnet::Imports($namespace);
+    return dotnet::Imports($namespace, $initiatorOffset = 1);
 }
 
 /**
@@ -45,12 +53,9 @@ function Redirect($URL) {
  */
 class dotnet {
 
-    /**
-     * 只需要修改这个参数的逻辑值就可以打开或者关闭调试器的输出行为
-     */
-    public static $debug = True;
     public static $error_log;
     public static $debugger;
+    public static $AppDebug;
 
     // 函数返回成功消息的json字符串
     public static function successMsg($msg) {	
@@ -91,19 +96,35 @@ class dotnet {
      */
     const DotNetManagerFileLocation = __FILE__;
 
-	public static function AutoLoad($config) {		
-        
-        date_default_timezone_set('UTC');
+    /**
+     *  
+     * @param debug: 只需要修改这个参数的逻辑值就可以打开或者关闭调试器的输出行为
+     *
+     **/
+	public static function AutoLoad($config = NULL, $debug = FALSE) {		       
+
+        define('APP_PATH',  dirname(__FILE__)."/");
+        define("APP_DEBUG", $debug);
+
+        self::$AppDebug = $debug;
+
+        if (self::$AppDebug) {
+            # 调试器必须先于Imports函数调用，否则会出现错误：
+            # PHP Fatal error:  Call to a member function add_loaded_script() on a non-object
+            dotnet::$debugger = new dotnetDebugger();    
+        }   
 
 		dotnet::Imports("MVC.view");
 		dotnet::Imports("MVC.model");
 		dotnet::Imports("MVC.router");
         dotnet::Imports("MVC.driver");       
         
-        DotNetRegistry::$config = include $config;
+        if ($config && file_exists($config)) {
+            DotNetRegistry::$config = include $config;
+        } else {
+            DotNetRegistry::$config = DotNetRegistry::DefaultConfig();
+        }             
 
-        dotnet::$debugger = new dotnetDebugger();
-        
         if (!DotNetRegistry::DisableErrorHandler()) {
             self::setupLogs();
         }
@@ -125,21 +146,25 @@ class dotnet {
     }
     
     public static function printMySqlTransaction() {
-        echo debugView::GetMySQLView(self::$debugger);
+        if (self::$AppDebug) {
+            echo debugView::GetMySQLView(self::$debugger);
+        }
     }
 
     /**
      * php写日志文件只能够写在自己的wwwroot文件夹之中 
      **/
     public static function writeMySqlLogs($onlyErrors = FALSE) {      
-        if (self::$debugger->hasMySqlLogs()) {
-            if ($onlyErrors) {
-                if (self::$debugger->hasMySqlErrs()) {
+        if (self::$AppDebug) {
+            if (self::$debugger->hasMySqlLogs()) {
+                if ($onlyErrors) {
+                    if (self::$debugger->hasMySqlErrs()) {
+                        self::writeMySqlLogs2();
+                    }
+                } else {
                     self::writeMySqlLogs2();
-                }
-            } else {
-                self::writeMySqlLogs2();
-            }            
+                }            
+            }
         }
     }
 
@@ -161,7 +186,7 @@ class dotnet {
      * @return string 这个函数返回所导入的模块的完整的文件路径
      * 
      */
-    public static function Imports($mod) {  	
+    public static function Imports($mod, $initiatorOffset = 0) {  	
                 
         $DIR = self::GetDotnetManagerDirectory();
         	
@@ -177,6 +202,24 @@ class dotnet {
 
         // 在这里导入需要导入的模块文件
         include_once($mod);
+        
+        if (self::$AppDebug) {
+            $bt    = debug_backtrace();             
+            $trace = array();
+
+            foreach($bt as $k=>$v) { 
+                // 解析出当前的栈片段信息
+                extract($v); 
+                array_push($trace, $file);    
+            } 
+
+            $initiatorOffset = 1 + $initiatorOffset;
+            $initiator       = $trace[$initiatorOffset];
+
+            # echo var_dump(self::$debugger);
+
+            self::$debugger->add_loaded_script($mod, $initiator);
+        }
 
         // 返回所导入的文件的全路径名
         return $mod;

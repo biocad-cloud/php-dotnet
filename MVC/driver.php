@@ -13,9 +13,6 @@ class Model {
     private $host;
     private $port;
 
-	// display debug message or not?
-    private $debug;
-
     // 显示mysql表的结构
     // DESCRIBE TableName
     function __construct($database, $user, $password, $host = "localhost", $port = 3306) {
@@ -24,8 +21,6 @@ class Model {
         $this->password = $password;
         $this->host     = $host;
         $this->port     = $port;
-
-        $this->debug    = dotnet::$debug;
     }
 
 	/*
@@ -83,34 +78,47 @@ class Model {
 	}
 
     public function Describe($tableName) {
-        $SQL = "DESCRIBE `$tableName`;";
+		$db          = $this->database;
+        $SQL         = "DESCRIBE `$db`.`$tableName`;";
         $mysqli_exec = $this->__init_MySql();                        
-        $schema = $this->ExecuteSQL($mysqli_exec, $SQL);
+        $schema      = $this->ExecuteSQL($mysqli_exec, $SQL);
 
         return $schema;
     }
 
 	// 这个方法主要是用于执行一些无返回值的方法，例如INSERT, UPDATE, DELETE等
     public function exec($SQL) {
-		$mysqli_exec = $this->__init_MySql();    
+		$mysql_exec = $this->__init_MySql();    
 
 		mysqli_select_db($mysql_exec, $this->database); 
 		mysqli_query($mysql_exec, "SET names 'utf8'");
 
 		$out = mysqli_query($mysql_exec, $SQL);                     
 		
-		dotnet::$debugger->add_mysql_history($SQL);
-		
+		# echo var_dump($out);
+		# echo var_dump(dotnet::$AppDebug);
+
+		if (dotnet::$AppDebug) {
+			dotnet::$debugger->add_mysql_history($SQL);
+		}
+		if (!$out && dotnet::$AppDebug) {
+			dotnet::$debugger->add_last_mysql_error(mysqli_error($mysql_exec));
+		}		
+
         return $out;
     }
 
-    /*
+    /**
 	 * 执行一条SQL语句，假若SQL语句是SELECT语句的话，有查询结果的时候
 	 * 会返回记录查询结果的数组集合
 	 *
 	 * 但是对于UPDATE，INSERT和DELETE这类的数据修改语句而言，都是直接
 	 * 返回False的，所以执行这类数据修改的操作的时候就不需要获取返回值
 	 * 赋值到变量了
+	 *
+	 * @param mysqli mysql_exec: 来自于函数__init_MySql()所创建的数据库连接
+	 * @param string SQL
+	 * @return boolean|array 如果数据库查询出错，会返回逻辑值False，反之会返回相对应的结果值
 	 */
 	public function ExecuteSQL($mysql_exec, $SQL) {
 		
@@ -118,8 +126,11 @@ class Model {
 		mysqli_query($mysql_exec, "SET names 'utf8'");
 
 		$data = mysqli_query($mysql_exec, $SQL); 		
-		dotnet::$debugger->add_mysql_history($SQL);
 
+		if (dotnet::$AppDebug) {
+			dotnet::$debugger->add_mysql_history($SQL);
+		}
+		
 		if($data) {
 			$out = array();
 			
@@ -129,6 +140,12 @@ class Model {
 			
 			return $out;
 		} else {
+
+			// 这条SQL语句执行出错了，添加错误信息到sql记录之中
+			if (dotnet::$AppDebug) {
+				dotnet::$debugger->add_last_mysql_error(mysqli_error($mysql_exec));
+			}
+
 			return false;
 		}
 	}
@@ -143,7 +160,10 @@ class Model {
 		mysqli_query($mysql_exec, "SET names 'utf8'");
 
 		$data = mysqli_query($mysql_exec, $SQL); 
-		dotnet::$debugger->add_mysql_history($SQL);
+		
+		if (dotnet::$AppDebug) {
+			dotnet::$debugger->add_mysql_history($SQL);
+		}
 		
 		if ($data) {
 			
