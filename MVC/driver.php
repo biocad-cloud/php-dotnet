@@ -88,18 +88,21 @@ class Model {
 
 	// 这个方法主要是用于执行一些无返回值的方法，例如INSERT, UPDATE, DELETE等
     public function exec($SQL) {
-		$mysqli_exec = $this->__init_MySql();    
+		$mysql_exec = $this->__init_MySql();    
 
 		mysqli_select_db($mysql_exec, $this->database); 
 		mysqli_query($mysql_exec, "SET names 'utf8'");
 
 		$out = mysqli_query($mysql_exec, $SQL);                     
 		
+		echo var_dump($out);
+		echo var_dump(dotnet::$AppDebug);
+
 		if (dotnet::$AppDebug) {
 			dotnet::$debugger->add_mysql_history($SQL);
 		}
 		if (!$out && dotnet::$AppDebug) {
-			dotnet::$debugger->add_last_mysql_error(mysqli_error($mysqli_exec));
+			dotnet::$debugger->add_last_mysql_error(mysqli_error($mysql_exec));
 		}		
 
         return $out;
@@ -140,7 +143,7 @@ class Model {
 
 			// 这条SQL语句执行出错了，添加错误信息到sql记录之中
 			if (dotnet::$AppDebug) {
-				dotnet::$debugger->add_last_mysql_error(mysqli_error($mysqli_exec));
+				dotnet::$debugger->add_last_mysql_error(mysqli_error($mysql_exec));
 			}
 
 			return false;
