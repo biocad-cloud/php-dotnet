@@ -23,9 +23,10 @@ class Table {
 	 * 
 	 */
     function __construct($tableName, $condition = null, $type = "where") {
-        $this->tableName = $tableName;
-        $this->driver    = DotNetRegistry::$config;
-        $this->driver    = new Model(
+        $this->tableName    = $tableName;
+		$this->driver       = DotNetRegistry::$config;
+		$this->databaseName = $this->driver["DB_NAME"];
+        $this->driver       = new Model(
             $this->driver["DB_NAME"], 
             $this->driver["DB_USER"],
             $this->driver["DB_PWD"],
@@ -38,8 +39,7 @@ class Table {
         $this->schema         = Model::schemaArray($this->schema);
         $this->condition      = $condition;
 		$this->condition_type = $type;
-		$this->AI             = Model::getAIKey($this);
-		$this->databaseName   = $this->driver["DB_NAME"];
+		$this->AI             = Model::getAIKey($this);		
     }
 
 	public function getSchema() {
