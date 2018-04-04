@@ -331,8 +331,7 @@ class Table {
     // update table
     public function save($data) {
 		$table       = $this->tableName;
-        $assert      = $this->getWhere();
-        $mysqli_exec = $this->driver->__init_MySql();
+        $assert      = $this->getWhere();        
 		$SQL         = "";
 		$updates     = array();
 		
@@ -359,12 +358,8 @@ class Table {
 		} else {
 			$SQL = $SQL . " WHERE " . $assert . " LIMIT 1;";
 		}
-		
-		if (dotnet::$AppDebug) {
-			dotnet::$debugger->add_mysql_history($SQL);
-		}
-				
-		if (!mysqli_query($mysqli_exec, $SQL)) {
+						
+		if (!$this->driver->exec($SQL)) {
 			return false;
 		} else {
 			return true;
@@ -374,21 +369,16 @@ class Table {
     // delete from
     public function delete($data) {
 		$table       = $this->tableName;
-        $assert      = $this->getWhere();
-        $mysqli_exec = $this->driver->__init_MySql();
+        $assert      = $this->getWhere();        
 		
 		# DELETE FROM `metacardio`.`experimental_batches` WHERE `id`='4';
 		if (!$assert) {
-			dotnet::ThrowException("WHERE condition can not be null!");
+			dotnet::ThrowException("WHERE condition can not be null in DELETE SQL!");
 		} else {
 			$SQL     = "DELETE FROM `$table` WHERE $assert;";
 		}
-		
-		if (dotnet::$AppDebug) {
-			dotnet::$debugger->add_mysql_history($SQL);
-		}
-		
-		if (!mysqli_query($mysqli_exec, $SQL)) {
+				
+		if (!$this->driver->exec($SQL)) {
 			return false;
 		} else {
 			return true;
