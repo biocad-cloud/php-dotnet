@@ -51,19 +51,29 @@ class Table {
     }
 
     // select all
-    public function select() {
+    public function select($offset = -1, $n = -1) {
 		$table  = $this->tableName;
 		$db     = $this->databaseName;
         $assert = $this->getWhere();
         $mysqli_exec = $this->driver->__init_MySql();       
 
         if ($assert) {
-            $SQL = "SELECT * FROM `$db`.`$table` WHERE $assert;";
+            $SQL = "SELECT * FROM `$db`.`$table` WHERE $assert";
         } else {
-            $SQL = "SELECT * FROM `$db`.`$table`;";
+            $SQL = "SELECT * FROM `$db`.`$table`";
         }
-        
-		// print_r($SQL);
+		
+		if ($offset >= 0) {
+			if ($n > 0) {
+				$SQL .= " LIMIT $offset,$n;";
+			} else {
+				$SQL .= " LIMIT $offset;";
+			}
+		} else {
+			$SQL .= ";";
+		}
+
+		print_r($SQL);
 		
         return $this->driver->ExecuteSQL($mysqli_exec, $SQL);
     }
