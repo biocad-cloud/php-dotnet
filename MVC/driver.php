@@ -95,8 +95,8 @@ class Model {
 
 		$out = mysqli_query($mysql_exec, $SQL);                     
 		
-		echo var_dump($out);
-		echo var_dump(dotnet::$AppDebug);
+		# echo var_dump($out);
+		# echo var_dump(dotnet::$AppDebug);
 
 		if (dotnet::$AppDebug) {
 			dotnet::$debugger->add_mysql_history($SQL);
