@@ -310,11 +310,16 @@ class Table {
 		# INSERT INTO `metacardio`.`xcms_files` (`task_id`) VALUES ('ABC');
 		$SQL = "INSERT INTO `{$table}` ($fields) VALUES ($values);";
 
-		dotnet::$debugger->add_mysql_history($SQL);
-
+		if (dotnet::$AppDebug) {
+			dotnet::$debugger->add_mysql_history($SQL);
+		}
+		
         if (!mysqli_query($mysqli_exec, $SQL)) {
 
-			dotnet::$debugger->add_last_mysql_error(mysqli_error($mysqli_exec));
+			if (dotnet::$AppDebug) {
+				dotnet::$debugger->add_last_mysql_error(mysqli_error($mysqli_exec));
+			}
+			
             // 可能有错误，给出错误信息
             return false;
 			
@@ -363,8 +368,10 @@ class Table {
 			$SQL = $SQL . " WHERE " . $assert . " LIMIT 1;";
 		}
 		
-		dotnet::$debugger->add_mysql_history($SQL);
-		
+		if (dotnet::$AppDebug) {
+			dotnet::$debugger->add_mysql_history($SQL);
+		}
+				
 		if (!mysqli_query($mysqli_exec, $SQL)) {
 			return false;
 		} else {
@@ -385,8 +392,10 @@ class Table {
 			$SQL     = "DELETE FROM `$table` WHERE $assert;";
 		}
 		
-		dotnet::$debugger->add_mysql_history($SQL);
-
+		if (dotnet::$AppDebug) {
+			dotnet::$debugger->add_mysql_history($SQL);
+		}
+		
 		if (!mysqli_query($mysqli_exec, $SQL)) {
 			return false;
 		} else {

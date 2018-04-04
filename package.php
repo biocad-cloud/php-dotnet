@@ -146,21 +146,25 @@ class dotnet {
     }
     
     public static function printMySqlTransaction() {
-        echo debugView::GetMySQLView(self::$debugger);
+        if (self::$AppDebug) {
+            echo debugView::GetMySQLView(self::$debugger);
+        }
     }
 
     /**
      * php写日志文件只能够写在自己的wwwroot文件夹之中 
      **/
     public static function writeMySqlLogs($onlyErrors = FALSE) {      
-        if (self::$debugger->hasMySqlLogs()) {
-            if ($onlyErrors) {
-                if (self::$debugger->hasMySqlErrs()) {
+        if (self::$AppDebug) {
+            if (self::$debugger->hasMySqlLogs()) {
+                if ($onlyErrors) {
+                    if (self::$debugger->hasMySqlErrs()) {
+                        self::writeMySqlLogs2();
+                    }
+                } else {
                     self::writeMySqlLogs2();
-                }
-            } else {
-                self::writeMySqlLogs2();
-            }            
+                }            
+            }
         }
     }
 
