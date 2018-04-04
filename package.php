@@ -12,6 +12,12 @@ include_once dotnet::GetDotnetManagerDirectory() . "/dotnetException.php";
 include_once dotnet::GetDotnetManagerDirectory() . "/Registry.php";
 
 session_start();
+# PHP Warning:  date(): It is not safe to rely on the system's timezone settings. 
+# You are *required* to use the date.timezone setting or the date_default_timezone_set() function. 
+# In case you used any of those methods and you are still getting this warning, you most likely 
+# misspelled the timezone identifier. We selected the timezone 'UTC' for now, 
+# but please set date.timezone to select your timezone.
+date_default_timezone_set('UTC');
 
 /**
  * Global function for load php.NET package 
@@ -91,9 +97,7 @@ class dotnet {
      */
     const DotNetManagerFileLocation = __FILE__;
 
-	public static function AutoLoad($config) {		
-        
-        date_default_timezone_set('UTC');
+	public static function AutoLoad($config) {		       
 
 		dotnet::Imports("MVC.view");
 		dotnet::Imports("MVC.model");
