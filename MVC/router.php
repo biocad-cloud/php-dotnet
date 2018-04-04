@@ -5,10 +5,8 @@
  *
  * 这个模块的功能主要是解析所请求的url字符串，然后从
  */
-class Control {
-	
-	public static $debug;
-	
+class Router {
+		
 	/*
 	 * 进行自动处理请求主要是用户通过实例化一个class之后
 	 * 这个函数会对url的解析结果从class实例对象之中匹配出
@@ -25,7 +23,7 @@ class Control {
 			$page = $_GET["app"];
 		}		
 		
-		if (self::$debug) {
+		if (dotnet::$debug) {
 			# print_r($argv);
 			# print_r($page);
 		}
