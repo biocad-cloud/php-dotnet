@@ -33,5 +33,9 @@ class dotnetDebugger {
 		$this->setError              = TRUE;
 		$this->mysql_history[$lasti] = $last; 
 	}
+
+	public static function GetLoadedFiles() {
+		return get_included_files();
+	}
 }
 ?>
