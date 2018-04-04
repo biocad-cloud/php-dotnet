@@ -51,6 +51,10 @@ class View {
 	}
 
 	private static function interpolate_includes($html, $path) {
+		if (!$path) {
+			return $html;
+		}
+
 		$pattern = "#[$]\{.+?\}#";
 		$dirName = dirname($path);
 		
