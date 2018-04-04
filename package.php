@@ -104,6 +104,16 @@ class dotnet {
      **/
 	public static function AutoLoad($config = NULL, $debug = FALSE) {		       
 
+        define('APP_PATH', dirname(__FILE__)."/");
+
+        if ($debug) {
+            # 调试器必须先于Imports函数调用，否则会出现错误：
+            # PHP Fatal error:  Call to a member function add_loaded_script() on a non-object
+            dotnet::$debugger = new dotnetDebugger();
+
+            define("APP_DEBUG", TRUE);
+        }   
+
 		dotnet::Imports("MVC.view");
 		dotnet::Imports("MVC.model");
 		dotnet::Imports("MVC.control");
@@ -113,15 +123,7 @@ class dotnet {
             DotNetRegistry::$config = include $config;
         } else {
             DotNetRegistry::$config = DotNetRegistry::DefaultConfig();
-        }      
-
-        if ($debug) {
-            dotnet::$debugger = new dotnetDebugger();
-
-            define("APP_DEBUG", TRUE);
-        }       
-        
-        define('APP_PATH', dirname(__FILE__)."/");
+        }             
 
         if (!DotNetRegistry::DisableErrorHandler()) {
             self::setupLogs();
@@ -197,7 +199,7 @@ class dotnet {
         // 在这里导入需要导入的模块文件
         include_once($mod);
 
-        if (self::$debug) {
+        if (true === APP_DEBUG) {
             $bt    = debug_backtrace();             
             $trace = array();
 
@@ -209,6 +211,8 @@ class dotnet {
 
             $initiatorOffset = 1 + $initiatorOffset;
             $initiator       = $trace[$initiatorOffset];
+
+            echo var_dump(self::$debugger);
 
             self::$debugger->add_loaded_script($mod, $initiator);
         }

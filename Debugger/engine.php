@@ -30,7 +30,8 @@ class dotnetDebugger {
 		$info = array(
 			"module"    => $path, 
 			"size"      => filesize($path), 
-			"initiator" => $refer
+			"initiator" => $refer,
+			"time"      => Utils::Now()
 		);
 
 		array_push($this->script_loading, $info);
