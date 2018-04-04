@@ -23,7 +23,7 @@ class Router {
 			$page = $_GET["app"];
 		}		
 		
-		if (dotnet::$debug) {
+		if (dotnet::$AppDebug) {
 			# print_r($argv);
 			# print_r($page);
 		}
@@ -36,7 +36,7 @@ class Router {
 		}
 		
 		# 在末尾输出调试信息？
-		if (dotnet::$debug) {
+		if (dotnet::$AppDebug) {
 			
 		}
 	}

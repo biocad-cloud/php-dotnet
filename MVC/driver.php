@@ -78,9 +78,9 @@ class Model {
 	}
 
     public function Describe($tableName) {
-        $SQL = "DESCRIBE `$tableName`;";
+        $SQL         = "DESCRIBE `$tableName`;";
         $mysqli_exec = $this->__init_MySql();                        
-        $schema = $this->ExecuteSQL($mysqli_exec, $SQL);
+        $schema      = $this->ExecuteSQL($mysqli_exec, $SQL);
 
         return $schema;
     }
