@@ -94,7 +94,9 @@ class Model {
 
 		$out = mysqli_query($mysql_exec, $SQL);                     
 		
-		dotnet::$debugger->add_mysql_history($SQL);
+		if (dotnet::$AppDebug) {
+			dotnet::$debugger->add_mysql_history($SQL);
+		}
 		
         return $out;
     }
@@ -113,8 +115,11 @@ class Model {
 		mysqli_query($mysql_exec, "SET names 'utf8'");
 
 		$data = mysqli_query($mysql_exec, $SQL); 		
-		dotnet::$debugger->add_mysql_history($SQL);
 
+		if (dotnet::$AppDebug) {
+			dotnet::$debugger->add_mysql_history($SQL);
+		}
+		
 		if($data) {
 			$out = array();
 			
@@ -138,7 +143,10 @@ class Model {
 		mysqli_query($mysql_exec, "SET names 'utf8'");
 
 		$data = mysqli_query($mysql_exec, $SQL); 
-		dotnet::$debugger->add_mysql_history($SQL);
+		
+		if (dotnet::$AppDebug) {
+			dotnet::$debugger->add_mysql_history($SQL);
+		}
 		
 		if ($data) {
 			
