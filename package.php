@@ -34,8 +34,8 @@ function Imports($namespace) {
  * 对用户的浏览器进行重定向
  * 
 */
-function Redirect($URL) {
-    header("Location: $URL");
+function Redirect($URL) {   
+    header("Location: " . View::AssignController($URL));
 }
 
 /**
