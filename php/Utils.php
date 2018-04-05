@@ -88,7 +88,7 @@ class Utils {
         # 在这里显式的引入一次这个文件即可解决问题
         include_once dotnet::GetDotnetManagerDirectory() . "/Microsoft/VisualBasic/Strings.php";
 
-        $array  = Strings::Split($path, "\.");
+        $array  = Strings::Split($path, ".");
         $suffix = array_values(array_slice($array, -1));
         $suffix = $suffix[0];
 
