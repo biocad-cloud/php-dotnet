@@ -9,6 +9,10 @@ class Strings {
 		$words = explode($deli, $str);
 		return $words;
 	}
+
+	public static function Join($list, $deli) {
+		return join($deli, $list);
+	}
 	
 	// 如果查找不到字串在目标字符串之上的位置，则函数返回0
 	// 假若能够查找得到，则会返回以1为准的位置
