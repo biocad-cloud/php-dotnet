@@ -73,7 +73,7 @@ class Table {
 			$SQL .= ";";
 		}
 
-		print_r($SQL);
+		# print_r($SQL);
 		
         return $this->driver->ExecuteSQL($mysqli_exec, $SQL);
     }
