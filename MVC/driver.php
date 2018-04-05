@@ -87,9 +87,11 @@ class Model {
     }
 
 	// 这个方法主要是用于执行一些无返回值的方法，例如INSERT, UPDATE, DELETE等
-    public function exec($SQL) {
-		$mysql_exec = $this->__init_MySql();    
-
+    public function exec($SQL, $mysql_exec = NULL) {
+		if (!$mysql_exec) {
+			 $mysql_exec = $this->__init_MySql();
+		}
+		
 		mysqli_select_db($mysql_exec, $this->database); 
 		mysqli_query($mysql_exec, "SET names 'utf8'");
 

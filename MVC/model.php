@@ -259,14 +259,13 @@ class Table {
 	 */ 
     public function add($data) {
 
-		$mysqli_exec = $this->driver->__init_MySql(); 
 		$table       = $this->tableName;
 		$db          = $this->databaseName;
 		$fields      = array();
-		$values      = array();
-		$uid         = null;
+		$values      = array();		
 					
 		# 检查自增字段
+		/*
 		if ($this->AI) {
 			$key = $this->AI;		
 						
@@ -287,7 +286,7 @@ class Table {
 			}
 			
 			# print("$key => $uid");
-		}
+		}*/
 		
 		foreach ($this->schema as $fieldName => $def) {
 			if (array_key_exists($fieldName, $data)) {
@@ -299,6 +298,8 @@ class Table {
 				array_push($fields, "`$fieldName`");
 				array_push($values, "'$value'");
 				
+			} else if ($this->AI && Strings::LCase($fieldName) == Strings::LCase($this->AI) ) {
+				# Do Nothing
 			} else {
 
                 # 检查一下这个字段是否是需要值的？如果需要，就将默认值填上
@@ -327,22 +328,23 @@ class Table {
 		$values = join(", ", $values);
 		
 		# INSERT INTO `metacardio`.`xcms_files` (`task_id`) VALUES ('ABC');
-		$SQL = "INSERT INTO `$db`.`{$table}` ($fields) VALUES ($values);";	
-		
-        if (!$this->driver->exec($SQL)) {
+		$SQL         = "INSERT INTO `$db`.`{$table}` ($fields) VALUES ($values);";	
+		$mysqli_exec = $this->driver->__init_MySql(); 
+
+        if (!$this->driver->exec($SQL, $mysqli_exec)) {
 			
             // 可能有错误，给出错误信息
             return false;
 			
         } else {
 			
-            if (!$uid) {
+            if (!$this->AI) {
 				# 这个表之中没有自增字段，则返回true
 				return true;
 			} else {
 				# 在这个表之中存在自增字段，则返回这个uid
 				# 方便进行后续的操作
-				return $uid;
+				return mysqli_insert_id($mysqli_exec);
 			}           
         }	
     }
