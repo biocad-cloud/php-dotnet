@@ -24,6 +24,10 @@ class StringBuilder {
         return $this;
     }
 
+    public function Clear() {
+        $this->buffer = "";
+    }
+
     public function ToString() {
         return $this->buffer;
     }
