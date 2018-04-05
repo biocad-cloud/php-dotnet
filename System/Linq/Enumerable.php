@@ -39,6 +39,22 @@ class Enumerable {
 	public static function OrderByKeyDescending($array, $key) { 
 		return array_reverse(Enumerable::OrderByKey($array, $key));
 	}
+
+	public static function Select($table, $selector) {
+		$projection = array();
+
+		if (is_string($selector)) {
+			foreach($table as $row) {
+				array_push($projection, $row[$selector]);
+			}
+		} else {
+			foreach($table as $row) {
+				array_push($projection, $selector($row));
+			}
+		}
+
+		return $projection;
+	}
 }
 
 ?>
