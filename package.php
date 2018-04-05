@@ -1,5 +1,7 @@
 <?php
 
+include_once dotnet::GetDotnetManagerDirectory() . "/php/Utils.php";
+
 include_once dotnet::GetDotnetManagerDirectory() . "/System/Diagnostics/StackTrace.php";
 include_once dotnet::GetDotnetManagerDirectory() . "/System/Text/StringBuilder.php";
 include_once dotnet::GetDotnetManagerDirectory() . "/Debugger/dotnetException.php";
@@ -7,7 +9,6 @@ include_once dotnet::GetDotnetManagerDirectory() . "/Debugger/engine.php";
 include_once dotnet::GetDotnetManagerDirectory() . "/Debugger/view.php";
 include_once dotnet::GetDotnetManagerDirectory() . "/Microsoft/VisualBasic/Strings.php";
 include_once dotnet::GetDotnetManagerDirectory() . "/Microsoft/VisualBasic/ApplicationServices/Debugger/Logging/LogFile.php";
-include_once dotnet::GetDotnetManagerDirectory() . "/php/Utils.php";
 include_once dotnet::GetDotnetManagerDirectory() . "/RFC7231/index.php";
 include_once dotnet::GetDotnetManagerDirectory() . "/Registry.php";
 
