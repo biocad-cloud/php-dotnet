@@ -2,13 +2,13 @@
 
 include_once dotnet::GetDotnetManagerDirectory() . "/System/Diagnostics/StackTrace.php";
 include_once dotnet::GetDotnetManagerDirectory() . "/System/Text/StringBuilder.php";
+include_once dotnet::GetDotnetManagerDirectory() . "/Debugger/dotnetException.php";
 include_once dotnet::GetDotnetManagerDirectory() . "/Debugger/engine.php";
 include_once dotnet::GetDotnetManagerDirectory() . "/Debugger/view.php";
 include_once dotnet::GetDotnetManagerDirectory() . "/Microsoft/VisualBasic/Strings.php";
 include_once dotnet::GetDotnetManagerDirectory() . "/Microsoft/VisualBasic/ApplicationServices/Debugger/Logging/LogFile.php";
 include_once dotnet::GetDotnetManagerDirectory() . "/php/Utils.php";
 include_once dotnet::GetDotnetManagerDirectory() . "/RFC7231/index.php";
-include_once dotnet::GetDotnetManagerDirectory() . "/dotnetException.php";
 include_once dotnet::GetDotnetManagerDirectory() . "/Registry.php";
 
 session_start();
@@ -192,7 +192,7 @@ class dotnet {
         	
         // 因为WithSuffixExtension这个函数会需要依赖小数点来判断文件拓展名，
         // 所以对小数点的替换操作要在if判断之后进行  
-        if (dotnet::WithSuffixExtension($mod, "php")) {
+        if (Utils::WithSuffixExtension($mod, "php")) {
             $mod = str_replace(".", "/", $mod); 
             $mod = "{$DIR}/{$mod}";
         } else {
@@ -223,27 +223,6 @@ class dotnet {
 
         // 返回所导入的文件的全路径名
         return $mod;
-    }
-
-    /**
-     * 判断这个文件路径是否是以特定的文件拓展名结尾的？这个函数大小写不敏感
-     */
-    public static function WithSuffixExtension($path, $ext) {
-
-        # 2018-3-8 因为这个函数之中需要调用Microsoft.VisualBasic.Strings模块
-        # 可能会因为在本脚本的头部进行引用其他的脚本文件的时候，这个模块的脚本还
-        # 没有被加载，所以会导致出现无法找到类Strings的错误
-        # 在这里显式的引入一次这个文件即可解决问题
-        include_once dotnet::GetDotnetManagerDirectory() . "/Microsoft/VisualBasic/Strings.php";
-
-        $array  = Strings::Split($path, "\.");
-        $lastEl = array_values(array_slice($array, -1));
-        $lastEl = $lastEl[0];
-
-        // echo $lastEl . "<br />";
-        // echo $ext;
-
-        return Strings::LCase($lastEl) == Strings::LCase($ext);
     }
 
     /**

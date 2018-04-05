@@ -16,6 +16,14 @@ class DotNetRegistry {
      */
     public static $config;
     
+    public static function Read($key, $default = NULL) {
+        if (self::hasValue($key)) {
+            return self::$config[$key];
+        } else {
+            return $default;
+        }
+    }
+
     /**
      * The default config file data.
      * 

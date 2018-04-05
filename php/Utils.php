@@ -67,6 +67,41 @@ class Utils {
             return date('Y:m:d H:i:s.', $milliseconds) . $remainder;
         }        
     }
+
+    public static function RandomASCIIString($len) {
+		$s = "";
+		$template = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		$template = str_split($template);
+		
+		for ($i = 0; $i < $len; $i++) {
+			$index = rand(0, count($template));
+			$s = $s . $template[$index];
+		}
+		
+		return $s;
+    }
+    
+    public static function GetExtensionSuffix($path) {
+        # 2018-3-8 因为这个函数之中需要调用Microsoft.VisualBasic.Strings模块
+        # 可能会因为在本脚本的头部进行引用其他的脚本文件的时候，这个模块的脚本还
+        # 没有被加载，所以会导致出现无法找到类Strings的错误
+        # 在这里显式的引入一次这个文件即可解决问题
+        include_once dotnet::GetDotnetManagerDirectory() . "/Microsoft/VisualBasic/Strings.php";
+
+        $array  = Strings::Split($path, "\.");
+        $suffix = array_values(array_slice($array, -1));
+        $suffix = $suffix[0];
+
+        return $suffix;
+    }
+
+    /**
+     * 判断这个文件路径是否是以特定的文件拓展名结尾的？这个函数大小写不敏感
+     */
+    public static function WithSuffixExtension($path, $ext) {
+        $suffix = self::GetExtensionSuffix($path);
+        return Strings::LCase($suffix) == Strings::LCase($ext);
+    }
 }
 
 ?>
