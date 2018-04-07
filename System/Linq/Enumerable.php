@@ -55,6 +55,29 @@ class Enumerable {
 
 		return $projection;
 	}
+
+	public static function GroupBy($array, $key) {		
+		$groups = array();
+
+		if (is_string($key)) {
+			$keyName = $key;
+			$key = function($obj) use ($keyName) {
+				return $obj[$keyName];
+			}
+		}
+
+		foreach($array as $row) {
+			$keyValue = $key($row);
+
+			if (!array_key_exists($keyValue, $groups)) {
+				$groups[$keyValue] = array();
+			}
+
+			array_push($groups[$keyValue], $row);
+		}
+
+		return $groups;
+	}
 }
 
 ?>
