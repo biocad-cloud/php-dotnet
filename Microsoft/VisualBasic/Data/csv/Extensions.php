@@ -1,8 +1,9 @@
 <?php
 
-Imports("Microsoft.VisualBasic.FileIO.FileSystem");
-
 namespace Microsoft\VisualBasic\Data\csv {
+
+    Imports("Microsoft.VisualBasic.FileIO.FileSystem");
+
     class Extensions {
 
         /**
