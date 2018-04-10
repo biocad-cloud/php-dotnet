@@ -110,7 +110,7 @@ class FileSystem {
 						array_push($files, realpath("$directory/$entry"));
 					}
 				} else {
-					# ����Ҫ��ɸѡ��ֱ�����
+					# 不需要做筛选，直接添加
 					array_push($files, realpath("$directory/$entry"));
 				}				
 			}
@@ -149,7 +149,7 @@ class FileSystem {
 		// Loop through the folder
 		$DIR = dir($source);
 		// echo $source;
-		// Ŀ���ļ��в����ڵ�ʱ������
+		// 目标文件夹不存在的时候会出错
 		while (false !== ($entry = $DIR->read())) {
 			// Skip pointers
 			if ($entry == '.' || $entry == '..') {

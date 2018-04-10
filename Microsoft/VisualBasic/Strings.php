@@ -43,6 +43,27 @@ class Strings {
 		return substr($str, $start, $len);
 	}
 
+	# Public Shared Function Replace(
+	#     Expression As String, 
+	#     Find As String, 
+	#     Replacement As String, 
+	#     Optional Start As Integer = 1, 
+	#     Optional Count As Integer = -1, 
+	#     Optional Compare As Microsoft.VisualBasic.CompareMethod = 0) As String
+
+	/**
+	 * Returns a string in which a specified substring has been replaced with another 
+	 * substring a specified number of times.
+	 *
+	 * @param str: Required. String expression containing substring to replace.
+	 * @param find: Substring being searched for.
+	 * @param replacement: Required. Replacement substring.
+	 * 
+	 * @return string Replace returns the following values. If Replace returns Find is zero-length 
+	 *                or Nothing Copy of Expression Replace is zero-length Copy of Expression with 
+	 *                no occurrences of Find Expression is zero-length or Nothing, or Start is greater 
+	 *                than length of Expression Nothing Count is 0 Copy of Expression
+	 */
 	public static function Replace($str, $find, $replacement) {
 		return str_replace($find, $replacement, $str);
 	}
