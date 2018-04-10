@@ -18,7 +18,16 @@ namespace Microsoft\VisualBasic\Data\csv {
          * @return boolean True for file save success, and false not. 
          */
         public static function SaveTo($array, $path, $project = null, $encoding = "utf8") {
-            FileSystem::CreateDirectory(dirname($path));
+            # 2018-4-10 直接引用其他的模块似乎会因为namespace的缘故而产生错误：
+            # <b>Fatal error</b>:  Class 'Microsoft\VisualBasic\Data\csv\FileSystem' not found
+            # 所以在这里就直接使用这个函数的代码了
+            $directory = dirname($path);
+
+            if (!file_exists($directory)) {
+                mkdir($directory, 0755, true);
+            } else {
+                # do nothing
+            }	
 
             $fp = fopen($path, 'w');
           
