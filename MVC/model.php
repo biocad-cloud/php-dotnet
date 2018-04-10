@@ -391,7 +391,7 @@ class Table {
     }
 
     // delete from
-    public function delete($data) {
+    public function delete() {
 		$table  = $this->tableName;
 		$db     = $this->databaseName;
         $assert = $this->getWhere();        
