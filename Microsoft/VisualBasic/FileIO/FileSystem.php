@@ -9,9 +9,19 @@ dotnet::Imports("System.Text.RegularExpressions.Regex");
  */
 class FileSystem {
 	
-	public static function NormalizePath($path) {
-		$path = Strings::Replace($path, "\\", "/");
+	/**
+	 * 
+	 * @param windowsStyle: If true, then all of the / will be replaced as \ 
+	 * 
+	 */
+	public static function NormalizePath($path, $windowsStyle = false) {
+		$path = Strings::Replace($path, '\\', "/");
 		$path = Regex::Replace($path, "[/]+", "/");
+
+		if ($windowsStyle) {
+			$path = Strings::Replace($path, "/", "\\");
+		}
+
 		return $path;
 	}
 

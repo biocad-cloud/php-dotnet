@@ -22,7 +22,8 @@ class Regex {
      *                 current instance, the method returns the current instance unchanged.
      */
     public static function Replace($input, $pattern, $replacement) {
-        return preg_replace("/$pattern/", $replacement, $input);
+        # return $input;
+        return preg_replace("#$pattern#", $replacement, $input);
     }
 }
 
