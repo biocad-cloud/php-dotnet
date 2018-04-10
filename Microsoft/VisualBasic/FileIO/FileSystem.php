@@ -1,6 +1,7 @@
 <?php
 
 dotnet::Imports("Microsoft.VisualBasic.Strings");
+dotnet::Imports("System.Text.RegularExpressions.Regex");
 
 /**
  * Provides properties and methods for working with drives, files, and directories.
@@ -8,6 +9,12 @@ dotnet::Imports("Microsoft.VisualBasic.Strings");
  */
 class FileSystem {
 	
+	public static function NormalizePath($path) {
+		$path = Strings::Replace($path, "\\", "/");
+		$path = Regex::Replace($path, "[/]+", "/");
+		return $path;
+	}
+
 	/**
 	 * Writes text to a file.
 	 *
