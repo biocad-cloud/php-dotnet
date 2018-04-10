@@ -26,7 +26,7 @@ namespace Microsoft\VisualBasic\Data\csv {
             if (!$project) {                
                 $project = array();
 
-                for (array_keys($array[0]) as $fieldName) {
+                foreach (array_keys($array[0]) as $fieldName) {
                     $project[$fieldName] = $fieldName;
                 }
             }
