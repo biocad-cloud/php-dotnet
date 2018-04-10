@@ -196,8 +196,22 @@ class Table {
         return $this->driver->ExecuteScalar($mysqli_exec, $SQL);
     }
 
+	/**
+	 * Select and limit 1 and return the field value, if target 
+	 * record is not found, then returns false.
+	 * 
+	 * @param name: The table field name. Case sensitive! 
+	 * 
+	 * @return mix The reuqired field value. 
+	 */
 	public function findfield($name) {
-		return $this->find()[$name];
+		$single = $this->find();
+
+		if ($single) {
+			return $single[$name];
+		} else {
+			return false;
+		}		 
 	}
 
 	public function ExecuteScalar($aggregate) {
