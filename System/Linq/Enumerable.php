@@ -5,8 +5,17 @@
  * querying objects that implement IEnumerable<T>.
  */
 class Enumerable {
-	
-	// 请注意这个函数并不会按照字典的key，只会按照value来排序
+
+	/**
+	 * Sorts the elements of a sequence in ascending order according to a key. 
+	 * 
+	 * @param array: A sequence of values to order.
+	 * @param key: A function to extract a key from an element.
+	 * 
+	 * @return array An System.Linq.IOrderedEnumerable<T> whose elements are sorted according to a key.
+	 * 
+	 * @remarks 请注意这个函数并不会按照字典的key，只会按照value来排序
+	 */
 	public static function OrderBy($array, $key) {		
 		$getKey =& $key;
 
@@ -24,6 +33,17 @@ class Enumerable {
 		return $array;
 	}
 	
+	/**
+	 * Sorts the elements of a sequence in descending order according to a key.
+	 * 
+	 * @param array: A sequence of values to order.
+	 * @param key: A function to extract a key from an element.
+	 * 
+	 * @return array An System.Linq.IOrderedEnumerable<T> whose elements are 
+	 *               sorted in descending order according to a key.
+	 * 
+	 * @remarks: 对OrderBy的结果的逆序
+	 */
 	public static function OrderByDescending($array, $key) {
 		return array_reverse(Enumerable::OrderBy($array, $key));		
 	}
@@ -44,6 +64,16 @@ class Enumerable {
 		return array_reverse(Enumerable::OrderByKey($array, $key));
 	}
 
+	/**
+	 * Projects each element of a sequence into a new form. 
+	 * 
+	 * @param table: A sequence of values to invoke a transform function on.
+	 * @param selector: A transform function to apply to each element.
+	 * 
+	 * @return array An System.Collections.Generic.IEnumerable<T> whose elements 
+	 *               are the result of invoking the transform function on each 
+	 *               element of source.
+	 */
 	public static function Select($table, $selector) {
 		$projection = array();
 
