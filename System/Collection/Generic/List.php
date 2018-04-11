@@ -7,7 +7,7 @@ dotnet::Imports("System.Collection.ICollection");
  */
 class List extends ICollection {
 
-    function __construct() {
+    public function __construct() {
         parent::__construct();
     }
 
@@ -16,13 +16,14 @@ class List extends ICollection {
     }
 
     public function AddRange($array) {
-        foreach($array  as $obj) {
+        foreach($array as $obj) {
             $this->Add($obj);
         }
     }
 
     /**
-     * pops and returns the last value of the list, shortening the list by one element.
+     * pops and returns the last value of the list, shortening 
+     * the list by one element.
      */
     public function RemoveLast() {
         return array_pop($this->__data);

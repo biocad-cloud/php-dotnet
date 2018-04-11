@@ -150,11 +150,11 @@ class Enumerable {
 		if (!$element) {
 			$element = function($obj) {
 				return $obj;
-			}
+			};
 		} else if (is_string($element)) {
 			$element = function($obj) use ($elementSelector) {
 				return $obj[$elementSelector];
-			}
+			};
 		}
 
 		if (!$key) {
@@ -162,7 +162,7 @@ class Enumerable {
 		} else if (is_string($key)) {
 			$key = function($obj) use ($keySelector) {
 				return $obj[$keySelector];
-			}
+			};
 		}
 
 		foreach ($source as $obj) {
