@@ -2,6 +2,9 @@
 
 namespace MVC\MySql\Expression {
 
+    /**
+     * 一个将表达式数组转换为对应的等价的MySql查询条件的工具类
+     */
     class WhereAssert {
 
         /*
@@ -48,7 +51,7 @@ namespace MVC\MySql\Expression {
                             # NOT equals
                             $assert = "`$key` <> '$value'";
                         }
-                        
+
                         break;
 
                     case "~":
