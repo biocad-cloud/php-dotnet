@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Provides a set of static (Shared in Visual Basic) methods for 
+ * querying objects that implement IEnumerable<T>.
+ */
 class Enumerable {
 	
 	// 请注意这个函数并不会按照字典的key，只会按照value来排序
@@ -61,7 +65,11 @@ class Enumerable {
 	 * creates a result value from each group and its key. The elements of each group are 
 	 * projected by using a specified function. 
 	 * 
+	 * @param array: An System.Collections.Generic.IEnumerable<T> whose elements to group.
+	 * @param key: A function to extract the key for each element.
 	 * 
+	 * @return array A collection of elements of type TResult where each element represents 
+	 *               a projection over a group and its key.
 	 */
 	public static function GroupBy($array, $key) {		
 		$groups = array();
