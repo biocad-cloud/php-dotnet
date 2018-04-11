@@ -56,6 +56,13 @@ class Enumerable {
 		return $projection;
 	}
 
+	/**
+	 * Groups the elements of a sequence according to a specified key selector function and 
+	 * creates a result value from each group and its key. The elements of each group are 
+	 * projected by using a specified function. 
+	 * 
+	 * 
+	 */
 	public static function GroupBy($array, $key) {		
 		$groups = array();
 		$isKeyString = is_string($key);
@@ -75,6 +82,56 @@ class Enumerable {
 		}
 
 		return $groups;
+	}
+
+	# System.Linq.Enumerable.ToDictionary<TSource, TKey, TElement>(
+	# 	 this System.Collections.Generic.IEnumerable<TSource>, 
+	#    System.Func<TSource,TKey>, 
+	#    System.Func<TSource,TElement>
+	# )
+
+	/**
+	 * Creates a System.Collections.Generic.Dictionary<T1,T2> from an 
+	 * System.Collections.Generic.IEnumerable<T> according to specified 
+	 * key selector and element selector functions.
+	 * 
+	 * @param source: An System.Collections.Generic.IEnumerable<T> to create 
+	 *                a System.Collections.Generic.Dictionary<T1,T2> from.
+	 * @param key: A function to extract a key from each element.
+	 * @param element: A transform function to produce a result element 
+	 *                 value from each element.
+	 * 
+	 * @return array A System.Collections.Generic.Dictionary<T1,T2> that contains 
+	 *               values of type TElement selected from the input sequence.
+	 */
+	public static function ToDictionary($source, $key, $element = NULL) {
+		$table           = array();
+		$elementSelector = $element;
+		$keySelector     = $key;
+
+		if (!$element) {
+			$element = function($obj) {
+				return $obj;
+			}
+		} else if (is_string($element)) {
+			$element = function($obj) use ($elementSelector) {
+				return $obj[$elementSelector];
+			}
+		}
+
+		if (!$key) {
+			throw new exception("The key selector can not be NULL!");
+		} else if (is_string($key)) {
+			$key = function($obj) use ($keySelector) {
+				return $obj[$keySelector];
+			}
+		}
+
+		foreach ($source as $obj) {
+			$table[$key($obj)] = $element($obj);
+		}
+
+		return $table;
 	}
 }
 
