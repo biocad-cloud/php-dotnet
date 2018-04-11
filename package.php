@@ -98,7 +98,14 @@ class dotnet {
     const DotNetManagerFileLocation = __FILE__;
 
     /**
-     *  
+     * 进行php.NET核心模块的加载操作 
+     * 
+     * @param config: php.NET框架核心正常工作所需要的配置参数，如果忽略掉这个参数的话将会使用默认配置
+     *                在默认配置下，mysql数据库模块将会无法正常工作，因为没有mysql的链接参数信息。
+     *                这个参数可以有两种形式：
+     *                1. php文件路径，如果文件不存在，则会使用默认配置数据
+     *                2. 包含有配置数据的字典数组
+     * 
      * @param debug: 只需要修改这个参数的逻辑值就可以打开或者关闭调试器的输出行为
      *
      **/
@@ -120,11 +127,22 @@ class dotnet {
 		dotnet::Imports("MVC.router");
         dotnet::Imports("MVC.driver");       
         
-        if ($config && file_exists($config)) {
-            DotNetRegistry::$config = include $config;
+        if ($config) {
+            # config存在赋值，则判断一下是否为字符串？
+            # 如果是字符串，则使用文件的加载方式
+            # 反之再判断是否为数组
+            # 如果既不是字符串又不是数组，则使用默认配置数据并给出警告
+            if (is_string($config) && file_exists($config)) {
+                DotNetRegistry::$config = include $config;
+            } elseif (is_array($config)) {
+                DotNetRegistry::$config = $config;
+            } else {
+                # 无效的配置参数信息，使用默认的配置并且给出警告信息
+                DotNetRegistry::$config = DotNetRegistry::DefaultConfig();
+            }
         } else {
             DotNetRegistry::$config = DotNetRegistry::DefaultConfig();
-        }             
+        }
 
         if (!DotNetRegistry::DisableErrorHandler()) {
             self::setupLogs();
