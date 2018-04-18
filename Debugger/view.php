@@ -6,7 +6,12 @@ class debugView {
         // 获取所加载的所有脚本列表
         $includes = get_included_files();
 	}
-	
+    
+    /**
+     * 将当前的会话之中所使用到的MySQL查询导出来 
+     * 
+     * @param engine: 
+    */
 	public static function GetMySQLView($engine) {
 		$template = '<li class="dotnet-mysql-debugger">%s</li>';
 		$html     = "";
