@@ -44,56 +44,89 @@ namespace MVC\MySql\Expression {
             $expressions = array();
 
             foreach ($asserts as $key => $value) {
-                # 第一个字符可能是!或者~
-                $c      = $key[0];
-                $assert = NULL;
-
-                switch($c) {
-                    case "!":
-
-                        $key = self::Pop($key);
-
-                        if (is_array($value)) {
-                            # NOT IN
-                            $assert = self::AsIN($key, $value, true);
-                        } else {
-                            # NOT equals
-                            $assert = "`$key` <> '$value'";
-                        }
-
-                        break;
-
-                    case "~":
-
-                        $key = self::Pop($key);
-                        $not = $key[0];
-
-                        if ($not == "!") {
-                            # not LIKE
-                            $key    = self::Pop($key);
-                            $assert = "`$key` NOT LIKE '$value'";
-                        } else {
-                            # LIKE
-                            $assert = "`$key` LIKE '$value'";
-                        }
-
-                        break;
-
-                    default:
-
-                        if (is_array($value)) {
-                            # IN
-                            $assert = self::AsIN($key, $value);
-                        } else {
-                            # equals
-                            $assert = "`$key` = '$value'";
-                        }
-                }
-
+                $assert = self::AsExpressionInternal($key, $value);
                 array_push($expressions, $assert);
             }
 
             return join(" $op ", $expressions);
+        }
+
+        private static function AsExpressionInternal($key, $value) {
+            # 第一个字符可能是!或者~
+            $c      = $key[0];
+            $assert = NULL;
+
+            switch($c) {
+                case "!":
+
+                    $key = self::Pop($key);
+
+                    if (is_array($value)) {
+                        # NOT IN
+                        $assert = self::AsIN($key, $value, true);
+                    } else {
+                        # NOT equals
+                        $assert = "`$key` <> '$value'";
+                    }
+
+                    break;
+
+                case "~":
+
+                    $key = self::Pop($key);
+                    $not = $key[0];
+
+                    if ($not == "!") {
+                        # not LIKE
+                        $key    = self::Pop($key);
+                        $assert = "`$key` NOT LIKE '$value'";
+                    } else {
+                        # LIKE
+                        $assert = "`$key` LIKE '$value'";
+                    }
+
+                    break;
+
+                default:
+
+                    # 默认操作为最基本的值等价判断操作    
+                    # 字典对象则是IN值等价判断操作
+                    # 单独的值对象则是直接的IS等价判断操作
+                    if (is_array($value)) {
+                        # IN
+                        $assert = self::AsIN($key, $value);
+                    } else {
+                        # equals
+                        $assert = "`$key` = '$value'";
+                    }
+            }
+        }
+
+        private static function PopulateFieldAsserts($key, $assert) {
+            $chars = str_split($string);
+            $buffer = array();
+            $field = "";
+            $asserts = "";
+
+            foreach($chars as $c) {
+                if ($c == "|" || $c == "&") {
+
+                    $op = ($c == "|") ? "OR" : "AND";
+                    $field = implode("", $buffer);
+                    $buffer = array();
+                    $asserts = $asserts . "`$field` $assert $op "; 
+                    
+                } else {
+                    array_push($buffer, $c);
+                }
+            }
+
+            # 正确的语法是  key1|key2|key3 这样子的模式
+            # 则按照这个语法，在退出循环之后肯定会在buffer里面存在key的字符
+            $field = implode("", $buffer);                    
+            $asserts = $asserts . "`$field` $assert"; 
+
+            return $asserts;
         }
 
         /**
@@ -109,7 +142,11 @@ namespace MVC\MySql\Expression {
 
         /**
          * 将数组之中的一个键值对转换为IN表达式 
-         *       
+         * 
+         * @param field: 数据表之中的字段名称
+         * @param array: 进行IN操作符所需要的右边的值列表      
+         * @param not: 是否是NOT取反操作？
+         * 
          */
         public static function AsIN($field, $array, $not = false) {
             $value = join("', '", $array);		
