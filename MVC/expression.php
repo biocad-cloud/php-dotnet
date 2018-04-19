@@ -18,8 +18,17 @@ namespace MVC\MySql\Expression {
           array("!key" => array()): `key` NOT IN (...)
 
           LIKE and Not LIKE
-          array("~key" => "value"): `key` LIKE 'value'
+          array("~key"  => "value"): `key` LIKE 'value'
           array("~!key" => "value"): `key` NOT LIKE 'value'
+
+          # 这个表达式可能会对表进行模糊搜索匹配有用
+          AND/OR
+          array("key1|key2|key3"   => "value"): `key1` = 'value' OR `key2` = 'value' OR `key3` = 'value'
+          array("key1&key2&key3"   => "value"): `key1` = 'value' AND `key2` = 'value' AND `key3` = 'value'
+          array("~key1|key2|key3"  => "%value%"): `key1` LIKE '%value%' OR `key2` LIKE '%value%' OR `key3` LIKE '%value%'
+          array("!key1|key2|key3"  => "value"): NOT (`key1` = 'value' OR `key2` = 'value' OR `key3` = 'value')
+          array("!key1&key2&key3"  => "value"): NOT (`key1` = 'value' AND `key2` = 'value' AND `key3` = 'value')
+          array("~!key1&key2&key3" => "%value%"): NOT (`key1` LIKE '%value%' AND `key2` LIKE '%value%' AND `key3` LIKE '%value%')
 
         */
 
