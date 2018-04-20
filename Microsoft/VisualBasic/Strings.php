@@ -1,7 +1,9 @@
 <?php
 
-/* The strings module functions in VisualBasic language */
-
+/** 
+ * The strings module functions in VisualBasic language 
+ * 
+*/
 class Strings {
 	
 	// 进行非正则表达式的替换
@@ -81,10 +83,16 @@ class Strings {
 		return strtoupper($str);
 	}
 
+	/**
+	 * 将字符串转换为小写形式
+	*/
 	public static function LCase($str) {
 		return strtolower($str);
 	}
 
+	/**
+	 * 将字符串之中的字符的顺序进行反转，然后返回新的字符串
+	*/
 	public static function Reverse($str) {
 		return strrev($str);
 	}
