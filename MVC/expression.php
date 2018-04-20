@@ -48,7 +48,7 @@ namespace MVC\MySql\Expression {
                 array_push($expressions, $assert);
             }
 
-            return join(" $op ", $expressions);
+            return "(" . implode(") $op (", $expressions) . ")";
         }
 
         private static function AsExpressionInternal($key, $value) {
@@ -115,7 +115,7 @@ namespace MVC\MySql\Expression {
                     $field = implode("", $buffer);
                     $buffer = array();
                     $asserts = $asserts . "`$field` $assert $op "; 
-                    
+
                 } else {
                     array_push($buffer, $c);
                 }

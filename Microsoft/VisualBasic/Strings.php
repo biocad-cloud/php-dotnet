@@ -39,6 +39,12 @@ class Strings {
 
 	}
 
+	/**
+	 * 对目标字符串进行取子字符串的操作，请注意这个函数的下标是从1开始的。
+	 * 
+	 * @param string $str 目标字符串
+	 * 
+	*/
 	public static function Mid($str, $start, $len) {
 		return substr($str, $start, $len);
 	}
@@ -55,19 +61,22 @@ class Strings {
 	 * Returns a string in which a specified substring has been replaced with another 
 	 * substring a specified number of times.
 	 *
-	 * @param str: Required. String expression containing substring to replace.
-	 * @param find: Substring being searched for.
-	 * @param replacement: Required. Replacement substring.
+	 * @param string $str: Required. String expression containing substring to replace.
+	 * @param string $find: Substring being searched for.
+	 * @param string $replacement: Required. Replacement substring.
 	 * 
 	 * @return string Replace returns the following values. If Replace returns Find is zero-length 
 	 *                or Nothing Copy of Expression Replace is zero-length Copy of Expression with 
 	 *                no occurrences of Find Expression is zero-length or Nothing, or Start is greater 
 	 *                than length of Expression Nothing Count is 0 Copy of Expression
-	 */
+	*/
 	public static function Replace($str, $find, $replacement) {
 		return str_replace($find, $replacement, $str);
 	}
 
+	/**
+	 * 将字符串转换为大写形式 
+	*/
 	public static function UCase($str) {
 		return strtoupper($str);
 	}
@@ -78,6 +87,16 @@ class Strings {
 
 	public static function Reverse($str) {
 		return strrev($str);
+	}
+
+	public static function StartWith($haystack, $needle) {
+    	$length = strlen($needle);
+    	return (substr($haystack, 0, $length) === $needle);
+	}
+
+	public function EndWith($haystack, $needle) {
+    	$length = strlen($needle);
+    	return $length === 0 || (substr($haystack, -$length) === $needle);
 	}
 }
 
