@@ -8,27 +8,32 @@ namespace MVC\MySql\Expression {
     class WhereAssert {
 
         /*
-          
-          IS
-          array("key" => "value"):  `key` = 'value'
-          array("key" => array()):  `key` IN (...)
+            # ThinkPHP之中的Where表达式  
 
-          Not IS
-          array("!key" => "value"): `key` <> 'value'
-          array("!key" => array()): `key` NOT IN (...)
+            |TP运算符    |SQL运算符            |例子                                                     |实际查询条件|
+            |-----------|---------------------|---------------------------------------------------------|---------------------------------|
+            |eq         |=                    |$map['id'] = array('eq',100); $map['id'] = 100;          |id = 100                         |
+            |neq        |<>                   |$map['id'] = array('neq',100);                           |id <> 100                        |
+            |gt         |>                    |$map['id'] = array('gt',100);	                        |id > 100                         |
+            |egt        |>=                   |$map['id'] = array('egt',100);                           |id >= 100                        |
+            |lt         |<                    |$map['id'] = array('lt',100);	                        |id < 100                         |
+            |elt        |<=                   |$map['id'] = array('elt',100);                           |id <= 100                        |
+            |like       |LIKE                 |$map['username'] = array('like','Admin%');               |username like 'Admin%'           |
+            |between    |BETWEEN .. AND ..    |$map['id'] = array('between','1,8');                     |id BETWEEN 1 AND 8               |
+            |not between|NOT BETWEEN .. AND ..|$map['id'] = array('not between','1,8');                 |id NOT BETWEEN 1 AND 8           |
+            |in         |IN                   |$map['id'] = array('in','1,5,8');                        |id in(1,5,8)                     |
+            |not in     |NOT IN               |$map['id'] = array('not in','1,5,8');                    |id not in(1,5,8)                 | 
+            |and（默认） |AND                  |$map['id'] = array(array('gt',1),array('lt',10));        |(id > 1) AND (id < 10)           |
+            |or         |OR                   |$map['id'] = array(array('gt',3),array('lt',10), 'or');  |(id > 3) OR (id < 10)            |
+            |xor（异或） |XOR                  |两个输入中只有一个是true时，结果为true，否则为false，例子略。|1 xor 1 = 0                      |
+            |exp        |expression           |$map['id'] = array('exp','in(1,3,8)');                   |$map['id'] = array('in','1,3,8');|
 
-          LIKE and Not LIKE
-          array("~key"  => "value"): `key` LIKE 'value'
-          array("~!key" => "value"): `key` NOT LIKE 'value'
+            注意点：
 
-          # 这个表达式可能会对表进行模糊搜索匹配有用
-          AND/OR
-          array("key1|key2|key3"   => "value"): `key1` = 'value' OR `key2` = 'value' OR `key3` = 'value'
-          array("key1&key2&key3"   => "value"): `key1` = 'value' AND `key2` = 'value' AND `key3` = 'value'
-          array("~key1|key2|key3"  => "%value%"): `key1` LIKE '%value%' OR `key2` LIKE '%value%' OR `key3` LIKE '%value%'
-          array("!key1|key2|key3"  => "value"): NOT (`key1` = 'value' OR `key2` = 'value' OR `key3` = 'value')
-          array("!key1&key2&key3"  => "value"): NOT (`key1` = 'value' AND `key2` = 'value' AND `key3` = 'value')
-          array("~!key1&key2&key3" => "%value%"): NOT (`key1` LIKE '%value%' AND `key2` LIKE '%value%' AND `key3` LIKE '%value%')
+            1. 默认为等值判断操作 = 
+            2. 条件之间默认为AND关系
+
+            
 
         */
 
