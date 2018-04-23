@@ -10,7 +10,7 @@ namespace MVC\MySql\Expression {
         /*
             # ThinkPHP之中的Where表达式  
 
-            |TP运算符    |SQL运算符            |例子                                                     |实际查询条件|
+            |TP运算符    |SQL运算符            |例子                                                     |实际查询条件                       |
             |-----------|---------------------|---------------------------------------------------------|---------------------------------|
             |eq         |=                    |$map['id'] = array('eq',100); $map['id'] = 100;          |id = 100                         |
             |neq        |<>                   |$map['id'] = array('neq',100);                           |id <> 100                        |
@@ -33,7 +33,24 @@ namespace MVC\MySql\Expression {
             1. 默认为等值判断操作 = 
             2. 条件之间默认为AND关系
 
-            
+            $query = M("table")->Where(array(
+                "flag" => 0,
+                "id"   => eq(100),
+                "id"   => between(10, 20)
+            ))->limit(100)
+              ->select();
+
+            Using ... to access variable arguments  php 5.6+
+
+            function sum(...$numbers) {
+                $acc = 0;
+                foreach ($numbers as $n) {
+                    $acc += $n;
+                }
+                return $acc;
+            }
+
+            echo sum(1, 2, 3, 4);
 
         */
 
