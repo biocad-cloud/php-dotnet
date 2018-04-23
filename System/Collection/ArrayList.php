@@ -5,7 +5,7 @@ dotnet::Imports("System.Collection.ICollection");
 /**
  * A dynamics array object.
  */
-class List extends ICollection {
+class ArrayList extends ICollection {
 
     public function __construct() {
         parent::__construct();
