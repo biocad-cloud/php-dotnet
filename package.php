@@ -14,6 +14,7 @@ include_once dotnet::GetDotnetManagerDirectory() . "/RFC7231/index.php";
 include_once dotnet::GetDotnetManagerDirectory() . "/Registry.php";
 
 session_start();
+
 # PHP Warning:  date(): It is not safe to rely on the system's timezone settings. 
 # You are *required* to use the date.timezone setting or the date_default_timezone_set() function. 
 # In case you used any of those methods and you are still getting this warning, you most likely 
@@ -25,15 +26,13 @@ $APP_DEBUG = true;
 
 /**
  * Global function for load php.NET package 
- * 
- */
+*/
 function Imports($namespace) {
     return dotnet::Imports($namespace, $initiatorOffset = 1);
 }
 
 /**
- * 对用户的浏览器进行重定向
- * 
+ * 对用户的浏览器进行重定向，支持路由规则
 */
 function Redirect($URL) {   
     header("Location: " . View::AssignController($URL));
@@ -51,15 +50,16 @@ function Redirect($URL) {
  * 因为这个类名称dotnet假若不区分大小写的话，是和系统自带的DOTNET类型同名的
  *
  * php 不像VB.NET一样允许函数重载，所以同一个class模块之中不可以出现相同名字的函数
- *
- */
+*/
 class dotnet {
 
     public static $error_log;
     public static $debugger;
     public static $AppDebug;
 
-    // 函数返回成功消息的json字符串
+    /**
+     * 函数返回成功消息的json字符串
+    */ 
     public static function successMsg($msg) {	
 		return json_encode(array(
 			'code' => 0,
@@ -67,7 +67,9 @@ class dotnet {
         );
 	}
     
-    // 函数返回失败消息的json字符串
+    /**
+     * 函数返回失败消息的json字符串
+    */ 
 	public static function errorMsg($msg, $errorCode = 1) {
 		return json_encode(array(
 			'code' => $errorCode,
@@ -108,8 +110,7 @@ class dotnet {
      *                2. 包含有配置数据的字典数组
      * 
      * @param debug: 只需要修改这个参数的逻辑值就可以打开或者关闭调试器的输出行为
-     *
-     **/
+    */
 	public static function AutoLoad($config = NULL, $debug = FALSE) {		       
 
         define('APP_PATH',  dirname(__FILE__)."/");
@@ -173,7 +174,7 @@ class dotnet {
 
     /**
      * php写日志文件只能够写在自己的wwwroot文件夹之中 
-     **/
+    */
     public static function writeMySqlLogs($onlyErrors = FALSE) {      
         if (self::$AppDebug) {
             if (self::$debugger->hasMySqlLogs()) {
@@ -199,13 +200,13 @@ class dotnet {
      * 对于这个函数额调用者而言，就是获取调用者所在的脚本的文件夹位置
      * 这个函数是使用require_once来进行模块调用的
      *
-     * @param mod: 直接为命名空间的路径，不需要考虑相对路径或者添加文件后缀名，例如需要导入VisualBasic的Strings模块的方法，只需要调用代码
+     * @param mod: 直接为命名空间的路径，不需要考虑相对路径或者添加文件后缀名，例如需要导入VisualBasic的Strings模块的方法，
+     *             只需要调用代码
      * 
      *     dotnet::Imports("Microsoft.VisualBasic.Strings");
      * 
      * @return string 这个函数返回所导入的模块的完整的文件路径
-     * 
-     */
+    */
     public static function Imports($mod, $initiatorOffset = 0) {  	
                 
         $DIR = self::GetDotnetManagerDirectory();
@@ -247,14 +248,14 @@ class dotnet {
 
     /**
      * 获取得到package.php这个文件的所处的文件夹的位置
-     */
+    */
     public static function GetDotnetManagerDirectory() {
         return dirname(self::DotNetManagerFileLocation);
     }
 
-	/*
+	/**
 	 * PHP throw exception helper
-	 */
+	*/
     public static function ThrowException($message) {      
 		$trace = StackTrace::GetCallStack();
 		$exc   = dotnetException::FormatOutput($message, $trace);
