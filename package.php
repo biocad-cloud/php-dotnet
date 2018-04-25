@@ -128,7 +128,9 @@ class dotnet {
 		dotnet::Imports("MVC.model");
 		dotnet::Imports("MVC.router");
         dotnet::Imports("MVC.driver");       
-        
+        dotnet::Imports("MVC.sqlBuilder");
+        dotnet::Imports("MVC.expression");
+
         if ($config) {
             # config存在赋值，则判断一下是否为字符串？
             # 如果是字符串，则使用文件的加载方式

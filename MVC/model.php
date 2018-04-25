@@ -189,6 +189,7 @@ class Table {
 	}
 	
 	private function whereGeneral() {
+		/*
 		$assert = array();
         $schema = $this->schema;		
 		
@@ -205,23 +206,25 @@ class Table {
 			$assert = join(" AND ", $assert);
 			return $assert;
 		}        
+		*/
+		return MySqlScript::AsExpression($this->condition);
 	}	
 
 	/**
 	 * select but limit 1
 	*/
     public function find() {
-		$table  = $this->tableName;
-		$db     = $this->databaseName;
-        $assert = $this->getWhere();
+		$table       = $this->tableName;
+		$db          = $this->databaseName;
+        $assert      = $this->getWhere();
         $mysqli_exec = $this->driver->__init_MySql();       
 
         if ($assert) {
             $SQL = "SELECT * FROM `$db`.`$table` WHERE $assert LIMIT 1;";
         } else {
             $SQL = "SELECT * FROM `$db`.`$table` LIMIT 1;";
-        }
-        
+        }	
+		
         return $this->driver->ExecuteScalar($mysqli_exec, $SQL);
     }
 
