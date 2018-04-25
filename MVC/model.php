@@ -4,16 +4,18 @@ Imports("Microsoft.VisualBasic.Strings");
 
 use MVC\MySql\Expression\WhereAssert as MySqlScript;
 
-/*
+/**
  * 数据表模型，这个模块主要是根据schema字典构建出相应的SQL表达式
  * 然后通过driver模型进行执行
- */
+*/
 class Table {
 
 	private $tableName;
 	private $databaseName;
 	private $driver;
-	// 数据表的表结构
+	/**
+	 * 数据表的表结构
+	*/ 
     private $schema;
     private $condition;
 	private $condition_type;
@@ -24,11 +26,25 @@ class Table {
 	 * 
 	 * @param type      where/in/expression
 	 * @param condition default is nothing, means all, no filter
-	 * 
-	 */
-    function __construct($tableName, $condition = null, $type = "where") {
-        $this->tableName    = $tableName;
-		$this->driver       = DotNetRegistry::$config;
+	*/
+    function __construct($config, $condition = null, $type = "where") {
+		if (is_string($config)) {		
+			$this->__initBaseOnTableName($config);
+		} else {			
+			$this->__initBaseOnExternalConfig($config["DB_TABLE"], $config);
+		}  
+		
+		$this->condition      = $condition;
+		$this->condition_type = $type;
+	}
+	
+	/**
+	 * 不通过内部的配置数据而是通过外部传递过来的新的配置数组
+	 * 来进行初始化
+	*/
+	private function __initBaseOnExternalConfig($tableName, $config) {
+		$this->tableName    = $tableName;
+		$this->driver       = $config;
 		$this->databaseName = $this->driver["DB_NAME"];
         $this->driver       = new Model(
             $this->driver["DB_NAME"], 
@@ -39,12 +55,17 @@ class Table {
         );
 
         # 获取数据库的目标数据表的表结构
-        $this->schema         = $this->driver->Describe($tableName);
+        $this->schema         = $this->driver->Describe($this->tableName);
         $this->schema         = Model::schemaArray($this->schema);
-        $this->condition      = $condition;
-		$this->condition_type = $type;
 		$this->AI             = Model::getAIKey($this);		
-    }
+	}
+
+	/**
+	 * 通过表名称来初始化
+	*/
+	private function __initBaseOnTableName($tableName) {
+		$this->__initBaseOnExternalConfig($tableName, DotNetRegistry::$config);
+	}
 
 	public function getSchema() {
 		return $this->schema;
@@ -54,7 +75,9 @@ class Table {
         return $this->driver->exec($SQL);
     }
 
-    // select all
+	/**
+	 * select all
+	*/
     public function select($offset = -1, $n = -1) {
 		$table  = $this->tableName;
 		$db     = $this->databaseName;
@@ -81,8 +104,10 @@ class Table {
 		
         return $this->driver->ExecuteSQL($mysqli_exec, $SQL);
     }
-
-	// select count(*) from where ...;
+	
+	/**
+	 * select count(*) from where ``...``;
+	*/
 	public function count() {
 		$table  = $this->tableName;
 		$db     = $this->databaseName;
@@ -180,9 +205,11 @@ class Table {
 			$assert = join(" AND ", $assert);
 			return $assert;
 		}        
-	}
-	
-    // select but limit 1
+	}	
+
+	/**
+	 * select but limit 1
+	*/
     public function find() {
 		$table  = $this->tableName;
 		$db     = $this->databaseName;
@@ -202,10 +229,10 @@ class Table {
 	 * Select and limit 1 and return the field value, if target 
 	 * record is not found, then returns false.
 	 * 
-	 * @param name: The table field name. Case sensitive! 
+	 * @param name The table field name. Case sensitive! 
 	 * 
 	 * @return mix The reuqired field value. 
-	 */
+	*/
 	public function findfield($name) {
 		$single = $this->find();
 
@@ -237,7 +264,9 @@ class Table {
 		}
 	}
 
-	// select * from `table`;
+	/**
+	 * select * from `table`;
+	*/
 	public function all() {
 		$table       = $this->tableName;
 		$db          = $this->databaseName;
@@ -250,8 +279,8 @@ class Table {
     /**
      * Create a where condition filter for the next SQL expression.
      *	  
-     * @param assert: The assert array of the where condition or an string expression.
-     */
+     * @param assert The assert array of the where condition or an string expression.
+    */
     public function where($assert) {
 		$next = null;
 
@@ -272,9 +301,8 @@ class Table {
 	/**
 	 * insert into.
 	 *
-	 * @param data: table row data in array type
-	 * 
-	 */ 
+	 * @param data table row data in array type
+	*/ 
     public function add($data) {
 
 		$table       = $this->tableName;
