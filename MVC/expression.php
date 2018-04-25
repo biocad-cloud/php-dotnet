@@ -73,26 +73,29 @@ namespace MVC\MySql\Expression {
          * @return string MySql查询条件表达式
          */
         public static function AsExpression($asserts) {
-            $expression = array();
+            $list = array();
 
             # 在这个表达式构造函数之中，使用~前导字符作为表达式的标记
             foreach($asserts as $name => $value) {
 
                 # $name可能是多个字段名，字段名之间使用 |(OR) 或者 &(AND) 来分割
                 # 如果存在()，则意味着是一个表达式，而非字段名
-                $value  = self::ValueExpression($value);
-                $buffer = array();
-                $exp    = null;
+                $value      = self::ValueExpression($value);
+                $buffer     = array();
+                $exp        = null;
+                $expression = array();
 
-                array_push($expression, "( ");
+                array_push($expression, " ( ");
 
                 foreach(str_split($name) as $c) {
                     if ($c === "|" || $c === "&") {
                         $exp    = self::KeyExpression(implode($buffer));
                         $buffer = array();
                         
+                        array_push($expression, "( ");
                         array_push($expression, $exp);
                         array_push($expression, $value);
+                        array_push($expression, ") ");
 
                         if ($c === "|") {
                             array_push($expression, " OR ");
@@ -108,14 +111,17 @@ namespace MVC\MySql\Expression {
                 # 肯定会有剩余的buffer，在这里需要将这个buffer也添加进来
                 $exp = self::KeyExpression(implode($buffer));
 
+                array_push($expression, "( ");
                 array_push($expression, $exp);
                 array_push($expression, $value);
+                array_push($expression, ") ");
 
                 # 结束条件堆栈
                 array_push($expression, ") ");
+                array_push($list, \Strings::Join($expression, " "));
             }
 
-            return \Strings::Join($expression, " ");
+            return \Strings::Join($list, " AND ");
         }
 
         public static function KeyExpression($exp) {
@@ -139,9 +145,9 @@ namespace MVC\MySql\Expression {
             } else if (self::InStack($value, "'") || self::InStack($value, "`")) {
                 # 自身就是一个字符串或者对象表达式了
                 # 不会再进行任何处理
-                return $value;
+                return "= $value";
             } else {
-                return "'$value'";
+                return "= '$value'";
             }
         }
 
