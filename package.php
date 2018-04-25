@@ -38,6 +38,10 @@ function Redirect($URL) {
     header("Location: " . View::AssignController($URL));
 }
 
+function session($name, $value) {
+    $_SESSION[$name] = $value;
+}
+
 /**
  * dotnet package manager, you must include this module at first.
  * 
