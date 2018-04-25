@@ -160,3 +160,14 @@ $users->where(["id" => 5])
       ->limit(1)
       ->delete();
 ```
+
+## Advanced MySql Model Usage
+
+### LIKE
+
+```php
+# DELETE FROM `users` WHERE (`name` LIKE '%abc') OR (`title` LIKE '%abc') LIMIT 10;
+$users->where(["name|title" => like("%abc")])
+      ->limit(10)
+      ->delete();
+```
