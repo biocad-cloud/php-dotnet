@@ -62,20 +62,26 @@ function in(...$values) { return "~IN ('". join("', '", $values) ."')"; }
 */
 function not_in(...$values) { return "~NOT " . in($values); }
 
+#regin "logical operator"
+
+# 2018-4-25
+# Parse error: syntax error, unexpected 'and' (T_LOGICAL_AND), expecting '('
+# 函数名不可以直接命名为and/or/xor
+
 /**
  * 对多个逻辑表达式的与运算
 */
-function and(...$booleans) { return LogicalExpression::Join($booleans, "AND"); }
+function andalso(...$booleans) { return LogicalExpression::Join($booleans, "AND"); }
 
 /**
  * 对多个逻辑表达式的或运算
 */
-function or($a, $b) { return LogicalExpression::Join($booleans, "OR"); }
+function orelse($a, $b) { return LogicalExpression::Join($booleans, "OR"); }
 
 /**
  * 对多个逻辑表达式的异或运算
 */
-function xor($a, $b) { return LogicalExpression::Join($booleans, "XOR"); }
+function exor($a, $b) { return LogicalExpression::Join($booleans, "XOR"); }
 
 class LogicalExpression {
 
@@ -89,5 +95,7 @@ class LogicalExpression {
         return $expression;
     }
 }
+
+#endregion
 
 ?>
