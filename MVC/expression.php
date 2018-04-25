@@ -88,19 +88,10 @@ namespace MVC\MySql\Expression {
 
                 foreach($name as $c) {
                     if ($c === "|" || $c === "&") {
-                        $exp    = $buffer;
+                        $exp    = self::KeyExpression(implode($buffer));
                         $buffer = array();
-                        $a = strpos($exp, '(');
-                        $b = strpos($exp, ')');
-
-                        if ( ($a !== false) && ($b !== false) && ($a + 1 < $b) ) {
-                            # 是一个表达式
-                            array_push($expression, $exp);
-                        } else {
-                            # 是一个字段名
-                            array_push($expression, "`$exp`");
-                        }
-
+                        
+                        array_push($expression, $exp);
                         array_push($expression, $value);
 
                         if ($c === "|") {
@@ -108,13 +99,32 @@ namespace MVC\MySql\Expression {
                         } else {
                             array_push($expression, " AND ");
                         }
+                    } else {
+                        array_push($buffer, $c);
                     }
                 }
+
+                # 因为分隔符|或者&只能够出现在中间，所以在结束上面的循环之后
+                # 肯定会有剩余的buffer，在这里需要将这个buffer也添加进来
+
 
                 array_push($expression, ") ");
             }
 
             return Strings::Join($expression, " ");
+        }
+
+        public static function KeyExpression($exp) {
+            $a = strpos($exp, '(');
+            $b = strpos($exp, ')');
+
+            if ( ($a !== false) && ($b !== false) && ($a + 1 < $b) ) {
+                # 是一个表达式
+                return $exp;
+            } else {
+                # 是一个字段名
+                return "`$exp`";
+            }
         }
 
         public static function ValueExpression($value) {
