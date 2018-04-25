@@ -38,6 +38,9 @@ function Redirect($URL) {
     header("Location: " . View::AssignController($URL));
 }
 
+/**
+ * Write session value
+*/
 function session($name, $value) {
     $_SESSION[$name] = $value;
 }
