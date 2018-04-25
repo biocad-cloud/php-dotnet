@@ -106,8 +106,12 @@ namespace MVC\MySql\Expression {
 
                 # 因为分隔符|或者&只能够出现在中间，所以在结束上面的循环之后
                 # 肯定会有剩余的buffer，在这里需要将这个buffer也添加进来
+                $exp = self::KeyExpression(implode($buffer));
 
+                array_push($expression, $exp);
+                array_push($expression, $value);
 
+                # 结束条件堆栈
                 array_push($expression, ") ");
             }
 
