@@ -171,3 +171,29 @@ $users->where(["name|title" => like("%abc")])
       ->limit(10)
       ->delete();
 ```
+
+### IN
+
+```php
+# DELETE FROM `users` 
+# WHERE ((`name` LIKE '%abc') OR (`title` LIKE '%abc')) AND (mod(`score` + 5) IN ('1','2','3','4','5','6','7','8','9'))
+# LIMIT 10;
+$users->where(["name|title" => like("%abc")])
+      ->and([
+      	   "mod(`score` + 5)" => in(1,2,3,4,5,6,7,8,9)
+      ])
+      ->limit(10)
+      ->delete();
+```
+
+### BETWEEN
+
+```php
+# UPDATE `users` 
+# SET `flag` = '99' 
+# WHERE `id` BETWEEN '100' AND '5000' 
+# LIMIT 1000;
+$users->where(["id" => between(100, 5000)])      
+      ->limit(1000)
+      ->save(["flag" => 99]);
+```
