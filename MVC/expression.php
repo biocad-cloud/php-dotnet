@@ -86,7 +86,7 @@ namespace MVC\MySql\Expression {
 
                 array_push($expression, "( ");
 
-                foreach($name as $c) {
+                foreach(str_split($name) as $c) {
                     if ($c === "|" || $c === "&") {
                         $exp    = self::KeyExpression(implode($buffer));
                         $buffer = array();
@@ -115,7 +115,7 @@ namespace MVC\MySql\Expression {
                 array_push($expression, ") ");
             }
 
-            return Strings::Join($expression, " ");
+            return \Strings::Join($expression, " ");
         }
 
         public static function KeyExpression($exp) {

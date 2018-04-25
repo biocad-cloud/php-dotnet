@@ -1,7 +1,14 @@
 <?php
 
+include "../../package.php";
+
 include "../../MVC/expression.php";
 include "../../MVC/sqlBuilder.php";
+
+dotnet::AutoLoad();
+
+Imports("Microsoft.VisualBasic.Strings");
+Imports("System.Text.StringBuilder");
 
 $asserts = [
     "lower(`account`)|lower(`email`)" => "1233333", 
