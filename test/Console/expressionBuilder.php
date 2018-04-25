@@ -1,5 +1,8 @@
 <?php
 
+include "../../MVC/expression.php";
+include "../../MVC/sqlBuilder.php";
+
 $asserts = [
     "lower(`account`)|lower(`email`)" => "1233333", 
     "lower(`password`)"               => "23333",
