@@ -45,7 +45,6 @@ namespace MVC\MySql\Expression {
 
             echo sum(1, 2, 3, 4);
 
-
             $query = M("table")->Where([
                 "flag"    => 0,
                 "id|uid"  => eq(100),
@@ -74,7 +73,66 @@ namespace MVC\MySql\Expression {
          * @return string MySql查询条件表达式
          */
         public static function AsExpression($asserts) {
+            $expression = array();
 
+            # 在这个表达式构造函数之中，使用~前导字符作为表达式的标记
+            foreach($asserts as $name => $value) {
+
+                # $name可能是多个字段名，字段名之间使用 |(OR) 或者 &(AND) 来分割
+                # 如果存在()，则意味着是一个表达式，而非字段名
+                $value  = self::ValueExpression($value);
+                $buffer = array();
+                $exp    = null;
+
+                array_push($expression, "( ");
+
+                foreach($name as $c) {
+                    if ($c === "|" || $c === "&") {
+                        $exp    = $buffer;
+                        $buffer = array();
+                        $a = strpos($exp, '(');
+                        $b = strpos($exp, ')');
+
+                        if ( ($a !== false) && ($b !== false) && ($a + 1 < $b) ) {
+                            # 是一个表达式
+                            array_push($expression, $exp);
+                        } else {
+                            # 是一个字段名
+                            array_push($expression, "`$exp`");
+                        }
+
+                        array_push($expression, $value);
+
+                        if ($c === "|") {
+                            array_push($expression, " OR ");
+                        } else {
+                            array_push($expression, " AND ");
+                        }
+                    }
+                }
+
+                array_push($expression, ") ");
+            }
+
+            return Strings::Join($expression, " ");
+        }
+
+        public static function ValueExpression($value) {
+            if ($value[0] === "~") {
+                # 是一个表达式，则不需要额外的处理
+                # 只需要将第一个字符删除掉即可
+                return substr($value, 1);
+            } else if (self::InStack($value, "'") || self::InStack($value, "`")) {
+                # 自身就是一个字符串或者对象表达式了
+                # 不会再进行任何处理
+                return $value;
+            } else {
+                return "'$value'";
+            }
+        }
+
+        public static function InStack($str, $char) {
+            return ($str[0] == $char) && ($str[count($str)] == $char);
         }
     }
 }
