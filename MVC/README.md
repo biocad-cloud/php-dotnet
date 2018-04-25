@@ -21,14 +21,14 @@ Where the ``config.php`` should return an array table, example:
 #
 # A very basic configuration file: just contains mysql connection 
 # parameter configuration for php.NET
-return array(
+return [
 	'DB_TYPE' => 'mysql',
 	'DB_HOST' => 'localhost',
 	'DB_NAME' => 'mz_biodeep_cn',
 	'DB_USER' => 'root',
 	'DB_PWD'  => 'root',
 	'DB_PORT' => '3306'
-);
+];
 
 ?>
 ```
@@ -106,26 +106,26 @@ $all_users = $users->All();
 
 # SELECT * FROM `users` WHERE `is_online` = '1' AND `gender` = '1';
 $online_list = $users
-    ->where(array(
+    ->where([
         "is_online" => 1, 
         "gender"    => 1
-    ))
+    ])
     ->select();
 
 # SELECT * FROM `users` WHERE `is_online` = '1' AND `gender` = '1' LIMIT 1;
 $online_list = $users
-    ->where(array(
+    ->where([
         "is_online" => 1, 
         "gender"    => 1
-    ))
+    ])
     ->find();
 
 # SELECT * FROM `users` WHERE `is_online` = '1' AND `gender` = '1' LIMIT 5,10;
 $online_list = $users
-    ->where(array(
+    ->where([
         "is_online" => 1, 
         "gender"    => 1
-    ))
+    ])
     ->select(5, 10);
 ```
 
@@ -133,22 +133,22 @@ $online_list = $users
 
 ```php
 # INSERT INTO `users` (`name`, `gender`) VALUES ('Jack', '1');
-$users->add(array(
+$users->add([
     "name"   => "Jack", 
     "gender" => "1"
-));
+]);
 ```
 
 ### 4. UPDATE
 
 ```php
 # UPDATE `users` SET `name` = 'ABC', `gender` = '0' WHERE `id` = '5' LIMIT 1;
-$users->where(array("id" => 5))
+$users->where(["id" => 5])
       ->limit(1)
-      ->save(array(
+      ->save([
           "name"   => "ABC", 
           "gender" => "0"
-      ));
+      ]);
 ```
 
 
@@ -156,7 +156,7 @@ $users->where(array("id" => 5))
 
 ```php
 # DELETE FROM `users` WHERE `id`='5' LIMIT 1;
-$users->where(array("id" => 5))
+$users->where(["id" => 5])
       ->limit(1)
       ->delete();
 ```
