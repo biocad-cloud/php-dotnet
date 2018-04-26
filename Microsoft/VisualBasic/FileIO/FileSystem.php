@@ -138,8 +138,8 @@ class FileSystem {
 	 * @param       string   $dest      Destination path
 	 * @param       int      $permissions New folder creation permissions
 	 * @return      bool     Returns true on success, false on failure
-	 */
-	public static function xcopy($source, $dest, $permissions = 0755) {
+	*/
+	public static function XCopy($source, $dest, $permissions = 0755) {
 			
 		// Check for symlinks
 		if (is_link($source)) {

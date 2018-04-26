@@ -29,7 +29,7 @@ class View {
 			echo $path . "\n\n";
 		}
 
-		View::Show($path, $vars);
+		View::Show($path, $vars, $lang);
 	}
 	
 	/**
@@ -44,7 +44,9 @@ class View {
 	 * 这个函数还会额外的处理includes关系
 	*/
 	public static function Load($path, $vars = NULL, $lang = "zhCN") {
-		$lang = dirname($path) . "/" . basename($path) . ".$lang.php";
+		$name = pathinfo($path);
+		$name = $name['filename'];
+		$lang = dirname($path) . "/$name.$lang.php";		
 
 		if (file_exists($lang)) {
 			$lang = include_once $lang;
