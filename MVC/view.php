@@ -4,13 +4,18 @@ dotnet::Imports("System.Diagnostics.StackTrace");
 dotnet::Imports("System.Linq.Enumerable");
 dotnet::Imports("Microsoft.VisualBasic.Strings");
 
-/*
- * html view handler
- */
+/**
+ * html user interface view handler
+*/
 class View {
 	
-	// 从html文件夹之中读取和当前函数同名的文件并显示出来
-	public static function Display($vars = NULL) {
+	/**
+	 * 从html文件夹之中读取和当前函数同名的文件并显示出来
+	 * 
+	 * @param array $vars 需要在页面上进行显示的文本变量的值的键值对集合
+	 * @param string $lang 页面的语言文件，默认为中文语言
+	*/
+	public static function Display($vars = NULL, $lang = "zhCN") {
 
 		$name    = StackTrace::GetCallerMethodName();
 		$wwwroot = DotNetRegistry::GetMVCViewDocumentRoot();
@@ -27,14 +32,41 @@ class View {
 		View::Show($path, $vars);
 	}
 	
-	// 显示指定的文件路径的html文本的内容
-	public static function Show($path, $vars = NULL) {
-		echo self::Load($path, $vars);
+	/**
+	 * 显示指定的文件路径的html文本的内容
+	*/
+	public static function Show($path, $vars = NULL, $lang = "zhCN") {
+		echo self::Load($path, $vars, $lang);
 	}
 	
-	// 加载指定路径的html文档并对其中的占位符利用vars字典进行填充
-	// 这个函数还会额外的处理includes关系
-	public static function Load($path, $vars = NULL) {
+	/**
+	 * 加载指定路径的html文档并对其中的占位符利用vars字典进行填充
+	 * 这个函数还会额外的处理includes关系
+	*/
+	public static function Load($path, $vars = NULL, $lang = "zhCN") {
+		$lang = dirname($path) . "/" . basename($path) . ".$lang.php";
+
+		if (file_exists($lang)) {
+			$lang = include_once $lang;
+			
+			if (($lang && count($lang) > 0)) {
+				if ($vars && count($vars) > 0) {
+					# 用户在Controller里面所定义的vars的优先级要高于lang之中的定义值
+					# 所以在这里会覆盖掉lang之中的值
+
+					foreach($vars as $key => $value) {
+						$lang[$key] = $value;
+					}
+
+					$vars = $lang;
+
+				} else {
+					# vars是空的，则直接用lang替换掉vars
+					$vars = $lang;
+				}
+			}
+		}
+
 		return View::InterpolateTemplate(file_get_contents($path), $vars, $path);
 	}
 
@@ -53,11 +85,10 @@ class View {
 	}
 
 	/**
-	 * 
 	 * 这个函数将html片段进行拼接，得到完整的html文档，函数需要使用文档所在的路径来获取文档碎片的引用文件位置
 	 * 
-	 * @param path: html模版文件的文件位置
-	 */
+	 * @param path html模版文件的文件位置
+	*/
 	private static function interpolate_includes($html, $path) {
 		if (!$path) {
 			return $html;
@@ -87,10 +118,10 @@ class View {
 		return $html;
 	}
 	
-	/*
+	/**
 	 * html页面之上存在有额外的需要进行设置的字符串变量参数
 	 * 在这里进行字符串替换操作
-	 */
+	*/
 	public static function Assign($html, $vars) {
 		
 		# 在这里需要按照键名称长度倒叙排序，防止出现可能的错误替换		

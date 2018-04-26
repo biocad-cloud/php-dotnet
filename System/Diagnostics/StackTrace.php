@@ -3,8 +3,9 @@
 dotnet::Imports("System.Text.StringBuilder");
 
 /**
- * Represents a stack trace, which is an ordered collection of one or more stack frames.
- */
+ * Represents a stack trace, which is an ordered collection of 
+ * one or more stack frames.
+*/
 class StackTrace {
 
     // public void AddLog(string message, 
@@ -36,7 +37,7 @@ class StackTrace {
      * 获取当前的函数调用堆栈
      * 
      * @return void
-     */
+    */
     public static function GetCallStack() {
   
         $bt    = debug_backtrace(); 
@@ -60,7 +61,7 @@ class StackTrace {
      * Get caller file path
      * 
      * @return string
-     */
+    */
     public static function GetCallerFile() {
         $caller = False;
 
@@ -77,7 +78,10 @@ class StackTrace {
             }
         }
     }
-	
+    
+    /**
+     * 得到调用当前所执行的函数的调用者的函数名称
+    */
 	public static function GetCallerMethodName() {
 		// 得到了当前函数的调用函数堆栈
 		// 1. current -> GetCallerMethodName()
