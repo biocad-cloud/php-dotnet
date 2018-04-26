@@ -2,9 +2,9 @@
 
 dotnet::Imports("Microsoft.VisualBasic.Strings");
 
-/*
+/**
  * MySQL data table model
- */
+*/
 class Model {
     
     private $database;
@@ -13,8 +13,6 @@ class Model {
     private $host;
     private $port;
 
-    // 显示mysql表的结构
-    // DESCRIBE TableName
     function __construct($database, $user, $password, $host = "localhost", $port = 3306) {
         $this->database = $database;
         $this->user     = $user;
@@ -23,9 +21,9 @@ class Model {
         $this->port     = $port;
     }
 
-	/*
+	/**
 	 * Get the field name of the auto increment field.
-	 */
+	*/
 	public static function getAIKey($model) {
 		$schema = $model->getSchema();
 		
@@ -45,9 +43,11 @@ class Model {
 		return null;
 	}
 	
-	/*
-	 * Mysql schema table to php schema dictionary array, the key in the dictionary is the field name in table.
-	 */
+	/**
+	 * Mysql schema table to php schema dictionary array, 
+	 * the key in the dictionary is the field name in 
+	 * table.
+	*/
 	public static function schemaArray($schema) {
         $array = array();
 
@@ -59,9 +59,9 @@ class Model {
         return $array;
     }
 	
-    /*
+    /**
 	 * 使用这个函数来打开和mysql数据库的链接
-	 */
+	*/
 	public function __init_MySql() {	
 		$db = mysqli_connect(
 			$this->host,   
@@ -77,6 +77,11 @@ class Model {
 		}
 	}
 
+	/**
+	 * 显示mysql表的结构
+	 * 
+	 * DESCRIBE TableName
+	*/
     public function Describe($tableName) {
 		$db          = $this->database;
         $SQL         = "DESCRIBE `$db`.`$tableName`;";
@@ -86,7 +91,10 @@ class Model {
         return $schema;
     }
 
-	// 这个方法主要是用于执行一些无返回值的方法，例如INSERT, UPDATE, DELETE等
+	/**
+	 * 这个方法主要是用于执行一些无返回值的方法，
+	 * 例如INSERT, UPDATE, DELETE等
+	*/
     public function exec($SQL, $mysql_exec = NULL) {
 		if (!$mysql_exec) {
 			 $mysql_exec = $this->__init_MySql();
@@ -154,8 +162,7 @@ class Model {
 	
 	/**
 	 * 执行SQL查询然后返回一条数据
-	 *
-	 */
+	*/
 	public function ExecuteScalar($mysql_exec, $SQL) {
 		
 		mysqli_select_db($mysql_exec, $this->database); 

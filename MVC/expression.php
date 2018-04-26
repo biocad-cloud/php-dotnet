@@ -33,13 +33,6 @@ namespace MVC\MySql\Expression {
             1. 默认为等值判断操作 = 
             2. 条件之间默认为AND关系
 
-            $query = M("table")->Where(array(
-                "flag" => 0,
-                "id"   => eq(100),
-                "id"   => between(10, 20)
-            ))->limit(100)
-              ->select();
-
             Using ... to access variable arguments  php 5.6+
 
             function sum(...$numbers) {
@@ -52,6 +45,23 @@ namespace MVC\MySql\Expression {
 
             echo sum(1, 2, 3, 4);
 
+            $query = M("table")->Where([
+                "flag"    => 0,
+                "id|uid"  => eq(100),
+                "balance" => between(10, 20)
+            ])->or(["email" => like("%@gmail.com")])
+              ->limit(100)
+              ->distinct(["id", "year"])
+              ->select();
+
+            SELECT DISTINCT id, year 
+            FROM `table` 
+            WHERE (flag = 0 
+                AND (id = 100 OR uid = 100) 
+                AND balance between 10 AND 20) 
+            OR (email LIKE '%@gmail.com') 
+            LIMIT 100;
+
         */
 
         /**
@@ -62,122 +72,87 @@ namespace MVC\MySql\Expression {
          * 
          * @return string MySql查询条件表达式
          */
-        public static function AsExpression($asserts, $op = "AND") {
-            $expressions = array();
+        public static function AsExpression($asserts) {
+            $list = array();
 
-            foreach ($asserts as $key => $value) {
-                $assert = self::AsExpressionInternal($key, $value);
-                array_push($expressions, $assert);
-            }
+            # 在这个表达式构造函数之中，使用~前导字符作为表达式的标记
+            foreach($asserts as $name => $value) {
 
-            return "(" . implode(") $op (", $expressions) . ")";
-        }
+                # $name可能是多个字段名，字段名之间使用 |(OR) 或者 &(AND) 来分割
+                # 如果存在()，则意味着是一个表达式，而非字段名
+                $value      = self::ValueExpression($value);
+                $buffer     = array();
+                $exp        = null;
+                $expression = array();
 
-        private static function AsExpressionInternal($key, $value) {
-            # 第一个字符可能是!或者~
-            $c      = $key[0];
-            $assert = NULL;
+                array_push($expression, " ( ");
 
-            switch($c) {
-                case "!":
+                foreach(str_split($name) as $c) {
+                    if ($c === "|" || $c === "&") {
+                        $exp    = self::KeyExpression(implode($buffer));
+                        $buffer = array();
+                        
+                        array_push($expression, "( ");
+                        array_push($expression, $exp);
+                        array_push($expression, $value);
+                        array_push($expression, ") ");
 
-                    $key = self::Pop($key);
-
-                    if (is_array($value)) {
-                        # NOT IN
-                        $assert = self::AsIN($key, $value, true);
+                        if ($c === "|") {
+                            array_push($expression, " OR ");
+                        } else {
+                            array_push($expression, " AND ");
+                        }
                     } else {
-                        # NOT equals
-                        $assert = "`$key` <> '$value'";
+                        array_push($buffer, $c);
                     }
-
-                    break;
-
-                case "~":
-
-                    $key = self::Pop($key);
-                    $not = $key[0];
-
-                    if ($not == "!") {
-                        # not LIKE
-                        $key    = self::Pop($key);
-                        $assert = "`$key` NOT LIKE '$value'";
-                    } else {
-                        # LIKE
-                        $assert = "`$key` LIKE '$value'";
-                    }
-
-                    break;
-
-                default:
-
-                    # 默认操作为最基本的值等价判断操作    
-                    # 字典对象则是IN值等价判断操作
-                    # 单独的值对象则是直接的IS等价判断操作
-                    if (is_array($value)) {
-                        # IN
-                        $assert = self::AsIN($key, $value);
-                    } else {
-                        # equals
-                        $assert = "`$key` = '$value'";
-                    }
-            }
-        }
-
-        private static function PopulateFieldAsserts($key, $assert) {
-            $chars = str_split($string);
-            $buffer = array();
-            $field = "";
-            $asserts = "";
-
-            foreach($chars as $c) {
-                if ($c == "|" || $c == "&") {
-
-                    $op = ($c == "|") ? "OR" : "AND";
-                    $field = implode("", $buffer);
-                    $buffer = array();
-                    $asserts = $asserts . "`$field` $assert $op "; 
-
-                } else {
-                    array_push($buffer, $c);
                 }
+
+                # 因为分隔符|或者&只能够出现在中间，所以在结束上面的循环之后
+                # 肯定会有剩余的buffer，在这里需要将这个buffer也添加进来
+                $exp = self::KeyExpression(implode($buffer));
+
+                array_push($expression, "( ");
+                array_push($expression, $exp);
+                array_push($expression, $value);
+                array_push($expression, ") ");
+
+                # 结束条件堆栈
+                array_push($expression, ") ");
+                array_push($list, \Strings::Join($expression, " "));
             }
 
-            # 正确的语法是  key1|key2|key3 这样子的模式
-            # 则按照这个语法，在退出循环之后肯定会在buffer里面存在key的字符
-            $field = implode("", $buffer);                    
-            $asserts = $asserts . "`$field` $assert"; 
-
-            return $asserts;
+            return \Strings::Join($list, " AND ");
         }
 
-        /**
-         * 删除key字符串的第一个操作符字符 
-         * 
-         * @param key: 数据库表之中的字段名称
-         * 
-         * @return string 函数返回删除掉第一个操作符字符的字段名称
-         */
-        private static function Pop($key) {
-            return substr($key, 1);
-        }
+        public static function KeyExpression($exp) {
+            $a = strpos($exp, '(');
+            $b = strpos($exp, ')');
 
-        /**
-         * 将数组之中的一个键值对转换为IN表达式 
-         * 
-         * @param field: 数据表之中的字段名称
-         * @param array: 进行IN操作符所需要的右边的值列表      
-         * @param not: 是否是NOT取反操作？
-         * 
-         */
-        public static function AsIN($field, $array, $not = false) {
-            $value = join("', '", $array);		
-            
-            if ($not) {
-                return "`$field` NOT IN ('$value')";
+            if ( ($a !== false) && ($b !== false) && ($a + 1 < $b) ) {
+                # 是一个表达式
+                return $exp;
             } else {
-                return "`$field`     IN ('$value')";
+                # 是一个字段名
+                return "`$exp`";
             }
+        }
+
+        public static function ValueExpression($value) {
+            if ($value[0] === "~") {
+                # 是一个表达式，则不需要额外的处理
+                # 只需要将第一个字符删除掉即可
+                return substr($value, 1);
+            } else if (self::InStack($value, "'") || self::InStack($value, "`")) {
+                # 自身就是一个字符串或者对象表达式了
+                # 不会再进行任何处理
+                return "= $value";
+            } else {
+                return "= '$value'";
+            }
+        }
+
+        public static function InStack($str, $char) {
+            return ($str[0] == $char) && ($str[count($str)] == $char);
         }
     }
 }
