@@ -44,32 +44,47 @@ class View {
 	 * 这个函数还会额外的处理includes关系
 	*/
 	public static function Load($path, $vars = NULL, $lang = "zhCN") {
+		$vars = self::LoadLanguage($path, $lang, $vars);
+		return View::InterpolateTemplate(file_get_contents($path), $vars, $path);
+	}
+
+	/**
+	 * 加载html视图页面的语言数据
+	 * 
+	 * @param string $lang 语言的标识符，例如:enUS, zhCN
+	 * @param string $path html文件的文件路径
+	*/
+	private static function LoadLanguage($path, $lang, $vars) {
 		$name = pathinfo($path);
 		$name = $name['filename'];
 		$lang = dirname($path) . "/$name.$lang.php";		
 
-		if (file_exists($lang)) {
-			$lang = include_once $lang;
-			
-			if (($lang && count($lang) > 0)) {
-				if ($vars && count($vars) > 0) {
-					# 用户在Controller里面所定义的vars的优先级要高于lang之中的定义值
-					# 所以在这里会覆盖掉lang之中的值
-
-					foreach($vars as $key => $value) {
-						$lang[$key] = $value;
-					}
-
-					$vars = $lang;
-
-				} else {
-					# vars是空的，则直接用lang替换掉vars
-					$vars = $lang;
-				}
-			}
+		if (!file_exists($lang)) { 
+			return $vars;
 		}
 
-		return View::InterpolateTemplate(file_get_contents($path), $vars, $path);
+		$lang = include_once $lang;
+		
+		if (!$lang || count($lang) = 0) {
+			return $vars;
+		}
+
+		if ($vars && count($vars) > 0) {
+			# 用户在Controller里面所定义的vars的优先级要高于lang之中的定义值
+			# 所以在这里会覆盖掉lang之中的值
+
+			foreach($vars as $key => $value) {
+				$lang[$key] = $value;
+			}
+
+			$vars = $lang;
+
+		} else {
+			# vars是空的，则直接用lang替换掉vars
+			$vars = $lang;
+		}
+
+		return $vars;
 	}
 
 	public static function InterpolateTemplate($html, $vars, $path = NULL) {
