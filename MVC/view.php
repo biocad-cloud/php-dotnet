@@ -65,7 +65,11 @@ class View {
 
 		$lang = include_once $lang;
 		
-		if (!$lang || count($lang) = 0) {
+		# 2018-4-26
+		# PHP Fatal error:  Can't use function return value in write context
+		# 在这里需要使用empty函数来判断是否是空值，不可以直接使用！操作符
+		#
+		if (empty($lang)) {
 			return $vars;
 		}
 
