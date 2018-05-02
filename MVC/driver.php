@@ -6,12 +6,16 @@ dotnet::Imports("Microsoft.VisualBasic.Strings");
  * MySQL data table model
 */
 class Model {
-    
+	
+	#region "MySql connection info"
+
     private $database;
     private $user;
     private $password;
     private $host;
-    private $port;
+	private $port;
+
+	#endregion
 
     function __construct($database, $user, $password, $host = "localhost", $port = 3306) {
         $this->database = $database;
@@ -93,26 +97,6 @@ class Model {
         return $array;
     }
 	
-	#endregion
-
-    /**
-	 * 使用这个函数来打开和mysql数据库的链接
-	*/
-	public function __init_MySql() {	
-		$db = mysqli_connect(
-			$this->host,   
-			$this->user,
-            $this->password, 
-            $this->database, 
-            $this->port) or die("Database error: ". mysqli_error()); 
-					
-		if (False == $db) {
-			die("Database connection fail!");
-		} else {
-			return $db;
-		}
-	}
-
 	/**
 	 * 显示mysql表的结构
 	 * 
@@ -126,6 +110,27 @@ class Model {
 
         return $schema;
     }
+
+	#endregion
+
+    /**
+	 * 使用这个函数来打开和mysql数据库的链接
+	*/
+	public function __init_MySql() {	
+		$db = mysqli_connect(
+			$this->host,   
+			$this->user,
+            $this->password, 
+            $this->database, 
+			$this->port
+		) or die("Database error: <code>" . mysqli_error() . "</code>"); 
+					
+		if (False === $db) {
+			die("Database connection fail!");
+		} else {
+			return $db;
+		}
+	}
 
 	/**
 	 * 这个方法主要是用于执行一些无返回值的方法，
@@ -162,8 +167,8 @@ class Model {
 	 * 返回False的，所以执行这类数据修改的操作的时候就不需要获取返回值
 	 * 赋值到变量了
 	 *
-	 * @param mysqli mysql_exec: 来自于函数__init_MySql()所创建的数据库连接
-	 * @param string SQL
+	 * @param mysqli $mysql_exec: 来自于函数__init_MySql()所创建的数据库连接
+	 * @param string $SQL
 	 * @return boolean|array 如果数据库查询出错，会返回逻辑值False，反之会返回相对应的结果值
 	 */
 	public function ExecuteSQL($mysql_exec, $SQL) {
