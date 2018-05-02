@@ -52,15 +52,22 @@ function between($a, $b) { return "~BETWEEN '$a' AND '$b'"; }
 */
 function not_between($a, $b) { return "~NOT " . substr(between($a, $b), 1); }
 
+# 2018-5-2 
+#
+# ... 参数数组类型只能够在php7版本使用
+# 目前为了兼容php5，将...版本的函数都注释掉先
+
 /**
  * 在集合中，在数据库查询之中判断目标字段值是否在给定的集合中
 */
-function in(...$values) { return "~IN ('". join("', '", $values) ."')"; }
+function in($values) { return "~IN ('". join("', '", $values) ."')"; }
+# function in(...$values) { return "~IN ('". join("', '", $values) ."')"; }
 
 /**
  * 不在集合中，在数据库查询之中判断目标字段值是否不再给定的集合中
 */
-function not_in(...$values) { return "~NOT " . substr(in($values), 1); }
+function not_in($values) { return "~NOT " . substr(in($values), 1); }
+# function not_in(...$values) { return "~NOT " . substr(in($values), 1); }
 
 #regin "logical operator"
 
@@ -71,7 +78,8 @@ function not_in(...$values) { return "~NOT " . substr(in($values), 1); }
 /**
  * 对多个逻辑表达式的与运算
 */
-function andalso(...$booleans) { return LogicalExpression::Join($booleans, "AND"); }
+function andalso($booleans) { return LogicalExpression::Join($booleans, "AND"); }
+# function andalso(...$booleans) { return LogicalExpression::Join($booleans, "AND"); }
 
 /**
  * 对多个逻辑表达式的或运算

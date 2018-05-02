@@ -225,6 +225,8 @@ class Table {
             $SQL = "SELECT * FROM `$db`.`$table` LIMIT 1;";
         }	
 		
+		# echo $SQL;
+
         return $this->driver->ExecuteScalar($mysqli_exec, $SQL);
     }
 
