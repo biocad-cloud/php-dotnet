@@ -54,10 +54,14 @@ class Table {
             $this->driver["DB_PORT"]
         );
 
-        # 获取数据库的目标数据表的表结构
-        $this->schema         = $this->driver->Describe($this->tableName);
-        $this->schema         = Model::schemaArray($this->schema);
-		$this->AI             = Model::getAIKey($this);		
+		# 获取数据库的目标数据表的表结构
+		$schema = Model::GetSchema(
+			$this->tableName, 
+			$this->driver
+		);
+		
+        $this->schema = $schema["schema"];
+		$this->AI     = $schema["AI"];
 	}
 
 	/**

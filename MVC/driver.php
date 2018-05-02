@@ -21,16 +21,50 @@ class Model {
         $this->port     = $port;
     }
 
+	#region "MySql table schema cache"
+
+	# 在这里通过对表结构信息的缓存操作来减少在进行
+	# mysql条件查询表达式构建的过程之中对数据库的
+	# 查询请求次数
+
+	/**
+	 * tableName => [
+	 * 	  schema => table_structure, 
+	 *    AI     => "AI key name"
+	 * ]
+	*/
+	private static $describCache = array();
+
+	/**
+	 * 从数据库之中获取表结构信息或者从缓存之中获取，如果表结构信息已经被缓存了的话
+	 * 
+	 * @param Model $driver 当前的class类型的实例，数据库抽象层的底层驱动
+	*/
+	public static function GetSchema($tableName, $driver) {
+		if (!array_key_exists($tableName, self::$describCache)) {
+			# 不存在，则进行数据库查询构建
+			$schema = $driver->Describe($tableName);
+			$schema = self::schemaArray($schema);
+			$AI     = self::getAIKey($schema);
+			
+			self::$describCache[$tableName] = [
+				"schema" => $schema, 
+				"AI"     => $AI
+			];
+		}
+
+		return self::$describCache[$tableName];
+	}
+
 	/**
 	 * Get the field name of the auto increment field.
 	*/
-	public static function getAIKey($model) {
-		$schema = $model->getSchema();
-		
+	public static function getAIKey($schema) {	
+
 		foreach ($schema as $name => $type) {
 			
-			$Null    = ($type["Null"] == "NO");
-			$Key     = ($type["Key"] == "PRI");
+			$Null    = ($type["Null"]  == "NO");
+			$Key     = ($type["Key"]   == "PRI");
 			$isAI    = ($type["Extra"] == "auto_increment");			
 			$type    =  $type["Type"];		
 			$isInt32 = (Strings::InStr("$type", "int"));					
@@ -59,6 +93,8 @@ class Model {
         return $array;
     }
 	
+	#endregion
+
     /**
 	 * 使用这个函数来打开和mysql数据库的链接
 	*/
