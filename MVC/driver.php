@@ -169,6 +169,7 @@ class Model {
 	 *
 	 * @param mysqli $mysql_exec: 来自于函数__init_MySql()所创建的数据库连接
 	 * @param string $SQL
+	 * 
 	 * @return boolean|array 如果数据库查询出错，会返回逻辑值False，反之会返回相对应的结果值
 	 */
 	public function ExecuteSQL($mysql_exec, $SQL) {
