@@ -79,6 +79,14 @@ class Table {
         return $this->driver->exec($SQL);
     }
 
+	public function limit($m, $n = -1) {
+
+	}
+
+	public function order_by($keys, $desc = false) {
+
+	}
+
 	/**
 	 * select all
 	*/
