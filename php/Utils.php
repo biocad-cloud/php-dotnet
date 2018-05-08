@@ -1,10 +1,15 @@
 <?php
 
+/**
+ * PHP WEB programming utils from php.NET framework
+*/
 class Utils {
 
     /**
      * 具有限速功能的文件下载函数 
      * 
+     * @param string $filepath 待文件下载的文件路径
+     * @param integer $rateLimit 文件下载的限速大小，小于等于零表示不限速，这个函数参数的单位为字节Byte
      */
     public static function PushDownload($filepath, $rateLimit = -1) {
        
@@ -42,6 +47,9 @@ class Utils {
         fclose($file);
     }
 
+    /**
+     * 函数返回当前的请求的完整URL
+    */
     public static function URL() {
         return (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
     }
@@ -55,6 +63,8 @@ class Utils {
     
     /**
      * 返回符合MySql所要求的格式的当前时间的字符串值
+     * 
+     * @param bool $MySqlStyle 返回的字符串格式是否是MySql数据库所要求的格式，默认是
      */
     public static function Now($MySqlStyle = TRUE) {
         if ($MySqlStyle) {
@@ -68,6 +78,9 @@ class Utils {
         }        
     }
 
+    /**
+     * 函数返回指定长度的随机ASCII字符串
+    */
     public static function RandomASCIIString($len) {
 		$s = "";
 		$template = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -81,6 +94,13 @@ class Utils {
 		return $s;
     }
     
+    /**
+     * 获取给定文件路径的文件拓展名
+     * 
+     * @param string $path 所给定的文件路径
+     * 
+     * @return string 函数返回不带小数点的文件拓展名
+    */
     public static function GetExtensionSuffix($path) {
         # 2018-3-8 因为这个函数之中需要调用Microsoft.VisualBasic.Strings模块
         # 可能会因为在本脚本的头部进行引用其他的脚本文件的时候，这个模块的脚本还
@@ -97,6 +117,11 @@ class Utils {
 
     /**
      * 判断这个文件路径是否是以特定的文件拓展名结尾的？这个函数大小写不敏感
+     * 
+     * @param string $path 给定的文件名或者文件路径
+     * @param string $ext 文件拓展名，这个文件拓展名不带小数点
+     * 
+     * @return bool 目标文件夹是否是以指定的文件拓展名结尾？
      */
     public static function WithSuffixExtension($path, $ext) {
         $suffix = self::GetExtensionSuffix($path);
@@ -104,7 +129,7 @@ class Utils {
     }
 
     /**
-	 * 文件数据格式换算
+	 * 文件数据格式显示转换
 	*/ 
 	public static function UnitSize($byte) {
 
@@ -140,9 +165,8 @@ class Utils {
  
 	private static function round_dp($num, $dp) {		
 	  	$sh = pow(10, $dp);
-	  	return(round($num * $sh) / $sh);
+	  	return round($num * $sh) / $sh;
 	}
-
 }
 
 ?>
