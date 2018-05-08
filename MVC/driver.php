@@ -17,6 +17,11 @@ class Model {
 
 	#endregion
 
+	/**
+	 * 当前的这个表模型对象实例的最后一条执行的MySql语句
+	*/
+	private $last_mysql_expression;
+
     function __construct($database, $user, $password, $host = "localhost", $port = 3306) {
         $this->database = $database;
         $this->user     = $user;
@@ -24,6 +29,13 @@ class Model {
         $this->host     = $host;
         $this->port     = $port;
     }
+
+	/**
+	 * 获取当前的这个实例之中所执行的最后一条MySql语句
+	*/
+	public function getLastMySql() {
+		return $this->last_mysql_expression;
+	}
 
 	#region "MySql table schema cache"
 

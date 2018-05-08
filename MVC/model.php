@@ -12,7 +12,12 @@ class Table {
 
 	private $tableName;
 	private $databaseName;
+
+	/**
+	 * MySql数据库驱动程序
+	*/
 	private $driver;
+	
 	/**
 	 * 数据表的表结构
 	*/ 
@@ -108,6 +113,13 @@ class Table {
     public function exec($SQL) {
         return $this->driver->exec($SQL);
     }
+
+	/**
+	 * 获取当前的这个实例之中所执行的最后一条MySql语句
+	*/
+	public function getLastMySql() {
+		return $this->driver->getLastMySql();
+	}
 
 	public function limit($m, $n = -1) {
 
