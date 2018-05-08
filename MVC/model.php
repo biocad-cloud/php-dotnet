@@ -24,20 +24,50 @@ class Table {
 	/**
 	 * Create an abstract table model.
 	 * 
-	 * @param type      where/in/expression
-	 * @param condition default is nothing, means all, no filter
+	 * @param string $type      where/in/expression
+	 * @param string $condition default is nothing, means all, no filter
+	 * @param string|array $config Database connection config, it can be: 
+	 *                             + (string) tableName, 
+	 *                             + (array) config, or 
+	 *                             + (array) [dbname => table] when multiple database config exists.
 	*/
     function __construct($config, $condition = null, $type = "where") {
 		if (is_string($config)) {		
 			$this->__initBaseOnTableName($config);
-		} else {			
+		} else if(self::isValidDbConfig($config)) {			
 			$this->__initBaseOnExternalConfig($config["DB_TABLE"], $config);
-		}  
+		} else {
+
+			// [dbName => $tableName] for multiple database config.
+			list($dbName, $tableName) = Utils::Tuple($config);
+
+			if (array_key_exists($dbName, DotNetRegistry::$config)) {
+				$this->__initBaseOnExternalConfig(
+					$tableName, DotNetRegistry::$config[$dbName]
+				);
+			} else {
+				# 无效的配置参数信息
+				$msg = "Invalid database name config or database config '$dbName' is not exists!";
+				throw new Exception($msg);
+			}
+		} 
 		
 		$this->condition      = $condition;
 		$this->condition_type = $type;
 	}
 	
+	/**
+	 * 判断目标配置信息是否是有效的数据库连接参数配置数组？
+	*/
+	private static function isValidDbConfig($config) {
+		return array_key_exists("DB_TABLE", $config) && 
+			   array_key_exists("DB_NAME", $config) && 
+			   array_key_exists("DB_USER", $config) && 
+			   array_key_exists("DB_PWD", $config) && 
+			   array_key_exists("DB_HOST", $config) && 
+			   array_key_exists("DB_PORT", $config);
+	}
+
 	/**
 	 * 不通过内部的配置数据而是通过外部传递过来的新的配置数组
 	 * 来进行初始化

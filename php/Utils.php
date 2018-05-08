@@ -6,6 +6,18 @@
 class Utils {
 
     /**
+     * 将只含有一个元素的[key => value]键值对转换为数组返回，可以使用list($key, $value)来进行赋值
+     * 
+     * @param array $table [key => value]
+    */
+    public static function Tuple($table) {
+        $keys  = array_keys($table);
+        $value = $table($keys[0]);
+        
+        return [$keys[0], $value];
+    }
+
+    /**
      * 具有限速功能的文件下载函数 
      * 
      * @param string $filepath 待文件下载的文件路径
