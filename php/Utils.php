@@ -22,7 +22,7 @@ class Utils {
      * 
      * @param string $filepath 待文件下载的文件路径
      * @param integer $rateLimit 文件下载的限速大小，小于等于零表示不限速，这个函数参数的单位为字节Byte
-     */
+    */
     public static function PushDownload($filepath, $rateLimit = -1) {
        
         header('Content-Description: File Transfer');
@@ -68,7 +68,7 @@ class Utils {
 	
 	/*
 	 * 获取当前时间点的Unix时间戳
-	 */
+	*/
 	public static function UnixTimeStamp() {
 		return time();
     }
@@ -77,7 +77,7 @@ class Utils {
      * 返回符合MySql所要求的格式的当前时间的字符串值
      * 
      * @param bool $MySqlStyle 返回的字符串格式是否是MySql数据库所要求的格式，默认是
-     */
+    */
     public static function Now($MySqlStyle = TRUE) {
         if ($MySqlStyle) {
             return date('Y-m-d H:i:s',   time());
@@ -134,7 +134,7 @@ class Utils {
      * @param string $ext 文件拓展名，这个文件拓展名不带小数点
      * 
      * @return bool 目标文件夹是否是以指定的文件拓展名结尾？
-     */
+    */
     public static function WithSuffixExtension($path, $ext) {
         $suffix = self::GetExtensionSuffix($path);
         return Strings::LCase($suffix) == Strings::LCase($ext);
