@@ -1,18 +1,19 @@
 <?php
 
-/*
+/**
  * REST api handler
  *
- * 这个模块的功能主要是解析所请求的url字符串，然后从
- */
+ * 这个路由器模块的功能主要是解析所请求的url字符串，然后转换为对Controller的反射调用
+*/
 class Router {
 		
-	/*
+	/**
 	 * 进行自动处理请求主要是用户通过实例化一个class之后
 	 * 这个函数会对url的解析结果从class实例对象之中匹配出
      * 相同的函数名然后进行调用	 
 	 *
-	 */
+	 * @param controller $app 控制器实例
+	*/
 	public static function HandleRequest($app) {
 		$argv = $_GET;
 		
@@ -46,6 +47,8 @@ class Router {
 	 * 例如：{index/upload}
 	 * 则根据控制器的解析规则，应该在这个函数之中被拓展为
 	 * 结果url字符串：/index.php?app=upload
+	 * 
+	 * @param string $html 包含有路由器规则占位符的HTML文档 
 	*/
 	public static function AssignController($html) {
 		# 设置简写字符串的匹配的规则
