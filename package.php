@@ -35,7 +35,7 @@ function Imports($namespace) {
  * 对用户的浏览器进行重定向，支持路由规则
 */
 function Redirect($URL) {   
-    header("Location: " . View::AssignController($URL));
+    header("Location: " . Router::AssignController($URL));
 }
 
 /**
