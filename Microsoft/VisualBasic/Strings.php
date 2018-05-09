@@ -81,6 +81,8 @@ class Strings {
 	 * Returns the position of the first occurrence of one string within another, 
 	 * starting from the right side of the string.
 	 * 
+	 * 这个函数返回来的位置是从下标1开始的
+	 * 
 	 * @param string $str Required. String expression being searched.
 	 * @param string $find_subString Required. String expression being searched for.
 	 * 
@@ -88,7 +90,7 @@ class Strings {
 	 *                 starting from the right side of the string.
 	*/
 	public static function InStrRev($str, $find_subString) {
-		return strrpos($str, $find_subString);
+		return strrpos($str, $find_subString) + 1;
 	}
 
 	/**
@@ -107,10 +109,14 @@ class Strings {
 	 *                in the string.
 	*/
 	public static function Mid($str, $start, $len = -1) {
+		if ($start > self::Len($str)) {
+			return "";
+		}
+
 		if ($len > 0) {
-			return substr($str, $start, $len);
+			return substr($str, $start - 1, $len);
 		} else {
-			
+			return substr($str, $start - 1);
 		}
 	}
 
