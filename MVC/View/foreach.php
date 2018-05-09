@@ -30,8 +30,8 @@ namespace MVC\Views {
 
         public static function InterpolateTemplate($html, $vars) {
             # 首先使用正则表达式解析出文档碎片之中的模板
-            $pattern   = "(<(foreach)[^>]+>)(.+)(<\/\\2>)";
-            $templates = \Regex::Matches($html, $pattern, PREG_SET_ORDER, "/"); 
+            $pattern   = "<foreach(.*?)<\/foreach>";
+            $templates = \Regex::Matches($html, $pattern, null, "/"); 
 
             echo $html . "\n";
             echo $pattern . "\n";

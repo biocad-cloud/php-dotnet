@@ -36,10 +36,17 @@ class Regex {
     */
     public static function Matches($input, $pattern, $options = PREG_PATTERN_ORDER, $wrap = "#") {
         $pattern = "$wrap$pattern$wrap";
+        $hits    = 0;
+        $matches = null;
 
-        if (preg_match_all($pattern, $input, $matches, $options) > 0) { 
-            $matches = $matches[0];
-            return $matches;
+        if (empty($options)) {
+            $hits = preg_match_all($pattern, $input, $matches);
+        } else {
+            $hits = preg_match_all($pattern, $input, $matches, $options);
+        }
+
+        if ($hits > 0) {             
+            return $matches[0];
         } else {
             return NULL;
         }
