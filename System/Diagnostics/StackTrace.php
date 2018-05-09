@@ -1,6 +1,7 @@
 <?php
 
-dotnet::Imports("System.Text.StringBuilder");
+Imports("System.Text.StringBuilder");
+Imports("Microsoft.VisualBasic.Strings");
 
 /**
  * Represents a stack trace, which is an ordered collection of 
@@ -48,6 +49,16 @@ class StackTrace {
         foreach($bt as $k=>$v) { 
             // 解析出当前的栈片段信息
             extract($v); 
+
+            if (!APP_DEBUG) {
+                # 在非调试模式下，将服务器的文件系统信息隐藏掉
+                if (defined(APP_PATH)) {
+                    $file = Strings::Replace($file, APP_PATH, "~");
+                }
+
+                $file = Strings::Replace($file, PHP_DOTNET, "~");
+            }
+
             $trace->AppendLine("    at $function in $file:line $line<br/>");    
         } 
      
