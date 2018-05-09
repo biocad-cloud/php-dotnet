@@ -56,9 +56,9 @@ namespace MVC\Views {
                     
                     # DO NOTHING
                 } else {
-                    $template = \StringHelpers::GetStackValue($template, ">", "<");
-                    $list     = self::Build($var, $template, $name);    
-                    $html     = \Strings::Replace($html, $template, $list);                
+                    $templ = \StringHelpers::GetStackValue($template, ">", "<");
+                    $list  = self::Build($var, $templ, $name);    
+                    $html  = \Strings::Replace($html, $template, $list);                
                 }                
             }
 
@@ -76,9 +76,9 @@ namespace MVC\Views {
             $varPattern = "@$var\[\".+?\"\]";
             $vars = \Regex::Matches($template, $varPattern);
 
-            echo var_dump($array) . "\n\n";
-            echo $template . "\n\n";
-            echo $var . "\n\n";
+            # echo var_dump($array) . "\n\n";
+            # echo $template . "\n\n";
+            # echo $var . "\n\n";
 
             if (count($vars) == 0) {
                 # 没有定义模板变量？？
