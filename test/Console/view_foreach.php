@@ -30,16 +30,18 @@ $list[3] = [
     "amount" => "-5000"
 ];
 
-$template = "
+$template = <<<EOT
 <ul>
 
     <foreach @balance>
-        <li>@balance[\"time\"] &nbsp; @balance[\"title\"]
-		     <span style='text-align: right; color: @balance[\"color\"]'>@balance[\"amount\"] 元</span>
+        <li>@balance["time"] &nbsp; @balance["title"]
+		     <span style='text-align: right; color: @balance["color"]'>@balance["amount"] 元</span>
 	    </li>
  	</foreach>
 
-</ul>";
+</ul>
+
+EOT;
 
 echo json_encode($list) . "\n\n";
 

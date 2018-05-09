@@ -34,10 +34,16 @@ class Regex {
      *               found by the search. If no matches are found, the method returns 
      *               an empty collection object.
     */
-    public static function Matches($input, $pattern, $options = PREG_PATTERN_ORDER, $wrap = "#") {
-        $pattern = "$wrap$pattern$wrap";
+    public static function Matches($input, $pattern, $options = PREG_PATTERN_ORDER, $flags = null) {
+        $pattern = "/$pattern/";
         $hits    = 0;
         $matches = null;
+
+        if ($flags) {
+            $pattern .= $flags;
+        }
+
+        # echo $pattern . "\n\n";
 
         if (empty($options)) {
             $hits = preg_match_all($pattern, $input, $matches);

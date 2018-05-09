@@ -31,14 +31,14 @@ namespace MVC\Views {
         public static function InterpolateTemplate($html, $vars) {
             # 首先使用正则表达式解析出文档碎片之中的模板
             $pattern   = "<foreach(.*?)<\/foreach>";
-            $templates = \Regex::Matches($html, $pattern, null, "/"); 
+            $templates = \Regex::Matches($html, $pattern, null, "is"); 
 
-            echo $html . "\n";
-            echo $pattern . "\n";
-            echo \json_encode($templates);
+            # echo $html . "\n";
+            # echo $pattern . "\n";
+            echo \var_dump($templates);
 
             # 没有找到任何模板
-            if (count($templates) === 0) {
+            if (!$templates || count($templates) === 0) {
                 return $html;
             }
 
