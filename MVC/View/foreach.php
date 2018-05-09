@@ -38,18 +38,17 @@ namespace MVC\Views {
                 $var  = \explode(">", $template)[0];
                 $var  = \explode("@", $var);
                 $name = end($var);
-                $var  = $vars[$name];
-                $list = "";
+                $var  = $vars[$name];                
 
                 if (!$var) {
                     # 目标模板的数据源不存在
-                    # 则将占位符替换为空白字符串
-                    $list = "";
+                    # 则将模板保留下来，不做任何处理
+                    
+                    # DO NOTHING
                 } else {
-                    $list = self::Build($var, $template, $name);                    
-                }
-
-                $html = Strings::Replace($html, $template, "");
+                    $list = self::Build($var, $template, $name);    
+                    $html = Strings::Replace($html, $template, $list);                
+                }                
             }
 
             return $html;
