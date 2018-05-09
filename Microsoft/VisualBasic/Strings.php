@@ -1,18 +1,41 @@
 <?php
 
 /** 
- * The strings module functions in VisualBasic language 
- * 
+ * The strings module functions in VisualBasic language. The Strings module contains 
+ * procedures used to perform string operations.
 */
 class Strings {
 	
-	// 进行非正则表达式的替换
-	public static function Split($str, $deli) {
+	/**
+	 * Returns a zero-based, one-dimensional array containing a specified number of substrings.
+	 * 
+	 * @param string $str Required. String expression containing substrings and delimiters.
+	 * @param string $deli Optional. Any single character used to identify substring limits. 
+	 * 					   If Delimiter is omitted, the space character (" ") is assumed to 
+	 * 					   be the delimiter.
+	 * 
+	 * @return array String array. If Expression is a zero-length string (""), Split returns a 
+	 * 			     single-element array containing a zero-length string. If Delimiter is a 
+	 * 				 zero-length string, or if it does not appear anywhere in Expression, Split 
+	 * 				 returns a single-element array containing the entire Expression string.
+	*/
+	public static function Split($str, $deli = " ") {
 		$words = explode($deli, $str);
 		return $words;
 	}
 
-	public static function Join($list, $deli) {
+	/**
+	 * Returns a string created by joining a number of substrings contained in an array.
+	 * 
+	 * @param array $list Required. One-dimensional array containing substrings to be joined.
+	 * @param string $deli Optional. Any string, used to separate the substrings in the returned string. 
+	 * 								 If omitted, the space character (" ") is used. If Delimiter is a 
+	 * 								 zero-length string ("") or Nothing, all items in the list are 
+	 * 								 concatenated with no delimiters.
+	 * 
+	 * @return string Returns a string created by joining a number of substrings contained in an array.
+	*/
+	public static function Join($list, $deli = " ") {
 		return join($deli, $list);
 	}
 	
@@ -42,13 +65,26 @@ class Strings {
 	}
 
 	/**
+	 * Returns a string that contains a specified number of characters starting from a specified position in a string.
 	 * 对目标字符串进行取子字符串的操作，请注意这个函数的下标是从1开始的。
 	 * 
-	 * @param string $str 目标字符串
+	 * @param string $str Required. String expression from which characters are returned. 目标字符串
+	 * @param string $start Required. Integer expression. Starting position of the characters to return. If Start is 
+	 *                      greater than the number of characters in str, the Mid function returns a zero-length 
+	 *                      string (""). Start is one based.
+	 * @param string $len Optional. Integer expression. Number of characters to return. If omitted or if there are fewer 
+	 * 					  than Length characters in the text (including the character at position Start), all characters 
+	 *                    from the start position to the end of the string are returned.
 	 * 
+	 * @return string A string that consists of the specified number of characters starting from the specified position 
+	 *                in the string.
 	*/
-	public static function Mid($str, $start, $len) {
-		return substr($str, $start, $len);
+	public static function Mid($str, $start, $len = -1) {
+		if ($len > 0) {
+			return substr($str, $start, $len);
+		} else {
+			
+		}
 	}
 
 	# Public Shared Function Replace(
@@ -61,7 +97,7 @@ class Strings {
 
 	/**
 	 * Returns a string in which a specified substring has been replaced with another 
-	 * substring a specified number of times.
+	 * substring a specified number of times. 进行非正则表达式的替换
 	 *
 	 * @param string $str: Required. String expression containing substring to replace.
 	 * @param string $find: Substring being searched for.
