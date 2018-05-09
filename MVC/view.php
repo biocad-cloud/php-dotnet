@@ -1,8 +1,9 @@
 <?php
 
-dotnet::Imports("System.Diagnostics.StackTrace");
-dotnet::Imports("System.Linq.Enumerable");
-dotnet::Imports("Microsoft.VisualBasic.Strings");
+Imports("System.Diagnostics.StackTrace");
+Imports("System.Linq.Enumerable");
+Imports("Microsoft.VisualBasic.Strings");
+Imports("MVC.View.foreach");
 
 /**
  * html user interface view handler
@@ -159,6 +160,9 @@ class View {
 			$name = '{$' . $name . '}';
 			$html = Strings::Replace($html, $name, $value);
 		}
+
+		# 处理数组循环变量，根据模板生成表格或者列表
+		$html = MVC\Views\ForEachView::InterpolateTemplate($html, $vars);
 		
 		return $html;
 	}
