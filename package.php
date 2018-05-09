@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * 这个常数会影响框架的调试器的输出行为，默认是关闭调试器
+*/
+define("APP_DEBUG", false);
+/**
+ * PHP.NET框架的根文件夹位置
+*/
+define("PHP_DOTNET", dirname(__FILE__));
+
 include_once dotnet::GetDotnetManagerDirectory() . "/php/Utils.php";
 
 include_once dotnet::GetDotnetManagerDirectory() . "/System/Diagnostics/StackTrace.php";
@@ -21,15 +30,6 @@ session_start();
 # misspelled the timezone identifier. We selected the timezone 'UTC' for now, 
 # but please set date.timezone to select your timezone.
 date_default_timezone_set('UTC');
-
-/**
- * 这个常数会影响框架的调试器的输出行为，默认是关闭调试器
-*/
-define("APP_DEBUG", false);
-/**
- * PHP.NET框架的根文件夹位置
-*/
-define("PHP_DOTNET", dirname(__FILE__));
 
 /**
  * Global function for load php.NET package 
