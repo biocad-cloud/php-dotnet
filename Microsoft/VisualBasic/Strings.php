@@ -39,10 +39,21 @@ class Strings {
 		return join($deli, $list);
 	}
 	
-	// 如果查找不到字串在目标字符串之上的位置，则函数返回0
-	// 假若能够查找得到，则会返回以1为准的位置
+	/**
+	 * Returns an integer specifying the start position of the first occurrence of one 
+	 * string within another.
+	 * 
+	 * 如果查找不到字串在目标字符串之上的位置，则函数返回0
+	 * 假若能够查找得到，则会返回以1为准的位置
+	 * 
+	 * @param string $str Required. String expression being searched.
+	 * @param string $find_subString Required. String expression sought.
+	 * @param integer $begin 
+	 * 
+	 * @return integer Returns an integer specifying the start position of the first 
+	 *                 occurrence of one string within another.
+	*/
 	public static function InStr($str, $find_subString, $begin = 0) {
-
 		$pos = strpos($str, $find_subString, $begin);
 
 		// Note our use of ===.  Simply == would not work as expected
@@ -62,6 +73,22 @@ class Strings {
 			return ($pos + $begin + 1);
 		}
 
+	}
+
+	# Microsoft.VisualBasic.Strings.InStrRev(string, string, int, Microsoft.VisualBasic.CompareMethod)
+
+	/**
+	 * Returns the position of the first occurrence of one string within another, 
+	 * starting from the right side of the string.
+	 * 
+	 * @param string $str Required. String expression being searched.
+	 * @param string $find_subString Required. String expression being searched for.
+	 * 
+	 * @return integer Returns the position of the first occurrence of one string within another, 
+	 *                 starting from the right side of the string.
+	*/
+	public static function InStrRev($str, $find_subString) {
+		return strrpos($str, $find_subString);
 	}
 
 	/**
@@ -110,6 +137,24 @@ class Strings {
 	*/
 	public static function Replace($str, $find, $replacement) {
 		return str_replace($find, $replacement, $str);
+	}
+
+	/**
+	 * Returns an integer containing either the number of characters in a string 
+	 * or the element counts of the target array.
+	 * 
+	 * @param string|array $obj string or array
+	 * 
+	 * @return integer length
+	*/
+	public static function Len($obj) {
+		if (is_string($obj)) {
+			return strlen($obj);
+		} else if (is_array($obj)) {
+			return count($obj);
+		} else {
+			throw new exception("Invalid data type!");
+		}
 	}
 
 	/**

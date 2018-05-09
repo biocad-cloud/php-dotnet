@@ -30,12 +30,14 @@ namespace MVC\Views {
 
         public static function InterpolateTemplate($html, $vars) {
             # 首先使用正则表达式解析出文档碎片之中的模板
+            # flags表示正则表达式引擎忽略大小写并且以单行模式工作
             $pattern   = "<foreach(.*?)<\/foreach>";
-            $templates = \Regex::Matches($html, $pattern, null, "is"); 
+            $flags     = "is";
+            $templates = \Regex::Matches($html, $pattern, null, $flags); 
 
             # echo $html . "\n";
             # echo $pattern . "\n";
-            echo \var_dump($templates);
+            # echo \var_dump($templates);
 
             # 没有找到任何模板
             if (!$templates || count($templates) === 0) {
@@ -54,8 +56,9 @@ namespace MVC\Views {
                     
                     # DO NOTHING
                 } else {
-                    $list = self::Build($var, $template, $name);    
-                    $html = Strings::Replace($html, $template, $list);                
+                    $template = \StringHelpers::GetStackValue($template, ">", "<");
+                    $list     = self::Build($var, $template, $name);    
+                    $html     = \Strings::Replace($html, $template, $list);                
                 }                
             }
 
@@ -73,6 +76,10 @@ namespace MVC\Views {
             $varPattern = "@$var\[\".+?\"\]";
             $vars = \Regex::Matches($template, $varPattern);
 
+            echo var_dump($array) . "\n\n";
+            echo $template . "\n\n";
+            echo $var . "\n\n";
+
             if (count($vars) == 0) {
                 # 没有定义模板变量？？
                 return "";
@@ -82,23 +89,23 @@ namespace MVC\Views {
                 $replaceAs = [];
 
                 foreach($vars as $var) {
-                    $name = StringHelpers::GetStackValue($var, '"', '"');
+                    $name = \StringHelpers::GetStackValue($var, '"', '"');
                     $replaceAs[$name] = $var;
                 }
 
-                $list = new ArrayList();
+                $list = new \ArrayList();
 
                 foreach ($array as $row) {
                     $str = $template;
 
                     foreach ($replaceAs as $name => $index) {
-                        $str = Strings::Replace($str, $index, $row[$name]);
+                        $str = \Strings::Replace($str, $index, $row[$name]);
                     }
 
                     $list->Add($str);
                 }
 
-                return Strings::Join($list->ToArray(), "\n\n");
+                return \Strings::Join($list->ToArray(), "\n\n");
             }
         }
     }

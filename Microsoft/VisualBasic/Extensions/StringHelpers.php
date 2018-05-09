@@ -9,9 +9,25 @@ class StringHelpers {
      * @param string $str
      * @param string $left
      * @param string $right
+     * 
+     * @filesource https://github.com/xieguigang/sciBASIC/blob/cebfca8ad0f7e565a00774bb3507796c8e72ecc6/Microsoft.VisualBasic.Core/Extensions/StringHelpers/StringHelpers.vb#L622
     */
     public static function GetStackValue($str, $left, $right) {
+        if (Strings::Len($str) <= 2) {
+            return "";
+        }
 
+        $p = Strings::InStr($str, $left) + Strings::Len($left);
+        $q = Strings::InStrRev($str, $right);
+
+        if ($p == 0 && $q == 0) {
+            return $str;
+        } else if ($p >= $q) {
+            return "";
+        } else {
+            $str = Strings::Mid($str, $p, $q - $p);
+            return $str;
+        }
     }
 }
 ?>
