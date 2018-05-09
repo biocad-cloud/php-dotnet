@@ -18,7 +18,7 @@ class Regex {
      * @return string An object that contains information about the match.
     */
     public static function Match($input, $pattern) {
-
+        return self::Matches($input, $pattern)[0];
     }
 
     /**
