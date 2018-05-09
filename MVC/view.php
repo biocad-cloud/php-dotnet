@@ -159,7 +159,15 @@ class View {
 		# 需要在这里需要进行额外的字符串链接操作才能够正常的替换掉目标		
 		foreach ($vars as $name => $value) {
 			$name = '{$' . $name . '}';
-			$html = Strings::Replace($html, $name, $value);
+
+			if (is_array($value)) {
+				# 这个可能是后面的foreach循环的数据源
+				# 不做任何处理？？
+				#
+				# DO NOTHING
+			} else {
+				$html = Strings::Replace($html, $name, $value);
+			}			
 		}		
 
 		# 处理数组循环变量，根据模板生成表格或者列表

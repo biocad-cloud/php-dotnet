@@ -142,6 +142,15 @@ class Strings {
 	 *                than length of Expression Nothing Count is 0 Copy of Expression
 	*/
 	public static function Replace($str, $find, $replacement) {
+		if (is_array($str)) {
+			throw new Exception("str is array!");
+		}
+		if (is_array($find)) {
+			throw new Exception("find is array!");
+		}
+		if (is_array($replacement)) {
+			throw new Exception("replacement is array!");
+		}
 		return str_replace($find, $replacement, $str);
 	}
 

@@ -57,7 +57,7 @@ namespace MVC\Views {
                     # DO NOTHING
                 } else {
                     $templ = \StringHelpers::GetStackValue($template, ">", "<");
-                    $list  = self::Build($var, $templ, $name);    
+                    $list  = self::Build($var, $templ, $name);
                     $html  = \Strings::Replace($html, $template, $list);                
                 }                
             }
