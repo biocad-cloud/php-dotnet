@@ -1,7 +1,9 @@
 <?php
 
+Imports("System.Collection.ArrayList");
 Imports("System.Text.RegularExpressions.Regex");
 Imports("Microsoft.VisualBasic.Extensions.StringHelpers");
+Imports("Microsoft.VisualBasic.Strings");
 
 namespace MVC\Views {
 
@@ -50,9 +52,19 @@ namespace MVC\Views {
                     $replaceAs[$name] = $var;
                 }
 
-                $list = [];
+                $list = new ArrayList();
 
-                return Strings::Join($list, "\n\n");
+                foreach ($array as $row) {
+                    $str = $template;
+
+                    foreach ($replaceAs as $name => $index) {
+                        $str = Strings::Replace($str, $index, $row[$name]);
+                    }
+
+                    $list->Add($str);
+                }
+
+                return Strings::Join($list->ToArray(), "\n\n");
             }
         }
     }

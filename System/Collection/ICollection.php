@@ -1,8 +1,9 @@
 <?php 
 
 /**
- *  对集合类型的基本抽象
- */
+ * Defines size, enumerators, and synchronization methods for all nongeneric collections.
+ * 对集合类型的基本抽象
+*/
 abstract class ICollection {
 
     protected $__data;
@@ -18,34 +19,33 @@ abstract class ICollection {
 
     /**
      * 使用默认的构造函数
-     */
-    function __construct() {
-		$this->__data = array();
+    */
+    function __construct($source = NULL) {
+		$this->__data = $source;
 	}
-
-    // /**
-    //  * 使用已经存在的array数组数据构建一个集合对象类型
-    //  */
-    // function __construct($source){
-    //     $this->__data = $source;
-    // }
 
     /**
      * 这个函数定义当前的这个集合对象与字符串函数交互的默认行为
-     */
+    */
     public function __toString() {
         return $this->GetJson();
     }
 
     /**
 	 * 将当前的这个字典对象序列化为json字符串，以返回给客户端浏览器
-	 */
+	*/
 	public function GetJson() {
 		return json_encode($this->__data);
     }
     
+    /**
+     * Copies the elements of the System.Collections.ArrayList to a new System.Object array.
+     * 
+     * @return array An System.Object array containing copies of the elements of the 
+     *               System.Collections.ArrayList.
+    */
     public function ToArray() {
-        return $this->__data;
+        return (new ArrayObject($this->__data))->getArrayCopy();
     }
 }
 
