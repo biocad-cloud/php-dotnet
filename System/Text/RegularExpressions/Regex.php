@@ -34,8 +34,8 @@ class Regex {
      *               found by the search. If no matches are found, the method returns 
      *               an empty collection object.
     */
-    public static function Matches($input, $pattern, $options = PREG_PATTERN_ORDER) {
-        $pattern = "#$pattern#";
+    public static function Matches($input, $pattern, $options = PREG_PATTERN_ORDER, $wrap = "#") {
+        $pattern = "$wrap$pattern$wrap";
 
         if (preg_match_all($pattern, $input, $matches, $options) > 0) { 
             $matches = $matches[0];
