@@ -1,9 +1,13 @@
 <?php
 
-/**
- * 这个常数会影响框架的调试器的输出行为，默认是关闭调试器
-*/
-define("APP_DEBUG", false);
+// APP_DEBUG常数在引用这个文件之前必须首先进行定义
+if (!defined('APP_DEBUG')) {
+    /**
+     * 这个常数会影响框架的调试器的输出行为，默认是关闭调试器
+    */
+    define("APP_DEBUG", false);
+}
+
 /**
  * PHP.NET框架的根文件夹位置
 */
@@ -11,12 +15,16 @@ define("PHP_DOTNET", dirname(__FILE__));
 
 include_once dotnet::GetDotnetManagerDirectory() . "/php/Utils.php";
 
-include_once dotnet::GetDotnetManagerDirectory() . "/System/Diagnostics/StackTrace.php";
-include_once dotnet::GetDotnetManagerDirectory() . "/System/Text/StringBuilder.php";
+# 调试器必须要优先于其他模块进行加载，否则会出现
+# Uncaught Error: Class 'dotnetDebugger' not found
+# 的错误
 include_once dotnet::GetDotnetManagerDirectory() . "/Debugger/dotnetException.php";
 include_once dotnet::GetDotnetManagerDirectory() . "/Debugger/engine.php";
 include_once dotnet::GetDotnetManagerDirectory() . "/Debugger/view.php";
 include_once dotnet::GetDotnetManagerDirectory() . "/Debugger/console.php";
+
+include_once dotnet::GetDotnetManagerDirectory() . "/System/Diagnostics/StackTrace.php";
+include_once dotnet::GetDotnetManagerDirectory() . "/System/Text/StringBuilder.php";
 include_once dotnet::GetDotnetManagerDirectory() . "/Microsoft/VisualBasic/Strings.php";
 include_once dotnet::GetDotnetManagerDirectory() . "/Microsoft/VisualBasic/ApplicationServices/Debugger/Logging/LogFile.php";
 include_once dotnet::GetDotnetManagerDirectory() . "/RFC7231/index.php";
@@ -128,7 +136,9 @@ class dotnet {
         if (APP_DEBUG) {
             # 调试器必须先于Imports函数调用，否则会出现错误：
             # PHP Fatal error:  Call to a member function add_loaded_script() on a non-object
-            dotnet::$debugger = new dotnetDebugger();    
+            if (!self::$debugger) {
+                self::$debugger = new dotnetDebugger();    
+            }            
         }   
 
 		dotnet::Imports("MVC.view");
@@ -247,7 +257,9 @@ class dotnet {
             $initiator       = $trace[$initiatorOffset];
 
             # echo var_dump(self::$debugger);
-
+            if (!self::$debugger) {
+                self::$debugger = new dotnetDebugger();    
+            }
             self::$debugger->add_loaded_script($mod, $initiator);
         }
 
