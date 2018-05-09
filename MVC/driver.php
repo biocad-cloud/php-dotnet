@@ -158,13 +158,10 @@ class Model {
 
 		$out = mysqli_query($mysql_exec, $SQL);                     
 		
-		# echo var_dump($out);
-		# echo var_dump(dotnet::$AppDebug);
-
-		if (dotnet::$AppDebug) {
+		if (APP_DEBUG) {
 			dotnet::$debugger->add_mysql_history($SQL);
 		}
-		if (!$out && dotnet::$AppDebug) {
+		if (!$out && APP_DEBUG) {
 			dotnet::$debugger->add_last_mysql_error(mysqli_error($mysql_exec));
 		}		
 
@@ -191,7 +188,7 @@ class Model {
 
 		$data = mysqli_query($mysql_exec, $SQL); 		
 
-		if (dotnet::$AppDebug) {
+		if (APP_DEBUG) {
 			dotnet::$debugger->add_mysql_history($SQL);
 		}
 		
@@ -206,7 +203,7 @@ class Model {
 		} else {
 
 			// 这条SQL语句执行出错了，添加错误信息到sql记录之中
-			if (dotnet::$AppDebug) {
+			if (APP_DEBUG) {
 				dotnet::$debugger->add_last_mysql_error(mysqli_error($mysql_exec));
 			}
 
@@ -224,7 +221,7 @@ class Model {
 
 		$data = mysqli_query($mysql_exec, $SQL); 
 		
-		if (dotnet::$AppDebug) {
+		if (APP_DEBUG) {
 			dotnet::$debugger->add_mysql_history($SQL);
 		}
 		

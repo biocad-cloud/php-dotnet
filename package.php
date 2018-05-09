@@ -22,7 +22,14 @@ session_start();
 # but please set date.timezone to select your timezone.
 date_default_timezone_set('UTC');
 
-$APP_DEBUG = true;
+/**
+ * 这个常数会影响框架的调试器的输出行为，默认是关闭调试器
+*/
+define("APP_DEBUG", false);
+/**
+ * PHP.NET框架的根文件夹位置
+*/
+define("PHP_DOTNET", dirname(__FILE__));
 
 /**
  * Global function for load php.NET package 
@@ -62,7 +69,6 @@ class dotnet {
 
     public static $error_log;
     public static $debugger;
-    public static $AppDebug;
 
     /**
      * 函数返回成功消息的json字符串
@@ -108,24 +114,18 @@ class dotnet {
     const DotNetManagerFileLocation = __FILE__;
 
     /**
-     * 进行php.NET核心模块的加载操作 
+     * 进行php.NET核心模块的加载操作，请注意：在调用这个方法之前需要先使用define函数进行定义APP_DEBUG常数 
      * 
-     * @param config: php.NET框架核心正常工作所需要的配置参数，如果忽略掉这个参数的话将会使用默认配置
-     *                在默认配置下，mysql数据库模块将会无法正常工作，因为没有mysql的链接参数信息。
-     *                这个参数可以有两种形式：
-     *                1. php文件路径，如果文件不存在，则会使用默认配置数据
-     *                2. 包含有配置数据的字典数组
-     * 
-     * @param debug: 只需要修改这个参数的逻辑值就可以打开或者关闭调试器的输出行为
+     * @param string|array $config php.NET框架核心正常工作所需要的配置参数，如果忽略掉这个参数的话将会使用默认配置
+     *                             在默认配置下，mysql数据库模块将会无法正常工作，因为没有mysql的链接参数信息。
+     *                             这个参数可以有两种形式：
+     *                             
+     *                             1. php文件路径，如果文件不存在，则会使用默认配置数据
+     *                             2. 包含有配置数据的字典数组
     */
-	public static function AutoLoad($config = NULL, $debug = FALSE) {		       
+	public static function AutoLoad($config = NULL) {		       
 
-        define('APP_PATH',  dirname(__FILE__)."/");
-        define("APP_DEBUG", $debug);
-
-        self::$AppDebug = $debug;
-
-        if (self::$AppDebug) {
+        if (APP_DEBUG) {
             # 调试器必须先于Imports函数调用，否则会出现错误：
             # PHP Fatal error:  Call to a member function add_loaded_script() on a non-object
             dotnet::$debugger = new dotnetDebugger();    
@@ -176,7 +176,7 @@ class dotnet {
     }
     
     public static function printMySqlTransaction() {
-        if (self::$AppDebug) {
+        if (APP_DEBUG) {
             echo debugView::GetMySQLView(self::$debugger);
         }
     }
@@ -185,7 +185,7 @@ class dotnet {
      * php写日志文件只能够写在自己的wwwroot文件夹之中 
     */
     public static function writeMySqlLogs($onlyErrors = FALSE) {      
-        if (self::$AppDebug) {
+        if (APP_DEBUG) {
             if (self::$debugger->hasMySqlLogs()) {
                 if ($onlyErrors) {
                     if (self::$debugger->hasMySqlErrs()) {
@@ -233,7 +233,7 @@ class dotnet {
         // 在这里导入需要导入的模块文件
         include_once($mod);
         
-        if (self::$AppDebug) {
+        if (APP_DEBUG) {
             $bt    = debug_backtrace();             
             $trace = array();
 
