@@ -171,6 +171,17 @@ class Enumerable {
 
 		return $table;
 	}
+
+	/**
+	 * Returns the last element of a sequence.
+	 * 
+	 * @param array $source An System.Collections.Generic.IEnumerable<T> to return the last element of.
+	 *
+	 * @return mix The value at the last position in the source sequence.
+	*/
+	public static function Last($source) {
+		return end($source);
+	}
 }
 
 ?>

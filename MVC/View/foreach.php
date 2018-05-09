@@ -25,7 +25,34 @@ namespace MVC\Views {
         */
 
         public static function InterpolateTemplate($html, $vars) {
-            # 首先使用正则表达式解析出文档碎片
+            # 首先使用正则表达式解析出文档碎片之中的模板
+            $pattern   = "<foreach @.+?>.+?</foreach>";
+            $templates = \Regex::Matches($html, $pattern); 
+
+            # 没有找到任何模板
+            if (count($templates) === 0) {
+                return $html;
+            }
+
+            foreach($templates as $template) {
+                $var  = \explode(">", $template)[0];
+                $var  = \explode("@", $var);
+                $name = end($var);
+                $var  = $vars[$name];
+                $list = "";
+
+                if (!$var) {
+                    # 目标模板的数据源不存在
+                    # 则将占位符替换为空白字符串
+                    $list = "";
+                } else {
+                    $list = self::Build($var, $template, $name);                    
+                }
+
+                $html = Strings::Replace($html, $template, "");
+            }
+
+            return $html;
         }
 
         /**
