@@ -46,7 +46,8 @@ class View {
 	*/
 	public static function Load($path, $vars = NULL, $lang = "zhCN") {
 		$vars = self::LoadLanguage($path, $lang, $vars);
-		return View::InterpolateTemplate(file_get_contents($path), $vars, $path);
+		$html = file_get_contents($path);
+		return View::InterpolateTemplate($html, $vars, $path);
 	}
 
 	/**
@@ -124,8 +125,8 @@ class View {
 			
 			# ${includes/head.html}
 			foreach ($matches as $s) { 
-				$path    = Strings::Mid($s, 2, strlen($s) - 3);
-				$path    = realpath("$dirName/$path");
+				$path    = Strings::Mid($s, 3, strlen($s) - 3);				
+				$path    = realpath("$dirName/$path");			
 
 				# 读取获得到了文档的碎片
 				# 可能在当前的文档碎片里面还会存在依赖
@@ -159,7 +160,7 @@ class View {
 		foreach ($vars as $name => $value) {
 			$name = '{$' . $name . '}';
 			$html = Strings::Replace($html, $name, $value);
-		}
+		}		
 
 		# 处理数组循环变量，根据模板生成表格或者列表
 		$html = MVC\Views\ForEachView::InterpolateTemplate($html, $vars);
