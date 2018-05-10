@@ -1,1 +1,25 @@
-{$message}
+<!DOCTYPE HTML>
+
+<html>
+
+<head>
+    <title>Page Not Found!</title>
+    ${includes/styles.html}
+</head>
+
+<body>
+    <h1>404 Page Not Found!</h1>
+
+    <blockquote>
+        <span style="color:gray;">{$url}</span>
+    </blockquote>
+
+    <p>We could not find the above page on our servers</p>
+    <p>
+        {$message}
+    </p>
+
+    ${includes/footer.html}
+</body>
+
+</html>
