@@ -38,16 +38,20 @@ class Conversion {
 
     /**
      * 枚举所有表示True含义的字符串
-     */
-    private static $TRUEs  = array("t", "y", "true", "yes", "ok", "success", "right");
+    */
+    private static $TRUEs  = ["t", "y", "true", "yes", "ok", "success", "right"];
     /**
      * 枚举所有表示False含义的字符串
-     */
-    private static $FALSEs = array("f", "n", "false", "no", "cancel", "fail", "wrong");
+    */
+    private static $FALSEs = ["f", "n", "false", "no", "cancel", "fail", "wrong"];
 
     /**
      * 将具有特定含义的字符串表达式转换为逻辑值
-     */
+     * 
+     * @param string $str 大小写不敏感
+     * 
+     * @return bool 返回字符串的字面含义所对应的逻辑值
+    */
     public static function CBool($str) {
         $key = Strings::LCase($str);
 

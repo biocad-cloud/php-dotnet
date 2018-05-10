@@ -1,5 +1,7 @@
 <?php
 
+Imports("Microsoft.VisualBasic.Conversion");
+
 /**
  * 框架的配置文件的键名列表
 */
@@ -51,7 +53,7 @@ class DotNetRegistry {
         # 如果没有定义配置参数，则在非调试模式下永远启用，即将错误信息写入到log文件之中 
 
         if (self::hasValue(DotNetRegistry::ERR_HANDLER_DISABLE)) {
-            return self::$config[DotNetRegistry::ERR_HANDLER_DISABLE] == "TRUE"; 
+            return Conversion::CBool(self::$config[DotNetRegistry::ERR_HANDLER_DISABLE]); 
         } else {
             if (APP_DEBUG) {
                 return false;
@@ -65,7 +67,7 @@ class DotNetRegistry {
         if (self::hasValue(DotNetRegistry::ERR_HANDLER)) {
             return self::$config[DotNetRegistry::ERR_HANDLER];
         } else {
-            return "./data/php_errors.html";
+            return "./data/php_errors.log";
         }
     }
 
@@ -97,7 +99,7 @@ class DotNetRegistry {
     */
     private static function optFalse($key) {
         if (self::hasValue($key)) {
-            return self::$config[$key] == "FALSE"; 
+            return Conversion::CBool(self::$config[$key]) === false; 
         } else {
             # 键值对不存在，则肯定是False，返回True表示当前的键值是False
             return true;
