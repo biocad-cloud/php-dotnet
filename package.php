@@ -144,9 +144,9 @@ class dotnet {
 		dotnet::Imports("MVC.view");
 		dotnet::Imports("MVC.model");
 		dotnet::Imports("MVC.router");
-        dotnet::Imports("MVC.driver");       
-        dotnet::Imports("MVC.sqlBuilder");
-        dotnet::Imports("MVC.expression");
+        dotnet::Imports("MVC.MySql.driver");       
+        dotnet::Imports("MVC.MySql.sqlBuilder");
+        dotnet::Imports("MVC.MySql.expression");
 
         if ($config) {
             # config存在赋值，则判断一下是否为字符串？
@@ -225,7 +225,7 @@ class dotnet {
     }
 
     private static function writeMySqlLogs2() {
-        $log = "./data/mysql_logs.html";
+        $log = "./data/mysql_logs.log";
 
         FileSystem::WriteAllText($log, "<h5>API: $_SERVER[REQUEST_URI]</h5>\n", TRUE);
         FileSystem::WriteAllText($log, "<ul>" . debugView::GetMySQLView(self::$debugger) . "</ul>\n", TRUE);
