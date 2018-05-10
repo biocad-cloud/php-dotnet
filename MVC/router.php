@@ -23,12 +23,7 @@ class Router {
 		} else {
 			$page = $_GET["app"];
 		}		
-		
-		if (APP_DEBUG) {
-			# print_r($argv);
-			# print_r($page);
-		}
-		
+				
 		if (method_exists($app, $page)) {
 			$app->{$page}();
 		} else {

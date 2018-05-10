@@ -275,7 +275,7 @@ class dotnet {
     }
 
 	/**
-	 * PHP throw exception helper
+	 * PHP throw exception helper for show exception in .NET exception style
 	*/
     public static function ThrowException($message) {      
 		$trace = StackTrace::GetCallStack();

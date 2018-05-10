@@ -50,13 +50,15 @@ class StackTrace {
             // 解析出当前的栈片段信息
             extract($v); 
 
+            echo APP_DEBUG . "\n\n";
+            echo APP_PATH . "\n\n";
+            echo $file . "\n\n";
+            echo "==================\n\n";
+
             if (!APP_DEBUG) {
                 # 在非调试模式下，将服务器的文件系统信息隐藏掉
-                if (defined(APP_PATH)) {
-                    $file = Strings::Replace($file, APP_PATH, "~");
-                }
-
-                $file = Strings::Replace($file, PHP_DOTNET, "~");
+                if (defined(APP_PATH))   $file = Strings::Replace($file, APP_PATH, "~");
+                if (defined(PHP_DOTNET)) $file = Strings::Replace($file, PHP_DOTNET, "");
             }
 
             $trace->AppendLine("    at $function in $file:line $line<br/>");    
