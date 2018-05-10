@@ -5,6 +5,8 @@ Imports("Microsoft.VisualBasic.Strings");
 use MVC\MySql\Expression\WhereAssert as MySqlScript;
 
 /**
+ * WebApp data model.
+ * 
  * 数据表模型，这个模块主要是根据schema字典构建出相应的SQL表达式
  * 然后通过driver模型进行执行
 */
