@@ -52,12 +52,14 @@ class StackTrace {
             
             if (!APP_DEBUG) {
                 # 在非调试模式下，将服务器的文件系统信息隐藏掉
-                if (defined("PHP_DOTNET")) $file = Strings::Replace($file, PHP_DOTNET, "");
-                if (defined("APP_PATH"))   $file = Strings::Replace($file, APP_PATH, "~");
+                if (defined("PHP_DOTNET")) $file = Strings::Replace($file, PHP_DOTNET, "/wwwroot/docker/ubuntu~/->/");
+                if (defined("APP_PATH"))   $file = Strings::Replace($file, APP_PATH,   "/wwwroot/docker/ubuntu~/->/");
             } else {
                
             }            
 
+            $file = Strings::Replace($file, "\\", "/");
+            $file = Strings::Replace($file, "//", "/");
             $trace->AppendLine("    at $function in $file:line $line<br/>");    
         } 
      
