@@ -45,9 +45,20 @@ class DotNetRegistry {
         return array();
     }
 
-    public static function DisableErrorHandler() {        
-        $optFalse = self::optFalse(DotNetRegistry::ERR_HANDLER_DISABLE);
-        return !$optFalse;
+    public static function DisableErrorHandler() {    
+        # 当没有定义配置参数的时候，会根据是否处于调试模式来返回flag状态
+        # 如果没有定义配置参数，则在调试模式下永远禁用，即将在调试模式下所有的错误都显示在页面上
+        # 如果没有定义配置参数，则在非调试模式下永远启用，即将错误信息写入到log文件之中 
+
+        if (self::hasValue(DotNetRegistry::ERR_HANDLER_DISABLE)) {
+            return self::$config[DotNetRegistry::ERR_HANDLER_DISABLE] == "TRUE"; 
+        } else {
+            if (APP_DEBUG) {
+                return false;
+            } else {
+                return true;
+            }
+        }        
     }
 
     public static function LogFile() {       
