@@ -185,6 +185,22 @@ class dotnet {
         }, E_ALL);
     }
     
+    public static function GetLanguageConfig() {
+        if (array_key_exists("lang", $_GET)) {
+			$lang = Strings::LCase($_GET["lang"]);
+		} else {
+			$lang = "zhCN";
+		}
+
+		if ($lang && ($lang === "enus" || $lang === "en") ) {
+			$lang = "enUS";
+		} else {
+			$lang = "zhCN";
+		}
+		
+		return ["lang" => $lang];
+    }
+
     public static function printMySqlTransaction() {
         if (APP_DEBUG) {
             echo debugView::GetMySQLView(self::$debugger);

@@ -10,6 +10,7 @@ class DotNetRegistry {
     // 日志文件的文件路径
     const ERR_HANDLER         = "ERR_HANDLER";
     const MVC_VIEW_ROOT       = "MVC_VIEW_ROOT";
+    const DEFAULT_LANGUAGE    = "DEFAULT_LANGUAGE";
 
     /**
      * 包括mysql数据库的链接参数信息以及框架的设置参数  
@@ -31,6 +32,10 @@ class DotNetRegistry {
         } else {
             return $default;
         }
+    }
+
+    public static function DefaultLanguage() {
+        return self::Read(DotNetRegistry::DEFAULT_LANGUAGE, "zhCN");
     }
 
     /**
