@@ -12,7 +12,7 @@ class Utils {
     */
     public static function Tuple($table) {
         $keys  = array_keys($table);
-        $value = $table($keys[0]);
+        $value = $table[$keys[0]];
         
         return [$keys[0], $value];
     }
