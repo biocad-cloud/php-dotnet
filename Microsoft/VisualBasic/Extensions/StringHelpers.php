@@ -1,5 +1,7 @@
 <?php
 
+Imports("Microsoft.VisualBasic.Strings");
+
 class StringHelpers {
 
     /**
@@ -28,6 +30,26 @@ class StringHelpers {
             $str = Strings::Mid($str, $p, $q - $p);
             return $str;
         }
+    }
+
+    /**
+     * Text parser for the format: ``tagName{<paramref name="delimiter"/>}value``
+    */
+    public static function GetTagValue($str, $delimiter = " ") {
+        if (empty($str)) {
+            return [];
+        }
+
+        $p = Strings::InStr($str, $delimiter);
+
+        if ($p === 0) {
+            return [$str => ""];
+        }
+
+        $key   = Strings::Mid($str, 1, $p - 1);
+        $value = Strings::Mid($str, $p + Strings::Len($delimiter));
+
+        return [$key => $value];
     }
 }
 ?>
