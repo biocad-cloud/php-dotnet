@@ -185,6 +185,8 @@ class Utils {
     }
 
     /**
+     * 加密或者解密消息字符串
+     * 
      * @param string $string 字符串，明文或密文
      * @param string $operation DECODE表示解密，其它表示加密
      * @param string $key 密匙
