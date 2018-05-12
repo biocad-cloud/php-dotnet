@@ -13,6 +13,7 @@ class DotNetRegistry {
     const ERR_HANDLER         = "ERR_HANDLER";
     const MVC_VIEW_ROOT       = "MVC_VIEW_ROOT";
     const DEFAULT_LANGUAGE    = "DEFAULT_LANGUAGE";
+    const DEFAULT_AUTH_KEY    = "DEFAULT_AUTH_KEY";
 
     /**
      * 包括mysql数据库的链接参数信息以及框架的设置参数  
@@ -38,6 +39,10 @@ class DotNetRegistry {
 
     public static function DefaultLanguage() {
         return self::Read(DotNetRegistry::DEFAULT_LANGUAGE, "zhCN");
+    }
+
+    public static function DefaultAuthKey() {
+        return self::Read(DotNetRegistry::DEFAULT_AUTH_KEY, "php-dotnet");
     }
 
     /**
