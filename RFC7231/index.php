@@ -5,7 +5,7 @@ Imports("php.Utils");
 class RFC7231Error {
 	
 	public static function getPath($code) {
-		return dirname(__FILE__) . "/$code.html";
+		return (DotNetRegistry::RFC7231Folder() ?? dirname(__FILE__)) . "/$code.html";
 	}
 	
 	private static function display($code, $message) {
