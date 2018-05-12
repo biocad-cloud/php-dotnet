@@ -178,7 +178,11 @@ class Utils {
 	private static function round_dp($num, $dp) {		
 	  	$sh = pow(10, $dp);
 	  	return round($num * $sh) / $sh;
-	}
+    }
+    
+    public static function ArrayCopy($array) {
+        return (new ArrayObject($array))->getArrayCopy();
+    }
 }
 
 ?>
