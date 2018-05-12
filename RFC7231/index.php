@@ -9,10 +9,11 @@ class RFC7231Error {
 	}
 	
 	private static function display($code, $message) {
-		header(RFC7231Error::getRFC($code));		
+		header($httpResponse = RFC7231Error::getRFC($code));		
 		View::Show(RFC7231Error::getPath($code), [
 			"message" => $message,
-			"url"     => Utils::URL()
+			"url"     => Utils::URL(),
+			"title"   => $httpResponse
 		]);
 		exit(-1);
 	}
