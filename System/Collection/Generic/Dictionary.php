@@ -4,7 +4,8 @@ Imports("System.Collection.ICollection");
 Imports("php.Utils");
 
 /**
- * Represents a collection of keys and values.To browse the .NET Framework source code for this type, see the Reference Source.
+ * Represents a collection of keys and values.To browse the .NET Framework source code for this 
+ * type, see the Reference Source.
  * 
  * 模拟VB.NET之中的字典对象，在字典之中的每一个元素对象都是
  * 由{key, value}这样子的键值对所构成的
@@ -12,9 +13,11 @@ Imports("php.Utils");
 class Dictionary extends ICollection implements ArrayAccess {
 	
 	private $container;
+	private $default;
 
-	public function __construct($table = NULL) {
+	public function __construct($table = NULL, $default = null) {
 		$this->container = Utils::ArrayCopy($table);
+		$this->default   = $default;
 	}
 
 	/**
@@ -36,13 +39,15 @@ class Dictionary extends ICollection implements ArrayAccess {
 	}
 
 	/**
-	 * Determines whether the System.Collections.Generic.Dictionary<T1,T2> contains the specified key.
+	 * Determines whether the System.Collections.Generic.Dictionary<T1,T2> contains the 
+	 * specified key.
 	 *
 	 * 判断指定的键名是否存在于当前的字典对象之中
 	 * 
-	 * @param string $key: The key to locate in the System.Collections.Generic.Dictionary<T1,T2>.
-	 * @return boolean: true if the System.Collections.Generic.Dictionary<T1,T2> contains an element with the specified key; otherwise, false.
-	 *
+	 * @param string $key The key to locate in the System.Collections.Generic.Dictionary<T1,T2>.
+	 * 
+	 * @return boolean true if the System.Collections.Generic.Dictionary<T1,T2> contains an element 
+	 *                 with the specified key; otherwise, false.
 	*/
 	public function ContainsKey($key) {
 		return array_key_exists($key, $this->__data);
@@ -63,7 +68,9 @@ class Dictionary extends ICollection implements ArrayAccess {
 	 * Gets or sets the value associated with the specified key.
 	*/
     public function offsetGet($offset) {
-        return isset($this->container[$offset]) ? $this->container[$offset] : null;
+		return isset($this->container[$offset]) ? 
+			$this->container[$offset] : 
+			$this->default;
 	}
 
 	/**
@@ -88,6 +95,10 @@ class Dictionary extends ICollection implements ArrayAccess {
     }
 
 	#endregion
+
+	public static function From($table, $default = null) {
+		return new Dictionary($table, $default);
+	}
 }
 
 ?>
