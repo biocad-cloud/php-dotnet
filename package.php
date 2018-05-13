@@ -290,8 +290,10 @@ class dotnet {
         return dirname(self::DotNetManagerFileLocation);
     }
 
+    #region "error codes"
+
 	/**
-	 * PHP throw exception helper for show exception in .NET exception style
+	 * 500 PHP throw exception helper for show exception in .NET exception style
 	*/
     public static function ThrowException($message) {      
 		$trace = StackTrace::GetCallStack();
@@ -301,6 +303,9 @@ class dotnet {
 		exit(0);
     }
 
+    /**
+     * 404
+    */
     public static function PageNotFound($message) {
         $trace = StackTrace::GetCallStack();
 		$exc   = dotnetException::FormatOutput($message, $trace);
@@ -308,5 +313,18 @@ class dotnet {
 		RFC7231Error::err404($exc);
 		exit(0);
     }
+
+    /**
+     * 403
+    */
+    public static function AccessDenied($message) {
+        $trace = StackTrace::GetCallStack();
+		$exc   = dotnetException::FormatOutput($message, $trace);
+				
+		RFC7231Error::err403($exc);
+		exit(0);
+    }
+
+    #endregion
 }
 ?>
