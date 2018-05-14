@@ -22,5 +22,9 @@ class File {
 	public static function ReadAllText($path, $encoding = "Utf8") {
 		
 	}
+
+	public static function Exists($path) {
+		return file_exists($path);
+	}
 }
 ?>

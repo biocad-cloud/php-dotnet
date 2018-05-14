@@ -26,6 +26,7 @@ include_once PHP_DOTNET . "/Debugger/view.php";
 include_once PHP_DOTNET . "/Debugger/console.php";
 
 # 加载工具框架
+include_once PHP_DOTNET . "/System/IO/File.php";
 include_once PHP_DOTNET . "/System/Diagnostics/StackTrace.php";
 include_once PHP_DOTNET . "/System/Text/StringBuilder.php";
 include_once PHP_DOTNET . "/Microsoft/VisualBasic/Strings.php";
@@ -253,6 +254,10 @@ class dotnet {
             $mod = str_replace(".", "/", $mod); 
             $mod = PHP_DOTNET . "/{$mod}.php";
         }   
+
+        if (!File::Exists($mod)) {
+            $mod = dirname($mod) . "/index.php";
+        }
 
         // 在这里导入需要导入的模块文件
         include_once($mod);
