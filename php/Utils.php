@@ -1,5 +1,14 @@
 <?php
 
+# 因为在package.php之中本模块是属于第一个加载的，Imports函数还无法使用
+# 所以在这里直接使用 include <文件路径> 来显式导入
+
+# 2018-3-8 因为这个函数之中需要调用Microsoft.VisualBasic.Strings模块
+# 可能会因为在本脚本的头部进行引用其他的脚本文件的时候，这个模块的脚本还
+# 没有被加载，所以会导致出现无法找到类Strings的错误
+# 在这里显式的引入一次这个文件即可解决问题
+include_once PHP_DOTNET . "/Microsoft/VisualBasic/Strings.php";
+
 /**
  * PHP WEB programming utils from php.NET framework
 */
@@ -114,12 +123,6 @@ class Utils {
      * @return string 函数返回不带小数点的文件拓展名
     */
     public static function GetExtensionSuffix($path) {
-        # 2018-3-8 因为这个函数之中需要调用Microsoft.VisualBasic.Strings模块
-        # 可能会因为在本脚本的头部进行引用其他的脚本文件的时候，这个模块的脚本还
-        # 没有被加载，所以会导致出现无法找到类Strings的错误
-        # 在这里显式的引入一次这个文件即可解决问题
-        include_once dotnet::GetDotnetManagerDirectory() . "/Microsoft/VisualBasic/Strings.php";
-
         $array  = Strings::Split($path, ".");
         $suffix = array_values(array_slice($array, -1));
         $suffix = $suffix[0];
@@ -208,7 +211,7 @@ class Utils {
         $key_length = strlen($cryptkey);   
         // 明文，前10位用来保存时间戳，解密时验证数据有效性，10到26位用来保存$keyb(密匙b)， 
         // 解密时会通过这个密匙验证数据完整性   
-        // 如果是解码的话，会从第$ckey_length位开始，因为密文前$ckey_length位保存 动态密匙，以保证解密正确   
+        // 如果是解码的话，会从第$ckey_length位开始，因为密文前$ckey_length位保存 动态密匙，以保证解密正确
         $string = $operation == 'DECODE' ? 
             base64_decode(substr($string, $ckey_length)) : 
             sprintf('%010d', $expiry ? $expiry + time() : 0) . substr(md5($string.$keyb), 0, 16) . $string;

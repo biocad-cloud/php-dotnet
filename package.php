@@ -10,25 +10,32 @@ if (!defined('APP_DEBUG')) {
 
 /**
  * PHP.NET框架的根文件夹位置
+ * 获取得到package.php这个文件的所处的文件夹的位置
 */
 define("PHP_DOTNET", dirname(__FILE__));
 
-include_once dotnet::GetDotnetManagerDirectory() . "/php/Utils.php";
+# 加载帮助函数模块
+include_once PHP_DOTNET . "/php/Utils.php";
 
 # 调试器必须要优先于其他模块进行加载，否则会出现
 # Uncaught Error: Class 'dotnetDebugger' not found
 # 的错误
-include_once dotnet::GetDotnetManagerDirectory() . "/Debugger/dotnetException.php";
-include_once dotnet::GetDotnetManagerDirectory() . "/Debugger/engine.php";
-include_once dotnet::GetDotnetManagerDirectory() . "/Debugger/view.php";
-include_once dotnet::GetDotnetManagerDirectory() . "/Debugger/console.php";
+include_once PHP_DOTNET . "/Debugger/dotnetException.php";
+include_once PHP_DOTNET . "/Debugger/engine.php";
+include_once PHP_DOTNET . "/Debugger/view.php";
+include_once PHP_DOTNET . "/Debugger/console.php";
 
-include_once dotnet::GetDotnetManagerDirectory() . "/System/Diagnostics/StackTrace.php";
-include_once dotnet::GetDotnetManagerDirectory() . "/System/Text/StringBuilder.php";
-include_once dotnet::GetDotnetManagerDirectory() . "/Microsoft/VisualBasic/Strings.php";
-include_once dotnet::GetDotnetManagerDirectory() . "/Microsoft/VisualBasic/ApplicationServices/Debugger/Logging/LogFile.php";
-include_once dotnet::GetDotnetManagerDirectory() . "/RFC7231/index.php";
-include_once dotnet::GetDotnetManagerDirectory() . "/Registry.php";
+# 加载工具框架
+include_once PHP_DOTNET . "/System/Diagnostics/StackTrace.php";
+include_once PHP_DOTNET . "/System/Text/StringBuilder.php";
+include_once PHP_DOTNET . "/Microsoft/VisualBasic/Strings.php";
+include_once PHP_DOTNET . "/Microsoft/VisualBasic/ApplicationServices/Debugger/Logging/LogFile.php";
+
+include_once PHP_DOTNET . "/MSDN.php";
+
+# 加载Web框架部件
+include_once PHP_DOTNET . "/RFC7231/index.php";
+include_once PHP_DOTNET . "/Registry.php";
 
 session_start();
 
@@ -82,20 +89,20 @@ class dotnet {
      * 函数返回成功消息的json字符串
     */ 
     public static function successMsg($msg) {	
-		return json_encode(array(
+		return json_encode([
 			'code' => 0,
-            'info' => $msg)
-        );
+            'info' => $msg
+        ]);
 	}
     
     /**
      * 函数返回失败消息的json字符串
     */ 
 	public static function errorMsg($msg, $errorCode = 1) {
-		return json_encode(array(
+		return json_encode([
 			'code' => $errorCode,
-            'info' => $msg)
-        );
+            'info' => $msg
+        ]);
 	}
 
     public static function HandleRequest($app, $wwwroot = NULL) {
@@ -115,13 +122,6 @@ class dotnet {
     const MethodNotImplemented = "This method have not implemented yet!";
     
     /**
-     * 获取得到package.php这个文件的文件路径
-     * 
-     * @return string
-     */
-    const DotNetManagerFileLocation = __FILE__;
-
-    /**
      * 进行php.NET核心模块的加载操作，请注意：在调用这个方法之前需要先使用define函数进行定义APP_DEBUG常数 
      * 
      * @param string|array $config php.NET框架核心正常工作所需要的配置参数，如果忽略掉这个参数的话将会使用默认配置
@@ -137,7 +137,7 @@ class dotnet {
             # 调试器必须先于Imports函数调用，否则会出现错误：
             # PHP Fatal error:  Call to a member function add_loaded_script() on a non-object
             if (!self::$debugger) {
-                self::$debugger = new dotnetDebugger();    
+                 self::$debugger = new dotnetDebugger();    
             }            
         }   
 
@@ -235,25 +235,23 @@ class dotnet {
      * 对于这个函数额调用者而言，就是获取调用者所在的脚本的文件夹位置
      * 这个函数是使用require_once来进行模块调用的
      *
-     * @param mod: 直接为命名空间的路径，不需要考虑相对路径或者添加文件后缀名，例如需要导入VisualBasic的Strings模块的方法，
-     *             只需要调用代码
+     * @param string $mod: 直接为命名空间的路径，不需要考虑相对路径或者添加文件后缀名，例如需要导入VisualBasic的Strings模块的方法，
+     *                     只需要调用代码
      * 
      *     dotnet::Imports("Microsoft.VisualBasic.Strings");
      * 
      * @return string 这个函数返回所导入的模块的完整的文件路径
     */
-    public static function Imports($mod, $initiatorOffset = 0) {  	
-                
-        $DIR = self::GetDotnetManagerDirectory();
-        	
+    public static function Imports($mod, $initiatorOffset = 0) {        
+
         // 因为WithSuffixExtension这个函数会需要依赖小数点来判断文件拓展名，
         // 所以对小数点的替换操作要在if判断之后进行  
         if (Utils::WithSuffixExtension($mod, "php")) {
             $mod = str_replace(".", "/", $mod); 
-            $mod = "{$DIR}/{$mod}";
+            $mod = PHP_DOTNET . "/{$mod}";
         } else {
             $mod = str_replace(".", "/", $mod); 
-            $mod = "{$DIR}/{$mod}.php";
+            $mod = PHP_DOTNET . "/{$mod}.php";
         }   
 
         // 在这里导入需要导入的模块文件
@@ -283,15 +281,10 @@ class dotnet {
         return $mod;
     }
 
-    /**
-     * 获取得到package.php这个文件的所处的文件夹的位置
-    */
-    public static function GetDotnetManagerDirectory() {
-        return dirname(self::DotNetManagerFileLocation);
-    }
+    #region "error codes"
 
 	/**
-	 * PHP throw exception helper for show exception in .NET exception style
+	 * 500 PHP throw exception helper for show exception in .NET exception style
 	*/
     public static function ThrowException($message) {      
 		$trace = StackTrace::GetCallStack();
@@ -301,6 +294,9 @@ class dotnet {
 		exit(0);
     }
 
+    /**
+     * 404 资源没有找到
+    */
     public static function PageNotFound($message) {
         $trace = StackTrace::GetCallStack();
 		$exc   = dotnetException::FormatOutput($message, $trace);
@@ -308,5 +304,18 @@ class dotnet {
 		RFC7231Error::err404($exc);
 		exit(0);
     }
+
+    /**
+     * 403 用户当前的身份凭证没有访问权限，访问被拒绝
+    */
+    public static function AccessDenied($message) {
+        $trace = StackTrace::GetCallStack();
+		$exc   = dotnetException::FormatOutput($message, $trace);
+				
+		RFC7231Error::err403($exc);
+		exit(0);
+    }
+
+    #endregion
 }
 ?>
