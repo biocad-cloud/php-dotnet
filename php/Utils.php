@@ -184,7 +184,11 @@ class Utils {
     }
     
     public static function ArrayCopy($array) {
-        return (new ArrayObject($array))->getArrayCopy();
+        if (empty($array)) {
+            return [];
+        } else {
+            return (new ArrayObject($array))->getArrayCopy();
+        }
     }
 
     /**
@@ -193,7 +197,9 @@ class Utils {
      * @param string $string 字符串，明文或密文
      * @param string $operation DECODE表示解密，其它表示加密
      * @param string $key 密匙
-     * @param string $expiry 密文有效期
+     * @param integer $expiry 密文有效期
+     * 
+     * @return string 加密之后的密文或者解密之后的明文
     */
     public static function AuthCode($string, $operation = 'DECODE', $key = '', $expiry = 0) {   
         // 动态密匙长度，相同的明文会生成不同密文就是依靠动态密匙   
