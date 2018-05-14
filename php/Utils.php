@@ -118,7 +118,7 @@ class Utils {
         # 可能会因为在本脚本的头部进行引用其他的脚本文件的时候，这个模块的脚本还
         # 没有被加载，所以会导致出现无法找到类Strings的错误
         # 在这里显式的引入一次这个文件即可解决问题
-        include_once dotnet::GetDotnetManagerDirectory() . "/Microsoft/VisualBasic/Strings.php";
+        include_once PHP_DOTNET . "/Microsoft/VisualBasic/Strings.php";
 
         $array  = Strings::Split($path, ".");
         $suffix = array_values(array_slice($array, -1));

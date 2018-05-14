@@ -240,18 +240,16 @@ class dotnet {
      * 
      * @return string 这个函数返回所导入的模块的完整的文件路径
     */
-    public static function Imports($mod, $initiatorOffset = 0) {  	
-                
-        $DIR = self::GetDotnetManagerDirectory();
-        	
+    public static function Imports($mod, $initiatorOffset = 0) {        
+
         // 因为WithSuffixExtension这个函数会需要依赖小数点来判断文件拓展名，
         // 所以对小数点的替换操作要在if判断之后进行  
         if (Utils::WithSuffixExtension($mod, "php")) {
             $mod = str_replace(".", "/", $mod); 
-            $mod = "{$DIR}/{$mod}";
+            $mod = PHP_DOTNET . "/{$mod}";
         } else {
             $mod = str_replace(".", "/", $mod); 
-            $mod = "{$DIR}/{$mod}.php";
+            $mod = PHP_DOTNET . "/{$mod}.php";
         }   
 
         // 在这里导入需要导入的模块文件
