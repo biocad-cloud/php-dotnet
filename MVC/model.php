@@ -280,9 +280,7 @@ class Table {
         } else {
             $SQL = "SELECT * FROM `$db`.`$table` LIMIT 1;";
         }	
-		
-		# echo $SQL;
-
+	
         return $this->driver->ExecuteScalar($mysqli_exec, $SQL);
     }
 
@@ -292,7 +290,7 @@ class Table {
 	 * 
 	 * @param name The table field name. Case sensitive! 
 	 * 
-	 * @return mix The reuqired field value. 
+	 * @return mixed The reuqired field value. 
 	*/
 	public function findfield($name) {
 		$single = $this->find();
@@ -340,7 +338,7 @@ class Table {
     /**
      * Create a where condition filter for the next SQL expression.
      *	  
-     * @param assert The assert array of the where condition or an string expression.
+     * @param mixed $assert The assert array of the where condition or an string expression.
     */
     public function where($assert) {
 		$next = null;
@@ -362,7 +360,7 @@ class Table {
 	/**
 	 * insert into.
 	 *
-	 * @param data table row data in array type
+	 * @param array $data table row data in array type
 	*/ 
     public function add($data) {
 
@@ -456,7 +454,9 @@ class Table {
         }	
     }
 
-    // update table
+    /**
+	 * update table
+	*/ 
     public function save($data) {
 		$table   = $this->tableName;
 		$db      = $this->databaseName;
@@ -495,7 +495,9 @@ class Table {
 		}
     }
 
-    // delete from
+    /**
+	 * delete from
+	*/ 
     public function delete() {
 		$table  = $this->tableName;
 		$db     = $this->databaseName;

@@ -128,6 +128,8 @@ class View {
 				$path    = Strings::Mid($s, 3, strlen($s) - 3);				
 				$path    = realpath("$dirName/$path");			
 
+				# echo $path . "\n\n";
+
 				# 读取获得到了文档的碎片
 				# 可能在当前的文档碎片里面还会存在依赖
 				# 则继续递归下去

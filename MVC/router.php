@@ -28,7 +28,7 @@ class Router {
 			$app->{$page}();
 		} else {
 			$message = "Web app `<strong>$page</strong>` is not available in this controller!";
-			dotnet::ThrowException($message);
+			dotnet::PageNotFound($message);
 		}
 		
 		# 在末尾输出调试信息？
