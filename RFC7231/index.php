@@ -5,7 +5,7 @@ Imports("MSDN");
 
 /**
  * Custom error page supports
- */
+*/
 class RFC7231Error {
 	
 	public static function getPath($code) {
