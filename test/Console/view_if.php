@@ -5,7 +5,7 @@ include "../../package.php";
 dotnet::AutoLoad();
 
 Imports("MVC.View.foreach");
-Imports("MVC.View.if");
+Imports("MVC.View.inline");
 Imports("php.Utils");
 
 $vars["title"] = "测试";
@@ -22,17 +22,19 @@ $vars["list"] = [
     ["name" => "jjjjj1", "value" => 1099]
 ];
 
-$id = -1000;
+$vars["id"] = -1000;
 
 # 先替换变量
 # 然后foreach
 # 最后php内联求值
 
-$template = file_get_contents("./view_info.html"); 
-$php = MVC\Views\ForEachView::InterpolateTemplate($template, $vars);
-$php = eval(' ?>' . $php . '<?php ');
+/* $template = file_get_contents("./view_info.html"); 
+# $php = MVC\Views\ForEachView::InterpolateTemplate($template, $vars);
+# $php = eval(' ?>' . $php . '<?php ');
+*/
 
+# echo $php;
 
-echo $php;
+echo View::Load("./view_info.html", $vars);
 
 ?>

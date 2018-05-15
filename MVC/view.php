@@ -4,6 +4,7 @@ Imports("System.Diagnostics.StackTrace");
 Imports("System.Linq.Enumerable");
 Imports("Microsoft.VisualBasic.Strings");
 Imports("MVC.View.foreach");
+Imports("MVC.View.inline");
 
 /**
  * html user interface view handler
@@ -174,7 +175,9 @@ class View {
 
 		# 处理数组循环变量，根据模板生成表格或者列表
 		$html = MVC\Views\ForEachView::InterpolateTemplate($html, $vars);
-		
+		# 处理内联的表达式，例如if条件显示
+		$html = MVC\Views\InlineView::RenderInlineTemplate($html);
+
 		return $html;
 	}
 }
