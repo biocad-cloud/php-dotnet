@@ -22,6 +22,8 @@ $vars["list"] = [
     ["name" => "jjjjj1", "value" => 1099]
 ];
 
+$id = -1000;
+
 # 先替换变量
 # 然后foreach
 # 最后php内联求值

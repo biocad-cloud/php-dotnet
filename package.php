@@ -253,15 +253,25 @@ class dotnet {
         } else {
             $mod = str_replace(".", "/", $mod);             
 
-            if (is_dir(PHP_DOTNET . "/$mod/")) {
-                $mod = PHP_DOTNET . "/$mod/index.php";
+            # 2018-5-15 假若Imports("MVC.view");
+            # 因为文件结构之中，有一个view.php和view文件夹
+            # 所以在这里会产生冲突
+            # 在linux上面因为文件系统区分大小写，所以可以通过大小写来避免冲突
+            # 但是windows上面却不可以
+            # 在这里假设偏向于加载文件
 
-                if (!File::Exists($mod)) {
-                    # 则认为是导入该命名空间文件夹下的所有的同级的文件夹文件
-                    return self::importsAll($mod, $initiatorOffset + 1);
-                }
-            } else {
-                $mod = PHP_DOTNET . "/{$mod}.php";
+            $php = PHP_DOTNET . "/{$mod}.php";
+
+            # 如果是文件存在，则只导入文件
+            if (File::Exists($php)) {
+                $mod = $php;
+            } elseif (File::Exists($php = PHP_DOTNET . "/$mod/index.php")) {
+                # 如果不存在，则使用index.php来进行判断
+                $mod = $php;
+            } elseif (is_dir($dir = PHP_DOTNET . "/$mod/")) {
+                # 可能是一个文件夹
+                # 则认为是导入该命名空间文件夹下的所有的同级的文件夹文件
+                return self::importsAll(dirname($mod), $initiatorOffset + 1);
             }
         }        
 
@@ -300,6 +310,9 @@ class dotnet {
      * 导入目标命名空间文件夹之下的所有的php模块文件
     */
     private static function importsAll($directory, $initiatorOffset) {
+
+        echo $directory . "\n\n";
+
         $files = [];
         $dir = opendir($directory);
 
