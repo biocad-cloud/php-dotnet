@@ -2,6 +2,8 @@
 
 namespace MVC\Views {
 
+    Imports("Microsoft.VisualBasic.Strings");
+
     /**
      * 直接支持php内联标签
     */
@@ -11,11 +13,12 @@ namespace MVC\Views {
          * https://stackoverflow.com/questions/1309800/php-eval-that-evaluates-html-php
          * https://stackoverflow.com/questions/4389361/include-code-from-a-php-stream
         */
-        public static function RenderInlineTemplate($template) {    
-                   
+        public static function RenderInlineTemplate($template) {
+            $config = ini_get('allow_url_include');
+
             # 在这里需要根据服务器配置参数来决定代码的流程
             # 否则会报错
-            if (ini_get('allow_url_include') === 0) {
+            if ((\Strings::Len($config) === 0) || ($config === "0") || ($config === 0)) {
 
                 # include url 被禁用掉了
                 # 使用eval函数
