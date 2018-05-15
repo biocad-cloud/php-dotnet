@@ -290,7 +290,7 @@ class dotnet {
 
             # echo var_dump(self::$debugger);
             if (!self::$debugger) {
-                self::$debugger = new dotnetDebugger();    
+                 self::$debugger = new dotnetDebugger();    
             }
             self::$debugger->add_loaded_script($mod, $initiator);
         }
