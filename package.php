@@ -251,17 +251,30 @@ class dotnet {
             $mod = str_replace(".", "/", $mod); 
             $mod = PHP_DOTNET . "/{$mod}";
         } else {
-            $mod = str_replace(".", "/", $mod); 
-            $mod = PHP_DOTNET . "/{$mod}.php";
-        }   
+            $mod = str_replace(".", "/", $mod);             
 
-        if (!File::Exists($mod)) {
-            $mod = dirname($mod) . "/index.php";
-        }
+            if (is_dir(PHP_DOTNET . "/$mod/")) {
+                $mod = PHP_DOTNET . "/$mod/index.php";
 
+                if (!File::Exists($mod)) {
+                    # 则认为是导入该命名空间文件夹下的所有的同级的文件夹文件
+                    return self::importsAll($mod, $initiatorOffset + 1);
+                }
+            } else {
+                $mod = PHP_DOTNET . "/{$mod}.php";
+            }
+        }        
+
+        self::__imports($mod, $initiatorOffset + 1);
+
+        // 返回所导入的文件的全路径名
+        return $mod;
+    }
+
+    private static function __imports($mod, $initiatorOffset) {
         // 在这里导入需要导入的模块文件
         include_once($mod);
-        
+                
         if (APP_DEBUG) {
             $bt    = debug_backtrace();             
             $trace = array();
@@ -281,9 +294,25 @@ class dotnet {
             }
             self::$debugger->add_loaded_script($mod, $initiator);
         }
+    }
 
-        // 返回所导入的文件的全路径名
-        return $mod;
+    /**
+     * 导入目标命名空间文件夹之下的所有的php模块文件
+    */
+    private static function importsAll($directory, $initiatorOffset) {
+        $files = [];
+        $dir = opendir($directory);
+
+        while ($dir && ($file = readdir($dir)) !== false) {
+            if (Utils::WithSuffixExtension($file, "php")) {
+                self::__imports($file, $initiatorOffset + 1);
+                array_push($files, $file);
+            }
+        }
+
+        closedir($dir);
+
+        return $files;
     }
 
     #region "error codes"
