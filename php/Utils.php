@@ -184,7 +184,11 @@ class Utils {
     }
     
     public static function ArrayCopy($array) {
-        return (new ArrayObject($array))->getArrayCopy();
+        if (empty($array)) {
+            return [];
+        } else {
+            return (new ArrayObject($array))->getArrayCopy();
+        }
     }
 
     /**
@@ -193,7 +197,9 @@ class Utils {
      * @param string $string 字符串，明文或密文
      * @param string $operation DECODE表示解密，其它表示加密
      * @param string $key 密匙
-     * @param string $expiry 密文有效期
+     * @param integer $expiry 密文有效期
+     * 
+     * @return string 加密之后的密文或者解密之后的明文
     */
     public static function AuthCode($string, $operation = 'DECODE', $key = '', $expiry = 0) {   
         // 动态密匙长度，相同的明文会生成不同密文就是依靠动态密匙   
@@ -211,7 +217,7 @@ class Utils {
         $key_length = strlen($cryptkey);   
         // 明文，前10位用来保存时间戳，解密时验证数据有效性，10到26位用来保存$keyb(密匙b)， 
         // 解密时会通过这个密匙验证数据完整性   
-        // 如果是解码的话，会从第$ckey_length位开始，因为密文前$ckey_length位保存 动态密匙，以保证解密正确   
+        // 如果是解码的话，会从第$ckey_length位开始，因为密文前$ckey_length位保存 动态密匙，以保证解密正确
         $string = $operation == 'DECODE' ? 
             base64_decode(substr($string, $ckey_length)) : 
             sprintf('%010d', $expiry ? $expiry + time() : 0) . substr(md5($string.$keyb), 0, 16) . $string;

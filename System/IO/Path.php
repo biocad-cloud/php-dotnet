@@ -10,6 +10,10 @@ class Path {
 		$path_parts = pathinfo($filePath);
 		return $path_parts['filename'];
 	}
+
+	public static function GetParentPath($filePath) {
+		return dirname($filePath);
+	}
 }
 
 ?>
