@@ -310,6 +310,8 @@ class dotnet {
             }
         }
 
+        closedir($dir);
+
         return $files;
     }
 
