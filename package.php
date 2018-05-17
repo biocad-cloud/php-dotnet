@@ -186,6 +186,9 @@ class dotnet {
         }, E_ALL);
     }
     
+    /**
+     * 默认是zhCN中文语言
+    */
     public static function GetLanguageConfig() {
         if (array_key_exists("lang", $_GET)) {
 			$lang = Strings::LCase($_GET["lang"]);
@@ -310,9 +313,6 @@ class dotnet {
      * 导入目标命名空间文件夹之下的所有的php模块文件
     */
     private static function importsAll($directory, $initiatorOffset) {
-
-        echo $directory . "\n\n";
-
         $files = [];
         $dir = opendir($directory);
 
