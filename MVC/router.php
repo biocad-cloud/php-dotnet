@@ -82,11 +82,10 @@ class Router {
      * 
      * @return array
      */
-    private static function mb_parse_url($url) {
+    public static function mb_parse_url($url) {
         $enc_url = preg_replace_callback(
             '%[^:/@?&=#]+%usD',
-            function ($matches)
-            {
+            function ($matches) {
                 return urlencode($matches[0]);
             },
             $url
@@ -94,13 +93,11 @@ class Router {
         
         $parts = parse_url($enc_url);
         
-        if($parts === false)
-        {
+        if($parts === false) {
             throw new \InvalidArgumentException('Malformed URL: ' . $url);
         }
         
-        foreach($parts as $name => $value)
-        {
+        foreach($parts as $name => $value) {
             $parts[$name] = urldecode($value);
         }
         

@@ -3,6 +3,7 @@
 Imports("Microsoft.VisualBasic.Strings");
 
 use MVC\MySql\Expression\WhereAssert as MySqlScript;
+use MVC\MySql\Model as Driver;
 
 /**
  * WebApp data model.
@@ -83,7 +84,7 @@ class Table {
 		$this->tableName    = $tableName;
 		$this->driver       = $config;
 		$this->databaseName = $this->driver["DB_NAME"];
-        $this->driver       = new Model(
+        $this->driver       = new Driver(
             $this->driver["DB_NAME"], 
             $this->driver["DB_USER"],
             $this->driver["DB_PWD"],
@@ -92,7 +93,7 @@ class Table {
         );
 
 		# 获取数据库的目标数据表的表结构
-		$schema = Model::GetSchema(
+		$schema = Driver::GetSchema(
 			$this->tableName, 
 			$this->driver
 		);
