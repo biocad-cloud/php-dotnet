@@ -24,22 +24,29 @@ class Table {
 	/**
 	 * 数据表的表结构
 	*/ 
-    private $schema;
+	private $schema;
+	
+	/**
+	 * 对MySql查询表达式的一些额外的配置信息数组
+	 * 例如 where limit order distinct 等
+	*/
     private $condition;
-	private $condition_type;
-	private $AI;
+
+	/**
+	 * 自增字段的列名称
+	*/
+	private $auto_increment;
 	
 	/**
 	 * Create an abstract table model.
 	 * 
-	 * @param string $type      where/in/expression
 	 * @param string $condition default is nothing, means all, no filter
 	 * @param string|array $config Database connection config, it can be: 
 	 *                             + (string) tableName, 
 	 *                             + (array) config, or 
 	 *                             + (array) [dbname => table] when multiple database config exists.
 	*/
-    function __construct($config, $condition = null, $type = "where") {
+    function __construct($config, $condition = null) {
 		if (is_string($config)) {		
 			$this->__initBaseOnTableName($config);
 		} else if(self::isValidDbConfig($config)) {			
@@ -60,8 +67,7 @@ class Table {
 			}
 		} 
 		
-		$this->condition      = $condition;
-		$this->condition_type = $type;
+		$this->condition = $condition;
 	}
 	
 	/**
@@ -69,11 +75,11 @@ class Table {
 	*/
 	private static function isValidDbConfig($config) {
 		return array_key_exists("DB_TABLE", $config) && 
-			   array_key_exists("DB_NAME", $config) && 
-			   array_key_exists("DB_USER", $config) && 
-			   array_key_exists("DB_PWD", $config) && 
-			   array_key_exists("DB_HOST", $config) && 
-			   array_key_exists("DB_PORT", $config);
+			   array_key_exists("DB_NAME",  $config) && 
+			   array_key_exists("DB_USER",  $config) && 
+			   array_key_exists("DB_PWD",   $config) && 
+			   array_key_exists("DB_HOST",  $config) && 
+			   array_key_exists("DB_PORT",  $config);
 	}
 
 	/**
@@ -98,8 +104,8 @@ class Table {
 			$this->driver
 		);
 		
-        $this->schema = $schema["schema"];
-		$this->AI     = $schema["AI"];
+        $this->schema         = $schema["schema"];
+		$this->auto_increment = $schema["AI"];
 	}
 
 	/**
@@ -189,46 +195,15 @@ class Table {
 		# 如果条件是空的话，就不再继续构建表达式了
 		# 这个SQL表达式可能是没有选择条件的
 		# 否则在下面会抛出错误的
-        if (!$this->condition || count($this->condition) == 0) {
+		if (!$this->condition            || 
+			count($this->condition) == 0 || 
+			count($this->condition["where"]) == 0) {
+
             return null;
         } else {
-			switch ($this->condition_type) {
-				
-				case "where":
-					return $this->whereGeneral();
-					break;
-				case "in":
-					return $this->whereIN();
-					break;
-				case "expression":
-					return $this->condition;
-					break;
-
-				default:
-					dotnet::ThrowException("Invalid type value: " . $this->condition_type);
-			}
+			return MySqlScript::AsExpression($this->condition["where"]);
 		}
     }
-
-	private function whereIN() {
-		$assert = array();
-		$schema = $this->schema;
-		
-		foreach ($this->condition as $field => $value) {
-			
-			if (array_key_exists($field, $schema)) {
-				$value = join("', '", $value);				
-				array_push($assert, "`$field` IN ('$value')");
-			}
-		}
-		
-		if (count($assert) == 0) {
-            $this->throwEmpty();
-        } else {
-			$assert = join(" AND ", $assert);
-			return $assert;
-		}    
-	}
 	
 	private function throwEmpty() {
 		$debug = "";
@@ -244,28 +219,6 @@ class Table {
 		
 		dotnet::ThrowException($debug);   
 	}
-	
-	private function whereGeneral() {
-		/*
-		$assert = array();
-        $schema = $this->schema;		
-		
-        foreach ($this->condition as $field => $value) {			
-			
-            if (array_key_exists($field, $schema)) {
-                array_push($assert, "`$field` = '$value'");
-            }
-        }
-
-        if (count($assert) == 0) {
-            $this->throwEmpty();
-        } else {
-			$assert = join(" AND ", $assert);
-			return $assert;
-		}        
-		*/
-		return MySqlScript::AsExpression($this->condition);
-	}	
 
 	/**
 	 * select but limit 1
@@ -342,20 +295,30 @@ class Table {
      * @param mixed $assert The assert array of the where condition or an string expression.
     */
     public function where($assert) {
-		$next = null;
+		$condition = null;
 
 		if (gettype($assert) === 'string') {
-			$next = new Table($this->tableName, $assert, "expression");
+			$condition["where"] = ["expression" => $assert];
 		} else {
-			$next = new Table($this->tableName, $assert, "where");
+			$condition["where"] = ["model" => $assert];
 		}
-        
+		
+		# 为了不影响当前的表对象实例的condition数组，在这里不直接进行添加
+		# 而是使用array_merge生成新的数组来完成添加操作
+		$condition = array_merge($condition, $this->condition);
+		$next      = new Table($this->tableName, $condition);
+
         return $next;
     }
 
+	/**
+	 * fieldName => list
+	*/
 	public function in($assert) {
-		$next = new Table($this->tableName, $assert, "in");
-		return $next;
+		$fieldName = array_keys($assert)[0];
+		$values    = $assert[$fieldName];
+		
+		return $this->where([$fieldName => in($values)]);
 	}
 	
 	/**
@@ -404,7 +367,7 @@ class Table {
 				array_push($fields, "`$fieldName`");
 				array_push($values, "'$value'");
 				
-			} else if ($this->AI && Strings::LCase($fieldName) == Strings::LCase($this->AI) ) {
+			} else if ($this->auto_increment && Strings::LCase($fieldName) == Strings::LCase($this->auto_increment) ) {
 				# Do Nothing
 			} else {
 
@@ -444,7 +407,7 @@ class Table {
 			
         } else {
 			
-            if (!$this->AI) {
+            if (!$this->auto_increment) {
 				# 这个表之中没有自增字段，则返回true
 				return true;
 			} else {
