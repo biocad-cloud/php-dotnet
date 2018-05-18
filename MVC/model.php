@@ -190,9 +190,9 @@ class Table {
 	 * select count(*) from where ``...``;
 	*/
 	public function count() {
-		$table  = $this->tableName;
-		$db     = $this->databaseName;
-        $assert = $this->getWhere();
+		$table       = $this->tableName;
+		$db          = $this->databaseName;
+        $assert      = $this->getWhere();
         $mysqli_exec = $this->driver->__init_MySql();       
 		$count       = "COUNT(*)";
 
@@ -275,6 +275,11 @@ class Table {
 		}		 
 	}
 
+	/**
+	 * 一般用于执行聚合函数查询，例如SUM, AVG, MIN, MAX等
+	 * 
+	 * @param string $aggregate 聚合函数表达式，例如 ``max(`id`)`` 等
+	*/
 	public function ExecuteScalar($aggregate) {
 		$table  = $this->tableName;
 		$db     = $this->databaseName;
@@ -351,31 +356,9 @@ class Table {
 		$db          = $this->databaseName;
 		$fields      = array();
 		$values      = array();		
-					
-		# 检查自增字段
-		/*
-		if ($this->AI) {
-			$key = $this->AI;		
-						
-			if (!$data[$key]) {
-				# 自增字段还没有值，则将表中目前最大的值+1
-				$SQL = "SELECT max(`$key`) as `uid` FROM `$table`;";
-				$uid  = $this->driver->ExecuteScalar($mysqli_exec, $SQL);							
-				
-				if (!$uid) {
-					$uid = 1;
-				} else {
-					$uid = $uid["uid"] + 1;
-				}
-								
-				$data[$key] = $uid;
-			} else {
-				$uid = $data[$key];
-			}
-			
-			# print("$key => $uid");
-		}*/
 		
+		// 使用这个for循环的主要的目的是将所传入的参数数组之中的
+		// 无关的名称给筛除掉，避免出现查询错误
 		foreach ($this->schema as $fieldName => $def) {
 			if (array_key_exists($fieldName, $data)) {
 				
