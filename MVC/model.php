@@ -131,11 +131,31 @@ class Table {
 	}
 
 	public function limit($m, $n = -1) {
+		$condition = null;
 
+		if ($n < 0) {
+			$condition["limit"] = $m;
+		} else {
+			$condition["limit"] = [$m, $n];
+		}
+
+		$condition = array_merge($this->condition, $condition);
+
+		return new Table($this->tableName, $condition);
 	}
 
 	public function order_by($keys, $desc = false) {
+		$condition = null;
 
+		if ($desc) {
+			$condition["order_by"] = [$key => "DESCIDING"];
+		} else {
+			$condition["order_by"] = [$key => "ASCIDING"];
+		}
+
+		$condition = array_merge($this->condition, $condition);
+
+		return new Table($this->tableName, $condition);
 	}
 
 	/**
@@ -162,8 +182,6 @@ class Table {
 		} else {
 			$SQL .= ";";
 		}
-
-		# print_r($SQL);
 		
         return $this->driver->ExecuteSQL($mysqli_exec, $SQL);
     }
@@ -235,7 +253,8 @@ class Table {
             $SQL = "SELECT * FROM `$db`.`$table` LIMIT 1;";
         }	
 	
-        return $this->driver->ExecuteScalar($mysqli_exec, $SQL);
+		return $this->driver
+					->ExecuteScalar($mysqli_exec, $SQL);
     }
 
 	/**
@@ -471,7 +490,7 @@ class Table {
 		if (!$assert) {
 			dotnet::ThrowException("WHERE condition can not be null in DELETE SQL!");
 		} else {
-			$SQL     = "DELETE FROM `$db`.`$table` WHERE $assert;";
+			$SQL = "DELETE FROM `$db`.`$table` WHERE $assert;";
 		}
 				
 		if (!$this->driver->exec($SQL)) {
