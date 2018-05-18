@@ -8,6 +8,11 @@ Imports("MSDN");
 */
 class RFC7231Error {
 	
+	/**
+	 * 这个函数会自动根据注册表之中的配置结果的状态返回相对应的错误代码的页面模版文件
+	 * 如果希望能够使用自定义的错误页面，需要在传递给框架的配置数据之中写入``RFC7231``
+	 * 字段的值
+	*/
 	public static function getPath($code) {
 		return (DotNetRegistry::RFC7231Folder() ?? dirname(__FILE__)) . "/$code.html";
 	}

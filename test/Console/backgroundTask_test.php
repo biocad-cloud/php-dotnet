@@ -1,6 +1,6 @@
 <?php
 
-include_once(dirname(__FILE__) . "/taskhost.php");
+include_once(dirname(__FILE__) . "../../php/taskhost.php");
 
 echo __FILE__ . "\n";
 echo taskhost::ref . "\n";

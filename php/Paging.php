@@ -3,7 +3,7 @@
 /**
  * 数据库查询数据分页帮助工具
 */
-class Page {
+class DbPaging {
 
     /*
     
@@ -19,6 +19,7 @@ class Page {
     /**
      * 返回分页数据
      * 
+     * @param string $tableName 数据表的名字或者数据库配置
      * @param array|number $id 可以是数字id或者一个数组用来指示id列
     */
     public static function RetrivePage($tableName, $id, $limits = 100) {
