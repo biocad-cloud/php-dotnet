@@ -38,6 +38,7 @@ namespace MVC\Views {
                 */
 
                 $template = "<!-- PHP inline scripting required option ``allow_url_include = On`` -->" . $template;
+                
                 return $template;
 
             } else {

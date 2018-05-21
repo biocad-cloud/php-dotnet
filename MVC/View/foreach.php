@@ -99,7 +99,8 @@ namespace MVC\Views {
                     $str = $template;
 
                     foreach ($replaceAs as $name => $index) {
-                        $str = \Strings::Replace($str, $index, $row[$name]);
+                        $str_val = $row[$name];
+                        $str = \Strings::Replace($str, $index, $str_val);
                     }
 
                     $list->Add($str);

@@ -96,13 +96,13 @@ class View {
 
 	public static function InterpolateTemplate($html, $vars, $path = NULL) {
 		# 将html片段合并为一个完整的html文档
-		$html = View::interpolate_includes($html, $path);
-		# 假设在html文档里面总是会存在url简写的，则在这里需要进行替换处理
-		$html = Router::AssignController($html);
-
+		$html = View::interpolate_includes($html, $path);	
+		
 		# 没有需要进行设置的变量字符串，则直接在这里返回html文件
 		if (!$vars) {
-			return $html;			
+			# 假设在html文档里面总是会存在url简写的，
+			# 则在这里需要进行替换处理
+			return Router::AssignController($html);		
 		} else {
 			return View::Assign($html, $vars);
 		}
@@ -175,6 +175,8 @@ class View {
 		$html = MVC\Views\ForEachView::InterpolateTemplate($html, $vars);
 		# 处理内联的表达式，例如if条件显示
 		$html = MVC\Views\InlineView::RenderInlineTemplate($html);
+		# 最后将完整的页面里面的url简写按照路由规则还原
+		$html = Router::AssignController($html);
 
 		return $html;
 	}
