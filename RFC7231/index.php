@@ -20,12 +20,12 @@ class RFC7231Error {
 	/**
 	 * Display an error code page.
 	*/
-	public static function Display($code, $message) {
+	public static function Display($code, $message, $header = "Unknown") {
 		if (!is_integer($code)) {
 			$link = MSDN::link("System.Int32");
 			dotnet::ThrowException("RFC7231 error code must be an <a href='$link'>System.Int32</a> numeric type!");
 		} else {
-			header($httpResponse = RFC7231Error::getRFC($code));	
+			header($httpResponse = RFC7231Error::getRFC($code, $header));	
 		}	
 
 		View::Show(RFC7231Error::getPath($code), [
@@ -37,7 +37,7 @@ class RFC7231Error {
 		exit($code);
 	}
 	
-	private static function getRFC($code, $header) {
+	private static function getRFC($code, $header = "Unknown") {
 		switch ($code) {
 			case 404:
 				return "HTTP/1.0 404 Not Found";
