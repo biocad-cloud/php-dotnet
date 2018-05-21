@@ -20,11 +20,19 @@ namespace MVC\Views {
             # 否则会报错
             if ((\Strings::Len($config) === 0) || ($config === "0") || ($config === 0)) {
 
+                if (APP_DEBUG) {
+                    echo "<!-- Using eval() function as engine -->";
+                }
+
                 # include url 被禁用掉了
                 # 使用eval函数
                 return eval(' ?>' . $template . '<?php ');
 
             } else {
+
+                if (APP_DEBUG) {
+                    echo "<!-- Using output buffer for dynamics includes -->";
+                }
 
                 ob_start();
 
