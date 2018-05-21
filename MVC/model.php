@@ -219,7 +219,16 @@ class Table {
 
             return null;
         } else {
-			return MySqlScript::AsExpression($this->condition["where"]);
+
+			$where = $this->condition["where"];
+			# expression -> string
+			# model      -> array
+			
+			if (array_key_exists("expression", $where)) {
+				return $where["expression"];
+			} else {
+				return MySqlScript::AsExpression($where["model"]);
+			}			
 		}
     }
 	
@@ -329,8 +338,13 @@ class Table {
 		
 		# 为了不影响当前的表对象实例的condition数组，在这里不直接进行添加
 		# 而是使用array_merge生成新的数组来完成添加操作
-		$condition = array_merge($condition, $this->condition);
-		$next      = new Table($this->tableName, $condition);
+		if ($this->condition) {
+			# null的时候会出现
+			# array_merge(): Argument #2 is not an array
+			$condition = array_merge($condition, $this->condition);
+		}
+		
+		$next = new Table($this->tableName, $condition);
 
         return $next;
     }
