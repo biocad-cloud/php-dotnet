@@ -313,6 +313,9 @@ class dotnet {
      * 导入目标命名空间文件夹之下的所有的php模块文件
     */
     private static function importsAll($directory, $initiatorOffset) {
+
+        echo $directory . "\n\n";
+
         $files = [];
         $dir = opendir($directory);
 
