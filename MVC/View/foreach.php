@@ -28,7 +28,7 @@ namespace MVC\Views {
          * </ul>
         */
 
-        public static function InterpolateTemplate($html, $vars) {
+        public static function ParseTemplates($html) {
             # 首先使用正则表达式解析出文档碎片之中的模板
             # flags表示正则表达式引擎忽略大小写并且以单行模式工作
             $pattern   = "<foreach(.*?)<\/foreach>";
@@ -37,7 +37,13 @@ namespace MVC\Views {
 
             # echo $html . "\n";
             # echo $pattern . "\n";
-            # echo \var_dump($templates);
+            echo \var_dump($templates);
+
+            return $templates;
+        }
+
+        public static function InterpolateTemplate($html, $vars) {
+            $templates = self::ParseTemplates($html);
 
             # 没有找到任何模板
             if (!$templates || count($templates) === 0) {

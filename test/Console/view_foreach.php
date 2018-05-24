@@ -7,6 +7,34 @@ dotnet::AutoLoad();
 Imports("MVC.View.foreach");
 Imports("php.Utils");
 
+$template = <<<EOT
+<ul>
+
+    <foreach @balance>
+        <li>@balance["time"] &nbsp; @balance["title"]
+             <span style='text-align: right; color: @balance["color"]'>@balance["amount"] 元</span>
+             
+             <foreach @attrs='@balance["attrs"]'>
+
+                <div class="row">@attrs["slot1"]</div>
+                <div class="row">@attrs["slot2"]</div>
+                <div class="row">@attrs["slot3"]</div>
+                <div class="row">@attrs["slot4"]</div>
+
+             </foreach>
+
+	    </li>
+ 	</foreach>
+
+</ul>
+
+EOT;
+
+
+echo var_dump(MVC\Views\ForEachView::ParseTemplates($template));
+die;
+
+
 $list = [];
 
 $list[1] = [
@@ -30,18 +58,6 @@ $list[3] = [
     "amount" => "-5000"
 ];
 
-$template = <<<EOT
-<ul>
-
-    <foreach @balance>
-        <li>@balance["time"] &nbsp; @balance["title"]
-		     <span style='text-align: right; color: @balance["color"]'>@balance["amount"] 元</span>
-	    </li>
- 	</foreach>
-
-</ul>
-
-EOT;
 
 echo json_encode($list) . "\n\n";
 
