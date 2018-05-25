@@ -136,10 +136,7 @@ namespace MVC\Views {
         public static function Build($array, $template, $var) {
             $varPattern = "@$var\[\".+?\"\]";
             $vars = \Regex::Matches($template, $varPattern);
-
-            # 2018-5-25 可能会存在嵌套模板，如何将这些嵌套模板也一同生成？
-            
-
+         
             if (count($vars) == 0) {
                 # 没有定义模板变量？？
                 return "";
@@ -153,7 +150,8 @@ namespace MVC\Views {
                     $replaceAs[$name] = $var;
                 }
 
-                $list = new \ArrayList();
+                $list    = new \ArrayList();
+                $nesting = self::nestingTemplate($template);
 
                 foreach ($array as $row) {
                     $str = $template;
@@ -161,6 +159,9 @@ namespace MVC\Views {
                     foreach ($replaceAs as $name => $index) {
                         $str_val = $row[$name];
                         $str = \Strings::Replace($str, $index, $str_val);
+                    }
+                    foreach (self::BuildNesting($nesting, $row) as $templ => $nesting_page) {
+                        $str = \Strings::Replace($str, $templ, $nesting_page);
                     }
 
                     $list->Add($str);
@@ -170,12 +171,47 @@ namespace MVC\Views {
             }
         }
 
+        /**
+         * 还有可能在这里面还存在嵌套？？？
+        */
+        public static function BuildNesting($nesting, $row) {
+            # $var => [$refName => $templ]            
+            $pages = [];
+
+            foreach($nesting as $var => $templ) {
+                list($ref, $templ) = \Utils::Tuple($templ);
+
+                $template = $templ;
+                $ref      = $row[$ref];
+                $templ    = \StringHelpers::GetStackValue($templ, ">", "<");
+
+                $varPattern = "@$var\[\".+?\"\]";
+                $vars = \Regex::Matches($templ, $varPattern);
+
+                $replaceAs = [];
+
+                foreach($vars as $var) {
+                    $name = \StringHelpers::GetStackValue($var, '"', '"');
+                    $replaceAs[$name] = $var;
+                }
+
+                foreach ($replaceAs as $name => $index) {
+                    $str_val = $ref[$name];
+                    $templ   = \Strings::Replace($templ, $index, $str_val);
+                }
+
+                $pages[$template] = $templ;
+            }
+
+            return $pages;
+        }
+
         public static function nestingTemplate($template) {
             $nesting   = self::StackParser($template);
             $templates = [];
 
             foreach($nesting as $templ) {
-                
+
                 # 在这里将变量的名称，以及引用的表达式解析出来
                 # <foreach @attrs='@list["attrs"]'>
                 $var = \explode(">", $templ)[0];
