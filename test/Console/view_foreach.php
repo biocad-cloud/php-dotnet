@@ -24,7 +24,16 @@ $template = <<<EOT
              </foreach>
 
 	    </li>
- 	</foreach>
+     </foreach>
+     
+     <foreach @list>
+
+        <foreach @attrs='@list["attrs"]'>
+        blabla
+    </foreach>
+
+
+     </foreach>
 
 </ul>
 

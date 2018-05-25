@@ -81,7 +81,7 @@ namespace MVC\Views {
                         throw new \exception("ForEach html template syntax error!");
                     } else if ($stackDepth == 0) {
                         # even, find a foreach template
-                        $len   = $i - $open_pos + 1;
+                        $len   = $i - $open_pos + 10;
                         $templ = substr($html, $open_pos, $len);
 
                         array_push($templates, $templ);
