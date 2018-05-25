@@ -170,8 +170,30 @@ namespace MVC\Views {
             }
         }
 
-        public static function nestingTemplate($template, $array, $name) {
+        public static function nestingTemplate($template) {
+            $nesting   = self::StackParser($template);
+            $templates = [];
 
+            foreach($nesting as $templ) {
+                
+                # 在这里将变量的名称，以及引用的表达式解析出来
+                # <foreach @attrs='@list["attrs"]'>
+                $var = \explode(">", $templ)[0];
+                $var = \StringHelpers::GetTagValue($var, " ");
+                $var = \Utils::Tuple($var)[1];
+                $var = \StringHelpers::GetTagValue($var, "=");
+
+                list($var, $ref) = \Utils::Tuple($var);
+
+                # @attrs => attrs
+                $var = \Strings::Mid($var, 2);
+                # '@list["attrs"]' => attrs
+                $ref = \StringHelpers::GetStackValue($ref, '"', '"');
+
+                $templates[$var] = [$ref => $templ];
+            }
+
+            return $templates;
         }
     }
 }
