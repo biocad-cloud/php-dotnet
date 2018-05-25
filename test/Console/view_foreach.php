@@ -30,6 +30,13 @@ $template = <<<EOT
 
         <foreach @attrs='@list["attrs"]'>
         blabla
+
+        <br />
+
+        <div class="row">@attrs["slot1"]</div>
+        <div class="row">@attrs["slot2"]</div>
+        <div class="row">@attrs["slot3"]</div>
+        <div class="row">@attrs["slot4"]</div>
     </foreach>
 
 
@@ -40,8 +47,8 @@ $template = <<<EOT
 EOT;
 
 
-echo var_dump(MVC\Views\ForEachView::StackParser($template));
-die;
+# echo var_dump(MVC\Views\ForEachView::StackParser($template));
+# die;
 
 
 $list = [];
@@ -68,7 +75,7 @@ $list[3] = [
 ];
 
 
-echo json_encode($list) . "\n\n";
+# echo json_encode($list) . "\n\n";
 
 echo MVC\Views\ForEachView::InterpolateTemplate($template, ["balance" => $list]);
 

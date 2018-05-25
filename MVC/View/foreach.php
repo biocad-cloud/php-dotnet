@@ -39,7 +39,7 @@ namespace MVC\Views {
 
             # echo $html . "\n";
             # echo $pattern . "\n";
-            echo \var_dump($templates);
+            # echo \var_dump($templates);
 
             return $templates;
         }
@@ -98,7 +98,7 @@ namespace MVC\Views {
         }
 
         public static function InterpolateTemplate($html, $vars) {
-            $templates = self::ParseTemplates($html);
+            $templates = self::StackParser($html);
 
             # 没有找到任何模板
             if (!$templates || count($templates) === 0) {
@@ -137,9 +137,8 @@ namespace MVC\Views {
             $varPattern = "@$var\[\".+?\"\]";
             $vars = \Regex::Matches($template, $varPattern);
 
-            # echo var_dump($array) . "\n\n";
-            # echo $template . "\n\n";
-            # echo $var . "\n\n";
+            # 2018-5-25 可能会存在嵌套模板，如何将这些嵌套模板也一同生成？
+            
 
             if (count($vars) == 0) {
                 # 没有定义模板变量？？
@@ -169,6 +168,10 @@ namespace MVC\Views {
 
                 return \Strings::Join($list->ToArray(), "\n\n");
             }
+        }
+
+        public static function nestingTemplate($template, $array, $name) {
+
         }
     }
 }
