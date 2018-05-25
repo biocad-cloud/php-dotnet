@@ -82,8 +82,10 @@ class Enumerable {
 				array_push($projection, $row[$selector]);
 			}
 		} else {
+			$project = & $selector;
+
 			foreach($table as $row) {
-				array_push($projection, $selector($row));
+				array_push($projection, $project($row));
 			}
 		}
 
