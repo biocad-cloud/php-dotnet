@@ -48,14 +48,14 @@ namespace MVC\Views {
          * ``<foreach>``标签可以嵌套
         */
         public static function StackParser($html) {
-            $openStacks  = Utils::Indices($html, "<foreach");
-            $closeStack  = Utils::Indices($html, "</foreach>");
+            $openStacks  = \Utils::Indices($html, "<foreach");
+            $closeStack  = \Utils::Indices($html, "</foreach>");
             $tupleStream = array_merge(
-                Enumerable::Select($openStacks, function($i) { return [$i => "<"]; }),
-                Enumerable::Select($closeStack, function($i) { return [$i => ">"]; })
+                \Enumerable::Select($openStacks, function($i) { return [$i => "<"]; }),
+                \Enumerable::Select($closeStack, function($i) { return [$i => ">"]; })
             );
-            $tupleStream = Enumerable::OrderBy($tupleStream, function($t) {
-                return Conversion::CInt(array_keys($t)[0]);
+            $tupleStream = \Enumerable::OrderBy($tupleStream, function($t) {
+                return \Conversion::CInt(array_keys($t)[0]);
             });
 
             $templates  = [];
@@ -63,7 +63,7 @@ namespace MVC\Views {
             $open_pos   = -1;
 
             foreach ($tupleStream as $flag) {
-                list($i, $tag) = Utils::Tuple($flag);
+                list($i, $tag) = \Utils::Tuple($flag);
 
                 if ($tag === "<") {
                     # open stack
@@ -78,7 +78,7 @@ namespace MVC\Views {
 
                     if ($stackDepth < 0) {
                         # syntax error
-                        throw new exception("ForEach html template syntax error!");
+                        throw new \exception("ForEach html template syntax error!");
                     } else if ($stackDepth == 0) {
                         # even, find a foreach template
                         $len   = $i - $open_pos + 1;
@@ -91,7 +91,7 @@ namespace MVC\Views {
 
             if ($stackDepth > 0) {
                 # 仍然存在未闭合的区间，语法错误
-                throw new exception("ForEach html template syntax error!");
+                throw new \exception("ForEach html template syntax error!");
             }
 
             return $templates;
