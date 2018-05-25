@@ -266,5 +266,40 @@ class Utils {
             return $keyc.str_replace('=', '', base64_encode($result));   
         }
     }
+
+    /**
+     * 将字符串文本转换为字符数组
+     * 
+     * @param string $str 字符串文本
+     * 
+     * @return array 输入的字符串文本参数经过分割之后得到的字符的数组
+    */
+    public static function Chars($str) {
+        return str_split($str);
+    }
+
+    /**
+     * 返回目标子字符串在给定的字符串之上的所有位置的集合
+     * 
+     * @param string $str 待查找的一个给定的字符串
+     * @param string $find 用于进行位置查找的目标子字符串
+     * 
+     * @param array 返回顶点位置的集合数组
+    */
+    public static function Indices($str, $find) {
+        $index = [];
+        $i     = 0;
+
+        while (true) {
+            $i = strpos($str, $find, $i);
+
+            if ($i === false) {
+                return $index;
+            } else {
+                array_push($index, $i);
+                $i = $i + 1;
+            }
+        }
+    }
 }
 ?>

@@ -7,9 +7,11 @@ namespace MVC\Views {
     # 所以这些imports必须要放在namespace的里面
 
     Imports("System.Collection.ArrayList");
+    Imports("System.Linq.Enumerable");
     Imports("System.Text.RegularExpressions.Regex");
     Imports("Microsoft.VisualBasic.Extensions.StringHelpers");
     Imports("Microsoft.VisualBasic.Strings");
+    Imports("php.Utils");
 
     /**
      * 根据HTML文档之中所定义的模板来生成列表或者表格
@@ -38,6 +40,59 @@ namespace MVC\Views {
             # echo $html . "\n";
             # echo $pattern . "\n";
             echo \var_dump($templates);
+
+            return $templates;
+        }
+
+        /**
+         * ``<foreach>``标签可以嵌套
+        */
+        public static function StackParser($html) {
+            $openStacks  = Utils::Indices($html, "<foreach");
+            $closeStack  = Utils::Indices($html, "</foreach>");
+            $tupleStream = array_merge(
+                Enumerable::Select($openStacks, function($i) { return [$i => "<"]; }),
+                Enumerable::Select($closeStack, function($i) { return [$i => ">"]; })
+            );
+            $tupleStream = Enumerable::OrderBy($tupleStream, function($t) {
+                return Conversion::CInt(array_keys($t)[0]);
+            });
+
+            $templates  = [];
+            $stackDepth = 0;
+            $open_pos   = -1;
+
+            foreach ($tupleStream as $flag) {
+                list($i, $tag) = Utils::Tuple($flag);
+
+                if ($tag === "<") {
+                    # open stack
+                    $stackDepth = $stackDepth + 1;
+
+                    if ($stackDepth == 1) {
+                        $open_pos = $i;
+                    }
+                } else {
+                    # close stack
+                    $stackDepth = $stackDepth - 1;
+
+                    if ($stackDepth < 0) {
+                        # syntax error
+                        throw new exception("ForEach html template syntax error!");
+                    } else if ($stackDepth == 0) {
+                        # even, find a foreach template
+                        $len   = $i - $open_pos + 1;
+                        $templ = substr($html, $open_pos, $len);
+
+                        array_push($templates, $templ);
+                    }
+                }
+            }
+
+            if ($stackDepth > 0) {
+                # 仍然存在未闭合的区间，语法错误
+                throw new exception("ForEach html template syntax error!");
+            }
 
             return $templates;
         }

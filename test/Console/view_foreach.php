@@ -31,7 +31,7 @@ $template = <<<EOT
 EOT;
 
 
-echo var_dump(MVC\Views\ForEachView::ParseTemplates($template));
+echo var_dump(MVC\Views\ForEachView::StackParser($template));
 die;
 
 
