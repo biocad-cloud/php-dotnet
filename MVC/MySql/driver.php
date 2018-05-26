@@ -122,6 +122,8 @@ namespace MVC\MySql {
 			$mysqli_exec = $this->__init_MySql();                        
 			$schema      = $this->ExecuteSQL($mysqli_exec, $SQL);
 
+			$this->last_mysql_expression = $SQL;
+
 			return $schema;
 		}
 
@@ -167,6 +169,8 @@ namespace MVC\MySql {
 				\dotnet::$debugger->add_last_mysql_error(mysqli_error($mysql_exec));
 			}		
 
+			$this->last_mysql_expression = $SQL;
+
 			return $out;
 		}
 
@@ -194,6 +198,8 @@ namespace MVC\MySql {
 				\dotnet::$debugger->add_mysql_history($SQL);
 			}
 			
+			$this->last_mysql_expression = $SQL;
+
 			if($data) {
 				$out = array();
 				
@@ -227,6 +233,8 @@ namespace MVC\MySql {
 				\dotnet::$debugger->add_mysql_history($SQL);
 			}
 			
+			$this->last_mysql_expression = $SQL;
+
 			if ($data) {
 				
 				// 只返回一条记录数据
