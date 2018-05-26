@@ -108,18 +108,20 @@ namespace MVC\Views {
             foreach($templates as $template) {
                 $var  = \explode(">", $template)[0];
                 $var  = \explode("@", $var);
-                $name = end($var);
-                $var  = $vars[$name];                
+                $name = end($var);                            
 
-                if (!$var) {
+                if (!array_key_exists($name, $vars)) {
                     # 目标模板的数据源不存在
                     # 则将模板保留下来，不做任何处理
                     
                     # DO NOTHING
                 } else {
+
+                    $var   = $vars[$name];    
                     $templ = \StringHelpers::GetStackValue($template, ">", "<");
                     $list  = self::Build($var, $templ, $name);
-                    $html  = \Strings::Replace($html, $template, $list);                
+                    $html  = \Strings::Replace($html, $template, $list); 
+
                 }                
             }
 
@@ -153,12 +155,20 @@ namespace MVC\Views {
                 $list    = new \ArrayList();
                 $nesting = self::nestingTemplate($template);
 
+                # echo var_dump($nesting);
+
                 foreach ($array as $row) {
                     $str = $template;
 
                     foreach ($replaceAs as $name => $index) {
                         $str_val = $row[$name];
-                        $str = \Strings::Replace($str, $index, $str_val);
+
+                        if (is_array($str_val)) {
+                            # 可能是内嵌的模板的数据源
+
+                        } else {
+                            $str = \Strings::Replace($str, $index, $str_val);
+                        }                        
                     }
                     foreach (self::BuildNesting($nesting, $row) as $templ => $nesting_page) {
                         $str = \Strings::Replace($str, $templ, $nesting_page);
@@ -202,6 +212,8 @@ namespace MVC\Views {
 
                 $pages[$template] = $templ;
             }
+
+            # echo var_dump($pages);
 
             return $pages;
         }

@@ -57,21 +57,24 @@ $list[1] = [
     "time"   => Utils::Now(),
     "title"  => "标题1",
     "color"  => "red",
-    "amount" => "-500"
+    "amount" => "-500",
+    "attrs"  => ["slot1" => "AAAAA", "slot2" => "AAAAA2", "slot3" => "AAAAA3", "slot4" => "AAAAA4"]
 ];
 
 $list[2] = [
     "time"   => Utils::Now(),
     "title"  => "标题2",
     "color"  => "green",
-    "amount" => "+50000"
+    "amount" => "+50000",
+    "attrs"  => ["slot1" => "AAAAA", "slot2" => "AAAAA2", "slot3" => "AAAAA3", "slot4" => "AAAAA4"]
 ];
 
 $list[3] = [
     "time"   => Utils::Now(),
     "title"  => "标题3",
     "color"  => "red",
-    "amount" => "-5000"
+    "amount" => "-5000",
+    "attrs"  => ["slot1" => "GGGAAAAA", "slot2" => "FFFAAAAA2", "slot3" => "EEEAAAAA3", "slot4" => "AAAKAAAAA4"]
 ];
 
 
