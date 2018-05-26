@@ -146,11 +146,19 @@ class Table {
 
 	public function order_by($keys, $desc = false) {
 		$condition = null;
+		$key       = "";
+
+		if (!is_array($keys)) {
+			$key = "`$keys`";
+		} else {
+			$key = join("`, `", $keys);
+			$key = "`$key`";
+		}
 
 		if ($desc) {
-			$condition["order_by"] = [$key => "DESCIDING"];
+			$condition["order_by"] = [$key => "DESC"];
 		} else {
-			$condition["order_by"] = [$key => "ASCIDING"];
+			$condition["order_by"] = [$key => "ASC"];
 		}
 
 		$condition = array_merge($this->condition, $condition);
@@ -161,7 +169,7 @@ class Table {
 	/**
 	 * select all
 	*/
-    public function select($offset = -1, $n = -1) {
+    public function select() {
 		$table  = $this->tableName;
 		$db     = $this->databaseName;
         $assert = $this->getWhere();
@@ -171,18 +179,8 @@ class Table {
             $SQL = "SELECT * FROM `$db`.`$table` WHERE $assert";
         } else {
             $SQL = "SELECT * FROM `$db`.`$table`";
-        }
-		
-		if ($offset >= 0) {
-			if ($n > 0) {
-				$SQL .= " LIMIT $offset,$n;";
-			} else {
-				$SQL .= " LIMIT $offset;";
-			}
-		} else {
-			$SQL .= ";";
-		}
-		
+        }	
+				
         return $this->driver->ExecuteSQL($mysqli_exec, $SQL);
     }
 	
@@ -208,15 +206,14 @@ class Table {
 		return $count;
 	}
 
+	#region "condition expression"
+
     private function getWhere() {	
 
 		# 如果条件是空的话，就不再继续构建表达式了
 		# 这个SQL表达式可能是没有选择条件的
 		# 否则在下面会抛出错误的
-		if (!$this->condition            || 
-			count($this->condition) == 0 || 
-			count($this->condition["where"]) == 0) {
-
+		if ($this->is_empty("where")) {
             return null;
         } else {
 
@@ -230,7 +227,45 @@ class Table {
 				return MySqlScript::AsExpression($where["model"]);
 			}			
 		}
-    }
+	}
+	
+	private function is_empty($key) {
+		return !$this->condition         || 
+			count($this->condition) == 0 || 
+			count($this->condition[$key]) == 0;
+	}
+
+	private function getOrderBy() {
+		if ($this->is_empty("order_by")) {
+			return null;
+		} else {
+	
+			list($key, $type) = Utils::Tuple($this->condition["order_by"]);
+
+			if ($type === "DESC") {
+				return "ORDER BY $key DESC";
+			} else {
+				return "ORDER BY $key";
+			}
+		}
+	}
+
+	private function getLimit() {
+		if ($this->is_empty("limit")) {
+			return null;
+		}
+
+		$limit = $this->condition["limit"];
+		
+		if (is_array($limit)) {
+			$offset = $limit[0];
+			$n      = $limit[1];
+			
+			return "LIMIT $offset,$n";			
+		} else {
+			return "LIMIT $limit";	
+		}
+	}
 	
 	private function throwEmpty() {
 		$debug = "";
@@ -246,6 +281,8 @@ class Table {
 		
 		dotnet::ThrowException($debug);   
 	}
+
+	#endregion
 
 	/**
 	 * select but limit 1
@@ -312,6 +349,8 @@ class Table {
 
 	/**
 	 * select * from `table`;
+	 * 
+	 * (不受where条件的影响)
 	*/
 	public function all() {
 		$table       = $this->tableName;
@@ -324,8 +363,11 @@ class Table {
 
     /**
      * Create a where condition filter for the next SQL expression.
+	 * (这个函数影响SELECT UPDATE DELETE，不会影响INSERT操作)
      *	  
      * @param mixed $assert The assert array of the where condition or an string expression.
+	 * 
+	 * @return Table Returns a new table object instance for expression chaining.
     */
     public function where($assert) {
 		$condition = null;
@@ -351,6 +393,8 @@ class Table {
 
 	/**
 	 * fieldName => list
+	 * 
+	 * (这个函数影响SELECT UPDATE DELETE，不会影响INSERT操作)
 	*/
 	public function in($assert) {
 		$fieldName = array_keys($assert)[0];
