@@ -118,6 +118,13 @@ class Table {
     }
 	
 	/**
+	 * Create a new mysqli link
+	*/
+	public function mysqli() {
+		return $this->driver->__init_MySql();
+	}
+	
+	/**
 	 * select count(*) from where ``...``;
 	*/
 	public function count() {
