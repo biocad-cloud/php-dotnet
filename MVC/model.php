@@ -119,6 +119,9 @@ class Table {
 		return $this->schema;
 	}
 	
+	/**
+	 * 直接执行一条SQL语句
+	*/
     public function exec($SQL) {
         return $this->driver->exec($SQL);
     }
@@ -130,6 +133,13 @@ class Table {
 		return $this->driver->getLastMySql();
 	}
 
+	/**
+	 * 对查询的结果的数量进行限制，当只有参数m的时候，表示查询结果限制为前m条，
+	 * 当参数n被赋值的时候，表示偏移m条之后返回n条结果
+	 * 
+	 * @param integer $m ``LIMIT m``
+	 * @param integer $n ``LIMIT m,n``
+	*/
 	public function limit($m, $n = -1) {
 		$condition = null;
 
@@ -144,13 +154,21 @@ class Table {
 		return new Table($this->tableName, $condition);
 	}
 
+	/**
+	 * 对返回来的结果按照给定的字段进行排序操作
+	 * 
+	 * @param string|array $keys 进行排序操作的字段依据，可以是一个字段或者一个字段的集合
+	 * @param boolean $desc 升序排序还是降序排序？默认是升序排序，当这个参数为true的时候为降序排序
+	*/
 	public function order_by($keys, $desc = false) {
 		$condition = null;
 		$key       = "";
 
+		# 如果只有一个字段的时候
 		if (!is_array($keys)) {
 			$key = "`$keys`";
 		} else {
+			# 如果是一个字段列表的时候
 			$key = join("`, `", $keys);
 			$key = "`$key`";
 		}
@@ -229,12 +247,18 @@ class Table {
 		}
 	}
 	
+	/**
+	 * 判断条件查询之中的给定的条件是否是不存在？
+	*/
 	private function is_empty($key) {
-		return !$this->condition         || 
-			count($this->condition) == 0 || 
-			count($this->condition[$key]) == 0;
+		return !$this->condition             || 
+		  count($this->condition)       == 0 || 
+		  count($this->condition[$key]) == 0;
 	}
 
+	/**
+	 * 生成``order by``语句部分
+	*/
 	private function getOrderBy() {
 		if ($this->is_empty("order_by")) {
 			return null;
@@ -250,6 +274,9 @@ class Table {
 		}
 	}
 
+	/**
+	 * 生成``limit m``或者``limit m,n``语句部分
+	*/
 	private function getLimit() {
 		if ($this->is_empty("limit")) {
 			return null;
