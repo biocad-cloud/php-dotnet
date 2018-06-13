@@ -28,7 +28,11 @@ namespace MVC\MySql {
         */
         public $ref;
 
-		function __construct($driver, $tableName) {
+		function __construct($tableName, $driver) {
+
+			# echo var_dump($driver);
+			# echo var_dump($tableName);
+
             $this->schema         = self::GetSchema($tableName, $driver);     
             $this->auto_increment = $this->schema["AI"];  
             $this->schema         = $this->schema["schema"];	

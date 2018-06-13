@@ -11,7 +11,7 @@ namespace MVC\MySql {
 		
 		#region "MySql connection info"
 
-		protected $database;
+		public $database;
 
 		private $user;
 		private $password;
@@ -43,12 +43,16 @@ namespace MVC\MySql {
 		 * DESCRIBE TableName
 		*/
 		public function Describe($tableName) {
-			$db          = $this->database;
-			$SQL         = "DESCRIBE `$db`.`$tableName`;";
-			$mysqli_exec = $this->__init_MySql();                        
-			$schema      = $this->ExecuteSQL($mysqli_exec, $SQL);
+			$db   = $this->database;
+			$SQL  = "DESCRIBE `$db`.`$tableName`;";
+			$link = $this->__init_MySql();   
+			
+			mysqli_select_db($link, $db); 
+			mysqli_query($link, "SET names 'utf8'");			      
 
-			$this->last_mysql_expression = $SQL;
+			$schema = mysqli_query($link, $SQL);
+
+			mysqli_close($link);
 
 			return $schema;
 		}		
