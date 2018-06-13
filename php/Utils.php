@@ -20,10 +20,14 @@ class Utils {
      * @param array $table [key => value]
     */
     public static function Tuple($table) {
-        $keys  = array_keys($table);
-        $value = $table[$keys[0]];
-        
-        return [$keys[0], $value];
+        if (!$table) {
+            return [];
+        } else {
+            $keys  = array_keys($table);
+            $value = $table[$keys[0]];
+            
+            return [$keys[0], $value];
+        }
     }
 
     /**
