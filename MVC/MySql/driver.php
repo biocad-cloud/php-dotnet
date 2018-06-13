@@ -11,7 +11,8 @@ namespace MVC\MySql {
 		
 		#region "MySql connection info"
 
-		private $database;
+		protected $database;
+
 		private $user;
 		private $password;
 		private $host;
@@ -94,7 +95,7 @@ namespace MVC\MySql {
 		 * table.
 		*/
 		public static function schemaArray($schema) {
-			$array = array();
+			$array = [];
 
 			foreach ($schema as $row) {
 				$field = $row["Field"];
@@ -134,7 +135,7 @@ namespace MVC\MySql {
 				$this->port
 			) or die("Database error: <code>" . mysqli_error() . "</code>"); 
 						
-			if (False === $db) {
+			if (false === $db) {
 				die("Database connection fail!");
 			} else {
 				return $db;
@@ -153,20 +154,20 @@ namespace MVC\MySql {
 	 * MySQL data table model.
      * (这个模块会将mysql语句用于具体的数据库查询操作)
     */
-    class mysqlExec extends sqlDriver {
+    class mysqlExec extends sqlDriver implements ISqlDriver {
 
 		/**
 		 * 获取当前的这个实例之中所执行的最后一条MySql语句
 		*/
 		public function getLastMySql() {
-			return $this->last_mysql_expression;
+			return parent::getLastMySql();
 		}
 
 		/**
 		 * 使用这个函数来打开和mysql数据库的链接
 		*/
 		public function getMySqlLink() {
-			return $this->__init_MySql();
+			return parent::__init_MySql();
 		}
 
 		/**
@@ -174,9 +175,9 @@ namespace MVC\MySql {
 		 * 例如INSERT, UPDATE, DELETE等
 		*/
 		public function ExecuteSql($SQL) {
-			$mysql_exec = $this->__init_MySql();			
+			$mysql_exec = parent::__init_MySql();			
 			
-			mysqli_select_db($mysql_exec, $this->database); 
+			mysqli_select_db($mysql_exec, parent::$database); 
 			mysqli_query($mysql_exec, "SET names 'utf8'");
 
 			$out = mysqli_query($mysql_exec, $SQL);                     
@@ -188,8 +189,7 @@ namespace MVC\MySql {
 				\dotnet::$debugger->add_last_mysql_error(mysqli_error($mysql_exec));
 			}		
 
-			$this->last_mysql_expression = $SQL;
-
+			parent::$last_mysql_expression = $SQL;
 			mysqli_close($mysql_exec);
 
 			return $out;
@@ -209,9 +209,9 @@ namespace MVC\MySql {
 		 * @return boolean|array 如果数据库查询出错，会返回逻辑值False，反之会返回相对应的结果值
 		 */
 		public function Fetch($SQL) {
-			$mysql_exec = $this->__init_MySql();	
+			$mysql_exec = parent::__init_MySql();	
 
-			mysqli_select_db($mysql_exec, $this->database); 
+			mysqli_select_db($mysql_exec, parent::$database); 
 			mysqli_query($mysql_exec, "SET names 'utf8'");
 
 			$data = mysqli_query($mysql_exec, $SQL); 		
@@ -220,7 +220,9 @@ namespace MVC\MySql {
 				\dotnet::$debugger->add_mysql_history($SQL);
 			}
 			
-			$this->last_mysql_expression = $SQL;
+			parent::$last_mysql_expression = $SQL;
+
+			// 输出
 			$out = null;
 
 			if($data) {
@@ -249,9 +251,9 @@ namespace MVC\MySql {
 		 * 执行SQL查询然后返回一条数据
 		*/
 		public function ExecuteScalar($SQL) {			
-			$mysql_exec = $this->__init_MySql();
+			$mysql_exec = parent::__init_MySql();
 
-			mysqli_select_db($mysql_exec, $this->database); 
+			mysqli_select_db($mysql_exec, parent::$database); 
 			mysqli_query($mysql_exec, "SET names 'utf8'");
 
 			$data = mysqli_query($mysql_exec, $SQL); 
@@ -260,7 +262,7 @@ namespace MVC\MySql {
 				\dotnet::$debugger->add_mysql_history($SQL);
 			}
 			
-			$this->last_mysql_expression = $SQL;
+			parent::$last_mysql_expression = $SQL;
 
 			if ($data) {
 				
@@ -277,13 +279,17 @@ namespace MVC\MySql {
     /**
      * 这个模块并不执行mysql语句，而是将mysql语句显示出来
     */
-    class mysqlDebugger extends sqlDriver {
+    class mysqlDebugger extends sqlDriver implements ISqlDriver {
 
 		private $buffer;
 
 		/**
 		 * @param resource $buffer 将SQL语句进行调试输出的句柄值，默认是将SQL语句打印在
 		 *                         终端上面或者可以通过这个构造函数参数指定一个文件
+		 * 
+		 * @abstract 因为上层调用的表模型对象任然会需要schema信息来生成SQL语句，
+		 *           所以这个调试器对象尽管并不执行SQL语句，但是仍然会需求数据库
+		 *           连接参数来提供表结构信息
 		*/
 		function __construct($database, $user, $password, $host = "localhost", $port = 3306, $buffer = null) {
 			parent::__construct($database, $user, $password, $host, $port);
@@ -316,9 +322,26 @@ namespace MVC\MySql {
 			return parent::getLastMySql();
 		}
 
-		public function ExecuteSql($SQL);
-		public function Fetch($SQL);
-		public function ExecuteScalar($SQL); 
+		public function ExecuteSql($SQL) {
+			parent::$last_mysql_expression = $SQL;
+			fwrite($this->buffer, "$SQL\n");
+
+			return null;
+		}
+
+		public function Fetch($SQL) {
+			parent::$last_mysql_expression = $SQL;
+			fwrite($this->buffer, "$SQL\n");
+
+			return null;
+		}
+
+		public function ExecuteScalar($SQL) {
+			parent::$last_mysql_expression = $SQL;
+			fwrite($this->buffer, "$SQL\n");
+
+			return null;
+		}
     }
 }
 ?>
