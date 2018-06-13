@@ -13,29 +13,23 @@ use MVC\MySql\Model as Driver;
 */
 class Table {
 
-	private $tableName;
-	private $databaseName;
-
 	/**
 	 * MySql数据库驱动程序
 	*/
 	private $driver;
 	
 	/**
-	 * 数据表的表结构
-	*/ 
+	 * 当前的这个数据表的结构信息
+	*/
 	private $schema;
 	
 	/**
 	 * 对MySql查询表达式的一些额外的配置信息数组
 	 * 例如 where limit order distinct 等
+	 * 
+	 * 进行链式调用的基础
 	*/
     private $condition;
-
-	/**
-	 * 自增字段的列名称
-	*/
-	private $auto_increment;
 	
 	/**
 	 * Create an abstract table model.
@@ -47,6 +41,10 @@ class Table {
 	 *                             + (array) [dbname => table] when multiple database config exists.
 	*/
     function __construct($config, $condition = null) {
+		# 2018-6-13 在这个构造函数之中对mysql的连接的初始化都是通过
+		# __initBaseOnExternalConfig这个函数来完成的
+		# 下面的if分支的差异仅在于不同的路径所获取得到的配置数据的方法上的差异
+
 		if (is_string($config)) {		
 			$this->__initBaseOnTableName($config);
 		} else if(self::isValidDbConfig($config)) {			
