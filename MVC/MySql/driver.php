@@ -4,10 +4,10 @@ namespace MVC\MySql {
 
 	Imports("Microsoft.VisualBasic.Strings");
 
-	/**
-	 * MySQL data table model
-	*/
-	class Model {
+    /**
+     * MySql execute or sql model debugger
+    */ 
+    class sqlDriver {
 		
 		#region "MySql connection info"
 
@@ -22,7 +22,7 @@ namespace MVC\MySql {
 		/**
 		 * 当前的这个表模型对象实例的最后一条执行的MySql语句
 		*/
-		private $last_mysql_expression;
+		protected $last_mysql_expression;
 
 		function __construct($database, $user, $password, $host = "localhost", $port = 3306) {
 			$this->database = $database;
@@ -30,13 +30,6 @@ namespace MVC\MySql {
 			$this->password = $password;
 			$this->host     = $host;
 			$this->port     = $port;
-		}
-
-		/**
-		 * 获取当前的这个实例之中所执行的最后一条MySql语句
-		*/
-		public function getLastMySql() {
-			return $this->last_mysql_expression;
 		}
 
 		#region "MySql table schema cache"
@@ -128,18 +121,11 @@ namespace MVC\MySql {
 		}
 
 		#endregion
-
+		
 		/**
 		 * 使用这个函数来打开和mysql数据库的链接
 		*/
-		public function GetMySqlLink() {
-			return $this->__init_MySql();
-		}
-
-		/**
-		 * 使用这个函数来打开和mysql数据库的链接
-		*/
-		private function __init_MySql() {	
+		protected function __init_MySql() {	
 			$db = mysqli_connect(
 				$this->host,   
 				$this->user,
@@ -154,12 +140,40 @@ namespace MVC\MySql {
 				return $db;
 			}
 		}
+    }
+
+	interface ISqlDriver {
+		public function getLastMySql();
+		public function ExecuteSql($SQL);
+		public function Fetch($SQL);
+		public function ExecuteScalar($SQL); 
+	}
+
+    /**
+	 * MySQL data table model.
+     * (这个模块会将mysql语句用于具体的数据库查询操作)
+    */
+    class mysqlExec extends sqlDriver {
+
+		/**
+		 * 获取当前的这个实例之中所执行的最后一条MySql语句
+		*/
+		public function getLastMySql() {
+			return $this->last_mysql_expression;
+		}
+
+		/**
+		 * 使用这个函数来打开和mysql数据库的链接
+		*/
+		public function getMySqlLink() {
+			return $this->__init_MySql();
+		}
 
 		/**
 		 * 这个方法主要是用于执行一些无返回值的方法，
 		 * 例如INSERT, UPDATE, DELETE等
 		*/
-		public function exec($SQL) {
+		public function ExecuteSql($SQL) {
 			$mysql_exec = $this->__init_MySql();			
 			
 			mysqli_select_db($mysql_exec, $this->database); 
@@ -194,7 +208,7 @@ namespace MVC\MySql {
 		 * 
 		 * @return boolean|array 如果数据库查询出错，会返回逻辑值False，反之会返回相对应的结果值
 		 */
-		public function ExecuteSQL($SQL) {
+		public function Fetch($SQL) {
 			$mysql_exec = $this->__init_MySql();	
 
 			mysqli_select_db($mysql_exec, $this->database); 
@@ -258,6 +272,53 @@ namespace MVC\MySql {
 				return false;
 			}
 		}
-	}
+    }
+
+    /**
+     * 这个模块并不执行mysql语句，而是将mysql语句显示出来
+    */
+    class mysqlDebugger extends sqlDriver {
+
+		private $buffer;
+
+		/**
+		 * @param resource $buffer 将SQL语句进行调试输出的句柄值，默认是将SQL语句打印在
+		 *                         终端上面或者可以通过这个构造函数参数指定一个文件
+		*/
+		function __construct($database, $user, $password, $host = "localhost", $port = 3306, $buffer = null) {
+			parent::__construct($database, $user, $password, $host, $port);
+			
+			if ($buffer) {
+				$this->buffer = $buffer;
+			} else {
+				// 如果函数参数为空的话，默认是将调试数据打印在终端上面的
+				$this->buffer = self::ConsoleBuffer();
+			}			
+		}
+
+		/**
+		 * 向一个文本文件输出文本数据
+		*/
+		public static function FileBuffer($filePath) {
+			$parent = dirname($filePath);			
+			mkdir($parent, 0777, true);
+			return fopen($filePath, "w+");
+		}
+
+		/**
+		 * 向终端输出文本数据
+		*/
+		public static function ConsoleBuffer() {
+			return fopen('php://stdout', 'w');
+		}
+
+		public function getLastMySql() {
+			return parent::getLastMySql();
+		}
+
+		public function ExecuteSql($SQL);
+		public function Fetch($SQL);
+		public function ExecuteScalar($SQL); 
+    }
 }
 ?>
