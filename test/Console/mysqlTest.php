@@ -35,6 +35,15 @@ $result = $world->where([
 
 echo var_dump($result);
 
+$result = $world->where([
+    "Name"       => like("%U%"), 
+    "Population" => between(2000, 186800)
+])->limit(10, 3000)
+  ->order_by("Population", false)
+  ->count();
+
+echo var_dump($result);
+
 # 聚合函数，例如查询出最大的人口数量
 $result = $world->ExecuteScalar("max('Population')");
 

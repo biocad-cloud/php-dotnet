@@ -230,9 +230,9 @@ class Table {
 	 * 判断条件查询之中的给定的条件是否是不存在？
 	*/
 	private function is_empty($key) {
-		return !$this->condition             || 
-		  count($this->condition)       == 0 || 
-		  count($this->condition[$key]) == 0;
+		return !$this->condition       || 
+		  count($this->condition) == 0 || 
+	    (!array_key_exists($key, $this->condition));
 	}
 
 	/**
