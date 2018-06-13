@@ -1,6 +1,9 @@
 <?php
 
 Imports("Microsoft.VisualBasic.Strings");
+Imports("MVC.MySql.sqlDriver");
+Imports("MVC.MySql.schemaDriver");
+Imports("MVC.MySql.driver");
 
 use MVC\MySql\Expression\WhereAssert as MySqlScript;
 use MVC\MySql\Model as Driver;
@@ -32,6 +35,8 @@ class Table {
 	*/
     private $condition;
 	
+	#region "Table Model constructor"
+
 	/**
 	 * Create an abstract table model.
 	 * 
@@ -60,8 +65,12 @@ class Table {
 
 			// config对象已经是一个可以直接使用的driver对象了
 			// 直接进行赋值使用
-			$this->driver = $config;
-			$this->schema = new SchemaDriver(
+
+			list($tableName, $condition) = Utils::Tuple($condition);
+
+			$this->tableName = $tableName;
+			$this->driver    = $config;
+			$this->schema    = new SchemaDriver(
 				$this->tableName, 
 				$this->driver
 			);
@@ -131,6 +140,8 @@ class Table {
 		$this->__initBaseOnExternalConfig($tableName, DotNetRegistry::$config);
 	}
 
+	#endregion
+
 	public function getSchema() {
 		return $this->schema;
 	}
@@ -139,7 +150,7 @@ class Table {
 	 * 直接执行一条SQL语句
 	*/
     public function exec($SQL) {
-        return $this->driver->exec($SQL);
+        return $this->driver->ExecuteSql($SQL);
     }
 
 	/**
@@ -167,7 +178,9 @@ class Table {
 
 		$condition = array_merge($this->condition, $condition);
 
-		return new Table($this->tableName, $condition);
+		return new Table($this->driver, [
+			$this->schema->tableName => $condition
+		]);
 	}
 
 	/**
@@ -197,44 +210,42 @@ class Table {
 
 		$condition = array_merge($this->condition, $condition);
 
-		return new Table($this->tableName, $condition);
+		return new Table($this->driver, [
+			$this->schema->tableName => $condition
+		]);
 	}
 
 	/**
 	 * select all
 	*/
     public function select() {
-		$table  = $this->tableName;
-		$db     = $this->databaseName;
-        $assert = $this->getWhere();
-        $mysqli_exec = $this->driver->__init_MySql();       
+		$ref    = $this->schema->ref;
+        $assert = $this->getWhere();        
 
         if ($assert) {
-            $SQL = "SELECT * FROM `$db`.`$table` WHERE $assert";
+            $SQL = "SELECT * FROM $ref WHERE $assert;";
         } else {
-            $SQL = "SELECT * FROM `$db`.`$table`";
+            $SQL = "SELECT * FROM $ref;";
         }	
 				
-        return $this->driver->ExecuteSQL($mysqli_exec, $SQL);
+        return $this->driver->Fetch($SQL);
     }
 	
 	/**
 	 * select count(*) from where ``...``;
 	*/
 	public function count() {
-		$table       = $this->tableName;
-		$db          = $this->databaseName;
-        $assert      = $this->getWhere();
-        $mysqli_exec = $this->driver->__init_MySql();       
-		$count       = "COUNT(*)";
+		$ref    = $this->schema->ref;
+        $assert = $this->getWhere();             
+		$count  = "COUNT(*)";
 
         if ($assert) {
-            $SQL = "SELECT $count FROM `$db`.`$table` WHERE $assert;";
+            $SQL = "SELECT $count FROM $ref WHERE $assert;";
         } else {
-            $SQL = "SELECT $count FROM `$db`.`$table`;";
+            $SQL = "SELECT $count FROM $ref;";
         }
     		
-		$count = $this->driver->ExecuteScalar($mysqli_exec, $SQL);
+		$count = $this->driver->ExecuteScalar($SQL);
 		$count = $count["COUNT(*)"];
 
 		return $count;
@@ -249,18 +260,17 @@ class Table {
 		# 否则在下面会抛出错误的
 		if ($this->is_empty("where")) {
             return null;
-        } else {
+        } 
 
-			$where = $this->condition["where"];
-			# expression -> string
-			# model      -> array
-			
-			if (array_key_exists("expression", $where)) {
-				return $where["expression"];
-			} else {
-				return MySqlScript::AsExpression($where["model"]);
-			}			
-		}
+		$where = $this->condition["where"];
+		# expression -> string
+		# model      -> array
+		
+		if (!array_key_exists("expression", $where)) {
+			return MySqlScript::AsExpression($where["model"]);
+		} else {
+			return $where["expression"];
+		}		
 	}
 	
 	/**
@@ -278,16 +288,15 @@ class Table {
 	private function getOrderBy() {
 		if ($this->is_empty("order_by")) {
 			return null;
-		} else {
+		} 
 	
-			list($key, $type) = Utils::Tuple($this->condition["order_by"]);
+		list($key, $type) = Utils::Tuple($this->condition["order_by"]);
 
-			if ($type === "DESC") {
-				return "ORDER BY $key DESC";
-			} else {
-				return "ORDER BY $key";
-			}
-		}
+		if ($type === "DESC") {
+			return "ORDER BY $key DESC";
+		} else {
+			return "ORDER BY $key";
+		}		
 	}
 
 	/**
@@ -331,19 +340,16 @@ class Table {
 	 * select but limit 1
 	*/
     public function find() {
-		$table       = $this->tableName;
-		$db          = $this->databaseName;
-        $assert      = $this->getWhere();
-        $mysqli_exec = $this->driver->__init_MySql();       
+		$ref    = $this->schema->ref;
+        $assert = $this->getWhere();    
 
         if ($assert) {
-            $SQL = "SELECT * FROM `$db`.`$table` WHERE $assert LIMIT 1;";
+            $SQL = "SELECT * FROM $ref WHERE $assert LIMIT 1;";
         } else {
-            $SQL = "SELECT * FROM `$db`.`$table` LIMIT 1;";
+            $SQL = "SELECT * FROM $ref LIMIT 1;";
         }	
 	
-		return $this->driver
-					->ExecuteScalar($mysqli_exec, $SQL);
+		return $this->driver->ExecuteScalar($SQL);
     }
 
 	/**
@@ -370,18 +376,20 @@ class Table {
 	 * @param string $aggregate 聚合函数表达式，例如 ``max(`id`)`` 等
 	*/
 	public function ExecuteScalar($aggregate) {
-		$table  = $this->tableName;
-		$db     = $this->databaseName;
-        $assert = $this->getWhere();
-        $mysqli_exec = $this->driver->__init_MySql();       
+		$ref    = $this->schema->ref;
+        $assert = $this->getWhere();        
+
+		if (!$aggregate || strlen($aggregate) == 0) {
+			throw new Exception("Aggregate expression can not be nothing!");
+		}
 
         if ($assert) {
-            $SQL = "SELECT $aggregate FROM `$db`.`$table` WHERE $assert LIMIT 1;";
+            $SQL = "SELECT $aggregate FROM $ref WHERE $assert LIMIT 1;";
         } else {
-            $SQL = "SELECT $aggregate FROM `$db`.`$table` LIMIT 1;";
+            $SQL = "SELECT $aggregate FROM $ref LIMIT 1;";
         }
         
-		$single = $this->driver->ExecuteScalar($mysqli_exec, $SQL);
+		$single = $this->driver->ExecuteScalar($SQL);
 		
 		if ($single) {
 			return $single[$aggregate];
@@ -395,13 +403,9 @@ class Table {
 	 * 
 	 * (不受where条件的影响)
 	*/
-	public function all() {
-		$table       = $this->tableName;
-		$db          = $this->databaseName;
-		$SQL         = "SELECT * FROM `$db`.`$table`;";
-		$mysqli_exec = $this->driver->__init_MySql();    
-
-		return $this->driver->ExecuteSQL($mysqli_exec, $SQL);
+	public function all() {		
+		$SQL = "SELECT * FROM {$this->schema->ref};";
+		return $this->driver->Fetch($SQL);
 	}
 
     /**
@@ -429,7 +433,9 @@ class Table {
 			$condition = array_merge($condition, $this->condition);
 		}
 		
-		$next = new Table($this->tableName, $condition);
+		$next = new Table($this->driver, [
+			$this->schema->tableName => $condition
+		]);
 
         return $next;
     }
@@ -453,10 +459,9 @@ class Table {
 	*/ 
     public function add($data) {
 
-		$table       = $this->tableName;
-		$db          = $this->databaseName;
-		$fields      = array();
-		$values      = array();		
+		$ref    = $this->schema->ref;
+		$fields = [];
+		$values = [];		
 		
 		// 使用这个for循环的主要的目的是将所传入的参数数组之中的
 		// 无关的名称给筛除掉，避免出现查询错误
@@ -500,10 +505,10 @@ class Table {
 		$values = join(", ", $values);
 		
 		# INSERT INTO `metacardio`.`xcms_files` (`task_id`) VALUES ('ABC');
-		$SQL         = "INSERT INTO `$db`.`{$table}` ($fields) VALUES ($values);";	
-		$mysqli_exec = $this->driver->__init_MySql(); 
+		$SQL    = "INSERT INTO $ref ($fields) VALUES ($values);";
+		$result = $this->driver->ExecuteSql($SQL);
 
-        if (!$this->driver->exec($SQL, $mysqli_exec)) {
+        if (!$result) {
 			
             // 可能有错误，给出错误信息
             return false;
@@ -516,7 +521,7 @@ class Table {
 			} else {
 				# 在这个表之中存在自增字段，则返回这个uid
 				# 方便进行后续的操作
-				return mysqli_insert_id($mysqli_exec);
+				return $result;
 			}           
         }	
     }
@@ -525,11 +530,10 @@ class Table {
 	 * update table
 	*/ 
     public function save($data) {
-		$table   = $this->tableName;
-		$db      = $this->databaseName;
+		$ref     = $this->schema->ref;
         $assert  = $this->getWhere();        
 		$SQL     = "";
-		$updates = array();
+		$updates = [];
 		
 		# UPDATE `metacardio`.`experimental_batches` SET `workspace`='2018/01/31/02-36-49/2', `note`='22222', `status`='10' WHERE `id`='3';
 		
@@ -544,7 +548,7 @@ class Table {
 		}
 		
 		$updates = join(", ", $updates);
-		$SQL = "UPDATE `$db`.`$table` SET $updates";
+		$SQL     = "UPDATE $ref SET $updates";
 		
 		if (!$assert) {
 			
@@ -555,7 +559,7 @@ class Table {
 			$SQL = $SQL . " WHERE " . $assert . " LIMIT 1;";
 		}
 						
-		if (!$this->driver->exec($SQL)) {
+		if (!$this->driver->ExecuteSql($SQL)) {
 			return false;
 		} else {
 			return true;
@@ -566,18 +570,17 @@ class Table {
 	 * delete from
 	*/ 
     public function delete() {
-		$table  = $this->tableName;
-		$db     = $this->databaseName;
+		$ref    = $this->schema->ref;
         $assert = $this->getWhere();        
 		
 		# DELETE FROM `metacardio`.`experimental_batches` WHERE `id`='4';
 		if (!$assert) {
 			dotnet::ThrowException("WHERE condition can not be null in DELETE SQL!");
 		} else {
-			$SQL = "DELETE FROM `$db`.`$table` WHERE $assert;";
+			$SQL = "DELETE FROM $ref WHERE $assert;";
 		}
 				
-		if (!$this->driver->exec($SQL)) {
+		if (!$this->driver->ExecuteSql($SQL)) {
 			return false;
 		} else {
 			return true;
