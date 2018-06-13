@@ -6,7 +6,7 @@ Imports("MVC.MySql.schemaDriver");
 Imports("MVC.MySql.driver");
 
 use MVC\MySql\Expression\WhereAssert as MySqlScript;
-use MVC\MySql\Model as Driver;
+use MVC\MySql\MySqlExecDriver as Driver;
 use MVC\MySql\SchemaInfo as SchemaDriver;
 
 /**
