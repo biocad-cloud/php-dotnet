@@ -60,8 +60,9 @@ class Table {
 			// 则不会从配置文件之中读取连接参数信息，而是直接使用
 			// 这个数组之中所给定的配置参数信息进行数据库的链接		
 			$this->__initBaseOnExternalConfig($config["DB_TABLE"], $config);
-		} else if (get_class($config) === "MVC\MySql\MySqlExecDriver" || 
-		           get_class($config) === "MVC\MySql\MySqlDebugger") {
+		} else if (is_object($config) && (
+				   get_class($config) === "MVC\MySql\MySqlExecDriver" || 
+		           get_class($config) === "MVC\MySql\MySqlDebugger")) {
 
 			// config对象已经是一个可以直接使用的driver对象了
 			// 直接进行赋值使用
