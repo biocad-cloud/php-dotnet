@@ -165,6 +165,8 @@ class Table {
 
 		$condition = array_merge($this->condition, $condition);
 
+		# echo var_dump($condition);
+
 		return new Table($this->driver, [
 			$this->schema->tableName => $condition
 		]);
@@ -351,15 +353,23 @@ class Table {
 	 * select all
 	*/
     public function select() {
-		$ref    = $this->schema->ref;
-        $assert = $this->getWhere();        
+		$ref     = $this->schema->ref;
+        $assert  = $this->getWhere();        
+		$orderBy = $this->getOrderBy();
+		$limit   = $this->getLimit();
 
         if ($assert) {
-            $SQL = "SELECT * FROM $ref WHERE $assert;";
+            $SQL = "SELECT * FROM $ref WHERE $assert";
         } else {
-            $SQL = "SELECT * FROM $ref;";
+            $SQL = "SELECT * FROM $ref";
         }	
-				
+		if ($orderBy) {
+			$SQL = "$SQL $orderBy";
+		}	
+		if ($limit) {
+			$SQL = "$SQL $limit";
+		}
+
         return $this->driver->Fetch($SQL);
     }
 	
@@ -387,15 +397,23 @@ class Table {
 	 * select but limit 1
 	*/
     public function find() {
-		$ref    = $this->schema->ref;
-        $assert = $this->getWhere();    
+		$ref     = $this->schema->ref;
+		$assert  = $this->getWhere();   
+		
+		// 排序操作会影响到limit 1的结果
+		$orderBy = $this->getOrderBy();
 
         if ($assert) {
-            $SQL = "SELECT * FROM $ref WHERE $assert LIMIT 1;";
+            $SQL = "SELECT * FROM $ref WHERE $assert";
         } else {
-            $SQL = "SELECT * FROM $ref LIMIT 1;";
+            $SQL = "SELECT * FROM $ref";
         }	
-	
+		if ($orderBy) {
+			$SQL = "$SQL $orderBy";
+		}	
+
+		$SQL = "$SQL LIMIT 1;";
+
 		return $this->driver->ExecuteScalar($SQL);
     }
 
@@ -431,9 +449,9 @@ class Table {
 		}
 
         if ($assert) {
-            $SQL = "SELECT $aggregate FROM $ref WHERE $assert LIMIT 1;";
+            $SQL = "SELECT $aggregate FROM $ref WHERE $assert;";
         } else {
-            $SQL = "SELECT $aggregate FROM $ref LIMIT 1;";
+            $SQL = "SELECT $aggregate FROM $ref;";
         }
         
 		$single = $this->driver->ExecuteScalar($SQL);
@@ -448,10 +466,16 @@ class Table {
 	/**
 	 * select * from `table`;
 	 * 
-	 * (不受where条件的影响)
+	 * (不受where条件以及limit的影响，但是可以使用order by进行结果的排序操作)
 	*/
 	public function all() {		
-		$SQL = "SELECT * FROM {$this->schema->ref};";
+		$orderBy = $this->getOrderBy();
+		$SQL     = "SELECT * FROM {$this->schema->ref}";
+
+		if ($orderBy) {
+			$SQL = "$SQL $orderBy;";
+		}
+
 		return $this->driver->Fetch($SQL);
 	}
 	
