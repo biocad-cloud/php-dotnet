@@ -32,7 +32,11 @@ namespace MVC\MySql {
 			$this->host     = $host;
 			$this->port     = $port;
 		}
-		
+        
+        public function GetDatabaseName() {
+            return $this->database;
+        }
+
 		/**
 		 * 显示mysql表的结构
 		 * 
@@ -53,18 +57,18 @@ namespace MVC\MySql {
 		 * 使用这个函数来打开和mysql数据库的链接
 		*/
 		protected function __init_MySql() {	
-			$db = mysqli_connect(
+			$link = mysqli_connect(
 				$this->host,   
 				$this->user,
 				$this->password, 
 				$this->database, 
 				$this->port
-			) or die("Database error: <code>" . mysqli_error() . "</code>"); 
+			) or die("Database error: <code>" . mysqli_error($link) . "</code>"); 
 						
-			if (false === $db) {
+			if (false === $link) {
 				die("Database connection fail!");
 			} else {
-				return $db;
+				return $link;
 			}
 		}
     }

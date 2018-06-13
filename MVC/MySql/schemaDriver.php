@@ -5,6 +5,9 @@ namespace MVC\MySql {
     Imports("Microsoft.VisualBasic.Strings");
     Imports("MVC.MySql.sqlDriver");
 
+    /**
+     * 获取数据库的目标数据表的表结构
+    */
     class SchemaInfo {
 
 		public $tableName;
@@ -18,8 +21,20 @@ namespace MVC\MySql {
 		*/
 		public $auto_increment;
 
-		function __construct($driver, $tableName) {
+        /**
+         * 对数据库之中的表对象的完整引用：
+         * 
+         * `databaseName`.`tableName`
+        */
+        public $ref;
 
+		function __construct($driver, $tableName) {
+            $this->schema         = self::GetSchema($tableName, $driver);     
+            $this->auto_increment = $this->schema["AI"];  
+            $this->schema         = $this->schema["schema"];	
+            $this->databaseName   = $driver->GetDatabaseName();
+            $this->tableName      = $tableName;
+            $this->ref            = "`{$this->databaseName}`.`{$this->tableName}`";
 		}
 
 		#region "MySql table schema cache"
@@ -34,7 +49,7 @@ namespace MVC\MySql {
 		 *    AI     => "AI key name"
 		 * ]
 		*/
-		private static $describCache = array();
+		private static $describCache = [];
 
 		/**
 		 * 从数据库之中获取表结构信息或者从缓存之中获取，如果表结构信息已经被缓存了的话
@@ -45,8 +60,8 @@ namespace MVC\MySql {
 			if (!array_key_exists($tableName, self::$describCache)) {
 				# 不存在，则进行数据库查询构建
 				$schema = $driver->Describe($tableName);
-				$schema = self::schemaArray($schema);
-				$AI     = self::getAIKey($schema);
+				$schema = self::ArrayOfSchema($schema);
+				$AI     = self::GetAutoIncrementKey($schema);
 				
 				self::$describCache[$tableName] = [
 					"schema" => $schema, 
@@ -60,7 +75,7 @@ namespace MVC\MySql {
 		/**
 		 * Get the field name of the auto increment field.
 		*/
-		public static function getAIKey($schema) {	
+		public static function GetAutoIncrementKey($schema) {	
 
 			foreach ($schema as $name => $type) {
 				
@@ -79,11 +94,11 @@ namespace MVC\MySql {
 		}
 		
 		/**
-		 * Mysql schema table to php schema dictionary array, 
+		 * MySql schema table to php schema dictionary array, 
 		 * the key in the dictionary is the field name in 
 		 * table.
 		*/
-		public static function schemaArray($schema) {
+		public static function ArrayOfSchema($schema) {
 			$array = [];
 
 			foreach ($schema as $row) {
