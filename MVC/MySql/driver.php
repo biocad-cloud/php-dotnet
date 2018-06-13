@@ -132,7 +132,14 @@ namespace MVC\MySql {
 		/**
 		 * 使用这个函数来打开和mysql数据库的链接
 		*/
-		public function __init_MySql() {	
+		public function GetMySqlLink() {
+			return $this->__init_MySql();
+		}
+
+		/**
+		 * 使用这个函数来打开和mysql数据库的链接
+		*/
+		private function __init_MySql() {	
 			$db = mysqli_connect(
 				$this->host,   
 				$this->user,
@@ -152,10 +159,8 @@ namespace MVC\MySql {
 		 * 这个方法主要是用于执行一些无返回值的方法，
 		 * 例如INSERT, UPDATE, DELETE等
 		*/
-		public function exec($SQL, $mysql_exec = NULL) {
-			if (!$mysql_exec) {
-				$mysql_exec = $this->__init_MySql();
-			}
+		public function exec($SQL) {
+			$mysql_exec = $this->__init_MySql();			
 			
 			mysqli_select_db($mysql_exec, $this->database); 
 			mysqli_query($mysql_exec, "SET names 'utf8'");
@@ -170,6 +175,8 @@ namespace MVC\MySql {
 			}		
 
 			$this->last_mysql_expression = $SQL;
+
+			mysqli_close($mysql_exec);
 
 			return $out;
 		}
@@ -187,8 +194,9 @@ namespace MVC\MySql {
 		 * 
 		 * @return boolean|array 如果数据库查询出错，会返回逻辑值False，反之会返回相对应的结果值
 		 */
-		public function ExecuteSQL($mysql_exec, $SQL) {
-			
+		public function ExecuteSQL($SQL) {
+			$mysql_exec = $this->__init_MySql();	
+
 			mysqli_select_db($mysql_exec, $this->database); 
 			mysqli_query($mysql_exec, "SET names 'utf8'");
 
@@ -199,15 +207,15 @@ namespace MVC\MySql {
 			}
 			
 			$this->last_mysql_expression = $SQL;
+			$out = null;
 
 			if($data) {
-				$out = array();
+				$out = [];
 				
 				while($row = mysqli_fetch_array($data, MYSQLI_ASSOC)) { 
 					array_push($out, $row);
-				}
-				
-				return $out;
+				}		
+			
 			} else {
 
 				// 这条SQL语句执行出错了，添加错误信息到sql记录之中
@@ -215,15 +223,20 @@ namespace MVC\MySql {
 					\dotnet::$debugger->add_last_mysql_error(mysqli_error($mysql_exec));
 				}
 
-				return false;
+				$out = false;
 			}
+
+			mysqli_close($mysql_exec);
+
+			return $out;
 		}
 		
 		/**
 		 * 执行SQL查询然后返回一条数据
 		*/
-		public function ExecuteScalar($mysql_exec, $SQL) {
-			
+		public function ExecuteScalar($SQL) {			
+			$mysql_exec = $this->__init_MySql();
+
 			mysqli_select_db($mysql_exec, $this->database); 
 			mysqli_query($mysql_exec, "SET names 'utf8'");
 

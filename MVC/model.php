@@ -283,7 +283,7 @@ class Table {
 		}
 
 		$limit = $this->condition["limit"];
-		
+
 		if (is_array($limit)) {
 			$offset = $limit[0];
 			$n      = $limit[1];
