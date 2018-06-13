@@ -156,6 +156,10 @@ namespace MVC\MySql {
     */
     class mysqlExec extends sqlDriver implements ISqlDriver {
 
+		function __construct($database, $user, $password, $host = "localhost", $port = 3306) {
+			parent::__construct($database, $user, $password, $host, $port);
+		}
+
 		/**
 		 * 获取当前的这个实例之中所执行的最后一条MySql语句
 		*/
