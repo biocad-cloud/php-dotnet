@@ -4,6 +4,7 @@ Imports("Microsoft.VisualBasic.Strings");
 
 use MVC\MySql\Expression\WhereAssert as MySqlScript;
 use MVC\MySql\Model as Driver;
+use MVC\MySql\SchemaInfo as SchemaDriver;
 
 /**
  * WebApp data model.
@@ -17,7 +18,7 @@ class Table {
 	 * MySql数据库驱动程序
 	*/
 	private $driver;
-	
+
 	/**
 	 * 当前的这个数据表的结构信息
 	*/
@@ -45,13 +46,33 @@ class Table {
 		# __initBaseOnExternalConfig这个函数来完成的
 		# 下面的if分支的差异仅在于不同的路径所获取得到的配置数据的方法上的差异
 
-		if (is_string($config)) {		
+		if (is_string($config)) {	
+			// 如果是字符串，则说明这个是数据表的名称
+			// 通过表名称来进行初始化	
 			$this->__initBaseOnTableName($config);
-		} else if(self::isValidDbConfig($config)) {			
+		} else if(self::isValidDbConfig($config)) {	
+			// 如果是有效的数据库连接参数的配置数组
+			// 则不会从配置文件之中读取连接参数信息，而是直接使用
+			// 这个数组之中所给定的配置参数信息进行数据库的链接		
 			$this->__initBaseOnExternalConfig($config["DB_TABLE"], $config);
+		} else if (get_class($config) === "MVC\MySql\MySqlExecDriver" || 
+		           get_class($config) === "MVC\MySql\MySqlDebugger") {
+
+			// config对象已经是一个可以直接使用的driver对象了
+			// 直接进行赋值使用
+			$this->driver = $config;
+			$this->schema = new SchemaDriver(
+				$this->tableName, 
+				$this->driver
+			);
+
 		} else {
 
-			// [dbName => $tableName] for multiple database config.
+			// 如果在配置文件之中配置了多个数据库的链接参数信息
+			// 则在这里可以使用下面的格式来指定数据库的连接信息的获取
+			// 
+			// [dbName => tableName] for multiple database config.
+			//
 			list($dbName, $tableName) = Utils::Tuple($config);
 
 			if (array_key_exists($dbName, DotNetRegistry::$config)) {
@@ -97,13 +118,10 @@ class Table {
         );
 
 		# 获取数据库的目标数据表的表结构
-		$schema = Driver::GetSchema(
+		$this->schema = new SchemaDriver(
 			$this->tableName, 
 			$this->driver
 		);
-		
-        $this->schema         = $schema["schema"];
-		$this->auto_increment = $schema["AI"];
 	}
 
 	/**
