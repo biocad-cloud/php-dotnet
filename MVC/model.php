@@ -147,20 +147,6 @@ class Table {
 	}
 	
 	/**
-	 * 直接执行一条SQL语句
-	*/
-    public function exec($SQL) {
-        return $this->driver->ExecuteSql($SQL);
-    }
-
-	/**
-	 * 获取当前的这个实例之中所执行的最后一条MySql语句
-	*/
-	public function getLastMySql() {
-		return $this->driver->getLastMySql();
-	}
-
-	/**
 	 * 对查询的结果的数量进行限制，当只有参数m的时候，表示查询结果限制为前m条，
 	 * 当参数n被赋值的时候，表示偏移m条之后返回n条结果
 	 * 
@@ -213,42 +199,6 @@ class Table {
 		return new Table($this->driver, [
 			$this->schema->tableName => $condition
 		]);
-	}
-
-	/**
-	 * select all
-	*/
-    public function select() {
-		$ref    = $this->schema->ref;
-        $assert = $this->getWhere();        
-
-        if ($assert) {
-            $SQL = "SELECT * FROM $ref WHERE $assert;";
-        } else {
-            $SQL = "SELECT * FROM $ref;";
-        }	
-				
-        return $this->driver->Fetch($SQL);
-    }
-	
-	/**
-	 * select count(*) from where ``...``;
-	*/
-	public function count() {
-		$ref    = $this->schema->ref;
-        $assert = $this->getWhere();             
-		$count  = "COUNT(*)";
-
-        if ($assert) {
-            $SQL = "SELECT $count FROM $ref WHERE $assert;";
-        } else {
-            $SQL = "SELECT $count FROM $ref;";
-        }
-    		
-		$count = $this->driver->ExecuteScalar($SQL);
-		$count = $count["COUNT(*)"];
-
-		return $count;
 	}
 
 	#region "condition expression"
@@ -334,7 +284,103 @@ class Table {
 		dotnet::ThrowException($debug);   
 	}
 
+    /**
+     * Create a where condition filter for the next SQL expression.
+	 * (这个函数影响SELECT UPDATE DELETE，不会影响INSERT操作)
+     *	  
+     * @param mixed $assert The assert array of the where condition or an string expression.
+	 * 
+	 * @return Table Returns a new table object instance for expression chaining.
+    */
+    public function where($assert) {
+		$condition = null;
+
+		if (gettype($assert) === 'string') {
+			$condition["where"] = ["expression" => $assert];
+		} else {
+			$condition["where"] = ["model" => $assert];
+		}
+		
+		# 为了不影响当前的表对象实例的condition数组，在这里不直接进行添加
+		# 而是使用array_merge生成新的数组来完成添加操作
+		if ($this->condition) {
+			# null的时候会出现
+			# array_merge(): Argument #2 is not an array
+			$condition = array_merge($condition, $this->condition);
+		}
+		
+		$next = new Table($this->driver, [
+			$this->schema->tableName => $condition
+		]);
+
+        return $next;
+    }
+
+	/**
+	 * fieldName => list
+	 * 
+	 * (这个函数影响SELECT UPDATE DELETE，不会影响INSERT操作)
+	*/
+	public function in($assert) {
+		$fieldName = array_keys($assert)[0];
+		$values    = $assert[$fieldName];
+		
+		return $this->where([$fieldName => in($values)]);
+	}
+
 	#endregion
+
+	#region "MySql executation"
+
+	/**
+	 * 直接执行一条SQL语句
+	*/
+    public function exec($SQL) {
+        return $this->driver->ExecuteSql($SQL);
+    }
+
+	/**
+	 * 获取当前的这个实例之中所执行的最后一条MySql语句
+	*/
+	public function getLastMySql() {
+		return $this->driver->getLastMySql();
+	}
+
+	/**
+	 * select all
+	*/
+    public function select() {
+		$ref    = $this->schema->ref;
+        $assert = $this->getWhere();        
+
+        if ($assert) {
+            $SQL = "SELECT * FROM $ref WHERE $assert;";
+        } else {
+            $SQL = "SELECT * FROM $ref;";
+        }	
+				
+        return $this->driver->Fetch($SQL);
+    }
+	
+	/**
+	 * select count(*) from where ``...``;
+	*/
+	public function count() {
+		$ref    = $this->schema->ref;
+        $assert = $this->getWhere();             
+		$count  = "COUNT(*)";
+
+        if ($assert) {
+            $SQL = "SELECT $count FROM $ref WHERE $assert;";
+        } else {
+            $SQL = "SELECT $count FROM $ref;";
+        }
+    		
+		$count = $this->driver->ExecuteScalar($SQL);
+		$count = $count["COUNT(*)"];
+
+		return $count;
+	}
 
 	/**
 	 * select but limit 1
@@ -406,50 +452,6 @@ class Table {
 	public function all() {		
 		$SQL = "SELECT * FROM {$this->schema->ref};";
 		return $this->driver->Fetch($SQL);
-	}
-
-    /**
-     * Create a where condition filter for the next SQL expression.
-	 * (这个函数影响SELECT UPDATE DELETE，不会影响INSERT操作)
-     *	  
-     * @param mixed $assert The assert array of the where condition or an string expression.
-	 * 
-	 * @return Table Returns a new table object instance for expression chaining.
-    */
-    public function where($assert) {
-		$condition = null;
-
-		if (gettype($assert) === 'string') {
-			$condition["where"] = ["expression" => $assert];
-		} else {
-			$condition["where"] = ["model" => $assert];
-		}
-		
-		# 为了不影响当前的表对象实例的condition数组，在这里不直接进行添加
-		# 而是使用array_merge生成新的数组来完成添加操作
-		if ($this->condition) {
-			# null的时候会出现
-			# array_merge(): Argument #2 is not an array
-			$condition = array_merge($condition, $this->condition);
-		}
-		
-		$next = new Table($this->driver, [
-			$this->schema->tableName => $condition
-		]);
-
-        return $next;
-    }
-
-	/**
-	 * fieldName => list
-	 * 
-	 * (这个函数影响SELECT UPDATE DELETE，不会影响INSERT操作)
-	*/
-	public function in($assert) {
-		$fieldName = array_keys($assert)[0];
-		$values    = $assert[$fieldName];
-		
-		return $this->where([$fieldName => in($values)]);
 	}
 	
 	/**
@@ -586,5 +588,7 @@ class Table {
 			return true;
 		}
 	}
+
+	#endregion
 }
 ?>
