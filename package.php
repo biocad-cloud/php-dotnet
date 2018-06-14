@@ -186,6 +186,9 @@ class dotnet {
         }, E_ALL);
     }
     
+    /**
+     * 默认是zhCN中文语言
+    */
     public static function GetLanguageConfig() {
         if (array_key_exists("lang", $_GET)) {
 			$lang = Strings::LCase($_GET["lang"]);

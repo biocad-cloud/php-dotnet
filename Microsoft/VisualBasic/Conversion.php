@@ -25,6 +25,9 @@ class Conversion {
         return $value;
     }
 
+    /**
+     * Alias of the ``intval`` function.
+    */
     public static function CInt($str) {
         return intval($str);
     }
