@@ -87,7 +87,7 @@ class dotnet {
     public static $debugger;
 
     /**
-     * 函数返回成功消息的json字符串
+     * 函数返回成功消息的json字符串(这个函数只返回json数据，并没有echo输出)
     */ 
     public static function successMsg($msg) {	
 		return json_encode([
@@ -97,7 +97,7 @@ class dotnet {
 	}
     
     /**
-     * 函数返回失败消息的json字符串
+     * 函数返回失败消息的json字符串(这个函数只返回json数据，并没有echo输出)
     */ 
 	public static function errorMsg($msg, $errorCode = 1) {
 		return json_encode([

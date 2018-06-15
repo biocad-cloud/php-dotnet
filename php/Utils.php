@@ -186,6 +186,21 @@ class Utils {
 	  	$sh = pow(10, $dp);
 	  	return round($num * $sh) / $sh;
     }
+
+    /**
+     * 一个安全的数组读取函数，
+     * 
+     * 阻止出现警告提示： Notice: Undefined index: blabla...
+    */
+    public static function ReadValue($array, $key, $default = null) {
+        if (empty($array)) {
+            return $default;
+        } else if (array_key_exists($key, $array)) {
+            return $array[$key];
+        } else {
+            return $default;
+        }
+    }
     
     public static function ArrayCopy($array) {
         if (empty($array)) {
