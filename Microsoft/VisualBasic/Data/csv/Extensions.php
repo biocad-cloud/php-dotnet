@@ -65,6 +65,25 @@ namespace Microsoft\VisualBasic\Data\csv {
 
             return file_exists($path);
         }
+
+        public static function Load($path, $encoding = "utf8") {            
+            $file_handle = fopen($path, 'r');
+            $headers     = fgetcsv($file_handle);
+
+            while (!feof($file_handle) ) {
+                $lineText = fgetcsv($file_handle, 1024);
+                $row = [];
+
+                for ($i = 0; $i < count($headers); $i++) {
+                    $row[$headers[$i]] = $lineText[$i];
+                }
+
+                $line_of_text[] = $row;
+            }
+
+            fclose($file_handle);
+            return $line_of_text;            
+        }
     }
 }
 
