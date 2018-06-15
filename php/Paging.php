@@ -1,5 +1,7 @@
 <?php
 
+Imports("php.Utils");
+
 /**
  * 数据库查询数据分页帮助工具
 */
@@ -21,6 +23,8 @@ class DbPaging {
      * 
      * @param string $tableName 数据表的名字或者数据库配置
      * @param array|integer $id 可以是数字id或者一个数组用来指示id列
+     *                          如果$id是一个数字的话，则默认数据表的id列的名称为`id`，则这个$id参数表示start的id编号
+     *                          如果$id参数是一个数组的话，则需要传入的形式为：["idName" => start]
      * @param integer $limits 每一页显示的数量
     */
     public static function RetrivePage($tableName, $id, $limits = 100) {
@@ -31,8 +35,7 @@ class DbPaging {
             $guid  = "id";
             $start = $id;
         } else {
-            $guid  = array_keys($id)[0];
-            $start = $id[$guid];
+            list($guid, $start) = Utils::Tuple($id);
         }
 
         $table   = new Table($tableName);
@@ -49,11 +52,15 @@ class DbPaging {
                 "endOfPage"    => true
             ];
         } else {
+
             $page = $table->where([
                 $guid => gt_eq($start)
             ])->limit($limits) 
               ->order_by([$guid])
               ->select();
+
+            echo $table->getLastMySql();
+
             $endOfPage = Enumerable::Last($page)[$guid] == $maxid;
             
             return [

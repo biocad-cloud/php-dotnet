@@ -75,6 +75,10 @@ namespace MVC\MySql {
 				return $link;
 			}
 		}
+
+		public function getLastMySql() {
+			return $this->last_mysql_expression;
+		}
     }
 
     /**
