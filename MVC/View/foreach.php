@@ -161,7 +161,7 @@ namespace MVC\Views {
                     $str = $template;
 
                     foreach ($replaceAs as $name => $index) {
-                        $str_val = $row[$name];
+                        $str_val = \Utils::ReadValue($row, $name);
 
                         if (is_array($str_val)) {
                             # 可能是内嵌的模板的数据源
@@ -192,7 +192,7 @@ namespace MVC\Views {
                 list($ref, $templ) = \Utils::Tuple($templ);
 
                 $template = $templ;
-                $ref      = $row[$ref];
+                $ref      = \Utils::ReadValue($row, $ref);
                 $templ    = \StringHelpers::GetStackValue($templ, ">", "<");
 
                 $varPattern = "@$var\[\".+?\"\]";
