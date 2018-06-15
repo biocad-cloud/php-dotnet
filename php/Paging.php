@@ -20,7 +20,8 @@ class DbPaging {
      * 返回分页数据
      * 
      * @param string $tableName 数据表的名字或者数据库配置
-     * @param array|number $id 可以是数字id或者一个数组用来指示id列
+     * @param array|integer $id 可以是数字id或者一个数组用来指示id列
+     * @param integer $limits 每一页显示的数量
     */
     public static function RetrivePage($tableName, $id, $limits = 100) {
         $guid  = "";
