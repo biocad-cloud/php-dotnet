@@ -53,14 +53,20 @@ namespace MVC\Views {
                     $template = "<!-- Using output buffer for dynamics includes -->" . $template;
                 }
 
-                ob_start();
+                # 2018-6-16 try...catch not working?
 
-                # echo $template;
+                # try {
+
+                ob_start();                
 
                 // 需要服务器端开启
                 // PHP Warning:  include(): data:// wrapper is disabled in the server configuration by allow_url_include=0
                 include "data://text/plain;base64," . base64_encode($template);
                 return ob_get_clean();
+
+                # } catch (Exception $ex) {
+                #    return "<div style='color:red;'><code><pre>\n" . $ex . "</pre></code></div>" . $template;
+                # }                
             }
         }
     }
