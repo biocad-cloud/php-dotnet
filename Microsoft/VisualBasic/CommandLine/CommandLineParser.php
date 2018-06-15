@@ -19,11 +19,17 @@ class CommandLineParser {
         return new CommandLine($name, $arguments);
     }
 
+    /**
+     * @abstract 因为php的argv数组之中的第一个元素总是当前脚本的文件名，
+     *           所以在这里是从1开始的，即跳过第一个文件名，第二个元素
+     *           （下标1）开始才是所需要的命令行数据
+     *  
+    */
     public static function ParseCLIArgvs() {
         $name      = $argv[1];
         $arguments = [];
 
-        for ($i = 1; $i < count($argv); $i++) {
+        for ($i = 2; $i < count($argv); $i++) {
             $term = $argv[$i];
 
             if (Strings::InStr($term, "=")) {

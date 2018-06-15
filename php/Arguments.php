@@ -22,8 +22,16 @@ class Arguments implements ArrayAccess {
         #
         # script.php appName arg1=value1 arg2=value2 arg3=value3 ...
         $argvs = CommandLineParser::ParseCLIArgvs();
+        $args  = [];
 
+        foreach ([$_GET, $_POST, $argvs->arguments] as $env) {
+            foreach ($env as $name => $value) {
+                $args[$name] = $value;
+            }
+        }
     }
+
+    #region "implements ArrayAccess"
 
     public function offsetSet($offset, $value) {
         $args[$offset] = $value;
@@ -44,6 +52,8 @@ class Arguments implements ArrayAccess {
            return null;
         }
     }
+
+    #endregion
 }
 
 ?>
