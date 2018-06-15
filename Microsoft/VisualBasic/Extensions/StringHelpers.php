@@ -34,6 +34,7 @@ class StringHelpers {
 
     /**
      * Text parser for the format: ``tagName{<paramref name="delimiter"/>}value``
+     * 这个函数返回一个tuple:  ``[key => value]``
     */
     public static function GetTagValue($str, $delimiter = " ") {
         if (empty($str)) {

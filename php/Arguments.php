@@ -1,5 +1,7 @@
 <?php
 
+Imports("Microsoft.VisualBasic.CommandLine.CommandLineParser");
+
 /**
  * 这个模块是为了统一查询参数的获取方式而设定的
  * 
@@ -19,6 +21,8 @@ class Arguments implements ArrayAccess {
         # 基于本应用程序框架下的命令行的标准格式应该为
         #
         # script.php appName arg1=value1 arg2=value2 arg3=value3 ...
+        $argvs = CommandLineParser::ParseCLIArgvs();
+
     }
 
     public function offsetSet($offset, $value) {
@@ -35,9 +39,9 @@ class Arguments implements ArrayAccess {
 
     public function offsetGet($offset) {
         if (isset($this->args[$offset])) {
-            return $this->args[$offset];
+           return $this->args[$offset];
         } else {
-            return null;
+           return null;
         }
     }
 }
