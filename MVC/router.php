@@ -1,5 +1,8 @@
 <?php
 
+Imports("Microsoft.VisualBasic.Strings");
+Imports("Microsoft.VisualBasic.Extensions.StringHelpers");
+
 /**
  * REST api handler
  *
@@ -66,7 +69,9 @@ class Router {
 		$fileNamePattern = '[a-zA-Z0-9\_\.]+';
 		# php之中的标识符则只允许字母，数字和下划线
 		$identifierPattern = "[a-zA-Z0-9\_]+";
-		$pattern = "($fileNamePattern)/($identifierPattern)";
+
+		# <api/user>security/modify_password
+		$pattern = "((<$fileNamePattern(/$fileNamePattern)*>)?$fileNamePattern)/($identifierPattern)";
 		$pattern = "#$pattern#";
 
 		# 使用正则匹配出所有的简写之后，对里面的字符串数据按照/作为分隔符拆开
@@ -75,10 +80,22 @@ class Router {
 			$matches = $matches[0];
 			
 			foreach ($matches as $s) {
-				$tokens = Strings::Split($s, "/");
+				$dir = StringHelpers::GetStackValue($s, "<", ">");
+
+				if (Strings::Len($dir) > 0) {					
+					# 因为在这里需要使用dir变量进行替换，所以dir应该在route变量的后面，
+					# 即在完成替换之后才赋值
+					$route = Strings::Replace($s, "<$dir>", "");
+					$dir   = "/$dir";
+				} else {
+					$dir   = "";
+					$route = $s; 
+				}
+
+				$tokens = Strings::Split($route, "/");
 				$file   = $tokens[0];
 				$app    = $tokens[1];
-				$url    = "$file.php?app=$app";
+				$url    = "$dir/$file.php?app=$app";
 				# 双引号下{}会被识别为字符串插值的操作
 				# 但是在单引号直接插入变量进行插值却失效了
 				# 所以在这里使用单引号加字符串连接来构建查找对象
