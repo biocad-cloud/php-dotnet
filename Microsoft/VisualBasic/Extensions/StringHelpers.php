@@ -34,6 +34,7 @@ class StringHelpers {
 
     /**
      * Text parser for the format: ``tagName{<paramref name="delimiter"/>}value``
+     * 这个函数返回一个tuple:  ``[key => value]``
     */
     public static function GetTagValue($str, $delimiter = " ") {
         if (empty($str)) {
@@ -51,5 +52,20 @@ class StringHelpers {
 
         return [$key => $value];
     }
+   
+    /**
+     * 在字符串前面填充指定长度的00序列，假若输入的字符串长度大于fill的长度，
+     * 则不再进行填充
+    */
+    public static function FormatZero($n, $fill = "00") {
+        $s = strval($n);
+        $d = Strings::Len($fill) - Strings::Len($s);
+
+        if ($d < 0) {
+            return $s;
+        } else {
+            return Strings::Mid($fill, 1, $d) . $s;
+        }
+    }    
 }
 ?>

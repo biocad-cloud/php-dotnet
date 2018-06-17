@@ -10,6 +10,12 @@ namespace MVC\Views {
     class InlineView {
 
         /**
+         * 2018-6-15
+         * 
+         * 因为在进行字符串替换的时候，false会被直接替换为空白字符串
+		 * 可能会导致脚本语法错误，所以逻辑值都需要转换为文本之后才
+         * 可以使用这个内联脚本帮助函数
+         * 
          * https://stackoverflow.com/questions/1309800/php-eval-that-evaluates-html-php
          * https://stackoverflow.com/questions/4389361/include-code-from-a-php-stream
         */
@@ -48,6 +54,8 @@ namespace MVC\Views {
                 }
 
                 ob_start();
+
+                # echo $template;
 
                 // 需要服务器端开启
                 // PHP Warning:  include(): data:// wrapper is disabled in the server configuration by allow_url_include=0
