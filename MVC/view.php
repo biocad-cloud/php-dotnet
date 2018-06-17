@@ -97,7 +97,13 @@ class View {
 	private static $join = [];
 
 	public static function Push($name, $value) {
-		self::$join[$name] = $value;
+		if ($name == "*") {
+			foreach($value as $key => $val) {
+				self::$join[$key] = $val;
+			}
+		} else {
+			self::$join[$name] = $value;
+		}		
 	}
 
 	public static function InterpolateTemplate($html, $vars, $path = NULL) {
