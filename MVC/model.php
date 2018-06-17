@@ -508,7 +508,7 @@ class Table {
 			} else if ($auto_increment && Strings::LCase($fieldName) == Strings::LCase($auto_increment) ) {
 				# Do Nothing
 			} else {
-echo var_dump($def);
+
                 # 检查一下这个字段是否是需要值的？如果需要，就将默认值填上
                 if (Utils::ReadValue($def, "Null", "") == "NO") {
 					
@@ -545,7 +545,7 @@ echo var_dump($def);
 			
         } else {
 			
-            if (!$this->auto_increment) {
+            if (!$auto_increment) {
 				# 这个表之中没有自增字段，则返回true
 				return true;
 			} else {
