@@ -106,6 +106,10 @@ class View {
 		}		
 	}
 
+	/**
+	 * Create user html document based on the html template 
+	 * and the given configuration data.
+	*/
 	public static function InterpolateTemplate($html, $vars, $path = NULL) {
 		# 将html片段合并为一个完整的html文档
 		$html = View::interpolate_includes($html, $path);	
@@ -116,12 +120,20 @@ class View {
 			# 则在这里需要进行替换处理
 			return Router::AssignController($html);		
 		} else {
-			return View::Assign($html, array_merge($vars, self::$join));
+			if (!$vars) {
+				$vars = self::$join;
+			} else if (!self::$join) {
+				// do nothing
+			} else {
+				$vars = array_merge($vars, self::$join);
+			}
+			return View::Assign($html, $vars);
 		}
 	}
 
 	/**
-	 * 这个函数将html片段进行拼接，得到完整的html文档，函数需要使用文档所在的路径来获取文档碎片的引用文件位置
+	 * 这个函数将html片段进行拼接，得到完整的html文档，函数需要使用文档所在的路径来
+	 * 获取文档碎片的引用文件位置
 	 * 
 	 * @param path html模版文件的文件位置
 	*/
