@@ -51,8 +51,21 @@ class DotNetRegistry {
         }
     }
 
+    /**
+     * 获取自定义错误代码页面的文件夹存放路径
+    */
     public static function RFC7231Folder() {
-        return self::Read(RFC7231, null);
+        $dir = self::Read(RFC7231, null);
+
+        if (!$dir) {
+            return null;
+        }
+        
+        if (!defined('APP_PATH')) {
+            return $dir;
+        } else {
+            return APP_PATH . "/" . $dir;
+        }
     }
 
     public static function DefaultLanguage() {

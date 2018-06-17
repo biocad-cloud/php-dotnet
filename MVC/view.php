@@ -94,17 +94,23 @@ class View {
 		return $vars;
 	}
 
+	private static $join = [];
+
+	public static function Push($name, $value) {
+		self::$join[$name] = $value;
+	}
+
 	public static function InterpolateTemplate($html, $vars, $path = NULL) {
 		# 将html片段合并为一个完整的html文档
 		$html = View::interpolate_includes($html, $path);	
 		
 		# 没有需要进行设置的变量字符串，则直接在这里返回html文件
-		if (!$vars) {
+		if (!$vars && !self::$join) {
 			# 假设在html文档里面总是会存在url简写的，
 			# 则在这里需要进行替换处理
 			return Router::AssignController($html);		
 		} else {
-			return View::Assign($html, $vars);
+			return View::Assign($html, array_merge($vars, self::$join));
 		}
 	}
 
@@ -143,7 +149,7 @@ class View {
 		
 		return $html;
 	}
-	
+
 	/**
 	 * html页面之上存在有额外的需要进行设置的字符串变量参数
 	 * 在这里进行字符串替换操作
