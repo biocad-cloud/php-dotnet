@@ -567,7 +567,7 @@ class Table {
 		
 		# UPDATE `metacardio`.`experimental_batches` SET `workspace`='2018/01/31/02-36-49/2', `note`='22222', `status`='10' WHERE `id`='3';
 		
-		foreach ($this->schema as $fieldName => $def) {
+		foreach ($this->schema->schema as $fieldName => $def) {
 			# 只更新存在的数据，所以在这里只需要这一个if分支即可
 			if (array_key_exists($fieldName, $data)) {
 				$value = $data[$fieldName];
@@ -589,6 +589,8 @@ class Table {
 			$SQL = $SQL . " WHERE " . $assert . " LIMIT 1;";
 		}
 						
+		# echo $SQL;
+
 		if (!$this->driver->ExecuteSql($SQL)) {
 			return false;
 		} else {
