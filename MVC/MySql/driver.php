@@ -51,9 +51,9 @@ namespace MVC\MySql {
 
 			$this->last_mysql_expression = $SQL;
 
-			if (Strings::StartWith($SQL, "INSERT INTO")) {
+			if (\Strings::StartWith($SQL, "INSERT INTO")) {
 				# 尝试获取插入语句所产生的新的自增的id编号
-				$id = mysqli_insert_id($mysqli_exec);
+				$id = mysqli_insert_id($mysql_exec);
 
 				# 2018-6-13 在这里需要额外的注意一下，如果表之中没有自增的字段
 				# 则id变量可能会是false，但是insert可能是成功的，因为$out可能

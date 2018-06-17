@@ -94,22 +94,46 @@ class View {
 		return $vars;
 	}
 
+	private static $join = [];
+
+	public static function Push($name, $value) {
+		if ($name == "*") {
+			foreach($value as $key => $val) {
+				self::$join[$key] = $val;
+			}
+		} else {
+			self::$join[$name] = $value;
+		}		
+	}
+
+	/**
+	 * Create user html document based on the html template 
+	 * and the given configuration data.
+	*/
 	public static function InterpolateTemplate($html, $vars, $path = NULL) {
 		# 将html片段合并为一个完整的html文档
 		$html = View::interpolate_includes($html, $path);	
 		
 		# 没有需要进行设置的变量字符串，则直接在这里返回html文件
-		if (!$vars) {
+		if (!$vars && !self::$join) {
 			# 假设在html文档里面总是会存在url简写的，
 			# 则在这里需要进行替换处理
 			return Router::AssignController($html);		
 		} else {
+			if (!$vars) {
+				$vars = self::$join;
+			} else if (!self::$join) {
+				// do nothing
+			} else {
+				$vars = array_merge($vars, self::$join);
+			}
 			return View::Assign($html, $vars);
 		}
 	}
 
 	/**
-	 * 这个函数将html片段进行拼接，得到完整的html文档，函数需要使用文档所在的路径来获取文档碎片的引用文件位置
+	 * 这个函数将html片段进行拼接，得到完整的html文档，函数需要使用文档所在的路径来
+	 * 获取文档碎片的引用文件位置
 	 * 
 	 * @param path html模版文件的文件位置
 	*/
@@ -143,7 +167,7 @@ class View {
 		
 		return $html;
 	}
-	
+
 	/**
 	 * html页面之上存在有额外的需要进行设置的字符串变量参数
 	 * 在这里进行字符串替换操作

@@ -1,5 +1,8 @@
 <?php
 
+Imports("Microsoft.VisualBasic.Strings");
+Imports("Microsoft.VisualBasic.Extensions.StringHelpers");
+
 /**
  * REST api handler
  *
@@ -12,7 +15,7 @@ class Router {
 	 * 这个函数会对url的解析结果从class实例对象之中匹配出
      * 相同的函数名然后进行调用	 
 	 *
-	 * @param controller $app 控制器实例
+	 * @param object $app 控制器对象实例
 	*/
 	public static function HandleRequest($app) {
 		$argv = $_GET;
@@ -38,10 +41,24 @@ class Router {
 	}
 		
 	/**
-	 * 为了方便，在html里面的控制器的链接可能为简写形式
-	 * 例如：{index/upload}
-	 * 则根据控制器的解析规则，应该在这个函数之中被拓展为
-	 * 结果url字符串：/index.php?app=upload
+	 * 为了方便，在html里面的控制器的链接可能为简写形式，例如：``{index/upload}``
+	 * 则根据控制器的解析规则，应该在这个函数之中被拓展为结果url字符串：
+	 * 
+	 * ``/index.php?app=upload``
+	 * 
+	 * 在上面的例子之中index为php文件名，upload则是控制器之中的一个控制器api函数
+	 * 
+	 * 如果控制器的php文件不位于根目录下，则可以通过添加前缀的tag的方式进行区分标识：
+	 * 
+	 * 例如，控制器php文件在api文件夹下面的user.php文件之中，则可以简写为：
+	 * ``{<api>user/modify_password}`` 
+	 * 表示在api/user.php文件之中
+	 * 
+	 * 如果在更深一层文件夹之中，则可以简写为``{<api/user>security/modify_password}``
+	 * 表示在api/user/security.php文件之中
+	 * 
+	 * 不过并不建议将php控制器文件放在很深的文件夹之中，添加这个前缀只是为了方便对控制器
+	 * 按照功能进行分组，便于组织项目代码
 	 * 
 	 * @param string $html 包含有路由器规则占位符的HTML文档 
 	*/
@@ -52,7 +69,9 @@ class Router {
 		$fileNamePattern = '[a-zA-Z0-9\_\.]+';
 		# php之中的标识符则只允许字母，数字和下划线
 		$identifierPattern = "[a-zA-Z0-9\_]+";
-		$pattern = "($fileNamePattern)/($identifierPattern)";
+
+		# <api/user>security/modify_password
+		$pattern = "((<$fileNamePattern(/$fileNamePattern)*>)?$fileNamePattern)/($identifierPattern)";
 		$pattern = "#$pattern#";
 
 		# 使用正则匹配出所有的简写之后，对里面的字符串数据按照/作为分隔符拆开
@@ -61,10 +80,22 @@ class Router {
 			$matches = $matches[0];
 			
 			foreach ($matches as $s) {
-				$tokens = Strings::Split($s, "/");
+				$dir = StringHelpers::GetStackValue($s, "<", ">");
+
+				if (Strings::Len($dir) > 0) {					
+					# 因为在这里需要使用dir变量进行替换，所以dir应该在route变量的后面，
+					# 即在完成替换之后才赋值
+					$route = Strings::Replace($s, "<$dir>", "");
+					$dir   = "/$dir";
+				} else {
+					$dir   = "";
+					$route = $s; 
+				}
+
+				$tokens = Strings::Split($route, "/");
 				$file   = $tokens[0];
 				$app    = $tokens[1];
-				$url    = "$file.php?app=$app";
+				$url    = "$dir/$file.php?app=$app";
 				# 双引号下{}会被识别为字符串插值的操作
 				# 但是在单引号直接插入变量进行插值却失效了
 				# 所以在这里使用单引号加字符串连接来构建查找对象
