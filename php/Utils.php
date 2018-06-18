@@ -30,17 +30,32 @@ class Utils {
         }
     }
 
+    public static function mime_content_type($filename) {
+        $result = new finfo();
+    
+        if (is_resource($result) === true) {
+            return $result->file($filename, FILEINFO_MIME_TYPE);
+        }
+    
+        return false;
+    }
+
     /**
      * 具有限速功能的文件下载函数 
      * 
      * @param string $filepath 待文件下载的文件路径
      * @param integer $rateLimit 文件下载的限速大小，小于等于零表示不限速，这个函数参数的单位为字节Byte
     */
-    public static function PushDownload($filepath, $rateLimit = -1) {
-       
+    public static function PushDownload($filepath, $rateLimit = -1, $mime = null) {
+        # 2018-6-18 有些服务器上面mime_content_type函数可能无法使用
+        # 所以在这里添加了一个可选参数来手动指定文件类型
+        if (!$mime) {
+            $mime = mime_content_type($filepath);
+        }
+
         header('Content-Description: File Transfer');
         header('Cache-control: private');
-        header('Content-Type:'                  . mime_content_type($filepath));
+        header('Content-Type:'                  . $mime);
         header('Content-Length:'                . filesize($filepath));
         header('Content-Disposition: filename=' . basename($filepath));
     
