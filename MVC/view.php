@@ -25,7 +25,13 @@ class View {
 		# 假若直接放在和index.php相同文件夹之下，那么apache服务器会优先读取
 		# index.html这个文件的，这就导致无法正确的通过这个框架来启动Web程序了
 		# 所以html文件规定放在html文件夹之中
-		$path = realpath("$wwwroot/$name.html");
+		$path = "$wwwroot/$name.html";
+
+		if (file_exists($path)) {
+			$path = realpath($path);
+		} else {
+			$path = str_replace("//", "/", $path);
+		}		
 
 		if (APP_DEBUG) {
 			echo "HTML document path is: ";
@@ -48,7 +54,14 @@ class View {
 	*/
 	public static function Load($path, $vars = NULL, $lang = "zhCN") {
 		$vars = self::LoadLanguage($path, $lang, $vars);
-		$html = file_get_contents($path);
+
+		if (file_exists($path)) {
+			$html = file_get_contents($path);
+		} else {
+			# 给出文件不存在的警告信息
+			return "HTML document view <strong>&lt;$path></strong> could not be found!";
+		}
+		
 		return View::InterpolateTemplate($html, $vars, $path);
 	}
 
