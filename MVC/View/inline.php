@@ -2,6 +2,7 @@
 
 namespace MVC\Views {
 
+    Imports("System.Text.RegularExpressions.Regex");
     Imports("Microsoft.VisualBasic.Strings");
 
     /**
@@ -53,7 +54,20 @@ namespace MVC\Views {
                     $template = "<!-- Using output buffer for dynamics includes -->" . $template;
                 }
 
-                ob_start();
+                # 有些替换的变量没有被替换掉，可能会导致php的内联表达式失败
+                # 在这里进行检查，然后给出警告消息
+                $missing = self::checkVars($template);
+
+                if ($missing && count($missing) > 0) {
+                    # 任然存在未被替换掉的变量，给出警告消息
+                    echo self::warnings($missing);              
+                }
+
+                # 2018-6-16 try...catch not working?
+
+                # try {
+
+                ob_start();                
 
                 # echo $template;
 
@@ -61,7 +75,37 @@ namespace MVC\Views {
                 // PHP Warning:  include(): data:// wrapper is disabled in the server configuration by allow_url_include=0
                 include "data://text/plain;base64," . base64_encode($template);
                 return ob_get_clean();
+
+                # } catch (Exception $ex) {
+                #    return "<div style='color:red;'><code><pre>\n" . $ex . "</pre></code></div>" . $template;
+                # }                
             }
+        }
+
+        private static function warnings($missing) {
+            $missing = "<span style='color:red'><strong>" . \implode(", ", $missing) . "</strong></span>";
+            return "Missing variable: $missing. And these missing variable may caused the inline scripting error!<br />";      
+        }
+
+        private static function checkVars($template) {
+            $pattern = "[{][$].+?[}]";
+            $flags   = "is";
+            $matches = \Regex::Matches($template, $pattern);
+            
+            # echo var_dump($matches);
+
+            if (!$matches || count($matches) == 0) {
+                return [];
+            }
+
+            $vars = [];
+
+            foreach($matches as $ref) {
+                $ref = \StringHelpers::GetStackValue($ref, "{", "}");
+                array_push($vars, $ref);
+            }
+            
+            return $vars;
         }
     }
 }

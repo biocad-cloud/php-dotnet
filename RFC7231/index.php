@@ -13,14 +13,21 @@ class RFC7231Error {
 	 * 如果希望能够使用自定义的错误页面，需要在传递给框架的配置数据之中写入``RFC7231``
 	 * 字段的值
 	*/
-	public static function getPath($code) {
-		return (DotNetRegistry::RFC7231Folder() ?? dirname(__FILE__)) . "/$code.html";
+	public static function getPath($code, $allow_custom) {
+		if ($allow_custom) {
+			return (DotNetRegistry::RFC7231Folder() ?? dirname(__FILE__)) . "/$code.html";
+		} else {
+			return dirname(__FILE__) . "/$code.html";
+		}		
 	}
 	
 	/**
 	 * Display an error code page.
 	*/
-	public static function Display($code, $message, $header = "Unknown") {
+	public static function Display($code, $message, 
+		$header = "Unknown", 
+		$allow_custom = true) {
+			
 		if (!is_integer($code)) {
 			$link = MSDN::link("System.Int32");
 			dotnet::ThrowException("RFC7231 error code must be an <a href='$link'>System.Int32</a> numeric type!");
@@ -28,7 +35,7 @@ class RFC7231Error {
 			header($httpResponse = RFC7231Error::getRFC($code, $header));	
 		}	
 
-		View::Show(RFC7231Error::getPath($code), [
+		View::Show(RFC7231Error::getPath($code, $allow_custom), [
 			"message" => $message,
 			"url"     => Utils::URL(),
 			"title"   => $httpResponse
@@ -56,16 +63,16 @@ class RFC7231Error {
 	
 	#region "Framework prefix error code page entry"
 
-	public static function err404($message = NULL) {
-		self::Display(404, $message);
+	public static function err404($message = NULL, $allow_custom = true) {
+		self::Display(404, $message, "", $allow_custom);
 	}
 	
-	public static function err403($message = NULL) {
-		self::Display(403, $message);
+	public static function err403($message = NULL, $allow_custom = true) {
+		self::Display(403, $message, "", $allow_custom);
 	}
 	
-	public static function err500($message = NULL) {
-		self::Display(500, $message);
+	public static function err500($message = NULL, $allow_custom = true) {
+		self::Display(500, $message, "", $allow_custom);
 	}
 
 	#endregion

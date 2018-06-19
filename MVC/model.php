@@ -488,11 +488,14 @@ class Table {
 
 		$ref    = $this->schema->ref;
 		$fields = [];
-		$values = [];		
+		$values = [];	
 		
+		// 自增的编号字段
+		$auto_increment = $this->schema->auto_increment;
+
 		// 使用这个for循环的主要的目的是将所传入的参数数组之中的
 		// 无关的名称给筛除掉，避免出现查询错误
-		foreach ($this->schema as $fieldName => $def) {
+		foreach ($this->schema->schema as $fieldName => $def) {
 			if (array_key_exists($fieldName, $data)) {
 				
 				$value = $data[$fieldName];
@@ -502,12 +505,12 @@ class Table {
 				array_push($fields, "`$fieldName`");
 				array_push($values, "'$value'");
 				
-			} else if ($this->auto_increment && Strings::LCase($fieldName) == Strings::LCase($this->auto_increment) ) {
+			} else if ($auto_increment && Strings::LCase($fieldName) == Strings::LCase($auto_increment) ) {
 				# Do Nothing
 			} else {
 
                 # 检查一下这个字段是否是需要值的？如果需要，就将默认值填上
-                if ($def["Null"] == "NO") {
+                if (Utils::ReadValue($def, "Null", "") == "NO") {
 					
                     # 这个字段是需要有值的，则尝试获取默认值
                     $default = $def["Default"];
@@ -542,7 +545,7 @@ class Table {
 			
         } else {
 			
-            if (!$this->auto_increment) {
+            if (!$auto_increment) {
 				# 这个表之中没有自增字段，则返回true
 				return true;
 			} else {
@@ -564,7 +567,7 @@ class Table {
 		
 		# UPDATE `metacardio`.`experimental_batches` SET `workspace`='2018/01/31/02-36-49/2', `note`='22222', `status`='10' WHERE `id`='3';
 		
-		foreach ($this->schema as $fieldName => $def) {
+		foreach ($this->schema->schema as $fieldName => $def) {
 			# 只更新存在的数据，所以在这里只需要这一个if分支即可
 			if (array_key_exists($fieldName, $data)) {
 				$value = $data[$fieldName];
@@ -586,6 +589,8 @@ class Table {
 			$SQL = $SQL . " WHERE " . $assert . " LIMIT 1;";
 		}
 						
+		# echo $SQL;
+
 		if (!$this->driver->ExecuteSql($SQL)) {
 			return false;
 		} else {
