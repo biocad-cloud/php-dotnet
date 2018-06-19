@@ -78,15 +78,16 @@ namespace MVC\Views {
                 // 需要服务器端开启
                 // PHP Warning:  include(): data:// wrapper is disabled in the server configuration by allow_url_include=0
                 include "data://text/plain;base64," . base64_encode($template);
+                
                 $output = ob_get_clean();
 
                 if (empty($output) && !empty($template)) {
                     $notWorking = "<span style='color:red;'>ERROR: include inline => ob_get_clean() is not working!</span>";
                     $notWorking = $notWorking . "<br /><br /><br /><br />"; 
-                    $template   = $notWorking . $template;
+                    $output     = $notWorking . $template;
                 }
 
-                return $template;
+                return $output;
                 # } catch (Exception $ex) {
                 #    return "<div style='color:red;'><code><pre>\n" . $ex . "</pre></code></div>" . $template;
                 # }                
