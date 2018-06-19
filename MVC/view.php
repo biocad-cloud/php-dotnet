@@ -128,6 +128,14 @@ class View {
 			} else {
 				$vars = array_merge($vars, self::$join);
 			}
+
+			if (APP_DEBUG) {
+				echo "<br /><br />";
+				echo "<code><pre>";
+				echo var_dump($vars);
+				echo "</pre></code>";
+			}
+
 			return View::Assign($html, $vars);
 		}
 	}
@@ -176,9 +184,9 @@ class View {
 	public static function Assign($html, $vars) {
 		
 		# 在这里需要按照键名称长度倒叙排序，防止出现可能的错误替换		
-		$vars = Enumerable::OrderByKeyDescending($vars, function($key) {
-			return strlen($key);
-		});		
+		// $vars = Enumerable::OrderByKeyDescending($vars, function($key) {
+		// 	return strlen($key);
+		// });		
 		
 		# 变量的名称$name的值为名称字符串，例如 id
 		# 而在html文件之中需要进行申明的形式则是 {$id}
@@ -194,8 +202,8 @@ class View {
 			} else {
 				$html = Strings::Replace($html, $name, $value);
 			}			
-		}	
-		
+		}		
+
 		# 处理数组循环变量，根据模板生成表格或者列表
 		$html = MVC\Views\ForEachView::InterpolateTemplate($html, $vars);
 		# 处理内联的表达式，例如if条件显示

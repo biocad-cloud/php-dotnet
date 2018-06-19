@@ -25,6 +25,10 @@ namespace MVC\Views {
             $config = "1";
 
             # allow_url_include = On
+            # echo "templates for inline scripting: \n\n";
+            # echo $template;
+
+            # echo "allow_url_include = $config";
 
             # 在这里需要根据服务器配置参数来决定代码的流程
             # 否则会报错
@@ -74,8 +78,15 @@ namespace MVC\Views {
                 // 需要服务器端开启
                 // PHP Warning:  include(): data:// wrapper is disabled in the server configuration by allow_url_include=0
                 include "data://text/plain;base64," . base64_encode($template);
-                return ob_get_clean();
+                $output = ob_get_clean();
 
+                if (empty($output) && !empty($template)) {
+                    $notWorking = "<span style='color:red;'>ERROR: include inline => ob_get_clean() is not working!</span>";
+                    $notWorking = $notWorking . "<br /><br /><br /><br />"; 
+                    $template   = $notWorking . $template;
+                }
+
+                return $template;
                 # } catch (Exception $ex) {
                 #    return "<div style='color:red;'><code><pre>\n" . $ex . "</pre></code></div>" . $template;
                 # }                
