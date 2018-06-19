@@ -15,7 +15,9 @@ class RFC7231Error {
 	*/
 	public static function getPath($code, $allow_custom) {
 		if ($allow_custom) {
-			return (DotNetRegistry::RFC7231Folder() ?? dirname(__FILE__)) . "/$code.html";
+			$custom = DotNetRegistry::RFC7231Folder();
+			$dir    = empty($custom) ? dirname(__FILE__) : $custom;
+			return "$dir/$code.html";
 		} else {
 			return dirname(__FILE__) . "/$code.html";
 		}		
