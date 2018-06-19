@@ -148,6 +148,13 @@ class Table {
 	}
 	
 	/**
+	 * 打开一个新的和mysql数据库的链接对象实例
+	*/
+	public function mysqli() {
+		return $this->driver->getMySqlLink();
+	}
+
+	/**
 	 * 对查询的结果的数量进行限制，当只有参数m的时候，表示查询结果限制为前m条，
 	 * 当参数n被赋值的时候，表示偏移m条之后返回n条结果
 	 * 
