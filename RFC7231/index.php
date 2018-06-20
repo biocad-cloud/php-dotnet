@@ -1,14 +1,19 @@
 <?php
 
+Imports("php.Utils");
+
 class RFC7231Error {
 	
 	public static function getPath($code) {
 		return dirname(__FILE__) . "/$code.html";
 	}
 	
-	private static function display($code) {
-		header(RFC7231Error::getRFC($code));
-		echo file_get_contents(RFC7231Error::getPath($code));
+	private static function display($code, $message) {
+		header(RFC7231Error::getRFC($code));		
+		View::Show(RFC7231Error::getPath($code), [
+			"message" => $message,
+			"url"     => Utils::URL()
+		]);
 		exit(-1);
 	}
 	
@@ -27,15 +32,15 @@ class RFC7231Error {
 	}
 	
 	public static function err404($message = NULL) {
-		View::Show(RFC7231Error::getPath(404), array("message" => $message));
+		self::display(404, $message);
 	}
 	
 	public static function err403($message = NULL) {
-		View::Show(RFC7231Error::getPath(403), array("message" => $message));
+		self::display(403, $message);
 	}
 	
 	public static function err500($message = NULL) {
-		View::Show(RFC7231Error::getPath(500), array("message" => $message));
+		self::display(500, $message);
 	}
 }
 

@@ -300,5 +300,13 @@ class dotnet {
 		RFC7231Error::err500($exc);
 		exit(0);
     }
+
+    public static function PageNotFound($message) {
+        $trace = StackTrace::GetCallStack();
+		$exc   = dotnetException::FormatOutput($message, $trace);
+				
+		RFC7231Error::err404($exc);
+		exit(0);
+    }
 }
 ?>
