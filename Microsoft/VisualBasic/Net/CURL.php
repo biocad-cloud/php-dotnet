@@ -2,9 +2,13 @@
 
 class CURLExtensions {
 
-	/*
+	/**
 	 * 模拟提交数据函数
-	 */ 
+	 * 
+	 * @param string $url remote api url
+	 * @param array $data 发送的数据包
+	 * @param string $userAgent 可以通过这个可选参数进行浏览器模拟
+	*/ 
 	public static function POST($url, $data = NULL, $userAgent = NULL) { 
 		$curl = curl_init(); 
 		
