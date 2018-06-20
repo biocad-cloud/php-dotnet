@@ -27,6 +27,12 @@ class View {
 		# 所以html文件规定放在html文件夹之中
 		$path = realpath("$wwwroot/$name.html");
 
+		if (file_exists($path)) {
+			$path = realpath($path);
+		} else {
+			$path = str_replace("//", "/", $path);
+		}		
+
 		if (APP_DEBUG) {
 			echo "HTML document path is: ";
 			echo $path . "\n";
@@ -48,7 +54,14 @@ class View {
 	*/
 	public static function Load($path, $vars = NULL, $lang = "zhCN") {
 		$vars = self::LoadLanguage($path, $lang, $vars);
-		$html = file_get_contents($path);
+
+		if (file_exists($path)) {
+			$html = file_get_contents($path);
+		} else {
+			# 给出文件不存在的警告信息
+			return "HTML document view <strong>&lt;$path></strong> could not be found!";
+		}
+		
 		return View::InterpolateTemplate($html, $vars, $path);
 	}
 
