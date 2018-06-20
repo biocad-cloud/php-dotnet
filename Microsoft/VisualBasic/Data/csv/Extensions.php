@@ -18,6 +18,7 @@ namespace Microsoft\VisualBasic\Data\csv {
          * @return boolean True for file save success, and false not. 
          */
         public static function SaveTo($array, $path, $project = null, $encoding = "utf8") {
+            
             # 2018-4-10 直接引用其他的模块似乎会因为namespace的缘故而产生错误：
             # <b>Fatal error</b>:  Class 'Microsoft\VisualBasic\Data\csv\FileSystem' not found
             # 所以在这里就直接使用这个函数的代码了
@@ -64,6 +65,25 @@ namespace Microsoft\VisualBasic\Data\csv {
             fclose($fp);
 
             return file_exists($path);
+        }
+
+        public static function Load($path, $encoding = "utf8") {            
+            $file_handle = fopen($path, 'r');
+            $headers     = fgetcsv($file_handle);
+
+            while (!feof($file_handle) ) {
+                $lineText = fgetcsv($file_handle, 1024);
+                $row = [];
+
+                for ($i = 0; $i < count($headers); $i++) {
+                    $row[$headers[$i]] = $lineText[$i];
+                }
+
+                $line_of_text[] = $row;
+            }
+
+            fclose($file_handle);
+            return $line_of_text;            
         }
     }
 }

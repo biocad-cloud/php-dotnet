@@ -25,6 +25,9 @@ class Conversion {
         return $value;
     }
 
+    /**
+     * Alias of the ``intval`` function.
+    */
     public static function CInt($str) {
         return intval($str);
     }
@@ -39,11 +42,27 @@ class Conversion {
     /**
      * 枚举所有表示True含义的字符串
     */
-    private static $TRUEs  = ["t", "y", "true", "yes", "ok", "success", "right"];
+    private static $TRUEs  = [
+        "t"       => true, 
+        "y"       => true, 
+        "true"    => true, 
+        "yes"     => true, 
+        "ok"      => true, 
+        "success" => true, 
+        "right"   => true
+    ];
     /**
      * 枚举所有表示False含义的字符串
     */
-    private static $FALSEs = ["f", "n", "false", "no", "cancel", "fail", "wrong"];
+    private static $FALSEs = [
+        "f"      => false, 
+        "n"      => false, 
+        "false"  => false, 
+        "no"     => false, 
+        "cancel" => false, 
+        "fail"   => false, 
+        "wrong"  => false
+    ];
 
     /**
      * 将具有特定含义的字符串表达式转换为逻辑值
@@ -53,14 +72,32 @@ class Conversion {
      * @return bool 返回字符串的字面含义所对应的逻辑值
     */
     public static function CBool($str) {
-        $key = Strings::LCase($str);
+        $key = null;
+
+        if (empty($str)) {
+            return false;
+        } else {
+            $key = Strings::LCase($str);
+        }
 
         if (array_key_exists($key, Conversion::$TRUEs)) {
             return True;
-        } elseif (array_key_exists($key, Conversion::$FALSEs)) {
+        } else if (array_key_exists($key, Conversion::$FALSEs)) {
             return False;
         } else {
-            return boolval($str);
+            // 至少需要php 5.5版本           
+            // return boolval($str);
+
+            # echo "Try to convert to boolean: \n\n";
+            # echo var_dump($str);
+            # echo "\n\n";
+            # echo var_dump($key);
+
+            if ($str) {
+                return true;
+            } else {
+                return false;
+            }
         }
     }
 

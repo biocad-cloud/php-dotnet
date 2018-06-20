@@ -9,13 +9,13 @@ class Enumerable {
 	/**
 	 * Sorts the elements of a sequence in ascending order according to a key. 
 	 * 
-	 * @param array: A sequence of values to order.
-	 * @param key: A function to extract a key from an element.
+	 * @param array $array A sequence of values to order.
+	 * @param function $key A function to extract a key from an element.
 	 * 
-	 * @return array An System.Linq.IOrderedEnumerable<T> whose elements are sorted according to a key.
+	 * @return array An ``System.Linq.IOrderedEnumerable<T>`` whose elements are sorted according to a key.
 	 * 
 	 * @remarks 请注意这个函数并不会按照字典的key，只会按照value来排序
-	 */
+	*/
 	public static function OrderBy($array, $key) {		
 		$getKey =& $key;
 
@@ -82,8 +82,10 @@ class Enumerable {
 				array_push($projection, $row[$selector]);
 			}
 		} else {
+			$project = & $selector;
+
 			foreach($table as $row) {
-				array_push($projection, $selector($row));
+				array_push($projection, $project($row));
 			}
 		}
 

@@ -4,6 +4,7 @@ Imports("System.Diagnostics.StackTrace");
 Imports("System.Linq.Enumerable");
 Imports("Microsoft.VisualBasic.Strings");
 Imports("MVC.View.foreach");
+Imports("MVC.View.inline");
 
 /**
  * html user interface view handler
@@ -24,10 +25,17 @@ class View {
 		# 假若直接放在和index.php相同文件夹之下，那么apache服务器会优先读取
 		# index.html这个文件的，这就导致无法正确的通过这个框架来启动Web程序了
 		# 所以html文件规定放在html文件夹之中
-		$path = "$wwwroot/$name.html";
+		$path = realpath("$wwwroot/$name.html");
+
+		if (file_exists($path)) {
+			$path = realpath($path);
+		} else {
+			$path = str_replace("//", "/", $path);
+		}		
 
 		if (APP_DEBUG) {
-			echo $path . "\n\n";
+			echo "HTML document path is: ";
+			echo $path . "\n";
 		}
 
 		View::Show($path, $vars, $lang);
@@ -46,7 +54,14 @@ class View {
 	*/
 	public static function Load($path, $vars = NULL, $lang = "zhCN") {
 		$vars = self::LoadLanguage($path, $lang, $vars);
-		$html = file_get_contents($path);
+
+		if (file_exists($path)) {
+			$html = file_get_contents($path);
+		} else {
+			# 给出文件不存在的警告信息
+			return "HTML document view <strong>&lt;$path></strong> could not be found!";
+		}
+		
 		return View::InterpolateTemplate($html, $vars, $path);
 	}
 
@@ -93,22 +108,54 @@ class View {
 		return $vars;
 	}
 
+	private static $join = [];
+
+	public static function Push($name, $value) {
+		if ($name == "*") {
+			foreach($value as $key => $val) {
+				self::$join[$key] = $val;
+			}
+		} else {
+			self::$join[$name] = $value;
+		}		
+	}
+
+	/**
+	 * Create user html document based on the html template 
+	 * and the given configuration data.
+	*/
 	public static function InterpolateTemplate($html, $vars, $path = NULL) {
 		# 将html片段合并为一个完整的html文档
-		$html = View::interpolate_includes($html, $path);
-		# 假设在html文档里面总是会存在url简写的，则在这里需要进行替换处理
-		$html = Router::AssignController($html);
-
+		$html = View::interpolate_includes($html, $path);	
+		
 		# 没有需要进行设置的变量字符串，则直接在这里返回html文件
-		if (!$vars) {
-			return $html;			
+		if (!$vars && !self::$join) {
+			# 假设在html文档里面总是会存在url简写的，
+			# 则在这里需要进行替换处理
+			return Router::AssignController($html);		
 		} else {
+			if (!$vars) {
+				$vars = self::$join;
+			} else if (!self::$join) {
+				// do nothing
+			} else {
+				$vars = array_merge($vars, self::$join);
+			}
+
+			if (APP_DEBUG) {
+				echo "<br /><br />";
+				echo "<code><pre>";
+				echo var_dump($vars);
+				echo "</pre></code>";
+			}
+
 			return View::Assign($html, $vars);
 		}
 	}
 
 	/**
-	 * 这个函数将html片段进行拼接，得到完整的html文档，函数需要使用文档所在的路径来获取文档碎片的引用文件位置
+	 * 这个函数将html片段进行拼接，得到完整的html文档，函数需要使用文档所在的路径来
+	 * 获取文档碎片的引用文件位置
 	 * 
 	 * @param path html模版文件的文件位置
 	*/
@@ -128,6 +175,8 @@ class View {
 				$path    = Strings::Mid($s, 3, strlen($s) - 3);				
 				$path    = realpath("$dirName/$path");			
 
+				# echo $path . "\n\n";
+
 				# 读取获得到了文档的碎片
 				# 可能在当前的文档碎片里面还会存在依赖
 				# 则继续递归下去
@@ -140,7 +189,7 @@ class View {
 		
 		return $html;
 	}
-	
+
 	/**
 	 * html页面之上存在有额外的需要进行设置的字符串变量参数
 	 * 在这里进行字符串替换操作
@@ -148,12 +197,10 @@ class View {
 	public static function Assign($html, $vars) {
 		
 		# 在这里需要按照键名称长度倒叙排序，防止出现可能的错误替换		
-		$vars = Enumerable::OrderByKeyDescending($vars, function($key) {
-			return strlen($key);
-		});	
+		// $vars = Enumerable::OrderByKeyDescending($vars, function($key) {
+		// 	return strlen($key);
+		// });		
 		
-		// print_r($vars);
-
 		# 变量的名称$name的值为名称字符串，例如 id
 		# 而在html文件之中需要进行申明的形式则是 {$id}
 		# 需要在这里需要进行额外的字符串链接操作才能够正常的替换掉目标		
@@ -172,7 +219,11 @@ class View {
 
 		# 处理数组循环变量，根据模板生成表格或者列表
 		$html = MVC\Views\ForEachView::InterpolateTemplate($html, $vars);
-		
+		# 处理内联的表达式，例如if条件显示
+		$html = MVC\Views\InlineView::RenderInlineTemplate($html);
+		# 最后将完整的页面里面的url简写按照路由规则还原
+		$html = Router::AssignController($html);
+
 		return $html;
 	}
 }
