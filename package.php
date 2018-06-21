@@ -38,7 +38,7 @@ include_once PHP_DOTNET . "/MSDN.php";
 include_once PHP_DOTNET . "/RFC7231/index.php";
 include_once PHP_DOTNET . "/Registry.php";
 
-session_start();
+# session_start();
 
 # PHP Warning:  date(): It is not safe to rely on the system's timezone settings. 
 # You are *required* to use the date.timezone setting or the date_default_timezone_set() function. 
