@@ -1,6 +1,6 @@
 <?php
 
-dotnet::Imports("System.Collection.ICollection");
+Imports("System.Collection.ICollection");
 
 /**
  * A dynamics array object. Implements the System.Collections.IList interface using 
@@ -9,8 +9,8 @@ dotnet::Imports("System.Collection.ICollection");
 */
 class ArrayList extends ICollection {
 
-    public function __construct() {
-        $this->__data = array();
+    public function __construct($source = null) {
+        parent::__construct($source);
     }
 
     /**

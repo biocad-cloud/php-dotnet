@@ -38,7 +38,7 @@ include_once PHP_DOTNET . "/MSDN.php";
 include_once PHP_DOTNET . "/RFC7231/index.php";
 include_once PHP_DOTNET . "/Registry.php";
 
-session_start();
+# session_start();
 
 # PHP Warning:  date(): It is not safe to rely on the system's timezone settings. 
 # You are *required* to use the date.timezone setting or the date_default_timezone_set() function. 
@@ -48,7 +48,9 @@ session_start();
 date_default_timezone_set('UTC');
 
 /**
- * Global function for load php.NET package 
+ * Global function for load php.NET package modules.
+ * 
+ * @param string $namespace php module file path
 */
 function Imports($namespace) {
     return dotnet::Imports($namespace, $initiatorOffset = 1);
@@ -63,6 +65,9 @@ function Redirect($URL) {
 
 /**
  * Write session value
+ * 
+ * @param string $name The session variable name
+ * @param mixed $value Value
 */
 function session($name, $value) {
     $_SESSION[$name] = $value;
@@ -88,6 +93,8 @@ class dotnet {
 
     /**
      * 函数返回成功消息的json字符串(这个函数只返回json数据，并没有echo输出)
+     * 
+     * @return mixed Message code is ZERO 
     */ 
     public static function successMsg($msg) {	
 		return json_encode([
@@ -98,6 +105,8 @@ class dotnet {
     
     /**
      * 函数返回失败消息的json字符串(这个函数只返回json数据，并没有echo输出)
+     * 
+     * @param integer $errorCode Default error code is 1. And zero for no error.
     */ 
 	public static function errorMsg($msg, $errorCode = 1) {
 		return json_encode([
@@ -118,8 +127,8 @@ class dotnet {
      * This method have not implemented yet!
      * 
      * Usage:
-     *      die(dotnet::$MethodNotImplemented);
-     */
+     *      ``die(dotnet::$MethodNotImplemented);``
+    */
     const MethodNotImplemented = "This method have not implemented yet!";
     
     /**
@@ -237,12 +246,12 @@ class dotnet {
 
     /**
      * 对于这个函数额调用者而言，就是获取调用者所在的脚本的文件夹位置
-     * 这个函数是使用require_once来进行模块调用的
+     * 这个函数是使用``require_once``来进行模块调用的
      *
      * @param string $mod: 直接为命名空间的路径，不需要考虑相对路径或者添加文件后缀名，例如需要导入VisualBasic的Strings模块的方法，
      *                     只需要调用代码
      * 
-     *     dotnet::Imports("Microsoft.VisualBasic.Strings");
+     *     ``dotnet::Imports("Microsoft.VisualBasic.Strings");``
      * 
      * @return string 这个函数返回所导入的模块的完整的文件路径
     */
