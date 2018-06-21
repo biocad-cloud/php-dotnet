@@ -85,60 +85,111 @@ class IEnumerator {
     }
 
     /**
-     * @return IEnumerator
+     * Bypasses elements in a sequence as long as a specified condition is true and 
+     * then returns the remaining elements.
+     * 
+     * @param function $predicate A function to test each element for a condition.
+     * 
+     * @return IEnumerator An ``System.Collections.Generic.IEnumerable<T>`` that contains 
+     *                     the elements from the input sequence starting at the first 
+     *                     element in the linear series that does not pass the test 
+     *                     specified by predicate.
     */
     public function SkipWhile($predicate) {
 
     }
 
     /**
+     * Generates a subset sequence of object within a specified range.
+     * 
+     * @param integer $start The value of the first integer in the sequence.
+     * @param integer $count The number of sequential integers to generate.
+     * 
      * @return IEnumerator
+    */
+    public function Range($start, $count) {
+        return $this->Skip($start - 1)->Take($count);
+    }
+
+    /**
+     * Returns distinct elements from a sequence by using a specified 
+     * ``System.Collections.Generic.IEqualityComparer<T>`` to compare values.
+     * 
+     * @param function $keySelector An ``System.Collections.Generic.IEqualityComparer<T>``
+     *                              to compare values.
+     * 
+     * @return IEnumerator An ``System.Collections.Generic.IEnumerable<T>`` that contains 
+     *                     distinct elements from the source sequence.
     */
     public function Distinct($keySelector) {
 
     }
 
     /**
-     * @return boolean
+     * Determines whether all elements of a sequence satisfy a condition.
+     *
+     * @param function $predicate A function to test each element for a condition.
+     * 
+     * @return boolean true if every element of the source sequence passes the test 
+     *                 in the specified predicate, or if the sequence is empty; 
+     *                 otherwise, false.
     */
     public function All($predicate) {
 
     }
 
     /**
-     * @return boolean
+     * Determines whether any element of a sequence satisfies a condition.
+     * 
+     * @param function $predicate A function to test each element for a condition. 
+     * 
+     * @return boolean true if any elements in the source sequence pass the test in 
+     *                 the specified predicate; otherwise, false.
     */
     public function Any($predicate) {
 
     }
 
     /**
-     * @return boolean
+     * Determines whether two sequences are equal by comparing their elements by using 
+     * a specified ``System.Collections.Generic.IEqualityComparer<T>``.
+     * 
+     * @param array $another An ``System.Collections.Generic.IEnumerable<T>`` to compare 
+     *                       to the first sequence.
+     * @param function $compares An ``System.Collections.Generic.IEqualityComparer<T>`` to 
+     *                           use to compare elements.
+     * 
+     * @return boolean true if the two source sequences are of equal length and their 
+     *                 corresponding elements compare equal according to comparer; 
+     *                 otherwise, false.
     */
     public function SequenceEquals($another, $compares = null) {
 
     }
 
     /**
-     * @return IEnumerator
+     * Inverts the order of the elements in a sequence.
+     * 
+     * @return IEnumerator A sequence whose elements correspond to those of the 
+     *                     input sequence in reverse order.
     */
     public function Reverse() {
 
     }
 
-    public function First() {
+    public function First($predicate = null) {
 
     }
 
-    public function Last() {
+    public function Last($predicate = null) {
 
     }
 
-    public function Sum() {
+    public function Sum($cast = null) {
 
     }
 
-    public function Average() {
+    public function Average($cast = null) {
 
     }
 
@@ -150,6 +201,9 @@ class IEnumerator {
 
     }
 
+    /**
+     * Applies an accumulator function over a sequence.
+    */
     public function Aggregate($func) {
 
     }
