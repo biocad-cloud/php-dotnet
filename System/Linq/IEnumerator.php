@@ -10,10 +10,22 @@ Imports("System.Collection.ArrayList");
 */
 class IEnumerator {
 
+    /**
+     * Array
+    */
     private $sequence;
 
-    public function Count() {
-        return count($this->sequence);
+    /**
+     * Returns the number of elements in a sequence. Or returns a number that 
+     * represents how many elements in the specified sequence satisfy a 
+     * condition if the ``assert`` is not null.
+    */
+    public function Count($assert = null) {
+        if ($assert) {
+            return $this->Where($assert)->Count();
+        } else {
+            return count($this->sequence);
+        }        
     }
 
     /**
@@ -23,54 +35,93 @@ class IEnumerator {
         $this->sequence = $source;
     }
 
+    /**
+     * @return IEnumerator
+    */
     public function Where($predicate) {
 
     }
 
+    /**
+     * @return IEnumerator
+    */
     public function Select($project) {
 
     }
 
+    /**
+     * @return IEnumerator
+    */
     public function GroupBy($keySelector) {
 
     }
 
+    /**
+     * @return IEnumerator
+    */
     public function OrderBy($keySelector) {
 
     }
 
+    /**
+     * @return IEnumerator
+    */
     public function OrderByDescending($keySelector) {
 
     }
 
+    /**
+     * @return IEnumerator
+    */
     public function Take($n) {
 
     }
 
+    /**
+     * @return IEnumerator
+    */
     public function Skip($n) {
         
     }
 
+    /**
+     * @return IEnumerator
+    */
     public function SkipWhile($predicate) {
 
     }
 
+    /**
+     * @return IEnumerator
+    */
     public function Distinct($keySelector) {
 
     }
 
+    /**
+     * @return boolean
+    */
     public function All($predicate) {
 
     }
 
+    /**
+     * @return boolean
+    */
     public function Any($predicate) {
 
     }
 
+    /**
+     * @return boolean
+    */
     public function SequenceEquals($another, $compares = null) {
 
     }
 
+    /**
+     * @return IEnumerator
+    */
     public function Reverse() {
 
     }
