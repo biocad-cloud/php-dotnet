@@ -101,6 +101,8 @@ class Table {
 	
 	/**
 	 * 判断目标配置信息是否是有效的数据库连接参数配置数组？
+	 * 
+	 * @return boolean
 	*/
 	private static function isValidDbConfig($config) {
 		return array_key_exists("DB_TABLE", $config) && 
@@ -143,6 +145,9 @@ class Table {
 
 	#endregion
 
+	/**
+	 * @return SchemaDriver
+	*/
 	public function getSchema() {
 		return $this->schema;
 	}
@@ -160,6 +165,8 @@ class Table {
 	 * 
 	 * @param integer $m ``LIMIT m``
 	 * @param integer $n ``LIMIT m,n``
+	 * 
+	 * @return Table
 	*/
 	public function limit($m, $n = -1) {
 		$condition = null;
@@ -184,6 +191,8 @@ class Table {
 	 * 
 	 * @param string|array $keys 进行排序操作的字段依据，可以是一个字段或者一个字段的集合
 	 * @param boolean $desc 升序排序还是降序排序？默认是升序排序，当这个参数为true的时候为降序排序
+	 * 
+	 * @return Table
 	*/
 	public function order_by($keys, $desc = false) {
 		$condition = null;
@@ -213,6 +222,9 @@ class Table {
 
 	#region "condition expression"
 
+	/**
+	 * @return string where expression
+	*/
     private function getWhere() {	
 
 		# 如果条件是空的话，就不再继续构建表达式了
@@ -330,6 +342,8 @@ class Table {
 	 * fieldName => list
 	 * 
 	 * (这个函数影响SELECT UPDATE DELETE，不会影响INSERT操作)
+	 * 
+	 * @return Table
 	*/
 	public function in($assert) {
 		$fieldName = array_keys($assert)[0];
@@ -351,6 +365,8 @@ class Table {
 
 	/**
 	 * 获取当前的这个实例之中所执行的最后一条MySql语句
+	 * 
+	 * @return string
 	*/
 	public function getLastMySql() {
 		return $this->driver->getLastMySql();
@@ -382,6 +398,8 @@ class Table {
 	
 	/**
 	 * select count(*) from where ``...``;
+	 * 
+	 * @return integer
 	*/
 	public function count() {
 		$ref    = $this->schema->ref;
@@ -565,6 +583,8 @@ class Table {
 
     /**
 	 * update table
+	 * 
+	 * @return boolean
 	*/ 
     public function save($data) {
 		$ref     = $this->schema->ref;
