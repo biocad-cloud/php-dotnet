@@ -4,16 +4,16 @@ dotnet::Imports("Microsoft.VisualBasic.Strings");
 dotnet::Imports("System.Text.RegularExpressions.Regex");
 
 /**
- * Provides properties and methods for working with drives, files, and directories.
- *
- */
+ * Provides properties and methods for working with drives, 
+ * files, and directories.
+*/
 class FileSystem {
 	
 	/**
 	 * 
-	 * @param windowsStyle: If true, then all of the / will be replaced as \ 
+	 * @param windowsStyle: If true, then all of the ``/`` will be replaced as ``\`` 
 	 * 
-	 */
+	*/
 	public static function NormalizePath($path, $windowsStyle = false) {
 		$path = Strings::Replace($path, '\\', "/");
 		$path = Regex::Replace($path, "[/]+", "/");
@@ -30,6 +30,12 @@ class FileSystem {
 	 *
 	 */
 	public static function WriteAllText($file, $text, $append = FALSE) {
+		$dir = dirname($file);
+
+		if (!file_exists($dir)) {
+			mkdir($dir, 0777, true);
+		}
+
 		if ($append) {
 			// echo ">>>>> append " . "\n";
 			// echo $text;

@@ -7,9 +7,11 @@ namespace MVC\Views {
     # 所以这些imports必须要放在namespace的里面
 
     Imports("System.Collection.ArrayList");
+    Imports("System.Linq.Enumerable");
     Imports("System.Text.RegularExpressions.Regex");
     Imports("Microsoft.VisualBasic.Extensions.StringHelpers");
     Imports("Microsoft.VisualBasic.Strings");
+    Imports("php.Utils");
 
     /**
      * 根据HTML文档之中所定义的模板来生成列表或者表格
@@ -28,7 +30,7 @@ namespace MVC\Views {
          * </ul>
         */
 
-        public static function InterpolateTemplate($html, $vars) {
+        public static function ParseTemplates($html) {
             # 首先使用正则表达式解析出文档碎片之中的模板
             # flags表示正则表达式引擎忽略大小写并且以单行模式工作
             $pattern   = "<foreach(.*?)<\/foreach>";
@@ -39,6 +41,65 @@ namespace MVC\Views {
             # echo $pattern . "\n";
             # echo \var_dump($templates);
 
+            return $templates;
+        }
+
+        /**
+         * ``<foreach>``标签可以嵌套
+        */
+        public static function StackParser($html) {
+            $openStacks  = \Utils::Indices($html, "<foreach");
+            $closeStack  = \Utils::Indices($html, "</foreach>");
+            $tupleStream = array_merge(
+                \Enumerable::Select($openStacks, function($i) { return [$i => "<"]; }),
+                \Enumerable::Select($closeStack, function($i) { return [$i => ">"]; })
+            );
+            $tupleStream = \Enumerable::OrderBy($tupleStream, function($t) {
+                return \Conversion::CInt(array_keys($t)[0]);
+            });
+
+            $templates  = [];
+            $stackDepth = 0;
+            $open_pos   = -1;
+
+            foreach ($tupleStream as $flag) {
+                list($i, $tag) = \Utils::Tuple($flag);
+
+                if ($tag === "<") {
+                    # open stack
+                    $stackDepth = $stackDepth + 1;
+
+                    if ($stackDepth == 1) {
+                        $open_pos = $i;
+                    }
+                } else {
+                    # close stack
+                    $stackDepth = $stackDepth - 1;
+
+                    if ($stackDepth < 0) {
+                        # syntax error
+                        throw new \exception("ForEach html template syntax error!");
+                    } else if ($stackDepth == 0) {
+                        # even, find a foreach template
+                        $len   = $i - $open_pos + 10;
+                        $templ = substr($html, $open_pos, $len);
+
+                        array_push($templates, $templ);
+                    }
+                }
+            }
+
+            if ($stackDepth > 0) {
+                # 仍然存在未闭合的区间，语法错误
+                throw new \exception("ForEach html template syntax error!");
+            }
+
+            return $templates;
+        }
+
+        public static function InterpolateTemplate($html, $vars) {
+            $templates = self::StackParser($html);
+
             # 没有找到任何模板
             if (!$templates || count($templates) === 0) {
                 return $html;
@@ -47,18 +108,20 @@ namespace MVC\Views {
             foreach($templates as $template) {
                 $var  = \explode(">", $template)[0];
                 $var  = \explode("@", $var);
-                $name = end($var);
-                $var  = $vars[$name];                
+                $name = end($var);                            
 
-                if (!$var) {
+                if (!array_key_exists($name, $vars)) {
                     # 目标模板的数据源不存在
                     # 则将模板保留下来，不做任何处理
                     
                     # DO NOTHING
                 } else {
+
+                    $var   = $vars[$name];    
                     $templ = \StringHelpers::GetStackValue($template, ">", "<");
                     $list  = self::Build($var, $templ, $name);
-                    $html  = \Strings::Replace($html, $template, $list);                
+                    $html  = \Strings::Replace($html, $template, $list); 
+
                 }                
             }
 
@@ -75,11 +138,7 @@ namespace MVC\Views {
         public static function Build($array, $template, $var) {
             $varPattern = "@$var\[\".+?\"\]";
             $vars = \Regex::Matches($template, $varPattern);
-
-            # echo var_dump($array) . "\n\n";
-            # echo $template . "\n\n";
-            # echo $var . "\n\n";
-
+         
             if (count($vars) == 0) {
                 # 没有定义模板变量？？
                 return "";
@@ -93,13 +152,26 @@ namespace MVC\Views {
                     $replaceAs[$name] = $var;
                 }
 
-                $list = new \ArrayList();
+                $list    = new \ArrayList();
+                $nesting = self::nestingTemplate($template);
+
+                # echo var_dump($nesting);
 
                 foreach ($array as $row) {
                     $str = $template;
 
                     foreach ($replaceAs as $name => $index) {
-                        $str = \Strings::Replace($str, $index, $row[$name]);
+                        $str_val = \Utils::ReadValue($row, $name);
+
+                        if (is_array($str_val)) {
+                            # 可能是内嵌的模板的数据源
+
+                        } else {
+                            $str = \Strings::Replace($str, $index, $str_val);
+                        }                        
+                    }
+                    foreach (self::BuildNesting($nesting, $row) as $templ => $nesting_page) {
+                        $str = \Strings::Replace($str, $templ, $nesting_page);
                     }
 
                     $list->Add($str);
@@ -107,6 +179,69 @@ namespace MVC\Views {
 
                 return \Strings::Join($list->ToArray(), "\n\n");
             }
+        }
+
+        /**
+         * 还有可能在这里面还存在嵌套？？？
+        */
+        public static function BuildNesting($nesting, $row) {
+            # $var => [$refName => $templ]            
+            $pages = [];
+
+            foreach($nesting as $var => $templ) {
+                list($ref, $templ) = \Utils::Tuple($templ);
+
+                $template = $templ;
+                $ref      = \Utils::ReadValue($row, $ref);
+                $templ    = \StringHelpers::GetStackValue($templ, ">", "<");
+
+                $varPattern = "@$var\[\".+?\"\]";
+                $vars = \Regex::Matches($templ, $varPattern);
+
+                $replaceAs = [];
+
+                foreach($vars as $var) {
+                    $name = \StringHelpers::GetStackValue($var, '"', '"');
+                    $replaceAs[$name] = $var;
+                }
+
+                foreach ($replaceAs as $name => $index) {
+                    $str_val = $ref[$name];
+                    $templ   = \Strings::Replace($templ, $index, $str_val);
+                }
+
+                $pages[$template] = $templ;
+            }
+
+            # echo var_dump($pages);
+
+            return $pages;
+        }
+
+        public static function nestingTemplate($template) {
+            $nesting   = self::StackParser($template);
+            $templates = [];
+
+            foreach($nesting as $templ) {
+
+                # 在这里将变量的名称，以及引用的表达式解析出来
+                # <foreach @attrs='@list["attrs"]'>
+                $var = \explode(">", $templ)[0];
+                $var = \StringHelpers::GetTagValue($var, " ");
+                $var = \Utils::Tuple($var)[1];
+                $var = \StringHelpers::GetTagValue($var, "=");
+
+                list($var, $ref) = \Utils::Tuple($var);
+
+                # @attrs => attrs
+                $var = \Strings::Mid($var, 2);
+                # '@list["attrs"]' => attrs
+                $ref = \StringHelpers::GetStackValue($ref, '"', '"');
+
+                $templates[$var] = [$ref => $templ];
+            }
+
+            return $templates;
         }
     }
 }

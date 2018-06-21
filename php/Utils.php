@@ -1,5 +1,14 @@
 <?php
 
+# 因为在package.php之中本模块是属于第一个加载的，Imports函数还无法使用
+# 所以在这里直接使用 include <文件路径> 来显式导入
+
+# 2018-3-8 因为这个函数之中需要调用Microsoft.VisualBasic.Strings模块
+# 可能会因为在本脚本的头部进行引用其他的脚本文件的时候，这个模块的脚本还
+# 没有被加载，所以会导致出现无法找到类Strings的错误
+# 在这里显式的引入一次这个文件即可解决问题
+include_once PHP_DOTNET . "/Microsoft/VisualBasic/Strings.php";
+
 /**
  * PHP WEB programming utils from php.NET framework
 */
@@ -11,10 +20,24 @@ class Utils {
      * @param array $table [key => value]
     */
     public static function Tuple($table) {
-        $keys  = array_keys($table);
-        $value = $table($keys[0]);
-        
-        return [$keys[0], $value];
+        if (!$table) {
+            return [];
+        } else {
+            $keys  = array_keys($table);
+            $value = $table[$keys[0]];
+            
+            return [$keys[0], $value];
+        }
+    }
+
+    public static function mime_content_type($filename) {
+        $result = new finfo();
+    
+        if (is_resource($result) === true) {
+            return $result->file($filename, FILEINFO_MIME_TYPE);
+        }
+    
+        return false;
     }
 
     /**
@@ -23,11 +46,16 @@ class Utils {
      * @param string $filepath 待文件下载的文件路径
      * @param integer $rateLimit 文件下载的限速大小，小于等于零表示不限速，这个函数参数的单位为字节Byte
     */
-    public static function PushDownload($filepath, $rateLimit = -1) {
-       
+    public static function PushDownload($filepath, $rateLimit = -1, $mime = null) {
+        # 2018-6-18 有些服务器上面mime_content_type函数可能无法使用
+        # 所以在这里添加了一个可选参数来手动指定文件类型
+        if (!$mime) {
+            $mime = mime_content_type($filepath);
+        }
+
         header('Content-Description: File Transfer');
         header('Cache-control: private');
-        header('Content-Type:'                  . mime_content_type($filepath));
+        header('Content-Type:'                  . $mime);
         header('Content-Length:'                . filesize($filepath));
         header('Content-Disposition: filename=' . basename($filepath));
     
@@ -114,12 +142,6 @@ class Utils {
      * @return string 函数返回不带小数点的文件拓展名
     */
     public static function GetExtensionSuffix($path) {
-        # 2018-3-8 因为这个函数之中需要调用Microsoft.VisualBasic.Strings模块
-        # 可能会因为在本脚本的头部进行引用其他的脚本文件的时候，这个模块的脚本还
-        # 没有被加载，所以会导致出现无法找到类Strings的错误
-        # 在这里显式的引入一次这个文件即可解决问题
-        include_once dotnet::GetDotnetManagerDirectory() . "/Microsoft/VisualBasic/Strings.php";
-
         $array  = Strings::Split($path, ".");
         $suffix = array_values(array_slice($array, -1));
         $suffix = $suffix[0];
@@ -178,7 +200,140 @@ class Utils {
 	private static function round_dp($num, $dp) {		
 	  	$sh = pow(10, $dp);
 	  	return round($num * $sh) / $sh;
-	}
-}
+    }
 
+    /**
+     * 一个安全的数组读取函数，
+     * 
+     * 阻止出现警告提示： Notice: Undefined index: blabla...
+    */
+    public static function ReadValue($array, $key, $default = null) {
+        if (empty($array)) {
+            return $default;
+        } else if (array_key_exists($key, $array)) {
+            return $array[$key];
+        } else {
+            return $default;
+        }
+    }
+    
+    public static function ArrayCopy($array) {
+        if (empty($array)) {
+            return [];
+        } else {
+            return (new ArrayObject($array))->getArrayCopy();
+        }
+    }
+
+    /**
+     * 加密或者解密消息字符串
+     * 
+     * @param string $string 字符串，明文或密文
+     * @param string $operation DECODE表示解密，其它表示加密
+     * @param string $key 密匙
+     * @param integer $expiry 密文有效期
+     * 
+     * @return string 加密之后的密文或者解密之后的明文
+    */
+    public static function AuthCode($string, $operation = 'DECODE', $key = '', $expiry = 0) {   
+        // 动态密匙长度，相同的明文会生成不同密文就是依靠动态密匙   
+        $ckey_length = 4;
+        // 密匙   
+        $key  = md5($key ? $key : DotNetRegistry::DefaultAuthKey());   
+        // 密匙a会参与加解密   
+        $keya = md5(substr($key, 0, 16));   
+        // 密匙b会用来做数据完整性验证   
+        $keyb = md5(substr($key, 16, 16));   
+        // 密匙c用于变化生成的密文   
+        $keyc = $ckey_length ? ($operation == 'DECODE' ? substr($string, 0, $ckey_length) : substr(md5(microtime()), -$ckey_length)) : '';   
+        // 参与运算的密匙   
+        $cryptkey   = $keya . md5($keya.$keyc);   
+        $key_length = strlen($cryptkey);   
+        // 明文，前10位用来保存时间戳，解密时验证数据有效性，10到26位用来保存$keyb(密匙b)， 
+        // 解密时会通过这个密匙验证数据完整性   
+        // 如果是解码的话，会从第$ckey_length位开始，因为密文前$ckey_length位保存 动态密匙，以保证解密正确
+        $string = $operation == 'DECODE' ? 
+            base64_decode(substr($string, $ckey_length)) : 
+            sprintf('%010d', $expiry ? $expiry + time() : 0) . substr(md5($string.$keyb), 0, 16) . $string;
+        $string_length = strlen($string);   
+        $result = '';   
+        $box    = range(0, 255);   
+        $rndkey = array();   
+
+        // 产生密匙簿   
+        for($i = 0; $i <= 255; $i++) {   
+            $rndkey[$i] = ord($cryptkey[$i % $key_length]);   
+        }   
+
+        // 用固定的算法，打乱密匙簿，增加随机性，好像很复杂，实际上对并不会增加密文的强度   
+        for($j = $i = 0; $i < 256; $i++) {   
+            $j = ($j + $box[$i] + $rndkey[$i]) % 256;   
+            $tmp = $box[$i];   
+            $box[$i] = $box[$j];   
+            $box[$j] = $tmp;   
+        }   
+
+        // 核心加解密部分   
+        for($a = $j = $i = 0; $i < $string_length; $i++) {   
+            $a       = ($a + 1) % 256;   
+            $j       = ($j + $box[$a]) % 256;   
+            $tmp     = $box[$a];   
+            $box[$a] = $box[$j];   
+            $box[$j] = $tmp;   
+            // 从密匙簿得出密匙进行异或，再转成字符   
+            $result .= chr(ord($string[$i]) ^ ($box[($box[$a] + $box[$j]) % 256]));   
+        }   
+
+        if($operation == 'DECODE') {  
+
+            // 验证数据有效性，请看未加密明文的格式   
+            if((substr($result, 0, 10) == 0 || substr($result, 0, 10) - time() > 0) && substr($result, 10, 16) == substr(md5(substr($result, 26).$keyb), 0, 16)) {   
+                return substr($result, 26);   
+            } else {   
+                return '';   
+            }   
+
+        } else {   
+
+            // 把动态密匙保存在密文里，这也是为什么同样的明文，生产不同密文后能解密的原因   
+            // 因为加密后的密文可能是一些特殊字符，复制过程可能会丢失，所以用base64编码   
+            return $keyc.str_replace('=', '', base64_encode($result));   
+        }
+    }
+
+    /**
+     * 将字符串文本转换为字符数组
+     * 
+     * @param string $str 字符串文本
+     * 
+     * @return array 输入的字符串文本参数经过分割之后得到的字符的数组
+    */
+    public static function Chars($str) {
+        return str_split($str);
+    }
+
+    /**
+     * 返回目标子字符串在给定的字符串之上的所有位置的集合
+     * 
+     * @param string $str 待查找的一个给定的字符串
+     * @param string $find 用于进行位置查找的目标子字符串
+     * 
+     * @param array 返回顶点位置的集合数组
+    */
+    public static function Indices($str, $find) {
+        $index = [];
+        $i     = 0;
+
+        while (true) {
+            $i = strpos($str, $find, $i);
+
+            if ($i === false) {
+                return $index;
+            } else {
+                array_push($index, $i);
+                $i = $i + 1;
+            }
+        }
+    }
+}
 ?>
