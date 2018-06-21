@@ -2,6 +2,12 @@
 
 Imports("System.Collection.ArrayList");
 
+/**
+ * Supports a simple iteration over a non-generic collection. And 
+ * Provides a set of static (Shared in Visual Basic) methods for 
+ * querying objects that implement 
+ * ``System.Collections.Generic.IEnumerable<T>``.
+*/
 class IEnumerator {
 
     private $sequence;
