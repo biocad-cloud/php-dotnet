@@ -4,7 +4,7 @@
  * Defines size, enumerators, and synchronization methods for all nongeneric collections.
  * 对集合类型的基本抽象
 */
-abstract class ICollection {
+abstract class ICollection implements ArrayAccess {
 
     protected $__data;
 	
@@ -37,6 +37,30 @@ abstract class ICollection {
 	public function GetJson() {
 		return json_encode($this->__data);
     }
+
+    #region "implements ArrayAccess"
+
+    public function offsetSet($offset, $value) {
+        $this->__data[$offset] = $value;
+    }
+
+    public function offsetExists($offset) {
+        return isset($this->__data[$offset]);
+    }
+
+    public function offsetUnset($offset) {
+        unset($this->__data[$offset]);
+    }
+
+    public function offsetGet($offset) {
+        if (isset($this->__data[$offset])) {
+           return $this->__data[$offset];
+        } else {
+           return null;
+        }
+    }
+
+    #endregion
 }
 
 ?>
