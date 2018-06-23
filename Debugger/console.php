@@ -1,7 +1,6 @@
 <?php
 
 /**
- * 
  * 用户调试记录器
  * 
 */
@@ -10,11 +9,11 @@ class console {
     private $logs;
 
     public function log($msg) {
-
+        echo Utils::Now() . ": $msg<br />";
     }
 
     public function writeline($s, $args = NULL) {
-        
+        $this->log(sprintf($s, $args));
     }
 
     /**
@@ -25,13 +24,11 @@ class console {
         // var_dump函数并不会返回任何数据，而是直接将结果输出到网页上面了，
         // 所以在这里为了能够显示出格式化的var_dump结果，在这里前后都
         // 添加<code>标签。
-        echo "<code><pre>";
-        echo var_dump($o);    
-        echo "</pre></code>";    
+        $this->printCode(var_dump($obj));    
     }
 
     public function error($msg) {
-
+        echo "<span style='color:red'>" . Utils::Now() . ": $msg" . "</span><br />";
     }
 
     public static function printCode($code) {
