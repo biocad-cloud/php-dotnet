@@ -5,6 +5,9 @@ Imports("Microsoft.VisualBasic.Extensions.StringHelpers");
 Imports("Microsoft.VisualBasic.Strings");
 Imports("php.Utils");
 
+/**
+ * 命令行字符串解析器模块
+*/
 class CommandLineParser {
 
     /**
