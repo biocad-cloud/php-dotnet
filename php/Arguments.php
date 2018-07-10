@@ -60,7 +60,7 @@ class Arguments implements ArrayAccess {
     /**
      * 检查参数是否符合要求，并将参数取出至对应的属性之中
      * 
-     * @param array params
+     * @param array $validations
      * 
      * @return array 
     */
@@ -102,7 +102,7 @@ class Arguments implements ArrayAccess {
             # 默认检查参数不能为空
 
             if (is_string($param)) {
-                $v = trim($_REQUEST[$param]);
+                $v = trim($args[$param]);
 
                 if (empty($v)) {
                     throw new dotnetException("Required param '$param' can not be empty!");
@@ -122,7 +122,7 @@ class Arguments implements ArrayAccess {
         $method   = isset($param['method'])   ? $param['method']   : 'POST';
         $v        = $method == 'GET' ? $_GET[$key] : $_POST[$key];
         
-        if($required && (!isset($_REQUEST[$key]) || empty($v))) {
+        if($required && (!isset($args[$key]) || empty($v))) {
             throw new dotnetException("Param '$key' can not be null!");
         }
 
