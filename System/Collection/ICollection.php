@@ -21,7 +21,11 @@ abstract class ICollection implements ArrayAccess {
      * 使用默认的构造函数
     */
     function __construct($source = NULL) {
-		$this->__data = $source;
+        $this->__data = $source;
+        
+        if (empty($this->__data)) {
+            $this->__data = [];
+        }
 	}
 
     /**

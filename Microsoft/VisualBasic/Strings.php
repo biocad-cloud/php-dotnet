@@ -193,14 +193,34 @@ class Strings {
 		return strrev($str);
 	}
 
-	public static function StartWith($haystack, $needle) {
+	public static function StartWith($haystack, $needle, $caseSensitive = TRUE) {
     	$length = strlen($needle);
     	return (substr($haystack, 0, $length) === $needle);
 	}
 
-	public function EndWith($haystack, $needle) {
-    	$length = strlen($needle);
-    	return $length === 0 || (substr($haystack, -$length) === $needle);
+	/**
+	 * String haystack is end with needle?
+	 * 
+	 * @param bool $caseSensitive 默认是大小写敏感的
+	 * 
+	 * @return bool
+	*/
+	public function EndWith($haystack, $needle, $caseSensitive = TRUE) {
+		$length = strlen($needle);
+		
+		if ($length === 0) {
+			return true;
+		} else {
+			$a = substr($haystack, -$length);
+			$b = $needle;
+
+			if (!$caseSensitive) {
+				$a = strtolower($a);
+				$b = strtolower($b);
+			}
+
+			return ( $a === $b );
+		} 
 	}
 }
 

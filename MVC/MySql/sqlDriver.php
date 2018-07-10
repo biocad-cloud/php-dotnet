@@ -52,6 +52,21 @@ namespace MVC\MySql {
 
 			$schema = mysqli_query($link, $SQL);
 
+			if (empty($schema)) {
+				$message = "Database query error for table schema: $tableName.\n\n";
+				$message = $message . "<code>$SQL</code>";
+				$message = $message . "Connection Info: \n\n";
+				$message = $message . \json_encode([
+					"host"     => $this->host, 
+					"port"     => $this->port, 
+					"database" => $this->database, 
+					"user"     => $this->user, 
+					"password" => $this->password
+				]); 
+
+				throw new \dotnetException($message);
+			}
+
 			mysqli_close($link);
 
 			return $schema;
