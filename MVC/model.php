@@ -471,11 +471,12 @@ class Table {
         $assert  = $this->getWhere();        
 		$orderBy = $this->getOrderBy();
 		$limit   = $this->getLimit();
+		$join    = $this->buildJoin();
 
         if ($assert) {
-            $SQL = "SELECT * FROM $ref WHERE $assert";
+            $SQL = "SELECT * FROM $ref $join WHERE $assert";
         } else {
-            $SQL = "SELECT * FROM $ref";
+            $SQL = "SELECT * FROM $ref $join";
         }	
 		if ($orderBy) {
 			$SQL = "$SQL $orderBy";
@@ -483,6 +484,8 @@ class Table {
 		if ($limit) {
 			$SQL = "$SQL $limit";
 		}
+
+		$SQL = $SQL . ";";
 
         return $this->driver->Fetch($SQL);
     }
