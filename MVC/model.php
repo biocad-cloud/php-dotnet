@@ -4,8 +4,11 @@ Imports("Microsoft.VisualBasic.Strings");
 Imports("MVC.MySql.sqlDriver");
 Imports("MVC.MySql.schemaDriver");
 Imports("MVC.MySql.driver");
+Imports("MVC.MySql.join");
+Imports("System.Linq.Enumerable");
 
 use MVC\MySql\Expression\WhereAssert as MySqlScript;
+use MVC\MySql\Expression\JoinExpression as JoinScript;
 use MVC\MySql\MySqlExecDriver as Driver;
 use MVC\MySql\SchemaInfo as SchemaDriver;
 
@@ -354,10 +357,98 @@ class Table {
 
 	#endregion
 
+	#region "JOIN"
+
+	/**
+	 * LEFT JOIN
+	 * 
+	 * @return Table
+	*/
+	public function left_join($tableName) {
+		if (strtolower($tableName) == strtolower($this->schema->tableName)) {
+			throw new Error("Can not join your self!");
+		}		
+
+		if (array_key_exists("left_join", $this->condition)) {
+			$opts = Utils::ArrayCopy($this->condition["left_join"]);
+			
+			# join的格式为
+			#
+			# 表名称 => On数组
+			# 
+			if (is_string(Enumerable::Last($opts))) {
+				throw new Error("Can not append join option after a unfinished expression!");
+			}
+		} else {
+			$opts = [];
+		}
+
+		# 2018-7-18 在这里将表名称放置在条件值之中
+		# 那么在下一个on函数赋值条件的时候就可以直接取
+		# last元素，即这个表名称字符串来使用了
+		$opts[$tableName] = $tableName;
+		$condition = Utils::ArrayCopy($this->$condition);
+		$condition["left_join"] = $opts;
+
+		$next = new Table($this->driver, [
+			$this->schema->tableName => $condition
+		]);
+
+        return $next;
+	}
+
+	/**
+	 * LEFT JOIN ... ON
+	 * 
+	 * @return Table
+	*/
+	public function on($equals) {
+		if (!array_key_exists("left_join", $this->condition)) {
+			throw new Error("Unable to find join condition target table!");
+		} else if (!is_array($equals)) {
+			throw new Error("Join condition expression must be an array!");
+		}
+
+		$opts = Utils::ArrayCopy($this->condition["left_join"]);
+		$last = Enumerable::Last($opts);
+
+		if (!is_string($last)) {
+			throw new Error("Unable to find join condition target table!");
+		}
+
+		$opts[$last] = $equals;
+		$condition = Utils::ArrayCopy($this->$condition);
+		$condition["left_join"] = $opts;
+
+		$next = new Table($this->driver, [
+			$this->schema->tableName => $condition
+		]);
+
+        return $next;
+	}
+
+	private function buildJoin() {
+		$exp = [];
+
+		if (array_key_exists("left_join", $this->condition)) {
+			array_push($exp, JoinScript::AsExpression(
+				$this->condition["left_join"], "left_join"
+			));
+		}
+
+		return Strings::Join($exp, " ");
+	}
+
+	#endregion
+
 	#region "MySql executation"
 
 	/**
 	 * 直接执行一条SQL语句
+	 * 
+	 * @param string $SQL
+	 * 
+	 * @return mixed
 	*/
     public function exec($SQL) {
         return $this->driver->ExecuteSql($SQL);

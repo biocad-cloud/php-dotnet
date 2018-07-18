@@ -223,6 +223,13 @@ class Utils {
         }
     }
     
+    /**
+     * 进行数组的克隆
+     * 
+     * @param array $array
+     * 
+     * @return array
+    */
     public static function ArrayCopy($array) {
         if (empty($array)) {
             return [];
