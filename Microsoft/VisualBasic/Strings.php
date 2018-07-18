@@ -172,6 +172,21 @@ class Strings {
 		}
 	}
 
+	public static function Empty($str, $stringAsFactor = false) {
+		if (empty($str)) {
+			return true;
+		} else if (Strings::Len($str) == 0) {
+			return true;
+		} else if ($stringAsFactor) {
+			return $str == "null"      || 
+				   $str == "NULL"      || 
+				   $str == "undefined" || 
+				   $str == "undefine";
+		} else {
+			return false;
+		}
+	}
+
 	/**
 	 * 将字符串转换为大写形式 
 	*/
