@@ -369,6 +369,10 @@ class Table {
 			throw new Error("Can not join your self!");
 		}		
 
+		if (empty($this->condition)) {
+			$this->condition = [];
+		}
+
 		if (array_key_exists("left_join", $this->condition)) {
 			$opts = Utils::ArrayCopy($this->condition["left_join"]);
 			
@@ -387,7 +391,7 @@ class Table {
 		# 那么在下一个on函数赋值条件的时候就可以直接取
 		# last元素，即这个表名称字符串来使用了
 		$opts[$tableName] = $tableName;
-		$condition = Utils::ArrayCopy($this->$condition);
+		$condition = Utils::ArrayCopy($this->condition);
 		$condition["left_join"] = $opts;
 
 		$next = new Table($this->driver, [
@@ -417,7 +421,7 @@ class Table {
 		}
 
 		$opts[$last] = $equals;
-		$condition = Utils::ArrayCopy($this->$condition);
+		$condition = Utils::ArrayCopy($this->condition);
 		$condition["left_join"] = $opts;
 
 		$next = new Table($this->driver, [
