@@ -38,7 +38,7 @@ namespace MVC\MySql\Expression {
                 array_push($exp, $s);
             }
 
-            return $type . " " . \Strings::Join($exp, " ");
+            return $type . " " . \Strings::Join($exp, " $type ");
         }
     }
 }
