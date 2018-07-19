@@ -6,6 +6,7 @@ Imports("MVC.MySql.schemaDriver");
 Imports("MVC.MySql.driver");
 Imports("MVC.MySql.join");
 Imports("System.Linq.Enumerable");
+Imports("Debugger.SqlFormatter");
 
 use MVC\MySql\Expression\WhereAssert as MySqlScript;
 use MVC\MySql\Expression\JoinExpression as JoinScript;
@@ -471,7 +472,7 @@ class Table {
 		$sql = $this->driver->getLastMySql();
 		
 		if ($code) {
-			$sql = "<code>$sql</code>";
+			$sql = SqlFormatter::format($sql);
 		}
 		return $sql;
 	}
