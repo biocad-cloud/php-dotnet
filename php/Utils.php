@@ -202,9 +202,9 @@ class Utils {
 
 		return $byte;
 	}
- 
+
 	private static function round_dp($num, $dp) {		
-	  	$sh = pow(10, $dp);
+        $sh = pow(10, $dp);
 	  	return round($num * $sh) / $sh;
     }
 
@@ -214,11 +214,11 @@ class Utils {
      * 阻止出现警告提示： Notice: Undefined index: blabla...
     */
     public static function ReadValue($array, $key, $default = null) {
-        if (empty($array)) {
+        if (empty($array)) {           
             return $default;
-        } else if (array_key_exists($key, $array)) {
+        } else if (array_key_exists($key, $array)) {          
             return $array[$key];
-        } else {
+        } else {           
             return $default;
         }
     }
