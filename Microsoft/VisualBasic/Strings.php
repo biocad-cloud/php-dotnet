@@ -189,7 +189,14 @@ class Strings {
 	}
 
 	public static function Empty($str, $stringAsFactor = false) {
-		if (empty($str)) {
+		# 2018-7-19
+		# 在php之中会将字符串0也作为空值，这是一个bug？？
+		#
+		# echo "<?php echo var_dump(empty('0'));" | php
+		# bool(true)
+
+		# 在这里额外的处理一下0字符串的特殊情况
+		if (empty($str) && $str != "0") {
 			return true;
 		} else if (Strings::Len($str) == 0) {
 			return true;
