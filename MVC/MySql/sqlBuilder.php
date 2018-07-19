@@ -77,6 +77,8 @@ function not_in($values) { return "~NOT " . substr(in($values), 1); }
 
 /**
  * 对多个逻辑表达式的与运算
+ * 
+ * @return LogicalExpression
 */
 function andalso($a, $b = null) { 
     return LogicalExpression::createModel($a, $b, "AND"); 
@@ -85,6 +87,8 @@ function andalso($a, $b = null) {
 
 /**
  * 对多个逻辑表达式的或运算
+ * 
+ * @return LogicalExpression
 */
 function orelse($a, $b = null) { 
     return LogicalExpression::createModel($a, $b, "OR"); 
@@ -92,6 +96,8 @@ function orelse($a, $b = null) {
 
 /**
  * 对多个逻辑表达式的异或运算
+ * 
+ * @return LogicalExpression
 */
 function exor($a, $b = null) { 
     return LogicalExpression::createModel($a, $b, "XOR"); 
@@ -134,6 +140,22 @@ class LogicalExpression {
         return new LogicalExpression($booleans, $op);
     }
 
+    public function Join($key) {
+        $exp = [];
+
+        foreach($this->expressions as $expr) {
+            $expr = MVC\MySql\Expression\WhereAssert::ValueExpression($expr);
+            $expr = "($key $expr)";
+
+            array_push($exp, $expr);
+        }
+
+        $exp = join(" {$this->operator} ", $exp);
+
+        return $exp;
+    }
+
+    /*
     public static function Join($booleans, $operator) {
         $expression = array_shift($booleans);
 
@@ -150,6 +172,7 @@ class LogicalExpression {
     
         return "~$expression";
     }
+    */
 }
 
 #endregion
