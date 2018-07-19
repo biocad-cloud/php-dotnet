@@ -154,6 +154,22 @@ class Strings {
 		return str_replace($find, $replacement, $str);
 	}
 
+	public static function CharAt($string, $i) {
+		if (empty($string)) {
+			return "";
+		}
+
+		if ($i < 0) {
+			$i = strlen($string) + $i;
+		}
+
+		if ($i >= strlen($string) || $i < 0) {
+			return "";
+		}
+
+		return $string[$i];
+	}
+
 	/**
 	 * Returns an integer containing either the number of characters in a string 
 	 * or the element counts of the target array.
@@ -169,6 +185,28 @@ class Strings {
 			return count($obj);
 		} else {
 			throw new exception("Invalid data type!");
+		}
+	}
+
+	public static function Empty($str, $stringAsFactor = false) {
+		# 2018-7-19
+		# 在php之中会将字符串0也作为空值，这是一个bug？？
+		#
+		# echo "<?php echo var_dump(empty('0'));" | php
+		# bool(true)
+
+		# 在这里额外的处理一下0字符串的特殊情况
+		if (empty($str) && $str != "0") {
+			return true;
+		} else if (Strings::Len($str) == 0) {
+			return true;
+		} else if ($stringAsFactor) {
+			return $str == "null"      || 
+				   $str == "NULL"      || 
+				   $str == "undefined" || 
+				   $str == "undefine";
+		} else {
+			return false;
 		}
 	}
 

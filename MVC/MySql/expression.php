@@ -124,12 +124,20 @@ namespace MVC\MySql\Expression {
             return \Strings::Join($list, " AND ");
         }
 
+        /**
+         * 获取进行条件判断所需要的对象的表达式
+        */
         public static function KeyExpression($exp) {
             $a = strpos($exp, '(');
             $b = strpos($exp, ')');
+            $c = \Strings::CharAt($exp,  0);
+            $d = \Strings::CharAt($exp, -1);
 
             if ( ($a !== false) && ($b !== false) && ($a + 1 < $b) ) {
                 # 是一个表达式
+                return $exp;
+            } else if (c && d) {
+                # 是一个 `fieldName` 字段引用，也是直接返回
                 return $exp;
             } else {
                 # 是一个字段名
