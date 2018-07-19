@@ -39,7 +39,7 @@ You can ignore specific the configuration parameter, like:
 dotnet::AutoLoad();
 ```
 
-This statement works, but the MySql module in this framework will not working as no database connection parameter was set.
+This statement works, but the MySql module in this framework will not working as no database connection parameter is setting up.
 
 ### 3. Create App for handle http request
 
@@ -125,8 +125,8 @@ $online_list = $users
     ->where([
         "is_online" => 1, 
         "gender"    => 1
-    ])
-    ->select(5, 10);
+    ])->limit(5, 10)
+      ->select();
 ```
 
 ### 3. INSERT INTO
@@ -196,4 +196,69 @@ $users->where(["name|title" => like("%abc")])
 $users->where(["id" => between(100, 5000)])      
       ->limit(1000)
       ->save(["flag" => 99]);
+```
+
+## Table Join
+
+```php
+$query = (new Table("chk_order_member"))
+    ->left_join("chk_box_order")
+    ->on(["chk_box_order"    => "order_id", 
+	  "chk_order_member" => "order_id"
+      ])
+    ->left_join("chk_box")
+    ->on(["chk_box"       => "box_id", 
+	  "chk_box_order" => "box_id"
+      ])
+    ->where($predicate)
+    ->order_by(["`chk_box`.`box_id`", "`chk_box_order`.`index`", "`chk_order_member`.`order_sn`"])
+    ->select([
+	"chk_order_member.order_sn as barcode", 
+	"chk_order_member.id as uid",
+	"chk_order_member.*", 
+	"chk_box.*", 
+	"chk_box_order.*"
+    ]);
+```
+
+Will generates the SQL expression like:
+
+```sql
+SELECT 
+  chk_order_member.order_sn as barcode, 
+  chk_order_member.id as uid, 
+  chk_order_member.*, 
+  chk_box.*, 
+  chk_box_order.* 
+FROM 
+  `t17`.`chk_order_member` 
+  LEFT JOIN `chk_box_order` ON (
+    `chk_box_order`.`order_id` = `chk_order_member`.`order_id`
+  ) 
+  LEFT JOIN `chk_box` ON (
+    `chk_box`.`box_id` = `chk_box_order`.`box_id`
+  ) 
+WHERE 
+  (
+    (
+      is_smoke IN ('0', '1', '2')
+    )
+  ) 
+  AND (
+    (
+      is_drink IN ('0', '1', '2')
+    )
+  ) 
+  AND (
+    (uname <> '')
+  ) 
+  AND (
+    (
+      `chk_order_member`.`order_sn` <> ''
+    )
+  ) 
+ORDER BY 
+  `chk_box`.`box_id`, 
+  `chk_box_order`.`index`, 
+  `chk_order_member`.`order_sn`;
 ```
