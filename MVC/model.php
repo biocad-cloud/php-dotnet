@@ -469,18 +469,23 @@ class Table {
 
 	/**
 	 * select all
+	 * 
+	 * @param array $fields A string array.
+	 * 
+	 * @return array
 	*/
-    public function select() {
+    public function select($fields = null) {
 		$ref     = $this->schema->ref;
         $assert  = $this->getWhere();        
 		$orderBy = $this->getOrderBy();
 		$limit   = $this->getLimit();
 		$join    = $this->buildJoin();
+		$fields  = empty($fields) ? "*" : Strings::Join($fields, ", ");
 
         if ($assert) {
-            $SQL = "SELECT * FROM $ref $join WHERE $assert";
+            $SQL = "SELECT $fields FROM $ref $join WHERE $assert";
         } else {
-            $SQL = "SELECT * FROM $ref $join";
+            $SQL = "SELECT $fields FROM $ref $join";
         }	
 		if ($orderBy) {
 			$SQL = "$SQL $orderBy";
