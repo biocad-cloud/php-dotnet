@@ -96,11 +96,18 @@ class LogicalExpression {
     public static function Join($booleans, $operator) {
         $expression = array_shift($booleans);
 
+        if ($expression[0] === "~") {
+            $expression = substr($expression, 1);
+        }
+
         foreach($booleans as $exp) {
+            if ($exp[0] === "~") {
+                $exp = substr($exp, 1);
+            }
             $expression = "($expression) $operator ($exp)";
         }
     
-        return $expression;
+        return "~$expression";
     }
 }
 
