@@ -79,7 +79,10 @@ namespace MVC\MySql\Expression {
             foreach($asserts as $name => $value) {
 
                 # 可能是一个很复杂的逻辑表达式的模型
-                if (is_object($value) && get_class($value) == "\\LogicalExpression") {
+                # 
+                # LogicalExpression模型的定义在sqlBuilder.php脚本文件之中 
+                #
+                if (is_object($value) && get_class($value) == "LogicalExpression") {
                     $value = $value->Join($name);
                     array_push($list, "( $value )");
                     continue;
