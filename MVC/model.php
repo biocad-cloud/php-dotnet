@@ -467,8 +467,13 @@ class Table {
 	 * 
 	 * @return string
 	*/
-	public function getLastMySql() {
-		return $this->driver->getLastMySql();
+	public function getLastMySql($code = false) {
+		$sql = $this->driver->getLastMySql();
+		
+		if ($code) {
+			$sql = "<code>$sql</code>";
+		}
+		return $sql;
 	}
 
 	/**
