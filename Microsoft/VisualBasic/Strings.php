@@ -154,6 +154,22 @@ class Strings {
 		return str_replace($find, $replacement, $str);
 	}
 
+	public static function CharAt($string, $i) {
+		if (empty($string)) {
+			return "";
+		}
+
+		if ($i < 0) {
+			$i = strlen($string) + $i;
+		}
+
+		if ($i >= strlen($string) || $i < 0) {
+			return "";
+		}
+
+		return $string[$i];
+	}
+
 	/**
 	 * Returns an integer containing either the number of characters in a string 
 	 * or the element counts of the target array.

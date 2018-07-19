@@ -203,11 +203,15 @@ class Table {
 
 		# 如果只有一个字段的时候
 		if (!is_array($keys)) {
-			$key = "`$keys`";
+			$key = MySqlScript::KeyExpression($keys);
 		} else {
 			# 如果是一个字段列表的时候
-			$key = join("`, `", $keys);
-			$key = "`$key`";
+			$contracts = [];
+			
+			foreach ($keys as $exp) {
+				array_push($contracts, MySqlScript::KeyExpression($exp));
+			}
+			$key = join(", ", $contracts);			
 		}
 
 		if ($desc) {
