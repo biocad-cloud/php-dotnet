@@ -78,20 +78,61 @@ function not_in($values) { return "~NOT " . substr(in($values), 1); }
 /**
  * 对多个逻辑表达式的与运算
 */
-function andalso($booleans) { return LogicalExpression::Join($booleans, "AND"); }
+function andalso($a, $b = null) { 
+    return LogicalExpression::createModel($a, $b, "AND"); 
+}
 # function andalso(...$booleans) { return LogicalExpression::Join($booleans, "AND"); }
 
 /**
  * 对多个逻辑表达式的或运算
 */
-function orelse($a, $b) { return LogicalExpression::Join($booleans, "OR"); }
+function orelse($a, $b = null) { 
+    return LogicalExpression::createModel($a, $b, "OR"); 
+}
 
 /**
  * 对多个逻辑表达式的异或运算
 */
-function exor($a, $b) { return LogicalExpression::Join($booleans, "XOR"); }
+function exor($a, $b = null) { 
+    return LogicalExpression::createModel($a, $b, "XOR"); 
+}
 
+/**
+ * 逻辑表达式的模型
+*/
 class LogicalExpression {
+
+    /**
+     * 逻辑操作符
+    */
+    public $operator;
+    /**
+     * 逻辑表达式字符串数组
+    */
+    public $expressions;
+
+    function __construct($expressions, $op) {
+        $this->operator    = $op;
+        $this->expressions = $expressions;
+    }
+
+    /**
+     * 创建逻辑表达式的模型
+     * 
+     * @param mixed $a 可以是一个逻辑表达式，或者一个逻辑表达式的向量
+     * @param string $b 一个逻辑表达式，当这个参数为空值的时候，$a参数必须是一个数组
+     * 
+     * @return LogicalExpression 函数返回一个逻辑表达式的模型
+    */
+    public static function createModel($a, $b, $op) {
+        if (!empty($b)) {
+            $booleans = [$a, $b];
+        } else {
+            $booleans = $a;
+        }
+
+        return new LogicalExpression($booleans, $op);
+    }
 
     public static function Join($booleans, $operator) {
         $expression = array_shift($booleans);
