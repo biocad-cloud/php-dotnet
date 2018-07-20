@@ -348,5 +348,31 @@ class Utils {
             }
         }
     }
+
+    /**
+     * 获取消息请求的客户端的ip地址
+    */
+    public static function UserIPAddress() {     
+           
+        if (isset($_SERVER)) {
+            if (isset($_SERVER["HTTP_X_FORWARDED_FOR"])) {
+                return $_SERVER["HTTP_X_FORWARDED_FOR"];
+            } else if (isset($_SERVER["HTTP_CLIENT_IP"])) {
+                return $_SERVER["HTTP_CLIENT_IP"];
+            } else {
+                return $_SERVER["REMOTE_ADDR"];
+            }
+        } else {
+            if (getenv("HTTP_X_FORWARDED_FOR")){
+                return getenv("HTTP_X_FORWARDED_FOR");
+            } else if (getenv("HTTP_CLIENT_IP")) {
+                return getenv("HTTP_CLIENT_IP");
+            } else {
+                return getenv("REMOTE_ADDR");
+            }
+        }
+
+        return false;
+    }
 }
 ?>
