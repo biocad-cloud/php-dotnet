@@ -64,7 +64,8 @@ namespace MVC\MySql {
 					"password" => $this->password
 				]); 
 
-				throw new \dotnetException($message);
+				# throw new \dotnetException($message);
+				dotnet::ThrowException($message);
 			}
 
 			mysqli_close($link);
