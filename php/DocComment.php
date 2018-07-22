@@ -105,8 +105,10 @@ class DocComment {
         if ($tagName == "@param") {
             $argName = $t[2];
             $description = array_slice($t, 3);            
-        } else {
+        } else if ($tagName == "@return") {
             $description = array_slice($t, 2);
+        } else {
+            $description = array_slice($t, 1);
         }
 
         $description = implode(" ", $description);
@@ -126,7 +128,7 @@ class DocComment {
             "name"        => $tagName, 
             "type"        => $type, 
             "argName"     => $argName, 
-            "description" => $description
+            "description" => trim($description)
         ];
         
         return [$i => $tagData];
