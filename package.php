@@ -142,6 +142,9 @@ class dotnet {
             if (!$injection->accessControl()) {
                  $injection->Redirect();
                  exit(403);
+            } else {
+                global $_DOC;
+                $_DOC = $injection->getDocComment();
             }
         }
 

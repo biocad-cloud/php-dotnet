@@ -31,6 +31,18 @@ abstract class controller {
     protected $docComment;
 
     /**
+     * Get php function document comment 
+     * 
+     * Get php function document comment parsed object 
+     * for current controller.
+     * 
+     * @return DocComment
+    */
+    public function getDocComment() {
+        return $this->docComment;
+    }
+
+    /**
      * 构建一个对web app的访问控制器
      * 
      * @param object $app 应该是一个class
