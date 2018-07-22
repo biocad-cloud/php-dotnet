@@ -126,14 +126,19 @@ class Utils {
 
     /**
      * 函数返回指定长度的随机ASCII字符串
+     * 
+     * @param integer $len The resulted string length
+     * 
+     * @return string A specific length random ascii string 
     */
     public static function RandomASCIIString($len) {
 		$s = "";
 		$template = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 		$template = str_split($template);
-		
+        $max      = count($template);
+        
 		for ($i = 0; $i < $len; $i++) {
-			$index = rand(0, count($template));
+			$index = rand(0, $max);
 			$s = $s . $template[$index];
 		}
 		
