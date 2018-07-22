@@ -9,14 +9,16 @@ class DocComment {
 
     public $title;
     public $summary;
+    public $params;
     public $tags;
     public $return;
 
-    function __construct($title, $summary, $tags, $return) {
+    function __construct($title, $summary, $params, $tags, $return) {
         $this->title   = $title;
         $this->summary = $summary;
         $this->tags    = $tags;
         $this->return  = $return;
+        $this->params  = $params;
     }
 
     /**
@@ -33,35 +35,116 @@ class DocComment {
         $docComment = self::Trim($docComment);
         $title   = "";
         $summary = "";
+        $params  = [];
         $tags    = [];
         $return  = []; 
-        $i       = 0;
+        $i       = 0;     
+
+        list($i, $title)   = Utils::Tuple(self::blankSplit($docComment, $i));
+        list($i, $summary) = Utils::Tuple(self::blankSplit($docComment, $i));
 
         while($i < count($docComment)) {
-            $line = $docComment[$i];
-
-            if (strlen($line) == 0) {
-                break;
-            } else {
-                $title = $title . " " . $line;
-            }            
+            list($i, $table) = Utils::Tuple(self::tagParser($docComment, $i));
+            
+            if (count($table) > 0) {
+                switch($table["name"]) {
+                    case "return": 
+                        $return = $table;
+                        break;
+    
+                    case "param":
+                        $name = $table["argName"];
+                        $params[$name] = $table;
+                        break;
+    
+                    default:
+                        $tags[$table["name"]] = $table;
+                }
+            }
         }
-
-        while($i < count($docComment)) {
-            $line = $docComment[$i];
-
-            if (strlen($line) == 0) {
-                break;
-            } else {
-                $summary = $summary . " " . $line;
-            }            
-        }        
 
         return new DocComment(
             trim($title), trim($summary), 
+            $params,
             $tags, 
             $return
         );
+    }
+
+    /**
+     * 
+     * @return array [i => [name => ..., type => ..., argName => ..., description => ...]]
+    */
+    private static function tagParser($lines, $i) {
+        while($i < count($lines)) {
+            if (count($lines[$i]) > 0) {
+                break;
+            } else {
+                $i++;
+            }
+        }
+
+        $line = trim($lines[$i]);
+
+        if ($line[0] != "@") {
+            return [$i => []];
+        }
+
+        $t           = split("\s+", $line);
+        $tagName     = $t[0];
+        $type        = "";
+        $argName     = "";
+        $description = "";
+
+        if ($tagName == "@param" || $tagName == "@var" || $tagName == "@return") {
+            $type = $t[1];
+        }
+        if ($tagName == "@param") {
+            $argName = $t[2];
+            $description = array_slice($t, 3);            
+        } else {
+            $description = array_slice($t, 2);
+        }
+
+        $description = implode(" ", $description);
+
+        # 将剩余的字符串也加上去，直到出现@为止
+        while($i < count($lines)) {
+            if ($lines[$i][0] == "@") {
+                break;
+            } else {
+                $description = $description . "\n" . $lines[$i];
+                $i++;
+            }
+        }
+
+        $tagName = Strings::Mid($tagName, 2);
+        $tagData = [
+            "name"        => $tagName, 
+            "type"        => $type, 
+            "argName"     => $argName, 
+            "description" => $description
+        ];
+        
+        return [$i => $tagData];
+    }
+
+    private static function blankSplit($lines, $i) {
+        $text = "";
+
+        while($i < count($lines)) {
+            $line = $lines[$i];
+
+            if (strlen($line) == 0 && strlen(trim($text)) > 0) {
+                break;
+            } else {
+                $text = $text . " " . $line;
+            } 
+            
+            $i++;
+        }
+
+        return [$i => $text];
     }
 
     private static function Trim($doc) {
