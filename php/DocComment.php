@@ -77,20 +77,23 @@ class DocComment {
     */
     private static function tagParser($lines, $i) {
         while($i < count($lines)) {
-            if (count($lines[$i]) > 0) {
+            $l = $lines[$i];            
+
+            if (strlen($l) > 0) {
                 break;
             } else {
                 $i++;
             }
         }
 
-        $line = trim($lines[$i]);
+        $line = trim($lines[$i]);        
+        $i++;
 
         if ($line[0] != "@") {
             return [$i => []];
         }
 
-        $t           = split("\s+", $line);
+        $t           = preg_split("#\s+#", $line);
         $tagName     = $t[0];
         $type        = "";
         $argName     = "";
@@ -110,7 +113,7 @@ class DocComment {
 
         # 将剩余的字符串也加上去，直到出现@为止
         while($i < count($lines)) {
-            if ($lines[$i][0] == "@") {
+            if (strlen($lines[$i]) && $lines[$i][0] == "@") {
                 break;
             } else {
                 $description = $description . "\n" . $lines[$i];
