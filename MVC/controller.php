@@ -24,7 +24,7 @@ abstract class controller {
     */    
     protected $app_logic;
     /**
-     * @var string
+     * @var DocComment
     */
     protected $docComment;
 
@@ -42,8 +42,9 @@ abstract class controller {
             $reflector = new ReflectionClass(get_class($app));
 
             $this->reflection = $reflector;
-            $this->app_logic = $reflector->getMethod(Router::getApp());   
+            $this->app_logic  = $reflector->getMethod(Router::getApp());   
             $this->docComment = $this->app_logic->getDocComment();   
+            $this->docComment = DocComment::Parse($this->docComment);
         }
     }
     
