@@ -1,5 +1,7 @@
 <?php
 
+Imports("php.DocComment");
+
 /**
  * Access controller model
 */

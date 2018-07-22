@@ -30,16 +30,50 @@ class DocComment {
     */
     public static function Parse($docComment) {
         $docComment = StringHelpers::LineTokens($docComment);
+        $docComment = self::Trim($docComment);
         $title   = "";
         $summary = "";
         $tags    = [];
         $return  = []; 
+        $i       = 0;
+
+        while($i < count($docComment)) {
+            $line = $docComment[$i];
+
+            if (strlen($line) == 0) {
+                break;
+            } else {
+                $title = $title . " " . $line;
+            }            
+        }
+
+        while($i < count($docComment)) {
+            $line = $docComment[$i];
+
+            if (strlen($line) == 0) {
+                break;
+            } else {
+                $summary = $summary . " " . $line;
+            }            
+        }        
 
         return new DocComment(
-            $title, $summary, 
+            trim($title), trim($summary), 
             $tags, 
             $return
         );
+    }
+
+    private static function Trim($doc) {
+        for($i = 0; $i < count($doc); $i ++) {
+            $line = $doc[$i];
+            $line = ltrim($line, " */");
+            $line = rtrim($line);
+
+            $doc[$i] = $line;
+        }
+
+        return $doc;
     }
 }
 
