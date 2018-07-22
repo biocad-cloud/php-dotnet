@@ -33,7 +33,7 @@ abstract class controller {
      * 
      * @param object $app 应该是一个class
     */
-    function __construct($app) {
+    public function Hook($app) {
         $this->appObj = $app;
 
         if (!is_object($app)) {

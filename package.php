@@ -126,7 +126,7 @@ class dotnet {
      *   dotnet::HandleRequest(new App(), "./", new accessControl());
      * 
      * @param object $app The web app logical layer
-     * @param string $wwwroot The html views document root directory.
+     * @param string|controller $wwwroot The html views document root directory.
      * @param controller $injection The access control injection.
     */
     public static function HandleRequest($app, $wwwroot = NULL, $injection = NULL) {
@@ -137,6 +137,8 @@ class dotnet {
         }
 
         if ($injection) {
+            $injection->Hook($app);
+
             if (!$injection->accessControl()) {
                  $injection->Redirect();
                  exit(403);
