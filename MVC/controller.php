@@ -4,12 +4,21 @@ abstract class controller {
 
     /**
      * Web app应用的逻辑实现，这个变量应该是一个class object来的
+     * 
+     * @var object
     */
     protected $appObj;
     /**
-     * 对Web app应用的逻辑层的反射器
+     * (ReflectionClass) 对Web app应用的逻辑层的反射器
+     * 
+     * @var ReflectionClass
     */
-    protected $reflection;    
+    protected $reflection;
+    /**
+     * 对web app的逻辑实现方法
+     * 
+     * @var ReflectionMethod
+    */    
     protected $app_logic;
 
     /**
@@ -23,7 +32,10 @@ abstract class controller {
         if (!is_object($app)) {
             throw new Error("App should be a class object!");
         } else {
-            $this->reflection = new ReflectionClass(get_class($app));            
+            $reflector = new ReflectionClass(get_class($app));
+
+            $this->reflection = $reflector;
+            $this->app_logic = $reflector->getMethod(Router::getApp());      
         }
     }
     

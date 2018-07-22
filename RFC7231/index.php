@@ -12,6 +12,8 @@ class RFC7231Error {
 	 * 这个函数会自动根据注册表之中的配置结果的状态返回相对应的错误代码的页面模版文件
 	 * 如果希望能够使用自定义的错误页面，需要在传递给框架的配置数据之中写入``RFC7231``
 	 * 字段的值
+	 * 
+	 * @return string The view document file path.
 	*/
 	public static function getPath($code, $allow_custom) {
 		if ($allow_custom) {
@@ -46,6 +48,9 @@ class RFC7231Error {
 		exit($code);
 	}
 	
+	/**
+	 * @return string The http status code header
+	*/
 	private static function getRFC($code, $header = "Unknown") {
 		switch ($code) {
 			case 404:
