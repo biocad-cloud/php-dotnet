@@ -115,11 +115,25 @@ class dotnet {
         ]);
 	}
 
-    public static function HandleRequest($app, $wwwroot = NULL) {
+    /**
+     * Handle web http request
+     * 
+     * @param object $app The web app logical layer
+     * @param string $wwwroot The html views document root directory.
+     * @param controller $injection The access control injection.
+    */
+    public static function HandleRequest($app, $wwwroot = NULL, $injection = NULL) {
         if ($wwwroot) {
             DotNetRegistry::SetMVCViewDocumentRoot($wwwroot);
         }
+        if ($injection) {
+            if (!$injection->accessControl()) {
+                 $injection->Redirect();
+                 exit(403);
+            }
+        }
 
+        // 具有访问权限的正常访问
         Router::HandleRequest($app);
     }
 

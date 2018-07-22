@@ -20,6 +20,10 @@ abstract class controller {
      * @var ReflectionMethod
     */    
     protected $app_logic;
+    /**
+     * @var string
+    */
+    protected $docComment;
 
     /**
      * 构建一个对web app的访问控制器
@@ -35,17 +39,22 @@ abstract class controller {
             $reflector = new ReflectionClass(get_class($app));
 
             $this->reflection = $reflector;
-            $this->app_logic = $reflector->getMethod(Router::getApp());      
+            $this->app_logic = $reflector->getMethod(Router::getApp());   
+            $this->docComment = $this->app_logic->getDocComment();   
         }
     }
     
     /**
      * 函数返回一个逻辑值，表明当前的访问是否具有权限，如果这个函数返回False，那么
-     * web服务器将会响应403，访问被拒绝
+     * web服务器将会默认响应403，访问被拒绝
      * 
      * @return boolean 当前的访问权限是否验证成功？
     */
     abstract public function accessControl();
+    /**
+     * 假若没有权限的话，会执行这个函数进行重定向
+    */
+    abstract public function Redirect();    
 
     /**
      * 在完成了这个函数的调用之后，服务器将会返回成功代码
