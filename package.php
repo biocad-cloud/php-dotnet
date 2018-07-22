@@ -118,14 +118,24 @@ class dotnet {
     /**
      * Handle web http request
      * 
+     * @example 
+     * 
+     *   dotnet::HandleRequest(new App());
+     *   dotnet::HandleRequest(new App(), "./");
+     *   dotnet::HandleRequest(new App(), new accessControl());
+     *   dotnet::HandleRequest(new App(), "./", new accessControl());
+     * 
      * @param object $app The web app logical layer
      * @param string $wwwroot The html views document root directory.
      * @param controller $injection The access control injection.
     */
     public static function HandleRequest($app, $wwwroot = NULL, $injection = NULL) {
-        if ($wwwroot) {
+        if ($wwwroot && is_string($wwwroot)) {
             DotNetRegistry::SetMVCViewDocumentRoot($wwwroot);
+        } else if ($wwwroot && is_object($wwwroot)) {
+            $injection = $wwwroot;
         }
+
         if ($injection) {
             if (!$injection->accessControl()) {
                  $injection->Redirect();

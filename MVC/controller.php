@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Access controller model
+*/
 abstract class controller {
 
     /**
