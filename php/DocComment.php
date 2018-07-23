@@ -7,9 +7,25 @@ Imports("Microsoft.VisualBasic.Extensions.StringHelpers");
 */
 class DocComment {
 
+    /**
+     * @var string
+    */
     public $title;
+    /**
+     * @var string
+    */
     public $summary;
+    /**
+     * @var array
+    */
     public $params;
+
+    /**
+     * 除了params以及return以外的其他的通过@起始
+     * 标记的标签对象数据的数组
+     * 
+     * @var array
+    */
     public $tags;
     public $return;
     public $access;

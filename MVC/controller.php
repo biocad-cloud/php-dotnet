@@ -43,6 +43,27 @@ abstract class controller {
     }
 
     /**
+     * The controller access level, `*` means everyone!
+    */
+    public function getAccessLevel() {
+        if (!empty($this->docComment)) {
+            $tag = Utils::ReadValue($this->docComment->tags, "access");
+
+            if (!empty($tag)) {
+                return $tag["description"];
+            } else {
+                return "";
+            }
+        } else {
+            return "";
+        }
+    }
+
+    public function AccessByEveryOne() {
+        return $this->getAccessLevel() == "*";
+    }
+
+    /**
      * 构建一个对web app的访问控制器
      * 
      * @param object $app 应该是一个class
