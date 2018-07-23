@@ -23,11 +23,15 @@ class Table {
 
 	/**
 	 * MySql数据库驱动程序
+	 * 
+	 * @var sqlDriver
 	*/
 	private $driver;
 
 	/**
 	 * 当前的这个数据表的结构信息
+	 * 
+	 * @var SchemaDriver 
 	*/
 	private $schema;
 	
@@ -36,6 +40,8 @@ class Table {
 	 * 例如 where limit order distinct 等
 	 * 
 	 * 进行链式调用的基础
+	 * 
+	 * @var array
 	*/
     private $condition;
 	
@@ -158,6 +164,8 @@ class Table {
 	
 	/**
 	 * 打开一个新的和mysql数据库的链接对象实例
+	 * 
+	 * @return mysqli Returns a new mysqli connection.
 	*/
 	public function mysqli() {
 		return $this->driver->getMySqlLink();
@@ -255,6 +263,8 @@ class Table {
 	
 	/**
 	 * 判断条件查询之中的给定的条件是否是不存在？
+	 * 
+	 * @return boolean
 	*/
 	private function is_empty($key) {
 		return !$this->condition       || 

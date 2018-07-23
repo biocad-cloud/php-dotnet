@@ -5,6 +5,17 @@ Imports("Microsoft.VisualBasic.Strings");
 class StringHelpers {
 
     /**
+     * Text split by new line
+     * 
+     * @param string $text
+     * 
+     * @return array
+    */
+    public static function LineTokens($text) {
+        return explode("\n", $text);
+    }
+
+    /**
      * 使用这个函数可以非常方便的从字符串之中取出由一对临近的括号或者引号
      * 所包裹的子字符串
      * 
