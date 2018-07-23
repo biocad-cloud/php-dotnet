@@ -78,6 +78,16 @@ namespace MVC\MySql\Expression {
             # 在这个表达式构造函数之中，使用~前导字符作为表达式的标记
             foreach($asserts as $name => $value) {
 
+                # 可能是一个很复杂的逻辑表达式的模型
+                # 
+                # LogicalExpression模型的定义在sqlBuilder.php脚本文件之中 
+                #
+                if (is_object($value) && get_class($value) == "LogicalExpression") {
+                    $value = $value->Join($name);
+                    array_push($list, "( $value )");
+                    continue;
+                }
+
                 # $name可能是多个字段名，字段名之间使用 |(OR) 或者 &(AND) 来分割
                 # 如果存在()，则意味着是一个表达式，而非字段名
                 $value      = self::ValueExpression($value);
@@ -124,12 +134,20 @@ namespace MVC\MySql\Expression {
             return \Strings::Join($list, " AND ");
         }
 
+        /**
+         * 获取进行条件判断所需要的对象的表达式
+        */
         public static function KeyExpression($exp) {
             $a = strpos($exp, '(');
             $b = strpos($exp, ')');
+            $c = \Strings::CharAt($exp,  0);
+            $d = \Strings::CharAt($exp, -1);
 
             if ( ($a !== false) && ($b !== false) && ($a + 1 < $b) ) {
                 # 是一个表达式
+                return $exp;
+            } else if ($c && $d) {
+                # 是一个 `fieldName` 字段引用，也是直接返回
                 return $exp;
             } else {
                 # 是一个字段名
@@ -137,6 +155,11 @@ namespace MVC\MySql\Expression {
             }
         }
 
+        /**
+         * 获取表达式的右边部分
+         * 
+         * @return string
+        */
         public static function ValueExpression($value) {
             if ($value[0] === "~") {
                 # 是一个表达式，则不需要额外的处理

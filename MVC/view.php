@@ -38,6 +38,19 @@ class View {
 			echo $path . "\n";
 		}
 
+		global $_DOC;
+
+		if (!empty($_DOC)) {
+			if (!empty($vars) && count($vars) > 0) {
+				if (!array_key_exists("title", $vars)) {
+					$vars["title"] = $_DOC->title;
+				}
+			} else {
+				# $vars是空的
+				$vars = ["title" => $_DOC->title]; 
+			}
+		}
+		
 		View::Show($path, $vars, $lang);
 	}
 	
