@@ -11,6 +11,11 @@ namespace MVC\MySql {
 		
 		#region "MySql connection info"
 
+		/**
+		 * 数据库的名称
+		 * 
+		 * @var string
+		*/
 		public $database;
 
 		private $user;
@@ -32,7 +37,10 @@ namespace MVC\MySql {
 			$this->host     = $host;
 			$this->port     = $port;
 		}
-        
+		
+		/**
+		 * @return string
+		*/
         public function GetDatabaseName() {
             return $this->database;
         }
@@ -64,7 +72,8 @@ namespace MVC\MySql {
 					"password" => $this->password
 				]); 
 
-				throw new \dotnetException($message);
+				# throw new \dotnetException($message);
+				\dotnet::ThrowException($message);
 			}
 
 			mysqli_close($link);
@@ -74,6 +83,8 @@ namespace MVC\MySql {
 		
 		/**
 		 * 使用这个函数来打开和mysql数据库的链接
+		 * 
+		 * @return mysqli 返回数据库的链接
 		*/
 		protected function __init_MySql() {	
 			$link = mysqli_connect(
@@ -91,6 +102,9 @@ namespace MVC\MySql {
 			}
 		}
 
+		/**
+		 * @return string The last executed sql expression.
+		*/
 		public function getLastMySql() {
 			return $this->last_mysql_expression;
 		}

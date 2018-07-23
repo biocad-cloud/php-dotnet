@@ -126,14 +126,19 @@ class Utils {
 
     /**
      * 函数返回指定长度的随机ASCII字符串
+     * 
+     * @param integer $len The resulted string length
+     * 
+     * @return string A specific length random ascii string 
     */
     public static function RandomASCIIString($len) {
 		$s = "";
 		$template = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 		$template = str_split($template);
-		
+        $max      = count($template) - 1;
+        
 		for ($i = 0; $i < $len; $i++) {
-			$index = rand(0, count($template));
+			$index = rand(0, $max);
 			$s = $s . $template[$index];
 		}
 		
@@ -223,6 +228,13 @@ class Utils {
         }
     }
     
+    /**
+     * 进行数组的克隆
+     * 
+     * @param array $array
+     * 
+     * @return array
+    */
     public static function ArrayCopy($array) {
         if (empty($array)) {
             return [];
@@ -340,6 +352,32 @@ class Utils {
                 $i = $i + 1;
             }
         }
+    }
+
+    /**
+     * 获取消息请求的客户端的ip地址
+    */
+    public static function UserIPAddress() {     
+           
+        if (isset($_SERVER)) {
+            if (isset($_SERVER["HTTP_X_FORWARDED_FOR"])) {
+                return $_SERVER["HTTP_X_FORWARDED_FOR"];
+            } else if (isset($_SERVER["HTTP_CLIENT_IP"])) {
+                return $_SERVER["HTTP_CLIENT_IP"];
+            } else {
+                return $_SERVER["REMOTE_ADDR"];
+            }
+        } else {
+            if (getenv("HTTP_X_FORWARDED_FOR")){
+                return getenv("HTTP_X_FORWARDED_FOR");
+            } else if (getenv("HTTP_CLIENT_IP")) {
+                return getenv("HTTP_CLIENT_IP");
+            } else {
+                return getenv("REMOTE_ADDR");
+            }
+        }
+
+        return false;
     }
 }
 ?>

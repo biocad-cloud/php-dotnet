@@ -18,17 +18,8 @@ class Router {
 	 * @param object $app 控制器对象实例
 	*/
 	public static function HandleRequest($app) {
-		$argv = $_GET;
-		
-		if (!$_GET || count($_GET) == 0) {
-			# index.html as default
-			$page = "index";
-		} else {
-			$page = $_GET["app"];
-		}		
-				
-		if (method_exists($app, $page)) {
-			$app->{$page}();
+		if (method_exists($app, $page = self::getApp())) {
+			$code = $app->{$page}();
 		} else {
 			$message = "Web app `<strong>$page</strong>` is not available in this controller!";
 			dotnet::PageNotFound($message);
@@ -38,8 +29,28 @@ class Router {
 		if (APP_DEBUG) {
 			
 		}
+
+		exit($code);
 	}
 		
+	/**
+	 * 获取当前所访问的应用程序的名称
+	 * 
+	 * @return string Web app name.
+	*/
+	public static function getApp() {
+		$argv = $_GET;
+
+		if (empty($argv) || count($argv) == 0 || !array_key_exists("app", $argv)) {
+			# index.html as default
+			$page = "index";
+		} else {
+			$page = $argv["app"];
+		}		
+
+		return $page;
+	}
+
 	/**
 	 * 为了方便，在html里面的控制器的链接可能为简写形式，例如：``{index/upload}``
 	 * 则根据控制器的解析规则，应该在这个函数之中被拓展为结果url字符串：
