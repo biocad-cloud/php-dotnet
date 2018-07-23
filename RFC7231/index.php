@@ -17,7 +17,13 @@ class RFC7231Error {
 		if ($allow_custom) {
 			$custom = DotNetRegistry::RFC7231Folder();
 			$dir    = empty($custom) ? dirname(__FILE__) : $custom;
-			return "$dir/$code.html";
+			$view   = "$dir/$code.html";
+
+			if (!file_exists($view)) {
+				$view = dirname(__FILE__) . "/$code.html";
+			}
+
+			return $view;
 		} else {
 			return dirname(__FILE__) . "/$code.html";
 		}		

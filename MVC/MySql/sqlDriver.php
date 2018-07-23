@@ -65,7 +65,7 @@ namespace MVC\MySql {
 				]); 
 
 				# throw new \dotnetException($message);
-				dotnet::ThrowException($message);
+				\dotnet::ThrowException($message);
 			}
 
 			mysqli_close($link);
