@@ -12,13 +12,11 @@ class DocComment {
     public $params;
     public $tags;
     public $return;
+    public $access;
 
-    function __construct($title, $summary, $params, $tags, $return) {
+    function __construct($title, $summary) {
         $this->title   = $title;
-        $this->summary = $summary;
-        $this->tags    = $tags;
-        $this->return  = $return;
-        $this->params  = $params;
+        $this->summary = $summary;        
     }
 
     /**
@@ -37,7 +35,7 @@ class DocComment {
         $summary = "";
         $params  = [];
         $tags    = [];
-        $return  = []; 
+        $return  = [];         
         $i       = 0;     
 
         list($i, $title)   = Utils::Tuple(self::blankSplit($docComment, $i));
@@ -55,20 +53,20 @@ class DocComment {
                     case "param":
                         $name = $table["argName"];
                         $params[$name] = $table;
-                        break;
-    
+                        break;   
+                    
                     default:
                         $tags[$table["name"]] = $table;
                 }
             }
         }
 
-        return new DocComment(
-            trim($title), trim($summary), 
-            $params,
-            $tags, 
-            $return
-        );
+        $doc = new DocComment(trim($title), trim($summary));
+        $doc->params = $params;
+        $doc->tags   = $tags;
+        $doc->return = $return;       
+
+        return $doc;
     }
 
     /**
