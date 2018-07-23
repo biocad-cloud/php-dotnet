@@ -135,7 +135,7 @@ class Utils {
 		$s = "";
 		$template = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 		$template = str_split($template);
-        $max      = count($template);
+        $max      = count($template) - 1;
         
 		for ($i = 0; $i < $len; $i++) {
 			$index = rand(0, $max);

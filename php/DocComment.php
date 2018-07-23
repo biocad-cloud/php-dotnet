@@ -91,7 +91,7 @@ class DocComment {
     */
     private static function tagParser($lines, $i) {
         while($i < count($lines)) {
-            $l = $lines[$i];            
+            $l = trim($lines[$i]);            
 
             if (strlen($l) > 0) {
                 break;
