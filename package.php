@@ -94,9 +94,12 @@ class dotnet {
     /**
      * 函数返回成功消息的json字符串(这个函数只返回json数据，并没有echo输出)
      * 
-     * @return mixed Message code is ZERO 
+     * @param string|array $msg The message that will be responsed to 
+     *                          the http client.
+     * 
+     * @return string The success message json with `code` is ZERO 
     */ 
-    public static function successMsg($msg) {	
+    public static function successMsg($msg) {
 		return json_encode([
 			'code' => 0,
             'info' => $msg
@@ -107,6 +110,9 @@ class dotnet {
      * 函数返回失败消息的json字符串(这个函数只返回json数据，并没有echo输出)
      * 
      * @param integer $errorCode Default error code is 1. And zero for no error.
+     * @param string|array $msg The message that will be responsed to 
+     *                          the http client.
+     * 
     */ 
 	public static function errorMsg($msg, $errorCode = 1) {
 		return json_encode([
