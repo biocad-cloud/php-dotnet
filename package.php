@@ -126,12 +126,16 @@ class dotnet {
     /**
      * Handle web http request
      * 
-     * @example 
+     * 使用这个函数来进行web请求的处理操作
      * 
-     *   dotnet::HandleRequest(new App());
-     *   dotnet::HandleRequest(new App(), "./");
-     *   dotnet::HandleRequest(new App(), new accessControl());
-     *   dotnet::HandleRequest(new App(), "./", new accessControl());
+     * @example 函数的第一个参数必须是一个class对象，第二个参数为html模板的文件路径或者控制器对象
+     *          如果指定了wwwroot html模板文件夹，想要再挂载控制器对象的话，可以将控制器对象的
+     *          实例传递到函数的第三个参数
+     * 
+     *    dotnet::HandleRequest(new App());
+     *    dotnet::HandleRequest(new App(), "./");
+     *    dotnet::HandleRequest(new App(), new accessControl());
+     *    dotnet::HandleRequest(new App(), "./", new accessControl());
      * 
      * @param object $app The web app logical layer
      * @param string|controller $wwwroot The html views document root directory.
