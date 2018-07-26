@@ -92,7 +92,8 @@ class dotnet {
     public static $debugger;
 
     /**
-     * 函数返回成功消息的json字符串(这个函数只返回json数据，并没有echo输出)
+     * 函数返回成功消息的json字符串``{code: 0, info: $msg}``.
+     * (这个函数只返回json数据，并没有echo输出)
      * 
      * @param string|array $msg The message that will be responsed to 
      *                          the http client.
@@ -107,7 +108,8 @@ class dotnet {
 	}
     
     /**
-     * 函数返回失败消息的json字符串(这个函数只返回json数据，并没有echo输出)
+     * 函数返回失败消息的json字符串``{code: 0, info: $msg}``.
+     * (这个函数只返回json数据，并没有echo输出)
      * 
      * @param integer $errorCode Default error code is 1. And zero for no error.
      * @param string|array $msg The message that will be responsed to 
