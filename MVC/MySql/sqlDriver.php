@@ -2,6 +2,7 @@
 
 namespace MVC\MySql {
 
+	Imports("System.Text.StringBuilder");
     Imports("Microsoft.VisualBasic.Strings");
 
     /**
@@ -102,9 +103,10 @@ namespace MVC\MySql {
 			);
 						
 			if (false == $link) {
-				$msg = "Error: Unable to connect to MySQL." . PHP_EOL;
-				$msg = "Debugging errno: " . mysqli_connect_errno() . PHP_EOL;
-				$msg = "Debugging error: " . mysqli_connect_error() . PHP_EOL;
+				$msg = (new \StringBuilder())
+					->AppendLine("Error: Unable to connect to MySQL.")
+				    ->AppendLine("Debugging errno: " . mysqli_connect_errno()) 
+					->AppendLine("Debugging error: " . mysqli_connect_error());
 					
 				\dotnet::ThrowException($msg);
 
