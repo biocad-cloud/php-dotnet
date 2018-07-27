@@ -102,11 +102,25 @@ namespace MVC\MySql {
 				$this->port
 			);
 						
+			# 2018-07-27
+			# 如果连接最新版本的mysql的时候，出现错误
+			#
+			# Error: Unable to connect to MySQL.
+			# Debugging errno: 2054
+			# Debugging error: The server requested authentication method unknown to the client
+			#
+			# 这是因为新版本的mysql采用了新的验证方式，这个时候会需要修改mysql之中的用户验证方式为旧的验证方式
+			# 使用下面的sql语句进行修改
+			# ALTER USER 'native'@'localhost' IDENTIFIED WITH mysql_native_password
+			#
+			# 或者升级php至最新版本
+
 			if (false == $link) {
-				$msg = (new \StringBuilder())
+				$msg = (new \StringBuilder("", "<br />"))
 					->AppendLine("Error: Unable to connect to MySQL.")
 				    ->AppendLine("Debugging errno: " . mysqli_connect_errno()) 
-					->AppendLine("Debugging error: " . mysqli_connect_error());
+					->AppendLine("Debugging error: " . mysqli_connect_error())
+					->ToString();
 					
 				\dotnet::ThrowException($msg);
 
