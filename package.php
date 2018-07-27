@@ -158,10 +158,15 @@ class dotnet {
                 global $_DOC;
                 $_DOC = $injection->getDocComment();
             }
-        }
 
-        // 具有访问权限的正常访问
-        Router::HandleRequest($app);
+            $injection->handleRequest();
+
+        } else {
+            // 没有定义控制器的时候，使用router进行访问请求的处理操作
+
+            // 具有访问权限的正常访问
+            Router::HandleRequest($app);
+        }
     }
 
     /**

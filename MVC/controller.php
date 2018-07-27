@@ -140,6 +140,13 @@ abstract class controller {
             $this->error($message, $errCode);
         }*/
 
+        // 先检查目标方法是否存在于逻辑层之中
+        if (!method_exists($app, $page = Router::getApp())) {
+            # 不存在，则抛出404
+            $message = "Web app `<strong>$page</strong>` is not available in this controller!";
+			dotnet::PageNotFound($message);
+        }
+
         if (!is_object($app)) {
             throw new Error("App should be a class object!");
         } else {
@@ -154,6 +161,21 @@ abstract class controller {
         return $this;
     }
     
+    /**
+     * 处理web请求
+    */
+    public function handleRequest() {
+        $code = $this->appObj->{Router::getApp()}();
+
+        # 在末尾输出调试信息？
+        # 只对view类型api调用的有效
+		if (APP_DEBUG && $this->getUsage() == "view") {
+			
+        }
+        
+        exit(0);
+    }
+
     /**
      * 函数返回一个逻辑值，表明当前的访问是否具有权限，如果这个函数返回False，那么
      * web服务器将会默认响应403，访问被拒绝
