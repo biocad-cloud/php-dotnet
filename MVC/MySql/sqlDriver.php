@@ -27,6 +27,8 @@ namespace MVC\MySql {
 
 		/**
 		 * 当前的这个表模型对象实例的最后一条执行的MySql语句
+		 * 
+		 * @var string
 		*/
 		protected $last_mysql_expression;
 
@@ -48,7 +50,11 @@ namespace MVC\MySql {
 		/**
 		 * 显示mysql表的结构
 		 * 
-		 * DESCRIBE TableName
+		 * @example
+		 * 
+		 *    DESCRIBE TableName
+		 * 
+		 * @param string $tableName The table name for get schema structure info.
 		*/
 		public function Describe($tableName) {
 			$db   = $this->database;
@@ -93,16 +99,23 @@ namespace MVC\MySql {
 				$this->password, 
 				$this->database, 
 				$this->port
-			) or die("Database error: <code>" . mysqli_error($link) . "</code>"); 
+			);
 						
-			if (false === $link) {
-				die("Database connection fail!");
+			if (false == $link) {
+				$msg = "Error: Unable to connect to MySQL." . PHP_EOL;
+				$msg = "Debugging errno: " . mysqli_connect_errno() . PHP_EOL;
+				$msg = "Debugging error: " . mysqli_connect_error() . PHP_EOL;
+					
+				\dotnet::ThrowException($msg);
+
 			} else {
 				return $link;
 			}
 		}
 
 		/**
+		 * Get the last executed sql expression string value.
+		 * 
 		 * @return string The last executed sql expression.
 		*/
 		public function getLastMySql() {

@@ -389,7 +389,10 @@ class dotnet {
     #region "error codes"
 
 	/**
-	 * 500 PHP throw exception helper for show exception in .NET exception style
+	 * 500 PHP throw exception helper for show exception in .NET 
+     * exception style
+     * 
+     * @param string $message The error message to display.
 	*/
     public static function ThrowException($message) {      
 		$trace = StackTrace::GetCallStack();
@@ -401,6 +404,8 @@ class dotnet {
 
     /**
      * 404 资源没有找到
+     * 
+     * @param string $message The error message to display.
     */
     public static function PageNotFound($message) {
         $trace = StackTrace::GetCallStack();
@@ -412,6 +417,8 @@ class dotnet {
 
     /**
      * 403 用户当前的身份凭证没有访问权限，访问被拒绝
+     * 
+     * @param string $message The error message to display.
     */
     public static function AccessDenied($message) {
         $trace = StackTrace::GetCallStack();
