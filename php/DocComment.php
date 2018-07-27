@@ -152,14 +152,14 @@ class DocComment {
         $text = "";
 
         while($i < count($lines)) {
-            $line = $lines[$i];
+            $line = trim($lines[$i]);
 
             # 如果遇到空白行，就退出
             if (strlen($line) == 0 && strlen(trim($text)) > 0) {
                 break;
 
             # 2018-7-24 bugs修复
-            } else if (trim($line)[0] == "@") {
+            } else if (strlen($line) > 0 && trim($line)[0] == "@") {
                 # 如果遇到了标签的起始符
                 # 则结束
                 break;
