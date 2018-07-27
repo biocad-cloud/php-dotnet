@@ -110,8 +110,11 @@ namespace MVC\MySql {
 			# Debugging error: The server requested authentication method unknown to the client
 			#
 			# 这是因为新版本的mysql采用了新的验证方式，这个时候会需要修改mysql之中的用户验证方式为旧的验证方式
-			# 使用下面的sql语句进行修改
-			# ALTER USER 'native'@'localhost' IDENTIFIED WITH mysql_native_password
+			# 使用下面的sql语句进行修改:
+			#
+			#    use mysql;
+			#    ALTER USER 'native'@'localhost' IDENTIFIED WITH mysql_native_password BY 'new_password';
+			#    FLUSH PRIVILEGES;
 			#
 			# 或者升级php至最新版本
 
