@@ -159,6 +159,7 @@ class dotnet {
                 $_DOC = $injection->getDocComment();
             }
 
+            $injection->sendContentType();
             $injection->handleRequest();
 
         } else {

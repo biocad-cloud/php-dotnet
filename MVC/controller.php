@@ -83,7 +83,7 @@ abstract class controller {
      * 
     */
     public function getUsage() {
-        $type = $this->getTagDescription("uses");
+        return $this->getTagDescription("uses");
     }
 
     /**
@@ -100,9 +100,10 @@ abstract class controller {
     }
 
     /**
-     * 这个可以在访问控制器之中应用
+     * 这个可以在访问控制器之中应用，这个函数只对定义了@uses标签的控制器有效
+     * 如果控制器函数没有定义@uses标签，则不会写入任何content-type的数据
     */
-    public function sendContentType() {
+    public function sendContentType() {        
         switch(strtolower($this->getUsage())) {
             case "api":
                 header("Content-Type: application/json");
