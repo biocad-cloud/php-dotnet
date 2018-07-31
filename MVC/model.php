@@ -664,7 +664,7 @@ class Table {
 	/**
 	 * select * from `table`;
 	 * 
-	 * (不受where条件以及limit的影响，但是可以使用order by进行结果的排序操作)
+	 * (不受``where``条件以及``limit``的影响，但是可以使用``order by``进行结果的排序操作)
 	*/
 	public function all() {		
 		$orderBy = $this->getOrderBy();
