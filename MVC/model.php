@@ -359,11 +359,11 @@ class Table {
 
     /**
      * Create a where condition filter for the next SQL expression.
-	 * (这个函数影响SELECT UPDATE DELETE，不会影响INSERT操作)
+	 * (这个函数影响``SELECT``, ``UPDATE``, ``DELETE``，不会影响``INSERT``操作)
      *	  
      * @param mixed $assert The assert array of the where condition or an string expression.
 	 * 
-	 * @return Table Returns a new table object instance for expression chaining.
+	 * @return Table Returns a new ``Table`` object instance for expression chaining.
     */
     public function where($assert) {
 		$condition = null;
