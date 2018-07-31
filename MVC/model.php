@@ -199,6 +199,44 @@ class Table {
 	}
 
 	/**
+	 * 进行分组操作
+	 * 
+	 * @param string|array $keys 进行分组操作的字段依据，可以是一个字段或者一个字段的集合
+	 * 
+	 * @return Table 返回表结构模型对象，用于继续构建表达式，进行链的延伸
+	*/
+	public function group_by($keys) {
+		$key       = self::getKeys($keys);
+		$condition = ["group_by" => $key];
+		$condition = array_merge($this->condition, $condition);
+
+		return new Table($this->driver, [
+			$this->schema->tableName => $condition
+		]);
+	}
+
+	/**
+	 * order_by 和 group_by的公用函数
+	 * 
+	 * @return string
+	*/
+	private static function getKeys($keys) {	
+		# 如果只有一个字段的时候
+		if (!is_array($keys)) {
+			return MySqlScript::KeyExpression($keys);
+		} 
+		
+		# 如果是一个字段列表的时候
+		$contracts = [];			
+
+		foreach ($keys as $exp) {
+			array_push($contracts, MySqlScript::KeyExpression($exp));
+		}
+		
+		return join(", ", $contracts);		
+	}
+
+	/**
 	 * 对返回来的结果按照给定的字段进行排序操作
 	 * 
 	 * @param string|array $keys 进行排序操作的字段依据，可以是一个字段或者一个字段的集合
@@ -208,20 +246,7 @@ class Table {
 	*/
 	public function order_by($keys, $desc = false) {
 		$condition = null;
-		$key       = "";
-
-		# 如果只有一个字段的时候
-		if (!is_array($keys)) {
-			$key = MySqlScript::KeyExpression($keys);
-		} else {
-			# 如果是一个字段列表的时候
-			$contracts = [];
-			
-			foreach ($keys as $exp) {
-				array_push($contracts, MySqlScript::KeyExpression($exp));
-			}
-			$key = join(", ", $contracts);			
-		}
+		$key       = self::getKeys($keys);
 
 		if ($desc) {
 			$condition["order_by"] = [$key => "DESC"];
@@ -287,6 +312,16 @@ class Table {
 		} else {
 			return "ORDER BY $key";
 		}		
+	}
+
+	private function getGroupBy() {
+		if ($this->is_empty("group_by")) {
+			return null;
+		}
+
+		$key = $this->condition["group_by"];
+		
+		return "GROUP BY $key";
 	}
 
 	/**
@@ -498,6 +533,7 @@ class Table {
 		$ref     = $this->schema->ref;
         $assert  = $this->getWhere();        
 		$orderBy = $this->getOrderBy();
+		$groupBy = $this->getGroupBy();
 		$limit   = $this->getLimit();
 		$join    = $this->buildJoin();
 		$fields  = empty($fields) ? "*" : Strings::Join($fields, ", ");
@@ -510,6 +546,9 @@ class Table {
 		if ($orderBy) {
 			$SQL = "$SQL $orderBy";
 		}	
+		if ($groupBy) {
+			$SQL = "$SQL $groupBy";
+		}
 		if ($limit) {
 			$SQL = "$SQL $limit";
 		}
@@ -525,16 +564,21 @@ class Table {
 	 * @return integer
 	*/
 	public function count() {
-		$ref    = $this->schema->ref;
-        $assert = $this->getWhere();             
-		$count  = "COUNT(*)";
+		$ref     = $this->schema->ref;
+		$assert  = $this->getWhere();
+		$groupBy = $this->getGroupBy();
+		$count   = "COUNT(*)";
 
         if ($assert) {
-            $SQL = "SELECT $count FROM $ref WHERE $assert;";
+            $SQL = "SELECT $count FROM $ref WHERE $assert";
         } else {
-            $SQL = "SELECT $count FROM $ref;";
+            $SQL = "SELECT $count FROM $ref";
         }
-    		
+			
+		if ($groupBy) {
+			$SQL = "$SQL $groupBy";
+		}
+
 		$count = $this->driver->ExecuteScalar($SQL);
 		$count = $count["COUNT(*)"];
 
@@ -618,10 +662,14 @@ class Table {
 	*/
 	public function all() {		
 		$orderBy = $this->getOrderBy();
+		$groupBy = $this->getGroupBy();
 		$SQL     = "SELECT * FROM {$this->schema->ref}";
 
 		if ($orderBy) {
-			$SQL = "$SQL $orderBy;";
+			$SQL = "$SQL $orderBy";
+		}
+		if ($groupBy) {
+			$SQL = "$SQL $groupBy";
 		}
 
 		return $this->driver->Fetch($SQL);
