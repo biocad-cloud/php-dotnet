@@ -189,9 +189,7 @@ class Table {
 			$condition["limit"] = [$m, $n];
 		}
 
-		$condition = array_merge($this->condition, $condition);
-
-		# echo var_dump($condition);
+		$condition = $this->addOption($condition);
 
 		return new Table($this->driver, [
 			$this->schema->tableName => $condition
@@ -207,9 +205,9 @@ class Table {
 	*/
 	public function group_by($keys) {
 		$key       = self::getKeys($keys);
-		$condition = ["group_by" => $key];
-		$condition = array_merge($this->condition, $condition);
-
+		$condition = ["group_by" => $key];		
+		$condition = $this->addOption($condition);
+		
 		return new Table($this->driver, [
 			$this->schema->tableName => $condition
 		]);
@@ -254,7 +252,7 @@ class Table {
 			$condition["order_by"] = [$key => "ASC"];
 		}
 
-		$condition = array_merge($this->condition, $condition);
+		$condition = $this->addOption($condition);
 
 		return new Table($this->driver, [
 			$this->schema->tableName => $condition
@@ -375,21 +373,28 @@ class Table {
 		} else {
 			$condition["where"] = ["model" => $assert];
 		}
-		
+					
+		$opt  = $this->addOption($condition);
+		$next = new Table($this->driver, [
+			$this->schema->tableName => $opt
+		]);
+
+        return $next;
+    }
+
+	private function addOption($option) {
 		# 为了不影响当前的表对象实例的condition数组，在这里不直接进行添加
 		# 而是使用array_merge生成新的数组来完成添加操作
 		if ($this->condition) {
 			# null的时候会出现
 			# array_merge(): Argument #2 is not an array
-			$condition = array_merge($condition, $this->condition);
+			$condition = array_merge($option, $this->condition);
+		} else {
+			$condition = $option;
 		}
-		
-		$next = new Table($this->driver, [
-			$this->schema->tableName => $condition
-		]);
 
-        return $next;
-    }
+		return $condition;
+	}
 
 	/**
 	 * fieldName => list
@@ -523,7 +528,8 @@ class Table {
 	}
 
 	/**
-	 * select all
+	 * select all.(函数参数``$fields``是需要选择的字段列表，如果没有传递任何参数的话，
+	 * 默认是``*``，即选择全部字段)
 	 * 
 	 * @param array $fields A string array.
 	 * 
