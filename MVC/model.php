@@ -616,7 +616,20 @@ class Table {
 		$SQL = "$SQL LIMIT 1;";
 
 		return $this->driver->ExecuteScalar($SQL);
-    }
+	}
+	
+	/**
+	 * 获取数据库之中的随机的一条记录，这个数据库必须要存在一个自增的id列作为主键
+	 * 
+	 * @param string $key 如果该自增的id列的名称不是``id``，则会需要使用这个参数
+	 *                    来指定该自增id列的名称
+	*/
+	public function random($key = "id") {
+		return (new Table($this->schema->tableName))
+			->where("`$key` >= (SELECT FLOOR( MAX(`$key`) * RAND()) FROM `{$this->schema->tableName}` )")
+			->order_by($key)
+			->find();
+	}
 
 	/**
 	 * Select and limit 1 and return the field value, if target 
