@@ -486,6 +486,9 @@ class Table {
         return $next;
 	}
 
+	/**
+	 * @return string
+	*/
 	private function buildJoin() {
 		$exp = [];
 
@@ -597,14 +600,14 @@ class Table {
     public function find() {
 		$ref     = $this->schema->ref;
 		$assert  = $this->getWhere();   
-		
+		$join    = $this->buildJoin();		
 		// 排序操作会影响到limit 1的结果
 		$orderBy = $this->getOrderBy();
 
         if ($assert) {
-            $SQL = "SELECT * FROM $ref WHERE $assert";
+            $SQL = "SELECT * FROM $ref $join WHERE $assert";
         } else {
-            $SQL = "SELECT * FROM $ref";
+            $SQL = "SELECT * FROM $ref $join";
         }	
 		if ($orderBy) {
 			$SQL = "$SQL $orderBy";
@@ -669,7 +672,8 @@ class Table {
 	public function all() {		
 		$orderBy = $this->getOrderBy();
 		$groupBy = $this->getGroupBy();
-		$SQL     = "SELECT * FROM {$this->schema->ref}";
+		$join    = $this->buildJoin();
+		$SQL     = "SELECT * FROM {$this->schema->ref} $join";
 
 		if ($orderBy) {
 			$SQL = "$SQL $orderBy";
