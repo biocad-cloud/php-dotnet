@@ -11,7 +11,7 @@ Imports("System.Collection.ArrayList");
 class IEnumerator {
 
     /**
-     * Array
+     * @var Array
     */
     private $sequence;
 
@@ -19,6 +19,8 @@ class IEnumerator {
      * Returns the number of elements in a sequence. Or returns a number that 
      * represents how many elements in the specified sequence satisfy a 
      * condition if the ``assert`` is not null.
+     * 
+     * @return integer Returns the count of the target sequence.
     */
     public function Count($assert = null) {
         if ($assert) {
@@ -135,7 +137,13 @@ class IEnumerator {
      *                 otherwise, false.
     */
     public function All($predicate) {
+        foreach($this->sequence as $x) {
+            if (!$predicate($x)) {
+                return false;
+            }
+        }
 
+        return true;
     }
 
     /**
@@ -147,7 +155,13 @@ class IEnumerator {
      *                 the specified predicate; otherwise, false.
     */
     public function Any($predicate) {
+        foreach($this->sequence as $x) {
+            if ($predicate($x)) {
+                return true;
+            }
+        }
 
+        return $false;
     }
 
     /**
@@ -164,7 +178,23 @@ class IEnumerator {
      *                 otherwise, false.
     */
     public function SequenceEquals($another, $compares = null) {
+        if ($this->count() != count($another)) {
+            return false;
+        }
 
+        if (!$compares) {
+            $compares = function($x, $y) {
+                return $x == $y;
+            };
+        }
+
+        for($i = 0; $i < count($another); $i++) {
+            if (!$compares($this->sequence[$i], $another[$i])) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
