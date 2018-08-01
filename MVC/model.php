@@ -625,10 +625,17 @@ class Table {
 	 *                    来指定该自增id列的名称
 	*/
 	public function random($key = "id") {
-		return (new Table($this->schema->tableName))
-			->where("`$key` >= (SELECT FLOOR( MAX(`$key`) * RAND()) FROM `{$this->schema->tableName}` )")
-			->order_by($key)
-			->find();
+		$last = $this->order_by($key, true)->limit(1)->findfield($key);
+		
+		if ($last !== false) {
+			$rndPick = $this->where([
+				$key => gt_eq(rand(1, $last))
+			])->find(); 
+			
+			return $rndPick;
+		} else {
+			return false;
+		}		
 	}
 
 	/**
