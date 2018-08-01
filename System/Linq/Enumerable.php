@@ -75,17 +75,21 @@ class Enumerable {
 	 *               element of source.
 	 */
 	public static function Select($table, $selector) {	
+		$out = [];
+
 		if (is_string($selector)) {
 			foreach($table as $row) {
-				yield $row[$selector];
+				array_push($out, $row[$selector]);
 			}
 		} else {
 			$project = & $selector;
 
 			foreach($table as $row) {
-				yield $project($row);
+				array_push($out, $project($row));
 			}
 		}
+
+		return $out;
 	}
 
 	/**

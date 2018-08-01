@@ -631,9 +631,10 @@ class Table {
 		
 		if ($last !== false) {
 			$rndPick = $this->where([
-				$key => gt_eq(rand(1, $last))
+				$key => gt_eq("~RAND() * $last") # (rand(1, $last))
 			])->find(); 
-
+echo var_dump($this->getLastMySql());
+die;
 			return $rndPick;
 		} else {
 			return false;
