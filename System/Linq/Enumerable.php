@@ -3,7 +3,7 @@
 /**
  * Provides a set of static (Shared in Visual Basic) methods for 
  * querying objects that implement IEnumerable<T>.
- */
+*/
 class Enumerable {
 
 	/**
@@ -67,38 +67,36 @@ class Enumerable {
 	/**
 	 * Projects each element of a sequence into a new form. 
 	 * 
-	 * @param table: A sequence of values to invoke a transform function on.
-	 * @param selector: A transform function to apply to each element.
+	 * @param array $table A sequence of values to invoke a transform function on.
+	 * @param string|function $selector A transform function to apply to each element.
 	 * 
 	 * @return array An System.Collections.Generic.IEnumerable<T> whose elements 
 	 *               are the result of invoking the transform function on each 
 	 *               element of source.
 	 */
-	public static function Select($table, $selector) {
-		$projection = array();
-
+	public static function Select($table, $selector) {	
 		if (is_string($selector)) {
 			foreach($table as $row) {
-				array_push($projection, $row[$selector]);
+				yield $row[$selector];
 			}
 		} else {
 			$project = & $selector;
 
 			foreach($table as $row) {
-				array_push($projection, $project($row));
+				yield $project($row);
 			}
 		}
-
-		return $projection;
 	}
 
 	/**
+	 * Groups the elements of a sequence
+	 * 
 	 * Groups the elements of a sequence according to a specified key selector function and 
 	 * creates a result value from each group and its key. The elements of each group are 
 	 * projected by using a specified function. 
 	 * 
-	 * @param array: An System.Collections.Generic.IEnumerable<T> whose elements to group.
-	 * @param key: A function to extract the key for each element.
+	 * @param array $array An System.Collections.Generic.IEnumerable<T> whose elements to group.
+	 * @param string $key A function to extract the key for each element.
 	 * 
 	 * @return array A collection of elements of type TResult where each element represents 
 	 *               a projection over a group and its key.
@@ -135,9 +133,9 @@ class Enumerable {
 	 * System.Collections.Generic.IEnumerable<T> according to specified 
 	 * key selector and element selector functions.
 	 * 
-	 * @param source: An System.Collections.Generic.IEnumerable<T> to create 
+	 * @param array $source An System.Collections.Generic.IEnumerable<T> to create 
 	 *                a System.Collections.Generic.Dictionary<T1,T2> from.
-	 * @param key: A function to extract a key from each element.
+	 * @param string $key A function to extract a key from each element.
 	 * @param element: A transform function to produce a result element 
 	 *                 value from each element.
 	 * 
@@ -183,6 +181,22 @@ class Enumerable {
 	*/
 	public static function Last($source) {
 		return end($source);
+	}
+
+	public static function Where($source, $predicate) {
+		foreach($source as $x) {
+			if ($predicate($x)) {
+				yield $x;
+			}
+		}
+	}
+
+	public static function SkipWhile($source, $predicate) {
+		$predicate2 = function($x) {
+			return $predicate($x);
+		};
+
+		return self::Where($source, $predicate2);
 	}
 }
 
