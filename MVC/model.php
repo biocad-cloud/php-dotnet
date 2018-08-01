@@ -625,13 +625,15 @@ class Table {
 	 *                    来指定该自增id列的名称
 	*/
 	public function random($key = "id") {
-		$last = $this->order_by($key, true)->limit(1)->findfield($key);
+		$last = $this->order_by($key, true)
+					 ->limit(1)
+					 ->findfield($key);
 		
 		if ($last !== false) {
 			$rndPick = $this->where([
 				$key => gt_eq(rand(1, $last))
 			])->find(); 
-			
+
 			return $rndPick;
 		} else {
 			return false;
