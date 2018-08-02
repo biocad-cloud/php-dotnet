@@ -4,6 +4,9 @@ namespace Microsoft\VisualBasic\Data\csv {
 
     Imports("Microsoft.VisualBasic.FileIO.FileSystem");
 
+    /**
+     * The csv file I/O extensions
+    */
     class Extensions {
 
         /**
@@ -44,6 +47,7 @@ namespace Microsoft\VisualBasic\Data\csv {
             # 写入第一行标题行
             $names  = array();
             $fields = array();
+            
             foreach ($project as $field => $title) {
                 array_push($names,  $title);
                 array_push($fields, $field);
@@ -67,9 +71,22 @@ namespace Microsoft\VisualBasic\Data\csv {
             return file_exists($path);
         }
 
+        /**
+         * Parse target csv file to an object array.
+         * 
+         * @param string $path The ``*.csv`` file path.
+         * @param string $encoding The file content encoding.
+         * 
+         * @return array An array of object that read from the given csv file.
+        */
         public static function Load($path, $encoding = "utf8") {            
             $file_handle = fopen($path, 'r');
             $headers     = fgetcsv($file_handle);
+
+            if (!file_exists($path) || filesize($path) == 0) {
+                \error_log("Target csv file \"$path\" is not exists or contains no data!");
+                return null;
+            }
 
             while (!feof($file_handle) ) {
                 $lineText = fgetcsv($file_handle, 1024);

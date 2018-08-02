@@ -203,7 +203,7 @@ class FileSystem {
 
 			file_put_contents($tmp, "");
 		}
-
+		
 		return $tmp;
 	}
 }
