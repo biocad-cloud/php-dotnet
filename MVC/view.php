@@ -82,6 +82,7 @@ class View {
 	private static function getCachePath($path) {
 		$version = filemtime($path);
 		$temp = sys_get_temp_dir();
+		$appName = DotNetRegistry::Read("APP_NAME", "php.NET");
 
 		if ($temp == "C:\Windows") {
 			# 不可以写入Windows文件夹
@@ -89,7 +90,7 @@ class View {
 			$temp = "./data/cache/";
 		}
 
-		$cache =  "$temp/$version/" . basename($path);
+		$cache =  "$temp/$appName/$version/" . basename($path);
 
 		return $cache;
 	}
