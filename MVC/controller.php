@@ -3,7 +3,7 @@
 Imports("php.DocComment");
 
 /**
- * Access controller model
+ * php.NET Access controller model
 */
 abstract class controller {
 

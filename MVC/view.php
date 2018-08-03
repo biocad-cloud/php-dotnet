@@ -46,8 +46,7 @@ class View {
 	/**
 	 * 显示指定的文件路径的html文本的内容
 	*/
-	public static function Show($path, $vars = NULL, $lang = null) {
-		//  temp/{yyymmmdd}/viewName
+	public static function Show($path, $vars = NULL, $lang = null) {		
 		$usingCache = DotNetRegistry::Read("CACHE", false);
 
 		if (APP_DEBUG) {
@@ -84,8 +83,9 @@ class View {
 	 * 获取目标html文档梭对应的缓存文件的文件路径
 	*/
 	private static function getCachePath($path) {
+		// temp/{yyymmmdd}/viewName
 		$version = filemtime($path);
-		$temp = sys_get_temp_dir();
+		$temp    = sys_get_temp_dir();
 		$appName = DotNetRegistry::Read("APP_NAME", "php.NET");
 
 		if ($temp == "C:\Windows") {
@@ -93,8 +93,8 @@ class View {
 			# 写入自己的data文件夹下面的临时文件夹
 			$temp = "./data/cache/";
 		}
-
-		$path = md5(json_encode($_GET));
+echo $_SERVER["REQUEST_URI"];
+		$path = md5($_SERVER["REQUEST_URI"]);
 		$cache =  "$temp/$appName/$version/$path.html";
 
 		return $cache;
