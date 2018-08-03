@@ -5,37 +5,37 @@
 /**
  * 等号，在数据库查询之中判断目标字段是否与目标值相等
 */
-function eq($value) { return "~= '$value'"; }
+function eq($value) { return "~= " . LogicalExpression::AutoValue($value) ; }
 
 /**
  * 不等于，在数据库查询之中判断目标字段是否不与目标值相等
 */
-function not_eq($value) { return "~<> '$value'"; }
+function not_eq($value) { return "~<> " . LogicalExpression::AutoValue($value); }
 
 /**
  * 大于，在数据库查询之中判断目标字段是否大于给定值
 */
-function gt($value) { return "~> '$value'"; }
+function gt($value) { return "~> " . LogicalExpression::AutoValue($value); }
 
 /**
  * 大于等于，在数据库查询之中判断目标字段是否大于等于给定值
 */
-function gt_eq($value) { return "~>= '$value'"; }
+function gt_eq($value) { return "~>= " . LogicalExpression::AutoValue($value); }
 
 /**
  * 小于，在数据库查询之中判断目标字段是否小于给定值
 */
-function lt($value) { return "~< '$value'"; }
+function lt($value) { return "~< " . LogicalExpression::AutoValue($value); }
 
 /**
  * 小于等于，在数据库查询之中判断目标字段是否小于等于给定值
 */
-function lt_eq($value) { return "~<= '$value'"; }
+function lt_eq($value) { return "~<= " . LogicalExpression::AutoValue($value); }
 
 /**
  * 字符串相似，在数据库查询之中判断目标字段是否和给定的模式相似
 */
-function like($value) { return "~LIKE '$value'"; }
+function like($value) { return "~LIKE " . LogicalExpression::AutoValue($value); }
 
 /**
  * 字符串不相似，在数据库查询之中判断目标字段是否和给定的模式不相似
@@ -45,7 +45,7 @@ function not_like($value) { return "~NOT " . substr(like($value), 1); }
 /**
  * 在区间中，在数据库查询之中判断目标字段是否在给定的区间之中
 */
-function between($a, $b) { return "~BETWEEN '$a' AND '$b'"; }
+function between($a, $b) { return "~BETWEEN " . LogicalExpression::AutoValue($a) . " AND " . LogicalExpression::AutoValue($b); }
 
 /**
  * 不在区间中，在数据库查询之中判断目标字段是否不存在于给定的区间之中
@@ -155,24 +155,18 @@ class LogicalExpression {
         return $exp;
     }
 
-    /*
-    public static function Join($booleans, $operator) {
-        $expression = array_shift($booleans);
-
-        if ($expression[0] === "~") {
-            $expression = substr($expression, 1);
-        }
-
-        foreach($booleans as $exp) {
-            if ($exp[0] === "~") {
-                $exp = substr($exp, 1);
-            }
-            $expression = "($expression) $operator ($exp)";
-        }
-    
-        return "~$expression";
-    }
+    /**
+     * 进行值表达式的构建
+     * 
+     * + 如果是~起始，则说明是一个表达式，则截取第二个字符起始的剩余的字符串之后返回
+     * + 如果目标是被两个`````或者``'``符号包裹，则说明是字段的引用或者值，则不做任何处理
+     * + 多于其他的任意情况，都会将目标表达式看作为一个值，在值的两边添加``'``符号构成一个值表达式之后返回
+     * 
+     * @return string SQL语句之中的值表达式
     */
+    public static function AutoValue($expr) {
+        return MVC\MySql\Expression\WhereAssert::AutoValue($expr);
+    }
 }
 
 #endregion

@@ -9,20 +9,20 @@ dotnet class simulation in php language
 2. And then add includes to the package manager module:
    ```php
    <?php
-       include_once("./mod/php-dotnet/package.php");
+       include_once "./mod/php-dotnet/package.php";
    ?>
    ```
 3. If you want using one of the module in this project, just includes it, example:
    ```php
    <?php
-       include_once("./mod/php-dotnet/package.php");
+       include_once "./mod/php-dotnet/package.php";
 
-       dotnet::Imports("System.Collection.Generic.Dictionary");
-       dotnet::Imports("Microsoft.VisualBasic.Language.List");
-       dotnet::Imports("Microsoft.VisualBasic.Conversion");
+       Imports("System.Collection.Generic.Dictionary");
+       Imports("Microsoft.VisualBasic.Language.List");
+       Imports("Microsoft.VisualBasic.Conversion");
 
        $double = Conversion::Val("123");
-       $list   = new List;
+       $list   = new ArrayList;
        $list->Add($double);
    ?>
    ```
@@ -34,7 +34,7 @@ dotnet class simulation in php language
 
 ```php
 <?php
-   dotnet::Imports('System.Diagnostics.StackTrace');
+   Imports('System.Diagnostics.StackTrace');
 ?>
 
 at GetCallStack in D:\Develop\mod\php.NET\test\index.php:line 7

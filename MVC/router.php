@@ -25,11 +25,6 @@ class Router {
 			dotnet::PageNotFound($message);
 		}
 		
-		# 在末尾输出调试信息？
-		if (APP_DEBUG) {
-			
-		}
-
 		exit($code);
 	}
 		

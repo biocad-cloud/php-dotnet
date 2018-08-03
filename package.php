@@ -92,11 +92,15 @@ class dotnet {
     public static $debugger;
 
     /**
-     * 函数返回成功消息的json字符串(这个函数只返回json数据，并没有echo输出)
+     * 函数返回成功消息的json字符串``{code: 0, info: $msg}``.
+     * (这个函数只返回json数据，并没有echo输出)
      * 
-     * @return mixed Message code is ZERO 
+     * @param string|array $msg The message that will be responsed to 
+     *                          the http client.
+     * 
+     * @return string The success message json with `code` is ZERO 
     */ 
-    public static function successMsg($msg) {	
+    public static function successMsg($msg) {
 		return json_encode([
 			'code' => 0,
             'info' => $msg
@@ -104,9 +108,13 @@ class dotnet {
 	}
     
     /**
-     * 函数返回失败消息的json字符串(这个函数只返回json数据，并没有echo输出)
+     * 函数返回失败消息的json字符串``{code: 0, info: $msg}``.
+     * (这个函数只返回json数据，并没有echo输出)
      * 
      * @param integer $errorCode Default error code is 1. And zero for no error.
+     * @param string|array $msg The message that will be responsed to 
+     *                          the http client.
+     * 
     */ 
 	public static function errorMsg($msg, $errorCode = 1) {
 		return json_encode([
@@ -118,12 +126,16 @@ class dotnet {
     /**
      * Handle web http request
      * 
-     * @example 
+     * 使用这个函数来进行web请求的处理操作
      * 
-     *   dotnet::HandleRequest(new App());
-     *   dotnet::HandleRequest(new App(), "./");
-     *   dotnet::HandleRequest(new App(), new accessControl());
-     *   dotnet::HandleRequest(new App(), "./", new accessControl());
+     * @example 函数的第一个参数必须是一个class对象，第二个参数为html模板的文件路径或者控制器对象
+     *          如果指定了wwwroot html模板文件夹，想要再挂载控制器对象的话，可以将控制器对象的
+     *          实例传递到函数的第三个参数
+     * 
+     *    dotnet::HandleRequest(new App());
+     *    dotnet::HandleRequest(new App(), "./");
+     *    dotnet::HandleRequest(new App(), new accessControl());
+     *    dotnet::HandleRequest(new App(), "./", new accessControl());
      * 
      * @param object $app The web app logical layer
      * @param string|controller $wwwroot The html views document root directory.
@@ -146,10 +158,16 @@ class dotnet {
                 global $_DOC;
                 $_DOC = $injection->getDocComment();
             }
-        }
 
-        // 具有访问权限的正常访问
-        Router::HandleRequest($app);
+            $injection->sendContentType();
+            $injection->handleRequest();
+
+        } else {
+            // 没有定义控制器的时候，使用router进行访问请求的处理操作
+
+            // 具有访问权限的正常访问
+            Router::HandleRequest($app);
+        }
     }
 
     /**
@@ -373,7 +391,10 @@ class dotnet {
     #region "error codes"
 
 	/**
-	 * 500 PHP throw exception helper for show exception in .NET exception style
+	 * 500 PHP throw exception helper for show exception in .NET 
+     * exception style
+     * 
+     * @param string $message The error message to display.
 	*/
     public static function ThrowException($message) {      
 		$trace = StackTrace::GetCallStack();
@@ -385,6 +406,8 @@ class dotnet {
 
     /**
      * 404 资源没有找到
+     * 
+     * @param string $message The error message to display.
     */
     public static function PageNotFound($message) {
         $trace = StackTrace::GetCallStack();
@@ -396,6 +419,8 @@ class dotnet {
 
     /**
      * 403 用户当前的身份凭证没有访问权限，访问被拒绝
+     * 
+     * @param string $message The error message to display.
     */
     public static function AccessDenied($message) {
         $trace = StackTrace::GetCallStack();
