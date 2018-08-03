@@ -55,12 +55,12 @@ class View {
 			$usingCache = false;
 		}
 
-		if (empty($vars) && $usingCache) {
+		if ($usingCache && (empty($vars) || count($vars) == 0) && (empty(self::$join) || count(self::$join) == 0)) {
 			# 当vars是空的时候，说明可能没有mysql活动
 			# 并且在配置文件之中开启了缓存选项
 			$cache = self::getCachePath($path);
 
-			if (!file_exists($cache)) {				
+			if (!file_exists($cache)) {
 				# 当缓存文件不存在的时候，生成缓存，然后返回
 				$cachePage = self::Load($path, $vars, $lang);
 				mkdir(dirname($cache), 0777, true);
