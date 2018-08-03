@@ -20,7 +20,6 @@ class View {
 	 *                     系统会强制使用这个语言项进行页面显示
 	*/
 	public static function Display($vars = NULL, $lang = null) {
-
 		$name    = StackTrace::GetCallerMethodName();
 		$wwwroot = DotNetRegistry::GetMVCViewDocumentRoot();
 
@@ -48,13 +47,15 @@ class View {
 	*/
 	public static function Show($path, $vars = NULL, $lang = null) {		
 		$usingCache = DotNetRegistry::Read("CACHE", false);
+		$emptyVars  = (empty($vars)       || count($vars)       == 0) && 
+					  (empty(self::$join) || count(self::$join) == 0);
 
 		if (APP_DEBUG) {
 			# 调试模式下缓存总是关闭的
 			$usingCache = false;
 		}
 
-		if ($usingCache && (empty($vars) || count($vars) == 0) && (empty(self::$join) || count(self::$join) == 0)) {
+		if ($usingCache && $emptyVars) {
 			# 当vars是空的时候，说明可能没有mysql活动
 			# 并且在配置文件之中开启了缓存选项
 			$cache = self::getCachePath($path);
@@ -93,9 +94,9 @@ class View {
 			# 写入自己的data文件夹下面的临时文件夹
 			$temp = "./data/cache/";
 		}
-echo $_SERVER["REQUEST_URI"];
-		$path = md5($_SERVER["REQUEST_URI"]);
-		$cache =  "$temp/$appName/$version/$path.html";
+echo var_dump( $_SERVER["REQUEST_URI"]);
+		$path  = md5($_SERVER["REQUEST_URI"]);
+		$cache = "$temp/$appName/$version/$path.html";
 
 		return $cache;
 	}
