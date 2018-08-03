@@ -180,6 +180,7 @@ class dotnet {
             }            
         }   
 
+        # 在这里加载框架之中的基本的MVC驱动程序模块
 		dotnet::Imports("MVC.view");
 		dotnet::Imports("MVC.model");
 		dotnet::Imports("MVC.router");

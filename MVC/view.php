@@ -58,6 +58,34 @@ class View {
 	 * 显示指定的文件路径的html文本的内容
 	*/
 	public static function Show($path, $vars = NULL, $lang = "zhCN") {
+		//  temp/{yyymmmdd}/viewName
+		// $sql = (new Table("user"))->getLastMySql();
+		// if(empty($sql)){
+			
+		// 	$start = strripos($path, '\\') + 1;
+
+		// 	$file_name = substr($path,$start);
+
+		// 	$dir = dirname(dirname(dirname(dirname(__FILE__))))."\\temp\\";
+			
+		// 	if(!file_exists($dir)){
+		// 		mkdir($dir, 0777);
+		// 	}
+
+		// 	if(file_exists($dir . $file_name)){
+
+		// 		$path = $dir . $file_name;
+
+		// 	}else{
+				
+		// 		copy($path, $dir . $file_name);
+
+		// 		$path = $dir . $file_name;
+		// 	}
+			
+		// }
+		
+
 		echo self::Load($path, $vars, $lang);
 	}
 	
