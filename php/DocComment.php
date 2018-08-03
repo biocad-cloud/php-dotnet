@@ -1,6 +1,8 @@
 <?php
 
 Imports("Microsoft.VisualBasic.Extensions.StringHelpers");
+Imports("Microsoft.VisualBasic.Strings");
+Imports("php.Utils");
 
 /**
  * 解析php的函数注释文档
