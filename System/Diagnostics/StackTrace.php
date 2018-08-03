@@ -93,6 +93,8 @@ class StackTrace {
     
     /**
      * 得到调用当前所执行的函数的调用者的函数名称
+     * 
+     * @return string Returns the caller function name
     */
 	public static function GetCallerMethodName() {
 		// 得到了当前函数的调用函数堆栈

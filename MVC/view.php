@@ -15,9 +15,11 @@ class View {
 	 * 从html文件夹之中读取和当前函数同名的文件并显示出来
 	 * 
 	 * @param array $vars 需要在页面上进行显示的文本变量的值的键值对集合
-	 * @param string $lang 页面的语言文件，默认为中文语言
+	 * @param string $lang 页面的语言文件，默认为中文语言，这个参数默认不需要进行指定，
+	 *                     渲染引擎可以自动从url参数之中读取语言配置项，如果指定了这个参数的话，
+	 *                     系统会强制使用这个语言项进行页面显示
 	*/
-	public static function Display($vars = NULL, $lang = "zhCN") {
+	public static function Display($vars = NULL, $lang = null) {
 
 		$name    = StackTrace::GetCallerMethodName();
 		$wwwroot = DotNetRegistry::GetMVCViewDocumentRoot();
@@ -37,6 +39,70 @@ class View {
 			echo "HTML document path is: ";
 			echo $path . "\n";
 		}
+		
+		View::Show($path, $vars, $lang);
+	}
+	
+	/**
+	 * 显示指定的文件路径的html文本的内容
+	*/
+	public static function Show($path, $vars = NULL, $lang = null) {
+		//  temp/{yyymmmdd}/viewName
+		$usingCache = DotNetRegistry::Read("CACHE", false);
+
+		if (APP_DEBUG) {
+			# 调试模式下缓存总是关闭的
+			$usingCache = false;
+		}
+
+		if (empty($vars) && $usingCache) {
+			# 当vars是空的时候，说明可能没有mysql活动
+			# 并且在配置文件之中开启了缓存选项
+			$cache = self::getCachePath($path);
+
+			if (!file_exists($cache)) {				
+				# 当缓存文件不存在的时候，生成缓存，然后返回
+				$cachePage = self::Load($path, $vars, $lang);
+				mkdir(dirname($cache), 0777, true);
+				file_put_contents($cache, $cachePage);
+			} else {
+				echo "<!--Cache hits!-->";
+			}
+
+			echo file_get_contents($cache);
+		} else {
+			# 不使用缓存，需要进行页面模板的拼接渲染
+			echo self::Load($path, $vars, $lang);
+		}		
+	}
+	
+	/**
+	 * 获取目标html文档梭对应的缓存文件的文件路径
+	*/
+	private static function getCachePath($path) {
+		$version = filemtime($path);
+		$temp = sys_get_temp_dir();
+
+		if ($temp == "C:\Windows") {
+			# 不可以写入Windows文件夹
+			# 写入自己的data文件夹下面的临时文件夹
+			$temp = "./data/cache/";
+		}
+
+		$cache =  "$temp/$version/" . basename($path);
+
+		return $cache;
+	}
+
+	/**
+	 * 加载指定路径的html文档并对其中的占位符利用vars字典进行填充
+	 * 这个函数还会额外的处理includes关系
+	*/
+	public static function Load($path, $vars = NULL, $lang = null) {
+		if (Strings::Empty($lang)) {
+			$lang = dotnet::GetLanguageConfig()["lang"];	
+		}			
+		$vars = self::LoadLanguage($path, $lang, $vars);
 
 		global $_DOC;
 
@@ -50,51 +116,6 @@ class View {
 				$vars = ["title" => $_DOC->title]; 
 			}
 		}
-		
-		View::Show($path, $vars, $lang);
-	}
-	
-	/**
-	 * 显示指定的文件路径的html文本的内容
-	*/
-	public static function Show($path, $vars = NULL, $lang = "zhCN") {
-		//  temp/{yyymmmdd}/viewName
-		// $sql = (new Table("user"))->getLastMySql();
-		// if(empty($sql)){
-			
-		// 	$start = strripos($path, '\\') + 1;
-
-		// 	$file_name = substr($path,$start);
-
-		// 	$dir = dirname(dirname(dirname(dirname(__FILE__))))."\\temp\\";
-			
-		// 	if(!file_exists($dir)){
-		// 		mkdir($dir, 0777);
-		// 	}
-
-		// 	if(file_exists($dir . $file_name)){
-
-		// 		$path = $dir . $file_name;
-
-		// 	}else{
-				
-		// 		copy($path, $dir . $file_name);
-
-		// 		$path = $dir . $file_name;
-		// 	}
-			
-		// }
-		
-
-		echo self::Load($path, $vars, $lang);
-	}
-	
-	/**
-	 * 加载指定路径的html文档并对其中的占位符利用vars字典进行填充
-	 * 这个函数还会额外的处理includes关系
-	*/
-	public static function Load($path, $vars = NULL, $lang = "zhCN") {
-		$vars = self::LoadLanguage($path, $lang, $vars);
 
 		if (file_exists($path)) {
 			$html = file_get_contents($path);
