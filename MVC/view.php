@@ -44,6 +44,10 @@ class View {
 	
 	/**
 	 * 显示指定的文件路径的html文本的内容
+	 * 
+	 * @param string $path html页面模板文件的文件路径
+	 * @param array $vars 需要进行填充的变量列表
+	 * @param string $lang 语言配置值，一般不需要指定，框架会根据url参数配置自动加载
 	*/
 	public static function Show($path, $vars = NULL, $lang = null) {		
 		$usingCache = DotNetRegistry::Read("CACHE", false);
@@ -177,10 +181,26 @@ echo var_dump( $_SERVER["REQUEST_URI"]);
 		return $vars;
 	}
 
+	/**
+	 * @var array
+	*/
 	private static $join = [];
 
+	/**
+	 * 这个函数的调用会使框架的缓存机制失效
+	 * 
+	 * @param string $name 变量名称，如果这个参数是``*``的话，表示将value数组之中的所有对象
+	 *                     都推送到输出页面上进行渲染
+	 * @param mixed $value 变量的值，如果name是字符串``*``的话，这个参数必须是一个字典数组
+	*/
 	public static function Push($name, $value) {
 		if ($name == "*") {
+
+			# value 必须是一个数组
+			if (!is_array($value)) {
+				throw new error("Value must be an array when variable name is ``*``!");
+			}
+
 			foreach($value as $key => $val) {
 				self::$join[$key] = $val;
 			}
