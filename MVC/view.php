@@ -63,7 +63,11 @@ class View {
 			if (!file_exists($cache)) {
 				# 当缓存文件不存在的时候，生成缓存，然后返回
 				$cachePage = self::Load($path, $vars, $lang);
-				mkdir(dirname($cache), 0777, true);
+				$cacheDir = dirname($cache);
+				
+				if (!file_exists($cacheDir)) {
+					mkdir($cacheDir, 0777, true);
+				}				
 				file_put_contents($cache, $cachePage);
 			} else {
 				echo "<!--Cache hits!-->";
@@ -90,7 +94,8 @@ class View {
 			$temp = "./data/cache/";
 		}
 
-		$cache =  "$temp/$appName/$version/" . basename($path);
+		$path = md5(json_encode($_GET));
+		$cache =  "$temp/$appName/$version/$path.html";
 
 		return $cache;
 	}
