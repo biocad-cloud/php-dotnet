@@ -66,7 +66,11 @@ class View {
 		if (strtolower($temp) == strtolower("C:\Windows")) {
 			# 不可以写入Windows文件夹
 			# 写入自己的data文件夹下面的临时文件夹
-			$temp = "./data/cache";
+			if (defined("APP_PATH")) {
+				$temp = APP_PATH . "/data/cache";
+			} else {
+				$temp = "./data/cache";
+			}			
 		}
 
 		$path  = md5($_SERVER["REQUEST_URI"]);
