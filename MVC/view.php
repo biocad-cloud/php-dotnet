@@ -195,7 +195,7 @@ class View {
 		if ($usingCache) {			
 			# 在配置文件之中开启了缓存选项
 			$cache = self::getCachePath($path);
-echo $cache;
+
 			if (!file_exists($cache)) {
 				# 当缓存文件不存在的时候，生成缓存，然后返回
 				# 将html片段合并为一个完整的html文档
