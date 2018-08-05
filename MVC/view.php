@@ -49,39 +49,9 @@ class View {
 	 * @param array $vars 需要进行填充的变量列表
 	 * @param string $lang 语言配置值，一般不需要指定，框架会根据url参数配置自动加载
 	*/
-	public static function Show($path, $vars = NULL, $lang = null) {		
-		$usingCache = DotNetRegistry::Read("CACHE", false);
-		$emptyVars  = (empty($vars)       || count($vars)       == 0) && 
-					  (empty(self::$join) || count(self::$join) == 0);
-
-		if (APP_DEBUG) {
-			# 调试模式下缓存总是关闭的
-			$usingCache = false;
-		}
-
-		if ($usingCache && $emptyVars) {
-			# 当vars是空的时候，说明可能没有mysql活动
-			# 并且在配置文件之中开启了缓存选项
-			$cache = self::getCachePath($path);
-
-			if (!file_exists($cache)) {
-				# 当缓存文件不存在的时候，生成缓存，然后返回
-				$cachePage = self::Load($path, $vars, $lang);
-				$cacheDir = dirname($cache);
-				
-				if (!file_exists($cacheDir)) {
-					mkdir($cacheDir, 0777, true);
-				}				
-				file_put_contents($cache, $cachePage);
-			} else {
-				echo "<!--Cache hits!-->";
-			}
-
-			echo file_get_contents($cache);
-		} else {
-			# 不使用缓存，需要进行页面模板的拼接渲染
-			echo self::Load($path, $vars, $lang);
-		}		
+	public static function Show($path, $vars = NULL, $lang = null) {
+		# 不使用缓存，需要进行页面模板的拼接渲染
+		echo self::Load($path, $vars, $lang);	
 	}
 	
 	/**
@@ -92,15 +62,16 @@ class View {
 		$version = filemtime($path);
 		$temp    = sys_get_temp_dir();
 		$appName = DotNetRegistry::Read("APP_NAME", "php.NET");
+		$file    = basename($path);
 
-		if ($temp == "C:\Windows") {
+		if (strtolower($temp) == strtolower("C:\Windows")) {
 			# 不可以写入Windows文件夹
 			# 写入自己的data文件夹下面的临时文件夹
-			$temp = "./data/cache/";
+			$temp = "./data/cache";
 		}
-echo var_dump( $_SERVER["REQUEST_URI"]);
+
 		$path  = md5($_SERVER["REQUEST_URI"]);
-		$cache = "$temp/$appName/$version/$path.html";
+		$cache = "$temp/$appName/$file/$version/$path.html";
 
 		return $cache;
 	}
@@ -214,9 +185,38 @@ echo var_dump( $_SERVER["REQUEST_URI"]);
 	 * and the given configuration data.
 	*/
 	public static function InterpolateTemplate($html, $vars, $path = NULL) {
-		# 将html片段合并为一个完整的html文档
-		$html = View::interpolate_includes($html, $path);	
+		$usingCache = DotNetRegistry::Read("CACHE", false);
 		
+		if (APP_DEBUG) {
+			# 调试模式下缓存总是关闭的
+			$usingCache = false;
+		}
+
+		if ($usingCache) {			
+			# 在配置文件之中开启了缓存选项
+			$cache = self::getCachePath($path);
+echo $cache;
+			if (!file_exists($cache)) {
+				# 当缓存文件不存在的时候，生成缓存，然后返回
+				# 将html片段合并为一个完整的html文档
+				# 得到了完整的html模板
+				$cachePage = View::interpolate_includes($html, $path);
+				$cacheDir = dirname($cache);
+				
+				if (!file_exists($cacheDir)) {
+					mkdir($cacheDir, 0777, true);
+				}				
+				file_put_contents($cache, $cachePage);
+			} else {
+				echo "<!--Cache hits!-->";
+			}
+
+			$html = file_get_contents($cache);
+		} else {
+			# 不使用缓存，需要进行页面模板的拼接渲染
+			$html = View::interpolate_includes($html, $path);
+		}		
+
 		# 没有需要进行设置的变量字符串，则直接在这里返回html文件
 		if (!$vars && !self::$join) {
 			# 假设在html文档里面总是会存在url简写的，
