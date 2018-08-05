@@ -50,7 +50,6 @@ class View {
 	 * @param string $lang 语言配置值，一般不需要指定，框架会根据url参数配置自动加载
 	*/
 	public static function Show($path, $vars = NULL, $lang = null) {
-		# 不使用缓存，需要进行页面模板的拼接渲染
 		echo self::Load($path, $vars, $lang);	
 	}
 	
@@ -100,13 +99,57 @@ class View {
 		}
 
 		if (file_exists($path)) {
-			$html = file_get_contents($path);
+			$html = self::loadTemplate($path);
 		} else {
 			# 给出文件不存在的警告信息
 			return "HTML document view <strong>&lt;$path></strong> could not be found!";
 		}
 		
-		return View::InterpolateTemplate($html, $vars, $path);
+		return View::InterpolateTemplate($html, $vars);
+	}
+
+	/**
+	 * Load or read from cache for get html template
+	 * 
+	 * @param string $path The file path of the html template file
+	 * 
+	 * @return string
+	*/
+	private static function loadTemplate($path) {
+		$usingCache = DotNetRegistry::Read("CACHE", false);
+		
+		if (APP_DEBUG) {
+			# 调试模式下缓存总是关闭的
+			$usingCache = false;
+		}
+
+		if ($usingCache && !Strings::Empty($path)) {			
+			# 在配置文件之中开启了缓存选项
+			$cache = self::getCachePath($path);
+
+			if (!file_exists($cache)) {
+				# 当缓存文件不存在的时候，生成缓存，然后返回
+				$html = file_get_contents($path);
+				# 将html片段合并为一个完整的html文档
+				# 得到了完整的html模板
+				$cachePage = View::interpolate_includes($html, $path);
+				$cacheDir = dirname($cache);
+				
+				if (!file_exists($cacheDir)) {
+					mkdir($cacheDir, 0777, true);
+				}				
+				file_put_contents($cache, $cachePage);
+			} else {
+				echo "<!--Cache hits!-->";
+			}
+
+			$html = file_get_contents($cache);
+		} else {
+			# 不使用缓存，需要进行页面模板的拼接渲染
+			$html = View::interpolate_includes($html, $path);
+		}	
+
+		return $html;
 	}
 
 	/**
@@ -184,39 +227,7 @@ class View {
 	 * Create user html document based on the html template 
 	 * and the given configuration data.
 	*/
-	public static function InterpolateTemplate($html, $vars, $path = NULL) {
-		$usingCache = DotNetRegistry::Read("CACHE", false);
-		
-		if (APP_DEBUG) {
-			# 调试模式下缓存总是关闭的
-			$usingCache = false;
-		}
-
-		if ($usingCache) {			
-			# 在配置文件之中开启了缓存选项
-			$cache = self::getCachePath($path);
-
-			if (!file_exists($cache)) {
-				# 当缓存文件不存在的时候，生成缓存，然后返回
-				# 将html片段合并为一个完整的html文档
-				# 得到了完整的html模板
-				$cachePage = View::interpolate_includes($html, $path);
-				$cacheDir = dirname($cache);
-				
-				if (!file_exists($cacheDir)) {
-					mkdir($cacheDir, 0777, true);
-				}				
-				file_put_contents($cache, $cachePage);
-			} else {
-				echo "<!--Cache hits!-->";
-			}
-
-			$html = file_get_contents($cache);
-		} else {
-			# 不使用缓存，需要进行页面模板的拼接渲染
-			$html = View::interpolate_includes($html, $path);
-		}		
-
+	public static function InterpolateTemplate($html, $vars) {		
 		# 没有需要进行设置的变量字符串，则直接在这里返回html文件
 		if (!$vars && !self::$join) {
 			# 假设在html文档里面总是会存在url简写的，
