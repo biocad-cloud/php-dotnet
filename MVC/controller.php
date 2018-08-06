@@ -167,8 +167,7 @@ abstract class controller {
     */
     public function handleRequest() {
         $code = $this->appObj->{Router::getApp()}();
-var_dump(APP_DEBUG);
-var_dump($this->getUsage());
+
         # 在末尾输出调试信息？
         # 只对view类型api调用的有效
 		if (APP_DEBUG && $this->getUsage() == "view") {
