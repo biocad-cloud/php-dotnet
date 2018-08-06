@@ -206,5 +206,15 @@ class FileSystem {
 		
 		return $tmp;
 	}
+
+	public static function Lanudry($bytes) {
+		if ($bytes <= 500) {
+			return "$bytes B";
+		} else {
+			$symbols = ["B", "KB", "MB", "GB", "TB"];
+			$exp = floor( log($bytes) / log(1000) );
+			return sprintf('%.2f '.$symbol[$exp], ($bytes/pow(1000, floor($exp))));
+		}
+	}
 }
 ?>

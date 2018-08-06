@@ -49,8 +49,8 @@ class View {
 	 * @param array $vars 需要进行填充的变量列表
 	 * @param string $lang 语言配置值，一般不需要指定，框架会根据url参数配置自动加载
 	*/
-	public static function Show($path, $vars = NULL, $lang = null) {
-		echo self::Load($path, $vars, $lang);	
+	public static function Show($path, $vars = NULL, $lang = null, $suppressDebug = false) {
+		echo self::Load($path, $vars, $lang, $suppressDebug);	
 	}
 	
 	/**
@@ -83,7 +83,7 @@ class View {
 	 * 加载指定路径的html文档并对其中的占位符利用vars字典进行填充
 	 * 这个函数还会额外的处理includes关系
 	*/
-	public static function Load($path, $vars = NULL, $lang = null) {
+	public static function Load($path, $vars = NULL, $lang = null, $suppressDebug = false) {
 		if (Strings::Empty($lang)) {
 			$lang = dotnet::GetLanguageConfig()["lang"];	
 		}			
@@ -109,6 +109,10 @@ class View {
 			return "HTML document view <strong>&lt;$path></strong> could not be found!";
 		}
 		
+		if (!$suppressDebug) {
+			debugView::DebugVars($vars);
+		}
+
 		return View::InterpolateTemplate($html, $vars);
 	}
 

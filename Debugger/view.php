@@ -12,6 +12,7 @@ class debugView {
      * @var array
     */
     private static $Events;
+    private static $vars;
 
     /**
      * @param string $event
@@ -21,6 +22,14 @@ class debugView {
             "time"        => time(), 
             "description" => $event
         ];
+    }
+
+    public static function DebugVars($vars) {
+        if (empty($vars)) {
+            self::$vars = [];
+        } else {
+            self::$vars = $vars;
+        }        
     }
 
     /**
@@ -34,10 +43,18 @@ class debugView {
      * 在这里主要是将变量组织之后传递给视图引擎进行调试器视图的渲染
     */
     public static function Display() {        
-        View::Show(debugView::Template(), [
+        View::Show(debugView::Template(), array_merge([
             "Includes" => self::Includes(),
-            "Events"   => self::$Events
-        ]);
+            "Events"   => self::$Events,
+            "Vars"     => self::$vars
+        ], self::Summary()), null, true);
+    }
+
+    private static function Summary() {
+        return [
+            "files"       => count(get_included_files()),
+            "memory_size" => FileSystem::Lanudry(memory_get_usage())
+        ];
     }
 
     /**
@@ -50,7 +67,7 @@ class debugView {
         foreach(get_included_files() as $file) {
             $includes[] = [
                 "path" => $file, 
-                "size" => filesize($file)
+                "size" => FileSystem::Lanudry(filesize($file))
             ];
         }
 
