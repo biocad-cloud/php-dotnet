@@ -59,7 +59,7 @@ class DbPaging {
               ->order_by([$guid])
               ->select();
 
-            echo $table->getLastMySql();
+            # echo $table->getLastMySql();
 
             $endOfPage = Enumerable::Last($page)[$guid] == $maxid;
             

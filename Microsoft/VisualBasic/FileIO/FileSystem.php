@@ -183,5 +183,28 @@ class FileSystem {
 			
 		return true;
 	}	
+
+	/**
+	 * Get temp file path.
+	 * 
+	 * @return string The temp file path.
+	*/
+	public static function TempFileName($prefix = "tmp") {
+		$tmp = tempnam(sys_get_temp_dir(), $prefix);
+
+		if ($tmp == false) {
+			# 没有权限在临时文件夹之中创建？？
+			$tmp_dir = "./data/temp";
+			$tmp     = "$tmp_dir/$prefix" . "_" . Utils::RandomASCIIString(8);
+
+			if (!file_exists($tmp_dir)) {
+				mkdir($tmp_dir, 0777, true);
+			}
+
+			file_put_contents($tmp, "");
+		}
+		
+		return $tmp;
+	}
 }
 ?>

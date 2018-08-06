@@ -189,13 +189,49 @@ class Table {
 			$condition["limit"] = [$m, $n];
 		}
 
-		$condition = array_merge($this->condition, $condition);
-
-		# echo var_dump($condition);
+		$condition = $this->addOption($condition);
 
 		return new Table($this->driver, [
 			$this->schema->tableName => $condition
 		]);
+	}
+
+	/**
+	 * 进行分组操作
+	 * 
+	 * @param string|array $keys 进行分组操作的字段依据，可以是一个字段或者一个字段的集合
+	 * 
+	 * @return Table 返回表结构模型对象，用于继续构建表达式，进行链的延伸
+	*/
+	public function group_by($keys) {
+		$key       = self::getKeys($keys);
+		$condition = ["group_by" => $key];		
+		$condition = $this->addOption($condition);
+		
+		return new Table($this->driver, [
+			$this->schema->tableName => $condition
+		]);
+	}
+
+	/**
+	 * order_by 和 group_by的公用函数
+	 * 
+	 * @return string
+	*/
+	private static function getKeys($keys) {	
+		# 如果只有一个字段的时候
+		if (!is_array($keys)) {
+			return MySqlScript::KeyExpression($keys);
+		} 
+		
+		# 如果是一个字段列表的时候
+		$contracts = [];			
+
+		foreach ($keys as $exp) {
+			array_push($contracts, MySqlScript::KeyExpression($exp));
+		}
+		
+		return join(", ", $contracts);		
 	}
 
 	/**
@@ -208,20 +244,7 @@ class Table {
 	*/
 	public function order_by($keys, $desc = false) {
 		$condition = null;
-		$key       = "";
-
-		# 如果只有一个字段的时候
-		if (!is_array($keys)) {
-			$key = MySqlScript::KeyExpression($keys);
-		} else {
-			# 如果是一个字段列表的时候
-			$contracts = [];
-			
-			foreach ($keys as $exp) {
-				array_push($contracts, MySqlScript::KeyExpression($exp));
-			}
-			$key = join(", ", $contracts);			
-		}
+		$key       = self::getKeys($keys);
 
 		if ($desc) {
 			$condition["order_by"] = [$key => "DESC"];
@@ -229,7 +252,7 @@ class Table {
 			$condition["order_by"] = [$key => "ASC"];
 		}
 
-		$condition = array_merge($this->condition, $condition);
+		$condition = $this->addOption($condition);
 
 		return new Table($this->driver, [
 			$this->schema->tableName => $condition
@@ -289,6 +312,16 @@ class Table {
 		}		
 	}
 
+	private function getGroupBy() {
+		if ($this->is_empty("group_by")) {
+			return null;
+		}
+
+		$key = $this->condition["group_by"];
+		
+		return "GROUP BY $key";
+	}
+
 	/**
 	 * 生成``limit m``或者``limit m,n``语句部分
 	*/
@@ -326,11 +359,11 @@ class Table {
 
     /**
      * Create a where condition filter for the next SQL expression.
-	 * (这个函数影响SELECT UPDATE DELETE，不会影响INSERT操作)
+	 * (这个函数影响``SELECT``, ``UPDATE``, ``DELETE``，不会影响``INSERT``操作)
      *	  
      * @param mixed $assert The assert array of the where condition or an string expression.
 	 * 
-	 * @return Table Returns a new table object instance for expression chaining.
+	 * @return Table Returns a new ``Table`` object instance for expression chaining.
     */
     public function where($assert) {
 		$condition = null;
@@ -340,21 +373,28 @@ class Table {
 		} else {
 			$condition["where"] = ["model" => $assert];
 		}
-		
+					
+		$opt  = $this->addOption($condition);
+		$next = new Table($this->driver, [
+			$this->schema->tableName => $opt
+		]);
+
+        return $next;
+    }
+
+	private function addOption($option) {
 		# 为了不影响当前的表对象实例的condition数组，在这里不直接进行添加
 		# 而是使用array_merge生成新的数组来完成添加操作
 		if ($this->condition) {
 			# null的时候会出现
 			# array_merge(): Argument #2 is not an array
-			$condition = array_merge($condition, $this->condition);
+			$condition = array_merge($option, $this->condition);
+		} else {
+			$condition = $option;
 		}
-		
-		$next = new Table($this->driver, [
-			$this->schema->tableName => $condition
-		]);
 
-        return $next;
-    }
+		return $condition;
+	}
 
 	/**
 	 * fieldName => list
@@ -446,6 +486,9 @@ class Table {
         return $next;
 	}
 
+	/**
+	 * @return string
+	*/
 	private function buildJoin() {
 		$exp = [];
 
@@ -488,7 +531,8 @@ class Table {
 	}
 
 	/**
-	 * select all
+	 * select all.(函数参数``$fields``是需要选择的字段列表，如果没有传递任何参数的话，
+	 * 默认是``*``，即选择全部字段)
 	 * 
 	 * @param array $fields A string array.
 	 * 
@@ -498,6 +542,7 @@ class Table {
 		$ref     = $this->schema->ref;
         $assert  = $this->getWhere();        
 		$orderBy = $this->getOrderBy();
+		$groupBy = $this->getGroupBy();
 		$limit   = $this->getLimit();
 		$join    = $this->buildJoin();
 		$fields  = empty($fields) ? "*" : Strings::Join($fields, ", ");
@@ -510,6 +555,9 @@ class Table {
 		if ($orderBy) {
 			$SQL = "$SQL $orderBy";
 		}	
+		if ($groupBy) {
+			$SQL = "$SQL $groupBy";
+		}
 		if ($limit) {
 			$SQL = "$SQL $limit";
 		}
@@ -525,16 +573,21 @@ class Table {
 	 * @return integer
 	*/
 	public function count() {
-		$ref    = $this->schema->ref;
-        $assert = $this->getWhere();             
-		$count  = "COUNT(*)";
+		$ref     = $this->schema->ref;
+		$assert  = $this->getWhere();
+		$groupBy = $this->getGroupBy();
+		$count   = "COUNT(*)";
 
         if ($assert) {
-            $SQL = "SELECT $count FROM $ref WHERE $assert;";
+            $SQL = "SELECT $count FROM $ref WHERE $assert";
         } else {
-            $SQL = "SELECT $count FROM $ref;";
+            $SQL = "SELECT $count FROM $ref";
         }
-    		
+			
+		if ($groupBy) {
+			$SQL = "$SQL $groupBy";
+		}
+
 		$count = $this->driver->ExecuteScalar($SQL);
 		$count = $count["COUNT(*)"];
 
@@ -547,14 +600,14 @@ class Table {
     public function find() {
 		$ref     = $this->schema->ref;
 		$assert  = $this->getWhere();   
-		
+		$join    = $this->buildJoin();		
 		// 排序操作会影响到limit 1的结果
 		$orderBy = $this->getOrderBy();
 
         if ($assert) {
-            $SQL = "SELECT * FROM $ref WHERE $assert";
+            $SQL = "SELECT * FROM $ref $join WHERE $assert";
         } else {
-            $SQL = "SELECT * FROM $ref";
+            $SQL = "SELECT * FROM $ref $join";
         }	
 		if ($orderBy) {
 			$SQL = "$SQL $orderBy";
@@ -563,7 +616,29 @@ class Table {
 		$SQL = "$SQL LIMIT 1;";
 
 		return $this->driver->ExecuteScalar($SQL);
-    }
+	}
+	
+	/**
+	 * 获取数据库之中的随机的一条记录，这个数据库必须要存在一个自增的id列作为主键
+	 * 
+	 * @param string $key 如果该自增的id列的名称不是``id``，则会需要使用这个参数
+	 *                    来指定该自增id列的名称
+	*/
+	public function random($key = "id") {
+		$last = $this->order_by($key, true)
+					 ->limit(1)
+					 ->findfield($key);
+		
+		if ($last !== false) {
+			$rndPick = $this->where([
+				$key => gt_eq("~RAND() * $last") # (rand(1, $last))
+			])->find(); 
+
+			return $rndPick;
+		} else {
+			return false;
+		}		
+	}
 
 	/**
 	 * Select and limit 1 and return the field value, if target 
@@ -614,14 +689,19 @@ class Table {
 	/**
 	 * select * from `table`;
 	 * 
-	 * (不受where条件以及limit的影响，但是可以使用order by进行结果的排序操作)
+	 * (不受``where``条件以及``limit``的影响，但是可以使用``order by``进行结果的排序操作)
 	*/
 	public function all() {		
 		$orderBy = $this->getOrderBy();
-		$SQL     = "SELECT * FROM {$this->schema->ref}";
+		$groupBy = $this->getGroupBy();
+		$join    = $this->buildJoin();
+		$SQL     = "SELECT * FROM {$this->schema->ref} $join";
 
 		if ($orderBy) {
-			$SQL = "$SQL $orderBy;";
+			$SQL = "$SQL $orderBy";
+		}
+		if ($groupBy) {
+			$SQL = "$SQL $groupBy";
 		}
 
 		return $this->driver->Fetch($SQL);

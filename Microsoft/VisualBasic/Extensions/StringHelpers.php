@@ -12,7 +12,7 @@ class StringHelpers {
      * @return array
     */
     public static function LineTokens($text) {
-        return explode("\n", $text);
+        return preg_split("/(\r|\n)+/", $text);
     }
 
     /**

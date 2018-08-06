@@ -2,6 +2,7 @@
 
 namespace MVC\MySql {
 
+	Imports("System.Text.StringBuilder");
     Imports("Microsoft.VisualBasic.Strings");
 
     /**
@@ -27,6 +28,8 @@ namespace MVC\MySql {
 
 		/**
 		 * 当前的这个表模型对象实例的最后一条执行的MySql语句
+		 * 
+		 * @var string
 		*/
 		protected $last_mysql_expression;
 
@@ -48,7 +51,11 @@ namespace MVC\MySql {
 		/**
 		 * 显示mysql表的结构
 		 * 
-		 * DESCRIBE TableName
+		 * @example
+		 * 
+		 *    DESCRIBE TableName
+		 * 
+		 * @param string $tableName The table name for get schema structure info.
 		*/
 		public function Describe($tableName) {
 			$db   = $this->database;
@@ -93,16 +100,41 @@ namespace MVC\MySql {
 				$this->password, 
 				$this->database, 
 				$this->port
-			) or die("Database error: <code>" . mysqli_error($link) . "</code>"); 
+			);
 						
-			if (false === $link) {
-				die("Database connection fail!");
+			# 2018-07-27
+			# 如果连接最新版本的mysql的时候，出现错误
+			#
+			# Error: Unable to connect to MySQL.
+			# Debugging errno: 2054
+			# Debugging error: The server requested authentication method unknown to the client
+			#
+			# 这是因为新版本的mysql采用了新的验证方式，这个时候会需要修改mysql之中的用户验证方式为旧的验证方式
+			# 使用下面的sql语句进行修改:
+			#
+			#    use mysql;
+			#    ALTER USER 'native'@'localhost' IDENTIFIED WITH mysql_native_password BY 'new_password';
+			#    FLUSH PRIVILEGES;
+			#
+			# 或者升级php至最新版本
+
+			if (false == $link) {
+				$msg = (new \StringBuilder("", "<br />"))
+					->AppendLine("Error: Unable to connect to MySQL.")
+				    ->AppendLine("Debugging errno: " . mysqli_connect_errno()) 
+					->AppendLine("Debugging error: " . mysqli_connect_error())
+					->ToString();
+					
+				\dotnet::ThrowException($msg);
+
 			} else {
 				return $link;
 			}
 		}
 
 		/**
+		 * Get the last executed sql expression string value.
+		 * 
 		 * @return string The last executed sql expression.
 		*/
 		public function getLastMySql() {
