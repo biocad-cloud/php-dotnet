@@ -121,7 +121,8 @@ class View {
 	*/
 	private static function loadTemplate($path) {
 		$usingCache = DotNetRegistry::Read("CACHE", false);
-		
+		$html       = file_get_contents($path);
+
 		if (APP_DEBUG) {
 			# 调试模式下缓存总是关闭的
 			$usingCache = false;
@@ -133,7 +134,7 @@ class View {
 
 			if (!file_exists($cache)) {
 				# 当缓存文件不存在的时候，生成缓存，然后返回
-				$html = file_get_contents($path);
+				
 				# 将html片段合并为一个完整的html文档
 				# 得到了完整的html模板
 				$cachePage = View::interpolate_includes($html, $path);
