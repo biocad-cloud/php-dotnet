@@ -213,7 +213,7 @@ class FileSystem {
 		} else {
 			$symbols = ["B", "KB", "MB", "GB", "TB"];
 			$exp = floor( log($bytes) / log(1000) );
-			return sprintf('%.2f '.$symbol[$exp], ($bytes/pow(1000, floor($exp))));
+			return sprintf('%.2f '.$symbols[$exp], ($bytes/pow(1000, floor($exp))));
 		}
 	}
 }
