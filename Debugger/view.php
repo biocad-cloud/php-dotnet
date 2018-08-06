@@ -79,9 +79,16 @@ class debugView {
         $includes = [];
         
         foreach(get_included_files() as $file) {
+            if (Strings::InStr($file, "data://text") == 1) {
+                $size = strlen($file);
+                $file = "<code>" . substr($file, 0, 50) . "...</code>";                
+            } else {
+                $size = filesize($file);
+            }
+
             $includes[] = [
                 "path" => $file, 
-                "size" => FileSystem::Lanudry(filesize($file))
+                "size" => FileSystem::Lanudry($size)
             ];
         }
 
