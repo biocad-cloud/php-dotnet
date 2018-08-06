@@ -323,9 +323,9 @@ class dotnet {
             $php = PHP_DOTNET . "/{$mod}.php";
 
             # 如果是文件存在，则只导入文件
-            if (File::Exists($php)) {
+            if (file_exists($php)) {
                 $mod = $php;
-            } elseif (File::Exists($php = PHP_DOTNET . "/$mod/index.php")) {
+            } elseif (file_exists($php = PHP_DOTNET . "/$mod/index.php")) {
                 # 如果不存在，则使用index.php来进行判断
                 $mod = $php;
             } elseif (is_dir($dir = PHP_DOTNET . "/$mod/")) {
