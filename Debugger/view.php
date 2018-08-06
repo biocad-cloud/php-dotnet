@@ -46,8 +46,21 @@ class debugView {
         View::Show(debugView::Template(), array_merge([
             "Includes" => self::Includes(),
             "Events"   => self::$Events,
-            "Vars"     => self::$vars
+            "Vars"     => self::Vars()
         ], self::Summary()), null, true);
+    }
+
+    private static function Vars() {
+        $vars = [];
+
+        foreach(self::$vars as $name => $value) {
+            $vars[] = [
+                "name"  => $name, 
+                "value" => $value
+            ];
+        }
+
+        return $vars;
     }
 
     private static function Summary() {
