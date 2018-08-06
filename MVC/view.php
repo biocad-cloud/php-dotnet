@@ -35,8 +35,8 @@ class View {
 		}		
 
 		if (APP_DEBUG) {
-			echo "HTML document path is: ";
-			echo $path . "\n";
+			echo "<!-- HTML document path is: ";
+			echo $path . "-->\n\n";
 		}
 		
 		View::Show($path, $vars, $lang);
