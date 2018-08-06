@@ -66,7 +66,8 @@ class debugView {
     private static function Summary() {
         return [
             "files"       => count(get_included_files()),
-            "memory_size" => FileSystem::Lanudry(memory_get_usage())
+            "memory_size" => FileSystem::Lanudry(memory_get_usage()),
+            "total_time"  => time() - $_SERVER["REQUEST_TIME"]
         ];
     }
 

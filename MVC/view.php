@@ -251,13 +251,6 @@ class View {
 				$vars = array_merge($vars, self::$join);
 			}
 
-			if (APP_DEBUG) {
-				echo "<br /><br />";
-				echo "<code><pre>";
-				echo var_dump($vars);
-				echo "</pre></code>";
-			}
-
 			return View::Assign($html, $vars);
 		}
 	}
