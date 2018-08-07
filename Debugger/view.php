@@ -1,7 +1,7 @@
 <?php
 
 Imports("MVC.view");
-
+require_once 'Ubench/Ubench.php';
 /**
  * 调试器的输出视图引擎
  * 必须要为web应用程序定义一个访问控制器，这个调试器才可以正常工作
@@ -21,7 +21,7 @@ class debugView {
     */
     public static function LogEvent($event) {
         self::$Events[] = [
-            "time"        => time(), 
+            "time"        => Utils::Now(), 
             "description" => $event
         ];
     }
@@ -46,8 +46,8 @@ class debugView {
     */
     public static function Display() {     
         # 在这里自动添加结束标记
-        self::LogEvent("--- App Exit ---");   
-        
+        self::LogEvent("--- App Exit ---");  
+        var_dump(self::Vars()); 
         View::Show(debugView::Template(), array_merge([
             "Includes" => self::Includes(),
             "Events"   => self::$Events,
