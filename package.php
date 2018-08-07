@@ -38,7 +38,7 @@ include_once PHP_DOTNET . "/MSDN.php";
 include_once PHP_DOTNET . "/RFC7231/index.php";
 include_once PHP_DOTNET . "/Registry.php";
 
-# session_start();
+debugView::LogEvent("--- App start ---");
 
 # PHP Warning:  date(): It is not safe to rely on the system's timezone settings. 
 # You are *required* to use the date.timezone setting or the date_default_timezone_set() function. 
@@ -167,7 +167,7 @@ class dotnet {
 
             // 具有访问权限的正常访问
             Router::HandleRequest($app);
-        }
+        }       
     }
 
     /**

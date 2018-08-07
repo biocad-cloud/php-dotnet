@@ -15,6 +15,8 @@ class debugView {
     private static $vars;
 
     /**
+     * 添加App的事件记录
+     * 
      * @param string $event
     */
     public static function LogEvent($event) {
@@ -42,7 +44,10 @@ class debugView {
     /**
      * 在这里主要是将变量组织之后传递给视图引擎进行调试器视图的渲染
     */
-    public static function Display() {        
+    public static function Display() {     
+        # 在这里自动添加结束标记
+        self::LogEvent("--- App Exit ---");   
+        
         View::Show(debugView::Template(), array_merge([
             "Includes" => self::Includes(),
             "Events"   => self::$Events,
