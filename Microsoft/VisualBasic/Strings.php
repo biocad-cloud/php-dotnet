@@ -188,6 +188,13 @@ class Strings {
 		}
 	}
 
+	# 2018-08-08
+	# 有些系统里面假若php的设置不区分大小写的话，这个Empty函数会造成与php自身的empty函数之间产生冲突
+	# 出现语法错误的bug问题...
+	# Parse error: syntax error, unexpected 'Empty' (T_EMPTY), expecting identifier (T_STRING) in 
+	# /var/www/html/MetaCardio/modules/dotnet/Microsoft/VisualBasic/Strings.php on line 196
+	
+	/*
 	public static function Empty($str, $stringAsFactor = false) {
 		# 2018-7-19
 		# 在php之中会将字符串0也作为空值，这是一个bug？？
@@ -209,6 +216,7 @@ class Strings {
 			return false;
 		}
 	}
+*/
 
 	/**
 	 * 将字符串转换为大写形式 
