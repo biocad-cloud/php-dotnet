@@ -62,10 +62,10 @@ namespace MVC\MySql {
 			$SQL  = "DESCRIBE `$db`.`$tableName`;";
 			$link = $this->__init_MySql();   
 			
-			mysqli_select_db($link, $db); 
-			mysqli_query($link, "SET names 'utf8'");			      
+			\mysqli_select_db($link, $db); 
+			\mysqli_query($link, "SET names 'utf8'");			      
 
-			$schema = mysqli_query($link, $SQL);
+			$schema = \mysqli_query($link, $SQL);
 
 			if (empty($schema)) {
 				$message = "Database query error for table schema: $tableName.\n\n";
@@ -83,7 +83,7 @@ namespace MVC\MySql {
 				\dotnet::ThrowException($message);
 			}
 
-			mysqli_close($link);
+			\mysqli_close($link);
 
 			return $schema;
 		}		
@@ -91,10 +91,22 @@ namespace MVC\MySql {
 		/**
 		 * 使用这个函数来打开和mysql数据库的链接
 		 * 
+		 * ### 2018-08-08
+		 * 
+		 * 对于新安装的centos服务器，php假若没有进行配置的话，可能会出现下面的错误：
+		 * 
+		 *    PHP Fatal error:  Uncaught Error: Call to undefined function mysqli_connect()
+		 * 
+		 * 则这是因为没有启用php的mysql拓展，则需要在php.ini之中
+		 * 启用mysql相关的拓展，找到下面的两个选项，取消掉注释，然后重启apache服务器即可
+		 * 
+		 *    extension=php_mysql.dll
+		 *    extension=php_mysqli.dll
+		 * 
 		 * @return mysqli 返回数据库的链接
 		*/
-		protected function __init_MySql() {	
-			$link = mysqli_connect(
+		protected function __init_MySql() {
+			$link = \mysqli_connect(
 				$this->host,   
 				$this->user,
 				$this->password, 

@@ -1,5 +1,12 @@
 <?php
 
+# 2018-08-08 在命令行之中快速查找php的配置文件位置
+
+/**
+ * echo "<?php echo phpinfo(); ?>" | php | grep php.ini
+ *  
+*/
+
 // APP_DEBUG常数在引用这个文件之前必须首先进行定义
 if (!defined('APP_DEBUG')) {
     /**
