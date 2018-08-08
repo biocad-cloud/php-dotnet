@@ -166,8 +166,16 @@ abstract class controller {
      * 处理web请求
     */
     public function handleRequest() {
-        $code = $this->appObj->{Router::getApp()}();
+        global $bench;
 
+        # 在这里执行用户的控制器函数
+        $bench->start();
+
+        $code = $this->appObj->{Router::getApp()}();
+        
+        $bench->end();
+
+        debugView::AddItem("benchmark.exec",$bench->getTime());
         # 在末尾输出调试信息？
         # 只对view类型api调用的有效
 		if (APP_DEBUG && $this->getUsage() == "view") {

@@ -5,6 +5,8 @@ Imports("System.Linq.Enumerable");
 Imports("Microsoft.VisualBasic.Strings");
 Imports("MVC.View.foreach");
 Imports("MVC.View.inline");
+Imports("Debugger.Ubench.Ubench");
+
 
 /**
  * html user interface view handler
@@ -50,7 +52,15 @@ class View {
 	 * @param string $lang 语言配置值，一般不需要指定，框架会根据url参数配置自动加载
 	*/
 	public static function Show($path, $vars = NULL, $lang = null, $suppressDebug = false) {
-		echo self::Load($path, $vars, $lang, $suppressDebug);	
+		global $bench;
+
+        $bench->start();
+
+		echo self::Load($path, $vars, $lang, $suppressDebug);
+
+		$bench->end();	
+
+		debugView::AddItem("benchmark.template", $bench->getTime());
 	}
 	
 	/**
@@ -134,7 +144,7 @@ class View {
 
 		if ($usingCache && !Strings::Empty($path)) {			
 			# 在配置文件之中开启了缓存选项
-			$cache = self::getCachePath($path);
+			$cache = self::getCachePath($path);			
 
 			if (!file_exists($cache)) {
 				# 当缓存文件不存在的时候，生成缓存，然后返回
@@ -154,10 +164,13 @@ class View {
 
 			$html = file_get_contents($cache);
 		} else {
+			$cache = '';
 			# 不使用缓存，需要进行页面模板的拼接渲染
 			$html = View::interpolate_includes($html, $path);
 		}	
 
+		debugView::AddItem("cache.path", $cache);
+		
 		return $html;
 	}
 

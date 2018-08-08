@@ -22,8 +22,16 @@ class dotnetDebugger {
 		return $this->setError;
 	}
 
-	public function add_mysql_history($SQL) {
-		array_push($this->mysql_history, array($SQL, null));
+	/**
+	 * @param string $SQL
+	 * $type = "writes"表示对数据库进行了sql操作，对数据库的数据有影响， $type = "queries"表示只是对数据库进行了查询，对数据库的数据没有影响
+	*/
+	public function add_mysql_history($SQL, $elapsed, $type) {
+		$this->mysql_history[] = [
+			"sql"  => $SQL, 
+			"time" => $elapsed,
+			"type" => $type
+		];
 	}
 
 	public function add_loaded_script($path, $refer) {
@@ -39,11 +47,11 @@ class dotnetDebugger {
 
 	/**
 	 * 如果上一条mysql执行出错了，则可以通过这个函数来将mysql的错误记录下来 
-	 */
+	*/
 	public function add_last_mysql_error($error) {
 		$lasti = count($this->mysql_history) - 1;
 		$last  = $this->mysql_history[$lasti];
-		$last  = array($last[0], $error);
+		$last["err"] = $error;
 
 		$this->setError              = TRUE;
 		$this->mysql_history[$lasti] = $last; 

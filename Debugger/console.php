@@ -6,14 +6,34 @@
 */
 class console {
 
-    private $logs;
+    /**
+     * @var array
+    */
+    public static $logs;
 
-    public function log($msg) {
-        echo Utils::Now() . ": $msg<br />";
+    private static function backtrace(){
+        $backtrace = array_reverse(debug_backtrace());
+        $i = 0;     
+
+        foreach($backtrace as $k => $v){
+            # 跳过这个函数的栈片段
+            if ($i <= 2) {
+               $i++;
+            } else {
+              return $v;
+           };
+
+        }
+        
+        return ["file" => "Invalid stack trace", "line" => 0];
     }
 
-    public function writeline($s, $args = NULL) {
-        $this->log(sprintf($s, $args));
+    /**
+     * 输出一般的调试信息，代码默认为零。表示无错误
+    */
+    public static function log($msg, $code = 0) {
+        $trace = self::backtrace();
+        self::$logs[] = ["code" => $code, "msg" => $msg, "file" => $trace["file"], "line" => $trace["line"]];
     }
 
     /**
@@ -21,14 +41,12 @@ class console {
      * 
      */
     public function dump($obj) {
-        // var_dump函数并不会返回任何数据，而是直接将结果输出到网页上面了，
-        // 所以在这里为了能够显示出格式化的var_dump结果，在这里前后都
-        // 添加<code>标签。
-        $this->printCode(var_dump($obj));    
+    
     }
 
-    public function error($msg) {
-        echo "<span style='color:red'>" . Utils::Now() . ": $msg" . "</span><br />";
+    public function error($msg, $code = 1) {
+        $trace = self::backtrace();
+        self::$logs[] = ["code" => $code, "msg" => "<span style='color:red'>" .  $msg . "</span>", "file" => $trace["file"], "line" => $trace["line"]];
     }
 
     public static function printCode($code) {

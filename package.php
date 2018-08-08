@@ -24,6 +24,7 @@ include_once PHP_DOTNET . "/Debugger/dotnetException.php";
 include_once PHP_DOTNET . "/Debugger/engine.php";
 include_once PHP_DOTNET . "/Debugger/view.php";
 include_once PHP_DOTNET . "/Debugger/console.php";
+include_once PHP_DOTNET . "/Debugger/Ubench/Ubench.php";
 
 # 加载工具框架
 include_once PHP_DOTNET . "/System/IO/File.php";
@@ -37,6 +38,12 @@ include_once PHP_DOTNET . "/MSDN.php";
 # 加载Web框架部件
 include_once PHP_DOTNET . "/RFC7231/index.php";
 include_once PHP_DOTNET . "/Registry.php";
+
+/**
+ * @var Ubench
+*/
+global $bench;
+$bench = new Ubench;
 
 debugView::LogEvent("--- App start ---");
 
@@ -89,6 +96,10 @@ function session($name, $value) {
 class dotnet {
 
     public static $error_log;
+
+    /**
+     * @var dotnetDebugger
+    */
     public static $debugger;
 
     /**
@@ -238,8 +249,9 @@ class dotnet {
         error_reporting(E_ALL);
         set_error_handler(function($errno, $errstr, $errfile, $errline) {
              # 2018-3-5 Call to a member function LoggingHandler() on a non-object
-             $logs = dotnet::$error_log;
-             $logs->LoggingHandler($errno, $errstr, $errfile, $errline);
+            // $logs = dotnet::$error_log;
+             //$logs->LoggingHandler($errno, $errstr, $errfile, $errline);
+             
         }, E_ALL);
     }
     
