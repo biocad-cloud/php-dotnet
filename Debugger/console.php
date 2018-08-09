@@ -91,11 +91,11 @@ class console {
                 $msg  = "<div class='jsonview-container' id='$id'></div>
                          <script type='text/javascript'>                                
                             $(function() {
-                                $('#$id').JSONView($json);
+                                $('#$id').JSONView($json, { collapsed: true });
                             });
                          </script>";
             } else {
-                $msg = "<code><pre>" . self::varDumpToString($obj) . "</pre></code>";
+                $msg = "<pre>" . self::varDumpToString($obj) . "</pre>";
             }
 
             self::$logs[]  = [
@@ -136,7 +136,7 @@ class console {
             $trace = self::backtrace();
             self::$logs[] = [
                 "code"  => 0, 
-                "msg"   => "<code><pre>$code</pre></code>", 
+                "msg"   => "<pre>$code</pre>", 
                 "file"  => $trace["file"], 
                 "line"  => $trace["line"], 
                 "color" => "black"
