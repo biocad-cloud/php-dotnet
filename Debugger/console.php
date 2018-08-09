@@ -15,7 +15,7 @@ class console {
         self::$logs[] = [
             "code"  => $errno, 
             "msg"   => $errstr, 
-            "file"  => $errfile, 
+            "file"  => self::shrinkPath($errfile), 
             "line"  => $errline, 
             "color" => "red"
         ];
@@ -29,6 +29,18 @@ class console {
         }
     }
 
+    private static function shrinkPath($file) {
+        if (strpos($file, PHP_DOTNET) === 0) {
+            $file = str_replace(PHP_DOTNET, "", $file);
+            $file = "[PHP_DOTNET]$file";
+        } elseif (defined("APP_PATH")) {
+            $file = str_replace(APP_PATH, "", $file);
+            $file = "[APP_PATH]$file";
+        }
+
+        return $file;
+    }
+
     private static function backtrace(){
         $backtrace = array_reverse(debug_backtrace());
         $i = 0;     
@@ -38,19 +50,8 @@ class console {
             if ($i <= 2) {
                 $i++;
             } else {
-
-                # 缩短路径字符串，优化显示
-                $file = $v["file"];
-
-                if (strpos($file, PHP_DOTNET) === 0) {
-                    $file = str_replace(PHP_DOTNET, "", $file);
-                    $file = "[PHP_DOTNET]$file";
-                } elseif (defined("APP_PATH")) {
-                    $file = str_replace(APP_PATH, "", $file);
-                    $file = "[APP_PATH]$file";
-                }
-
-                $v["file"] = $file;
+                # 缩短路径字符串，优化显示        
+                $v["file"] = self::shrinkPath($v["file"]);
                 
                 return $v;
             };

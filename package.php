@@ -46,12 +46,6 @@ include_once PHP_DOTNET . "/MSDN.php";
 include_once PHP_DOTNET . "/RFC7231/index.php";
 include_once PHP_DOTNET . "/Registry.php";
 
-/**
- * @var Ubench
-*/
-global $bench;
-$bench = new Ubench;
-
 debugView::LogEvent("--- App start ---");
 
 # PHP Warning:  date(): It is not safe to rely on the system's timezone settings. 
@@ -100,9 +94,7 @@ function session($name, $value) {
  *
  * php 不像VB.NET一样允许函数重载，所以同一个class模块之中不可以出现相同名字的函数
 */
-class dotnet {
-
-    public static $error_log;
+class dotnet {    
 
     /**
      * @var dotnetDebugger
@@ -250,12 +242,7 @@ class dotnet {
         }
     }
     
-    private static function setupLogs() {
-        // 使用本框架的错误处理工具
-        dotnet::$error_log = new LogFile(DotNetRegistry::LogFile());                    
-
-        # echo dotnet::$logs->handle . "\n";
-
+    private static function setupLogs() {        
         // Report all PHP errors (see changelog)
         error_reporting(E_ALL);
         set_error_handler(function($errno, $errstr, $errfile, $errline) {
