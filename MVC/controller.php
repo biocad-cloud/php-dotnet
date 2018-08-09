@@ -166,6 +166,8 @@ abstract class controller {
     
     /**
      * 处理web请求
+     * 
+     * 如果需要显示调试窗口，还需要将该控制器标记为view类型
     */
     public function handleRequest() {       
         # 在这里执行用户的控制器函数
