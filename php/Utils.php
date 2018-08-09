@@ -30,6 +30,22 @@ class Utils {
         }
     }
 
+    public static function KeyValueTuple($array, 
+        $keyName   = "key", 
+        $valueName = "value") {
+
+        $tuple = [];
+
+        foreach($array as $key => $value) {
+            $tuple[] = [
+                $keyName   => $key, 
+                $valueName => $value
+            ];
+        }
+
+        return $tuple;
+    }
+
     public static function mime_content_type($filename) {
         $result = new finfo();
     
