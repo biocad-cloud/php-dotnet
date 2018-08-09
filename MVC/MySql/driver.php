@@ -92,19 +92,15 @@ namespace MVC\MySql {
 		 * @return boolean|array 如果数据库查询出错，会返回逻辑值False，反之会返回相对应的结果值
 		 */
 		public function Fetch($SQL) {
-
-			$mysql_exec = parent::__init_MySql();	
+			$mysql_exec = parent::__init_MySql();
 
 			mysqli_select_db($mysql_exec, parent::GetDatabaseName()); 
 			mysqli_query($mysql_exec, "SET names 'utf8'");
 
 			$bench = new \Ubench();
-
-			$bench->start();
-
-			$data = mysqli_query($mysql_exec, $SQL); 		          
-			
-			$bench->end();				
+			$data  = $bench->run(function() use ($mysql_exec, $SQL) {
+				return mysqli_query($mysql_exec, $SQL);
+			});			
 
 			if (APP_DEBUG) {
 				\dotnet::$debugger->add_mysql_history($SQL, $bench->getTime(), "queries");
@@ -146,10 +142,13 @@ namespace MVC\MySql {
 			mysqli_select_db($mysql_exec, parent::GetDatabaseName()); 
 			mysqli_query($mysql_exec, "SET names 'utf8'");
 
-			$data = mysqli_query($mysql_exec, $SQL); 
+			$bench = new \Ubench();
+			$data = $bench->run(function() use ($mysql_exec, $SQL) {
+				return mysqli_query($mysql_exec, $SQL);
+			});  
 			
 			if (APP_DEBUG) {
-				\dotnet::$debugger->add_mysql_history($SQL);
+				\dotnet::$debugger->add_mysql_history($SQL, $bench->getTime(), "queries");
 			}
 			
 			$this->last_mysql_expression = $SQL;
