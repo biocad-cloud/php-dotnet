@@ -1,15 +1,12 @@
-<div id="think_page_trace" style="position: fixed;bottom:0;right:0;font-size:14px;width:100%;z-index: 999999;color: #000;text-align:left;font-family:'Microsoft YaHei';">
+<div id="think_page_trace" style="position: fixed;bottom:0;right:0;font-size:12px;width:100%;z-index: 999999;color: #000;text-align:left;font-family:'Microsoft YaHei';">
 
+	<script src="data:application/x-javascript;base64,{$json_viewer_js}"></script>
 	<style>
-		.dotnet-mysql-debugger {
-			border-bottom: 1px solid #EEE;
-			font-size: 14px;
-			padding: 0 12px;
-		}
+		{$json_viewer_css}
 	</style>
 
-	<div id="think_page_trace_tab" style="display: none;background:white;margin:0;height: 250px;">
-		<div id="think_page_trace_tab_tit" style="height:30px;padding: 6px 12px 0;border-bottom:1px solid #ececec;border-top:1px solid #ececec;font-size:16px">
+	<div id="think_page_trace_tab" style="display: none;background:white;margin:0;height: 450px;">
+		<div id="think_page_trace_tab_tit" style="height:30px;padding: 0px 3px 15px 10px;border-bottom:1px solid rgb(20,20,20);border-top:1px solid rgb(20,20,20);font-size:14px; background-color:rgb(240,240,240);">
 			<span style="color:#000;padding-right:12px;height:30px;line-height: 30px;display:inline-block;margin-right:3px;cursor: pointer;font-weight:700">Summary</span>
 			<span style="color:#000;padding-right:12px;height:30px;line-height: 30px;display:inline-block;margin-right:3px;cursor: pointer;font-weight:700">Includes</span>
 			<span style="color:#000;padding-right:12px;height:30px;line-height: 30px;display:inline-block;margin-right:3px;cursor: pointer;font-weight:700">App Events</span>
@@ -18,8 +15,8 @@
 			<span style="color:#000;padding-right:12px;height:30px;line-height: 30px;display:inline-block;margin-right:3px;cursor: pointer;font-weight:700">Variables</span>
 		</div>
 
-		<div id="think_page_trace_tab_cont" style="overflow:auto;height:212px;padding: 0; line-height: 24px">
-			<div style="display:none;">
+		<div id="think_page_trace_tab_cont" style="overflow:auto;height:412px;padding: 0; line-height: 24px">
+			<div class="think_page_trace_tab_cont" style="display:none;">
 				<ol style="padding: 0; margin:0">
 					<li style="border-bottom:1px solid #EEE;font-size:14px;padding:0 12px">Http Header :
 						<?php echo Utils::Now(); ?> HTTP/1.1 GET :
@@ -38,7 +35,7 @@
 					</li>
 				</ol>
 			</div>
-			<div style="display:none;">
+			<div class="think_page_trace_tab_cont" style="display:none;">
 				<ol style="padding: 0; margin:0">
 
 					<foreach @Includes>
@@ -47,25 +44,28 @@
 
 				</ol>
 			</div>
-			<div style="display:none;">
+			<div class="think_page_trace_tab_cont" style="display:none;">
 				<ol style="padding: 0; margin:0">
 
 					<foreach @Events>
-						<li style="border-bottom:1px solid #EEE;font-size:14px;padding:0 12px">@Events["time"] @Events["description"]</li>
+						<li style="border-bottom:1px solid #EEE;font-size:14px;padding:0 12px">
+							<strong>@Events["time"]</strong> &nbsp;&nbsp;@Events["description"]</li>
 					</foreach>
 
 				</ol>
 			</div>
-			<div style="display:none;">
+			<div class="think_page_trace_tab_cont" style="display:none;">
 				<ol style="padding: 0; margin:0">
 
 					<foreach @Console>
-						<li style="border-bottom:1px solid #EEE;font-size:14px;padding:0 12px">[@Console["code"]] @Console["msg"] @Console["file"] at line @Console["line"].</li>
+						<li style='border-bottom:1px solid #EEE;font-size:14px;padding:0 12px; color: @Console["color"];'>
+							[@Console["code"]] &nbsp; @Console["msg"] @Console["file"] at line @Console["line"]
+						</li>
 					</foreach>
 
 				</ol>
 			</div>
-			<div style="display:none;">
+			<div class="think_page_trace_tab_cont" style="display:none;">
 				<ol style="padding: 0; margin:0">
 
 					<foreach @MySql>
@@ -74,11 +74,12 @@
 
 				</ol>
 			</div>
-			<div style="display:none;">
+			<div class="think_page_trace_tab_cont" style="display:none;">
 				<ol style="padding: 0; margin:0">
 
 					<foreach @Vars>
-						<li style="border-bottom:1px solid #EEE;font-size:14px;padding:0 12px">@Vars["name"] : @Vars["value"]</li>
+						<li style="border-bottom:1px solid #EEE;font-size:14px;padding:0 12px">
+							<strong>@Vars["name"]:</strong> @Vars["value"]</li>
 					</foreach>
 
 				</ol>
@@ -99,9 +100,9 @@
 	(() => {
 
 		var tab_tit = document.getElementById('think_page_trace_tab_tit').getElementsByTagName('span');
-		var tab_cont = document.getElementById('think_page_trace_tab_cont').getElementsByTagName('div');
+		var tab_cont = document.getElementById('think_page_trace_tab_cont').getElementsByClassName("think_page_trace_tab_cont");
 		var open = document.getElementById('think_page_trace_open');
-		var close = document.getElementById('think_page_trace_close').childNodes[0];
+		var close = document.getElementById('think_page_trace_close').childNodes[1];
 		var trace = document.getElementById('think_page_trace_tab');
 		var cookie = document.cookie.match(/thinkphp_show_page_trace=(\d\|\d)/);
 
@@ -127,6 +128,9 @@
 					}
 					tab_cont[i].style.display = 'block';
 					tab_tit[i].style.color = '#000';
+
+					$(".jsonview").show();
+					$(".jsonview-container").show();
 				}
 			})(i)
 		}

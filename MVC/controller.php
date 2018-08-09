@@ -146,6 +146,8 @@ abstract class controller {
             # 不存在，则抛出404
             $message = "Web app `<strong>$page</strong>` is not available in this controller!";
 			dotnet::PageNotFound($message);
+        } else {
+            debugView::LogEvent("Reflects on web app => $page");
         }
 
         if (!is_object($app)) {
@@ -175,7 +177,9 @@ abstract class controller {
         
         $bench->end();
 
+        debugView::LogEvent("[Finish] Handle user request");
         debugView::AddItem("benchmark.exec",$bench->getTime());
+
         # 在末尾输出调试信息？
         # 只对view类型api调用的有效
 		if (APP_DEBUG && $this->getUsage() == "view") {

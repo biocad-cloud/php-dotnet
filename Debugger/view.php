@@ -22,7 +22,7 @@ class debugView {
     */
     public static function LogEvent($event) {
         self::$Events[] = [
-            "time"        => Utils::Now(), 
+            "time"        => Utils::Now(false), 
             "description" => $event
         ];
     }
@@ -39,7 +39,7 @@ class debugView {
      * 获取调试器终端的视图模板文件的文件路径
     */
     private static function Template() {
-        return dirname(__FILE__) . "/console.html";
+        return dirname(__FILE__) . "/template/console.html";
     }
 
     /**
@@ -47,7 +47,10 @@ class debugView {
     */
     public static function Display() {
         
-        console::log("测试输出+++", 255);
+        console::log("测试输出+++", 3);
+        console::error("ddddddddd");
+        console::dump(["a" => true, "rrr" => ["de" => 456, "v" => [1,2,3,4.5]]], 4);
+        console::printCode("cccc----", 4);
 
         # 在这里自动添加结束标记
         self::LogEvent("--- App Exit ---");   
@@ -84,10 +87,17 @@ class debugView {
     }
 
     private static function Summary() {
+        $js  = dirname(self::Template()) . "/jquery.jsonview.min.js";        
+        $js  = base64_encode(file_get_contents($js));
+        $css = dirname(self::Template()) . "/jquery.jsonview.min.css";
+        $css = file_get_contents($css);
+
         return array_merge([
-            "files"       => count(get_included_files()),
-            "memory_size" => FileSystem::Lanudry(memory_get_usage()),
-            "total_time"  => time() - $_SERVER["REQUEST_TIME"]
+            "files"           => count(get_included_files()),
+            "memory_size"     => FileSystem::Lanudry(memory_get_usage()),
+            "total_time"      => time() - $_SERVER["REQUEST_TIME"],
+            "json_viewer_js"  => $js,
+            "json_viewer_css" => $css
         ], self::$summary);
     }
 

@@ -36,11 +36,7 @@ class View {
 			$path = str_replace("//", "/", $path);
 		}		
 
-		if (APP_DEBUG) {
-			echo "<!-- HTML document path is: ";
-			echo $path . "-->\n\n";
-		}
-		
+		console::log("HTML document path is: $path");		
 		View::Show($path, $vars, $lang);
 	}
 	
@@ -53,7 +49,7 @@ class View {
 	*/
 	public static function Show($path, $vars = NULL, $lang = null, $suppressDebug = false) {
 		global $bench;
-
+		debugView::LogEvent("[Begin] Render html view");
         $bench->start();
 
 		echo self::Load($path, $vars, $lang, $suppressDebug);
@@ -61,6 +57,7 @@ class View {
 		$bench->end();	
 
 		debugView::AddItem("benchmark.template", $bench->getTime());
+		debugView::LogEvent("[Finish] Render html view");
 	}
 	
 	/**
@@ -158,15 +155,18 @@ class View {
 					mkdir($cacheDir, 0777, true);
 				}				
 				file_put_contents($cache, $cachePage);
+				debugView::LogEvent("HTML view cache created!");
 			} else {
-				echo "<!--Cache hits!-->";
+				debugView::LogEvent("HTML view cache hits!");
 			}
 
+			debugView::LogEvent("Cache=$cache");
 			$html = file_get_contents($cache);
 		} else {
-			$cache = '';
+			$cache = 'disabled';
 			# 不使用缓存，需要进行页面模板的拼接渲染
 			$html = View::interpolate_includes($html, $path);
+			debugView::LogEvent("Cache=disabled");
 		}	
 
 		debugView::AddItem("cache.path", $cache);

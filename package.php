@@ -155,11 +155,13 @@ class dotnet {
     public static function HandleRequest($app, $wwwroot = NULL, $injection = NULL) {
         if ($wwwroot && is_string($wwwroot)) {
             DotNetRegistry::SetMVCViewDocumentRoot($wwwroot);
+            debugView::LogEvent("SetMVCViewDocumentRoot => $wwwroot");
         } else if ($wwwroot && is_object($wwwroot)) {
             $injection = $wwwroot;
         }
 
         if ($injection) {
+            debugView::LogEvent("Hook controller");
             $injection->Hook($app);
 
             if (!$injection->accessControl()) {
@@ -169,6 +171,8 @@ class dotnet {
                 global $_DOC;
                 $_DOC = $injection->getDocComment();
             }
+
+            debugView::LogEvent("[Begin] Handle user request");
 
             $injection->sendContentType();
             $injection->handleRequest();
@@ -251,7 +255,7 @@ class dotnet {
              # 2018-3-5 Call to a member function LoggingHandler() on a non-object
             // $logs = dotnet::$error_log;
              //$logs->LoggingHandler($errno, $errstr, $errfile, $errline);
-             
+             console::error_handler($errno, $errstr, $errfile, $errline);
         }, E_ALL);
     }
     
