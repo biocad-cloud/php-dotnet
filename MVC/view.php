@@ -47,17 +47,18 @@ class View {
 	 * @param array $vars 需要进行填充的变量列表
 	 * @param string $lang 语言配置值，一般不需要指定，框架会根据url参数配置自动加载
 	*/
-	public static function Show($path, $vars = NULL, $lang = null, $suppressDebug = false) {
-		global $bench;
+	public static function Show($path, $vars = NULL, $lang = null, $suppressDebug = false) {		
 		debugView::LogEvent("[Begin] Render html view");
-        $bench->start();
 
-		echo self::Load($path, $vars, $lang, $suppressDebug);
-
-		$bench->end();	
+        $bench = new \Ubench();
+		$html  = $bench->run(function() use ($path, $vars, $lang, $suppressDebug) {
+			return self::Load($path, $vars, $lang, $suppressDebug);
+		});	
 
 		debugView::AddItem("benchmark.template", $bench->getTime());
 		debugView::LogEvent("[Finish] Render html view");
+
+		echo $html;
 	}
 	
 	/**

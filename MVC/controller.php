@@ -167,18 +167,15 @@ abstract class controller {
     /**
      * 处理web请求
     */
-    public function handleRequest() {
-        global $bench;
-
+    public function handleRequest() {       
         # 在这里执行用户的控制器函数
-        $bench->start();
-
-        $code = $this->appObj->{Router::getApp()}();
-        
-        $bench->end();
+        $bench = new \Ubench();
+        $code  = $bench->run(function($controller) {
+            $controller->appObj->{Router::getApp()}();
+        }, $this);       
 
         debugView::LogEvent("[Finish] Handle user request");
-        debugView::AddItem("benchmark.exec",$bench->getTime());
+        debugView::AddItem("benchmark.exec", $bench->getTime());
 
         # 在末尾输出调试信息？
         # 只对view类型api调用的有效
