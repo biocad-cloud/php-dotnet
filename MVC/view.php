@@ -5,6 +5,8 @@ Imports("System.Linq.Enumerable");
 Imports("Microsoft.VisualBasic.Strings");
 Imports("MVC.View.foreach");
 Imports("MVC.View.inline");
+Imports("Debugger.Ubench.Ubench");
+
 
 /**
  * html user interface view handler
@@ -15,10 +17,11 @@ class View {
 	 * 从html文件夹之中读取和当前函数同名的文件并显示出来
 	 * 
 	 * @param array $vars 需要在页面上进行显示的文本变量的值的键值对集合
-	 * @param string $lang 页面的语言文件，默认为中文语言
+	 * @param string $lang 页面的语言文件，默认为中文语言，这个参数默认不需要进行指定，
+	 *                     渲染引擎可以自动从url参数之中读取语言配置项，如果指定了这个参数的话，
+	 *                     系统会强制使用这个语言项进行页面显示
 	*/
-	public static function Display($vars = NULL, $lang = "zhCN") {
-
+	public static function Display($vars = NULL, $lang = null) {
 		$name    = StackTrace::GetCallerMethodName();
 		$wwwroot = DotNetRegistry::GetMVCViewDocumentRoot();
 
@@ -33,10 +36,65 @@ class View {
 			$path = str_replace("//", "/", $path);
 		}		
 
-		if (APP_DEBUG) {
-			echo "HTML document path is: ";
-			echo $path . "\n";
+		console::log("HTML document path is: $path");		
+		View::Show($path, $vars, $lang);
+	}
+	
+	/**
+	 * 显示指定的文件路径的html文本的内容
+	 * 
+	 * @param string $path html页面模板文件的文件路径
+	 * @param array $vars 需要进行填充的变量列表
+	 * @param string $lang 语言配置值，一般不需要指定，框架会根据url参数配置自动加载
+	*/
+	public static function Show($path, $vars = NULL, $lang = null, $suppressDebug = false) {
+		global $bench;
+		debugView::LogEvent("[Begin] Render html view");
+        $bench->start();
+
+		echo self::Load($path, $vars, $lang, $suppressDebug);
+
+		$bench->end();	
+
+		debugView::AddItem("benchmark.template", $bench->getTime());
+		debugView::LogEvent("[Finish] Render html view");
+	}
+	
+	/**
+	 * 获取目标html文档梭对应的缓存文件的文件路径
+	*/
+	private static function getCachePath($path) {
+		// temp/{yyymmmdd}/viewName
+		$version = filemtime($path);
+		$temp    = sys_get_temp_dir();
+		$appName = DotNetRegistry::Read("APP_NAME", "php.NET");
+		$file    = basename($path);
+
+		if (strtolower($temp) == strtolower("C:\Windows")) {
+			# 不可以写入Windows文件夹
+			# 写入自己的data文件夹下面的临时文件夹
+			if (defined("APP_PATH")) {
+				$temp = APP_PATH . "/data/cache";
+			} else {
+				$temp = "./data/cache";
+			}			
 		}
+
+		$path  = md5($_SERVER["REQUEST_URI"]);
+		$cache = "$temp/$appName/$file/$version/$path.html";
+
+		return $cache;
+	}
+
+	/**
+	 * 加载指定路径的html文档并对其中的占位符利用vars字典进行填充
+	 * 这个函数还会额外的处理includes关系
+	*/
+	public static function Load($path, $vars = NULL, $lang = null, $suppressDebug = false) {
+		if (Strings::Empty($lang)) {
+			$lang = dotnet::GetLanguageConfig()["lang"];	
+		}			
+		$vars = self::LoadLanguage($path, $lang, $vars);
 
 		global $_DOC;
 
@@ -50,32 +108,70 @@ class View {
 				$vars = ["title" => $_DOC->title]; 
 			}
 		}
-		
-		View::Show($path, $vars, $lang);
-	}
-	
-	/**
-	 * 显示指定的文件路径的html文本的内容
-	*/
-	public static function Show($path, $vars = NULL, $lang = "zhCN") {
-		echo self::Load($path, $vars, $lang);
-	}
-	
-	/**
-	 * 加载指定路径的html文档并对其中的占位符利用vars字典进行填充
-	 * 这个函数还会额外的处理includes关系
-	*/
-	public static function Load($path, $vars = NULL, $lang = "zhCN") {
-		$vars = self::LoadLanguage($path, $lang, $vars);
 
 		if (file_exists($path)) {
-			$html = file_get_contents($path);
+			$html = self::loadTemplate($path);
 		} else {
 			# 给出文件不存在的警告信息
 			return "HTML document view <strong>&lt;$path></strong> could not be found!";
 		}
 		
-		return View::InterpolateTemplate($html, $vars, $path);
+		if (!$suppressDebug) {
+			debugView::DebugVars($vars);
+		}
+
+		return View::InterpolateTemplate($html, $vars);
+	}
+
+	/**
+	 * Load or read from cache for get html template
+	 * 
+	 * @param string $path The file path of the html template file
+	 * 
+	 * @return string
+	*/
+	private static function loadTemplate($path) {
+		$usingCache = DotNetRegistry::Read("CACHE", false);
+		$html       = file_get_contents($path);
+
+		if (APP_DEBUG) {
+			# 调试模式下缓存总是关闭的
+			$usingCache = false;
+		}
+
+		if ($usingCache && !Strings::Empty($path)) {			
+			# 在配置文件之中开启了缓存选项
+			$cache = self::getCachePath($path);			
+
+			if (!file_exists($cache)) {
+				# 当缓存文件不存在的时候，生成缓存，然后返回
+				
+				# 将html片段合并为一个完整的html文档
+				# 得到了完整的html模板
+				$cachePage = View::interpolate_includes($html, $path);
+				$cacheDir = dirname($cache);
+				
+				if (!file_exists($cacheDir)) {
+					mkdir($cacheDir, 0777, true);
+				}				
+				file_put_contents($cache, $cachePage);
+				debugView::LogEvent("HTML view cache created!");
+			} else {
+				debugView::LogEvent("HTML view cache hits!");
+			}
+
+			debugView::LogEvent("Cache=$cache");
+			$html = file_get_contents($cache);
+		} else {
+			$cache = 'disabled';
+			# 不使用缓存，需要进行页面模板的拼接渲染
+			$html = View::interpolate_includes($html, $path);
+			debugView::LogEvent("Cache=disabled");
+		}	
+
+		debugView::AddItem("cache.path", $cache);
+		
+		return $html;
 	}
 
 	/**
@@ -121,10 +217,26 @@ class View {
 		return $vars;
 	}
 
+	/**
+	 * @var array
+	*/
 	private static $join = [];
 
+	/**
+	 * 这个函数的调用会使框架的缓存机制失效
+	 * 
+	 * @param string $name 变量名称，如果这个参数是``*``的话，表示将value数组之中的所有对象
+	 *                     都推送到输出页面上进行渲染
+	 * @param mixed $value 变量的值，如果name是字符串``*``的话，这个参数必须是一个字典数组
+	*/
 	public static function Push($name, $value) {
 		if ($name == "*") {
+
+			# value 必须是一个数组
+			if (!is_array($value)) {
+				throw new error("Value must be an array when variable name is ``*``!");
+			}
+
 			foreach($value as $key => $val) {
 				self::$join[$key] = $val;
 			}
@@ -137,10 +249,7 @@ class View {
 	 * Create user html document based on the html template 
 	 * and the given configuration data.
 	*/
-	public static function InterpolateTemplate($html, $vars, $path = NULL) {
-		# 将html片段合并为一个完整的html文档
-		$html = View::interpolate_includes($html, $path);	
-		
+	public static function InterpolateTemplate($html, $vars) {		
 		# 没有需要进行设置的变量字符串，则直接在这里返回html文件
 		if (!$vars && !self::$join) {
 			# 假设在html文档里面总是会存在url简写的，
@@ -153,13 +262,6 @@ class View {
 				// do nothing
 			} else {
 				$vars = array_merge($vars, self::$join);
-			}
-
-			if (APP_DEBUG) {
-				echo "<br /><br />";
-				echo "<code><pre>";
-				echo var_dump($vars);
-				echo "</pre></code>";
 			}
 
 			return View::Assign($html, $vars);

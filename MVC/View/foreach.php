@@ -138,7 +138,7 @@ namespace MVC\Views {
         public static function Build($array, $template, $var) {
             $varPattern = "@$var\[\".+?\"\]";
             $vars = \Regex::Matches($template, $varPattern);
-         
+
             if (count($vars) == 0) {
                 # 没有定义模板变量？？
                 return "";

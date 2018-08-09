@@ -31,6 +31,7 @@ include_once PHP_DOTNET . "/Debugger/dotnetException.php";
 include_once PHP_DOTNET . "/Debugger/engine.php";
 include_once PHP_DOTNET . "/Debugger/view.php";
 include_once PHP_DOTNET . "/Debugger/console.php";
+include_once PHP_DOTNET . "/Debugger/Ubench/Ubench.php";
 
 # 加载工具框架
 include_once PHP_DOTNET . "/System/IO/File.php";
@@ -45,7 +46,13 @@ include_once PHP_DOTNET . "/MSDN.php";
 include_once PHP_DOTNET . "/RFC7231/index.php";
 include_once PHP_DOTNET . "/Registry.php";
 
-# session_start();
+/**
+ * @var Ubench
+*/
+global $bench;
+$bench = new Ubench;
+
+debugView::LogEvent("--- App start ---");
 
 # PHP Warning:  date(): It is not safe to rely on the system's timezone settings. 
 # You are *required* to use the date.timezone setting or the date_default_timezone_set() function. 
@@ -96,6 +103,10 @@ function session($name, $value) {
 class dotnet {
 
     public static $error_log;
+
+    /**
+     * @var dotnetDebugger
+    */
     public static $debugger;
 
     /**
@@ -151,11 +162,13 @@ class dotnet {
     public static function HandleRequest($app, $wwwroot = NULL, $injection = NULL) {
         if ($wwwroot && is_string($wwwroot)) {
             DotNetRegistry::SetMVCViewDocumentRoot($wwwroot);
+            debugView::LogEvent("SetMVCViewDocumentRoot => $wwwroot");
         } else if ($wwwroot && is_object($wwwroot)) {
             $injection = $wwwroot;
         }
 
         if ($injection) {
+            debugView::LogEvent("Hook controller");
             $injection->Hook($app);
 
             if (!$injection->accessControl()) {
@@ -166,6 +179,8 @@ class dotnet {
                 $_DOC = $injection->getDocComment();
             }
 
+            debugView::LogEvent("[Begin] Handle user request");
+
             $injection->sendContentType();
             $injection->handleRequest();
 
@@ -174,7 +189,7 @@ class dotnet {
 
             // 具有访问权限的正常访问
             Router::HandleRequest($app);
-        }
+        }       
     }
 
     /**
@@ -205,6 +220,7 @@ class dotnet {
             }            
         }   
 
+        # 在这里加载框架之中的基本的MVC驱动程序模块
 		dotnet::Imports("MVC.view");
 		dotnet::Imports("MVC.model");
 		dotnet::Imports("MVC.router");
@@ -244,8 +260,9 @@ class dotnet {
         error_reporting(E_ALL);
         set_error_handler(function($errno, $errstr, $errfile, $errline) {
              # 2018-3-5 Call to a member function LoggingHandler() on a non-object
-             $logs = dotnet::$error_log;
-             $logs->LoggingHandler($errno, $errstr, $errfile, $errline);
+            // $logs = dotnet::$error_log;
+             //$logs->LoggingHandler($errno, $errstr, $errfile, $errline);
+             console::error_handler($errno, $errstr, $errfile, $errline);
         }, E_ALL);
     }
     
@@ -329,9 +346,9 @@ class dotnet {
             $php = PHP_DOTNET . "/{$mod}.php";
 
             # 如果是文件存在，则只导入文件
-            if (File::Exists($php)) {
+            if (file_exists($php)) {
                 $mod = $php;
-            } elseif (File::Exists($php = PHP_DOTNET . "/$mod/index.php")) {
+            } elseif (file_exists($php = PHP_DOTNET . "/$mod/index.php")) {
                 # 如果不存在，则使用index.php来进行判断
                 $mod = $php;
             } elseif (is_dir($dir = PHP_DOTNET . "/$mod/")) {

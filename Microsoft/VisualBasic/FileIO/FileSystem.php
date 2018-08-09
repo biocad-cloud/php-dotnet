@@ -206,5 +206,21 @@ class FileSystem {
 		
 		return $tmp;
 	}
+
+	/**
+	 * 对bytes数值进行格式自动优化显示
+	 * 
+	 * @param integer $bytes 
+	 * 
+	 * @return string 经过自动格式优化过后的大小显示字符串
+	*/
+	public static function Lanudry($bytes) {
+		$symbols = ["B", "KB", "MB", "GB", "TB"];
+		$exp     = floor( log($bytes) / log(1000) );
+		$symbol  = $symbols[$exp];
+		$val     = ($bytes / pow(1000, floor($exp)));
+		
+		return sprintf("%.2f $symbol", $val);		
+	}
 }
 ?>
