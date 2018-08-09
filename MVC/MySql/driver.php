@@ -12,6 +12,15 @@ namespace MVC\MySql {
     */
     class MySqlExecDriver extends sqlDriver implements ISqlDriver {
 
+		/**
+		 * 这个模块是mysql查询的基础驱动程序模块，是和具体的表模型无关的
+		 * 
+		 * @param string $database
+		 * @param string $user
+		 * @param string $password
+		 * @param string $host
+		 * @param integer $port
+		*/
 		function __construct($database, $user, $password, $host = "localhost", $port = 3306) {
 			parent::__construct($database, $user, $password, $host, $port);
 		}
@@ -41,14 +50,11 @@ namespace MVC\MySql {
 			mysqli_select_db($mysql_exec, parent::GetDatabaseName()); 
 			mysqli_query($mysql_exec, "SET names 'utf8'");
 
-			$bench = new \Ubench();
-
-			$bench->start();
-
-			$out = mysqli_query($mysql_exec, $SQL);                     
-			
-			$bench->end();		
-
+			$bench = new \Ubench();	
+			$out   = $bench->run(function() use ($mysql_exec, $SQL) {
+				return mysqli_query($mysql_exec, $SQL);
+			});		
+	
 			if (APP_DEBUG) {
 				\dotnet::$debugger->add_mysql_history($SQL, $bench->getTime(), "writes");
 			}
@@ -73,8 +79,9 @@ namespace MVC\MySql {
 				# do nothing
 			}
 
+			\debugView::LogEvent("MySql query => ExecuteSql");
 			mysqli_close($mysql_exec);
-
+			
 			return $out;
 		}
 
@@ -110,6 +117,7 @@ namespace MVC\MySql {
 
 			// 输出
 			$out = null;
+			$resultStatus = "";
 
 			if($data) {
 				$out = [];
@@ -118,6 +126,7 @@ namespace MVC\MySql {
 					array_push($out, $row);
 				}		
 			
+				$resultStatus = count($out) . " record";
 			} else {
 
 				// 这条SQL语句执行出错了，添加错误信息到sql记录之中
@@ -126,9 +135,11 @@ namespace MVC\MySql {
 				}
 
 				$out = false;
+				$resultStatus = "MySql error!";
 			}
 
 			mysqli_close($mysql_exec);
+			\debugView::LogEvent("MySql query => Fetch => $resultStatus");
 
 			return $out;
 		}
@@ -149,9 +160,10 @@ namespace MVC\MySql {
 			
 			if (APP_DEBUG) {
 				\dotnet::$debugger->add_mysql_history($SQL, $bench->getTime(), "queries");
+				\debugView::LogEvent("MySql query => ExecuteScalar");
 			}
 			
-			$this->last_mysql_expression = $SQL;
+			$this->last_mysql_expression = $SQL;						
 
 			if ($data) {
 				
