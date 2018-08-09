@@ -68,7 +68,7 @@ namespace MVC\Views {
 
                 */
 
-                $warnings = "<!-- PHP inline scripting required option ``allow_url_include = On`` -->";
+                $warnings = "PHP inline scripting required option <strong>allow_url_include = On</strong>";
                 \console::error($warnings);
 
                 return $template;
