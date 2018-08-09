@@ -83,24 +83,9 @@ class console {
     public static function dump($obj, $code =2) {
         if (self::isDebugMode()) {
             $trace = self::backtrace();
-            $msg   = null;
-
-            if (is_array($obj) || is_object($obj)) {
-                $id   = "json" . time();
-                $json = json_encode($obj);
-                $msg  = "<div class='jsonview-container' id='$id'></div>
-                         <script type='text/javascript'>                                
-                            $(function() {
-                                $('#$id').JSONView($json, { collapsed: true });
-                            });
-                         </script>";
-            } else {
-                $msg = "<pre>" . self::varDumpToString($obj) . "</pre>";
-            }
-
             self::$logs[]  = [
                 "code"  => $code,
-                "msg"   => $msg,
+                "msg"   => self::objDump($obj, true),
                 "file"  => $trace["file"],
                 "line"  => $trace["line"], 
                 "color" => "black"
@@ -108,6 +93,27 @@ class console {
         }        
     }
     
+    /**
+     * @param boolean $var_dump 是进行var_dump输出还是普通的字符串输出？
+    */
+    public static function objDump($obj, $var_dump) {        
+        if (is_array($obj) || is_object($obj)) {
+            $id   = "json" . Utils::RandomASCIIString(6);
+            $json = json_encode($obj);
+            
+            return "<div class='jsonview-container' id='$id'></div>
+                    <script type='text/javascript'>                                
+                        $(function() {
+                            $('#$id').JSONView($json, { collapsed: true });
+                        });
+                    </script>";
+        } else if ($var_dump) {
+            return "<pre>" . self::varDumpToString($obj) . "</pre>";
+        } else {
+            return strval($obj);
+        }
+    }
+
     /**
      * 返回输出缓冲区的内容
     */

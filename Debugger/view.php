@@ -66,10 +66,10 @@ class debugView {
     private static function Vars() {
         $vars = [];
 
-        foreach(self::$vars as $name => $value) {
+        foreach(self::$vars as $name => $value) {           
             $vars[] = [
                 "name"  => $name, 
-                "value" => $value
+                "value" => console::objDump($value, false)
             ];
         }
 
