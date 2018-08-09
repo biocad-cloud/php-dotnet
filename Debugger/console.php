@@ -107,8 +107,13 @@ class console {
                             $('#$id').JSONView($json, { collapsed: true });
                         });
                     </script>";
+
         } else if ($var_dump) {
-            return "<pre>" . self::varDumpToString($obj) . "</pre>";
+            $dump = self::varDumpToString($obj);
+            
+            return "<pre style='font-weight: bolder;font-size: 16px;padding: 0px;background-color: #fff;border: none;'>
+                        $dump
+                    </pre>";
         } else {
             return strval($obj);
         }
@@ -142,7 +147,7 @@ class console {
             $trace = self::backtrace();
             self::$logs[] = [
                 "code"  => 0, 
-                "msg"   => "<pre>$code</pre>", 
+                "msg"   => "<pre style='font-weight: bolder;font-size: 16px;padding: 0px;background-color: #fff;border: none;'>$code</pre>", 
                 "file"  => $trace["file"], 
                 "line"  => $trace["line"], 
                 "color" => "black"
