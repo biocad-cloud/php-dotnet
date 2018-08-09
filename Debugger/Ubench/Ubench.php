@@ -22,12 +22,16 @@
  * THE SOFTWARE.
  */
 
-class Ubench
-{
+class Ubench {
+
+    /**
+     * @var float
+    */
     protected $start_time;
-
+    /**
+     * @var float
+    */
     protected $end_time;
-
     protected $memory_usage;
 
     /**
@@ -35,8 +39,7 @@ class Ubench
      *
      * @return void
      */
-    public function start()
-    {
+    public function start() {
         $this->start_time = microtime(true);
     }
 
@@ -46,10 +49,8 @@ class Ubench
      * @return void
      * @throws Exception
      */
-    public function end()
-    {
-        if (!$this->hasStarted())
-        {
+    public function end() {
+        if (!$this->hasStarted()) {
             throw new LogicException("You must call start()");
         }
 
@@ -65,20 +66,16 @@ class Ubench
      * @return float|string
      * @throws Exception
      */
-    public function getTime($raw = false, $format = null)
-    {
-        if (!$this->hasStarted())
-        {
+    public function getTime($raw = false, $format = null) {
+        if (!$this->hasStarted()) {
             throw new LogicException("You must call start()");
         }
 
-        if (!$this->hasEnded())
-        {
+        if (!$this->hasEnded()) {
             throw new LogicException("You must call end()");
         }
 
         $elapsed = $this->end_time - $this->start_time;
-
         return $raw ? $elapsed : self::readableElapsedTime($elapsed, $format);
     }
 
@@ -89,8 +86,7 @@ class Ubench
      * @param  string  $format   The format to display (printf format)
      * @return string|float
      */
-    public function getMemoryUsage($raw = false, $format = null)
-    {
+    public function getMemoryUsage($raw = false, $format = null) {
         return $raw ? $this->memory_usage : self::readableSize($this->memory_usage, $format);
     }
 
@@ -101,10 +97,8 @@ class Ubench
      * @param  string  $format   The format to display (printf format)
      * @return string|float
      */
-    public function getMemoryPeak($raw = false, $format = null)
-    {
+    public function getMemoryPeak($raw = false, $format = null) {
         $memory = memory_get_peak_usage(true);
-
         return $raw ? $memory : self::readableSize($memory, $format);
     }
 
@@ -117,8 +111,7 @@ class Ubench
      * @param callable $callable
      * @return mixed
      */
-    public function run(callable $callable)
-    {
+    public function run(callable $callable) {
         $arguments = func_get_args();
         array_shift($arguments);
 
@@ -137,8 +130,7 @@ class Ubench
      * @param   int    $round
      * @return  string
      */
-    public static function readableSize($size, $format = null, $round = 3)
-    {
+    public static function readableSize($size, $format = null, $round = 3) {
         $mod = 1024;
 
         if (is_null($format)) {
@@ -165,8 +157,7 @@ class Ubench
      * @param  string  $format   The format to display (printf format)
      * @return string
      */
-    public static function readableElapsedTime($microtime, $format = null, $round = 3)
-    {
+    public static function readableElapsedTime($microtime, $format = null, $round = 3) {
         if (is_null($format)) {
             $format = '%.3f%s';
         }
@@ -184,13 +175,11 @@ class Ubench
         return sprintf($format, $time, $unit);
     }
 
-    public function hasEnded()
-    {
+    public function hasEnded() {
         return isset($this->end_time);
     }
 
-    public function hasStarted()
-    {
+    public function hasStarted() {
         return isset($this->start_time);
     }
 }
