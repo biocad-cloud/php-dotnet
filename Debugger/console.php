@@ -38,6 +38,20 @@ class console {
             if ($i <= 2) {
                 $i++;
             } else {
+
+                # 缩短路径字符串，优化显示
+                $file = $v["file"];
+
+                if (strpos($file, PHP_DOTNET) === 0) {
+                    $file = str_replace(PHP_DOTNET, "", $file);
+                    $file = "[PHP_DOTNET]$file";
+                } elseif (defined("APP_PATH")) {
+                    $file = str_replace(APP_PATH, "", $file);
+                    $file = "[APP_PATH]$file";
+                }
+
+                $v["file"] = $file;
+                
                 return $v;
             };
         }

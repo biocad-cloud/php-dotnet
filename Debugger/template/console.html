@@ -59,7 +59,7 @@
 
 					<foreach @Console>
 						<li style='border-bottom:1px solid #EEE;font-size:14px;padding:0 12px; color: @Console["color"];'>
-							[@Console["code"]] &nbsp; @Console["msg"] @Console["file"] at line @Console["line"]
+							<?php echo date("H:i:s", Utils::Now()); ?> &nbsp; [@Console["code"]] &nbsp; @Console["msg"] @Console["file"] at line @Console["line"]
 						</li>
 					</foreach>
 
