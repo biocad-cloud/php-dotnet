@@ -18,7 +18,7 @@ class Utils {
      * @return boolean
     */
     public static function IsSessionStart() {
-        return session_status() == PHP_SESSION_NONE;
+        return session_status() !== PHP_SESSION_NONE;
     }
 
     /**
