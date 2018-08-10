@@ -19,7 +19,9 @@
 			<div class="think_page_trace_tab_cont" style="display:none;">
 				<ol style="padding: 0; margin:0">
 					<li style="border-bottom:1px solid #EEE;font-size:14px;padding:0 12px">Http Header :
-						<?php echo Utils::Now(); ?> HTTP/1.1 GET :
+						<?php echo Utils::Now(); ?>
+						<?php echo $_SERVER["SERVER_PROTOCOL"]; ?>
+						<?php echo $_SERVER["REQUEST_METHOD"]; ?> :
 						<?php echo $_SERVER["REQUEST_URI"]; ?>
 					</li>
 					<li style="border-bottom:1px solid #EEE;font-size:14px;padding:0 12px">Benchmark : {$benchmark} ( Load:{$benchmark.load} Init:{$benchmark.init} Exec:{$benchmark.exec} Template:{$benchmark.template}
@@ -59,7 +61,10 @@
 
 					<foreach @Console>
 						<li style='border-bottom:1px solid #EEE;font-size:14px;padding:0 12px; color: @Console["color"];'>
-							<span style="display: inline-block;float: left;"><?php echo date("H:i:s", Utils::Now()); ?> &nbsp; [@Console["code"]] &nbsp;</span> <span style="display: inline-block;">@Console["msg"]</span> <span style="display: inline-block;float: right;">@Console["file"] at line @Console["line"]</span>
+							<span style="display: inline-block;float: left;">
+								<?php echo date("H:i:s", Utils::Now()); ?> &nbsp; [@Console["code"]] &nbsp;</span>
+							<span style="display: inline-block;">@Console["msg"]</span>
+							<span style="display: inline-block;float: right;">@Console["file"] at line @Console["line"]</span>
 						</li>
 					</foreach>
 
