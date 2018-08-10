@@ -11,7 +11,13 @@ class console {
     */
     public static $logs;
 
+    /**
+     * 在这个函数之中显示以及处理php的警告消息
+    */
     public static function error_handler($errno, $errstr, $errfile, $errline) {
+        if (Strings::InStr($errstr, "data://text") > 0) {            
+            $errstr = substr($errstr, 0, 64) . "...";                
+        } 
         self::$logs[] = [
             "code"  => $errno, 
             "msg"   => $errstr, 
@@ -21,6 +27,11 @@ class console {
         ];
     }
 
+    /**
+     * 当前是否是处于调试模式？
+     * 
+     * @return boolean
+    */
     private static function isDebugMode() {
         if (defined("APP_DEBUG")) {
             return APP_DEBUG;
@@ -29,6 +40,9 @@ class console {
         }
     }
 
+    /**
+     * 将php文件的路径进行相对简写，优化显示
+    */
     private static function shrinkPath($file) {
         if (strpos($file, PHP_DOTNET) === 0) {
             $file = str_replace(PHP_DOTNET, "", $file);

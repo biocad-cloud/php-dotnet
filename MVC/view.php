@@ -166,6 +166,7 @@ class View {
 				debugView::LogEvent("HTML view cache hits!");
 			}
 
+			$cache = realpath($cache);
 			debugView::LogEvent("Cache=$cache");
 			$html = file_get_contents($cache);
 		} else {
