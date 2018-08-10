@@ -45,22 +45,25 @@ class debugView {
     /**
      * 在这里主要是将变量组织之后传递给视图引擎进行调试器视图的渲染
     */
-    public static function Display() {
-        
-        console::log("测试输出+++", 3);
-        console::error("ddddddddd");
-        console::dump(["a" => true, "rrr" => ["de" => 456, "v" => [1,2,3,4.5]]], 4);
-        console::printCode("cccc----", 4);
-
+    public static function Display() {        
         # 在这里自动添加结束标记
-        self::LogEvent("--- App Exit ---");   
-        View::Show(debugView::Template(), array_merge([
+        self::LogEvent("--- App Exit ---");
+        
+        View::Show(
+            debugView::Template(), 
+            debugView::union(), 
+            null, true
+        );
+    }
+
+    private static function union() {
+        return array_merge([
             "Includes" => self::Includes(),
             "Events"   => self::$Events,
             "MySql"    => self::GetMySQLView(dotnet::$debugger),
             "Console"  => console::$logs,
             "Vars"     => self::Vars()
-        ], self::Summary()), null, true);
+        ], self::Summary());
     }
 
     private static function Vars() {
@@ -104,10 +107,12 @@ class debugView {
     private static function benchmark($vars) {
         # Benchmark : {$benchmark} ( Load:{$benchmark.load} Init:{$benchmark.init} Exec:{$benchmark.exec} Template:{$benchmark.template}
         $total = $vars["benchmark.load"] + $vars["benchmark.init"] + $vars["benchmark.exec"] + $vars["benchmark.template"];
+        $n     = 1000 / $total;
         $total = Ubench::readableElapsedTime($total);
 
-        $vars["benchmark"]  = $total;
-        $vars["total_time"] = $total;
+        $vars["benchmark"]   = $total;
+        $vars["total_time"]  = $total;
+        $vars["benchmark_n"] = round($n, 3);
 
         $vars["benchmark.load"]     = Ubench::readableElapsedTime($vars["benchmark.load"]);
         $vars["benchmark.init"]     = Ubench::readableElapsedTime($vars["benchmark.init"]);
