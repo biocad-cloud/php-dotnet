@@ -1,11 +1,11 @@
 <?php
 
-/**
- * Get current year value.
-*/
-function year() {
-    return date("Y");
-}
+	/**
+	 * Get current year value.
+	*/
+	function year() {
+		return date("Y");
+	}
 
 
 
