@@ -69,6 +69,13 @@ class debugView {
     private static function Vars() {
         $vars = [];
 
+        if (Utils::IsSessionStart()) {
+            $vars[] = [
+                "name"  => "PHP_SESSION", 
+                "value" => $_SESSION
+            ];
+        }
+
         foreach(self::$vars as $name => $value) {           
             $vars[] = [
                 "name"  => $name, 

@@ -15,6 +15,13 @@ include_once PHP_DOTNET . "/Microsoft/VisualBasic/Strings.php";
 class Utils {
 
     /**
+     * @return boolean
+    */
+    public static function IsSessionStart() {
+        return session_status() == PHP_SESSION_NONE;
+    }
+
+    /**
      * 将只含有一个元素的[key => value]键值对转换为数组返回，可以使用list($key, $value)来进行赋值
      * 
      * @param array $table [key => value]
