@@ -30,6 +30,22 @@ class Utils {
         }
     }
 
+    public static function TupleToObj($tuples,
+        $keyName   = "key", 
+        $valueName = "value") {
+
+        $list = [];
+
+        foreach($tuples as $tuple) {
+            $key   = $tuple[$keyName];
+            $value = $tuple[$valueName];
+
+            $list[$key] = $value;
+        }
+
+        return $list;
+    }
+
     public static function KeyValueTuple($array, 
         $keyName   = "key", 
         $valueName = "value") {
