@@ -57,10 +57,11 @@ class Table {
 	 *                             + (array) [dbname => table] when multiple database config exists.
 	*/
     function __construct($config, $condition = null) {
+		
 		# 2018-6-13 在这个构造函数之中对mysql的连接的初始化都是通过
 		# __initBaseOnExternalConfig这个函数来完成的
 		# 下面的if分支的差异仅在于不同的路径所获取得到的配置数据的方法上的差异
-
+		
 		if (is_string($config)) {	
 			// 如果是字符串，则说明这个是数据表的名称
 			// 通过表名称来进行初始化	

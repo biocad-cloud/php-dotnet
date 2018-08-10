@@ -46,6 +46,13 @@ class dotnetDebugger {
 	}
 
 	/**
+	 * @return array [sql => error]
+	*/
+	public function last_mysql_error() {
+		return $this->mysql_history[count($this->mysql_history) - 1];
+	}
+
+	/**
 	 * 如果上一条mysql执行出错了，则可以通过这个函数来将mysql的错误记录下来 
 	*/
 	public function add_last_mysql_error($error) {
