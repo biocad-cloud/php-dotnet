@@ -20,9 +20,10 @@ use RuntimeException;
  * @copyright 2013-2015 Florian Eckerstorfer
  * @license   http://opensource.org/licenses/MIT The MIT License
  * @link      https://florian.ec/articles/running-background-processes-in-php/ Running background processes in PHP
- */
-class BackgroundProcess
-{
+ * 
+*/
+class BackgroundProcess {
+
     const OS_WINDOWS = 1;
     const OS_NIX     = 2;
     const OS_OTHER   = 3;
@@ -47,8 +48,7 @@ class BackgroundProcess
      *
      * @codeCoverageIgnore
      */
-    public function __construct($command = null)
-    {
+    public function __construct($command = null) {
         $this->command  = $command;
         $this->serverOS = $this->getOS();
     }
@@ -60,8 +60,7 @@ class BackgroundProcess
      *                           currently $outputFile has no effect when used in conjunction with a Windows server
      * @param bool $append - set to true if output should be appended to $outputfile
      */
-    public function run($outputFile = '/dev/null', $append = false)
-    {
+    public function run($outputFile = '/dev/null', $append = false) {
         if($this->command === null) {
             return;
         }
@@ -88,8 +87,7 @@ class BackgroundProcess
      *
      * @return bool TRUE if the process is running, FALSE if not.
      */
-    public function isRunning()
-    {
+    public function isRunning() {
         $this->checkSupportingOS('Cocur\BackgroundProcess can only check if a process is running on *nix-based '.
                                  'systems, such as Unix, Linux or Mac OS X. You are running "%s".');
 
@@ -109,8 +107,7 @@ class BackgroundProcess
      *
      * @return bool `true` if the processes was stopped, `false` otherwise.
      */
-    public function stop()
-    {
+    public function stop() {
         $this->checkSupportingOS('Cocur\BackgroundProcess can only stop a process on *nix-based systems, such as '.
                                  'Unix, Linux or Mac OS X. You are running "%s".');
 
@@ -130,8 +127,7 @@ class BackgroundProcess
      *
      * @return int The ID of the process
      */
-    public function getPid()
-    {
+    public function getPid() {
         $this->checkSupportingOS('Cocur\BackgroundProcess can only return the PID of a process on *nix-based systems, '.
                                  'such as Unix, Linux or Mac OS X. You are running "%s".');
 
@@ -143,16 +139,14 @@ class BackgroundProcess
      *
      * @param $pid
      */
-    protected function setPid($pid)
-    {
+    protected function setPid($pid) {
         $this->pid = $pid;
     }
 
     /**
      * @return int
      */
-    protected function getOS()
-    {
+    protected function getOS() {
         $os = strtoupper(PHP_OS);
 
         if (substr($os, 0, 3) === 'WIN') {
@@ -171,8 +165,7 @@ class BackgroundProcess
      *
      * @codeCoverageIgnore
      */
-    protected function checkSupportingOS($message)
-    {
+    protected function checkSupportingOS($message) {
         if ($this->getOS() !== self::OS_NIX) {
             throw new RuntimeException(sprintf($message, PHP_OS));
         }
