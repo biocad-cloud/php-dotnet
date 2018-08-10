@@ -70,7 +70,7 @@ date_default_timezone_set('UTC');
  * @param string $namespace php module file path
 */
 function Imports($namespace) {
-    return dotnet::Imports($namespace, $initiatorOffset = 1);
+    return dotnet::Imports($namespace);
 }
 
 /**
@@ -261,10 +261,10 @@ class dotnet {
         // Report all PHP errors (see changelog)
         error_reporting(E_ALL);
         set_error_handler(function($errno, $errstr, $errfile, $errline) {
-             # 2018-3-5 Call to a member function LoggingHandler() on a non-object
+            # 2018-3-5 Call to a member function LoggingHandler() on a non-object
             // $logs = dotnet::$error_log;
-             //$logs->LoggingHandler($errno, $errstr, $errfile, $errline);
-             console::error_handler($errno, $errstr, $errfile, $errline);
+            //$logs->LoggingHandler($errno, $errstr, $errfile, $errline);
+            console::error_handler($errno, $errstr, $errfile, $errline);
         }, E_ALL);
     }
     
@@ -287,36 +287,6 @@ class dotnet {
 		return ["lang" => $lang];
     }
 
-    public static function printMySqlTransaction() {
-        if (APP_DEBUG) {
-            echo debugView::GetMySQLView(self::$debugger);
-        }
-    }
-
-    /**
-     * php写日志文件只能够写在自己的wwwroot文件夹之中 
-    */
-    public static function writeMySqlLogs($onlyErrors = FALSE) {      
-        if (APP_DEBUG) {
-            if (self::$debugger->hasMySqlLogs()) {
-                if ($onlyErrors) {
-                    if (self::$debugger->hasMySqlErrs()) {
-                        self::writeMySqlLogs2();
-                    }
-                } else {
-                    self::writeMySqlLogs2();
-                }            
-            }
-        }
-    }
-
-    private static function writeMySqlLogs2() {
-        $log = "./data/mysql_logs.log";
-
-        FileSystem::WriteAllText($log, "<h5>API: $_SERVER[REQUEST_URI]</h5>\n", TRUE);
-        FileSystem::WriteAllText($log, "<ul>" . debugView::GetMySQLView(self::$debugger) . "</ul>\n", TRUE);
-    }
-
     /**
      * 对于这个函数额调用者而言，就是获取调用者所在的脚本的文件夹位置
      * 这个函数是使用``require_once``来进行模块调用的
@@ -328,7 +298,7 @@ class dotnet {
      * 
      * @return string 这个函数返回所导入的模块的完整的文件路径
     */
-    public static function Imports($mod, $initiatorOffset = 0) {        
+    public static function Imports($mod) {        
 
         // 因为WithSuffixExtension这个函数会需要依赖小数点来判断文件拓展名，
         // 所以对小数点的替换操作要在if判断之后进行  
@@ -356,17 +326,17 @@ class dotnet {
             } elseif (is_dir($dir = PHP_DOTNET . "/$mod/")) {
                 # 可能是一个文件夹
                 # 则认为是导入该命名空间文件夹下的所有的同级的文件夹文件
-                return self::importsAll(dirname($mod), $initiatorOffset + 1);
+                return self::importsAll(dirname($mod));
             }
         }        
 
-        self::__imports($mod, $initiatorOffset + 1);
+        self::__imports($mod);
 
         // 返回所导入的文件的全路径名
         return $mod;
     }
 
-    private static function __imports($mod, $initiatorOffset) {
+    private static function __imports($mod) {
         // 在这里导入需要导入的模块文件
         include_once($mod);
                 
@@ -414,16 +384,15 @@ class dotnet {
     /**
      * 导入目标命名空间文件夹之下的所有的php模块文件
     */
-    private static function importsAll($directory, $initiatorOffset) {
-
-        echo $directory . "\n\n";
-
+    private static function importsAll($directory) {
         $files = [];
         $dir = opendir($directory);
 
+        console::log("Imports all module files from $directory");
+
         while ($dir && ($file = readdir($dir)) !== false) {
             if (Utils::WithSuffixExtension($file, "php")) {
-                self::__imports($file, $initiatorOffset + 1);
+                self::__imports($file);
                 array_push($files, $file);
             }
         }
