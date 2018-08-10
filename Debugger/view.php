@@ -76,6 +76,9 @@ class debugView {
             ];
         }
 
+        $vars[] = ["name" => "REQUEST",     "value" => console::objDump($_REQUEST, false)];
+        $vars[] = ["name" => "ENVIRONMENT", "value" => console::objDump($_SERVER, false)];
+
         foreach(self::$vars as $name => $value) {           
             $vars[] = [
                 "name"  => $name, 
