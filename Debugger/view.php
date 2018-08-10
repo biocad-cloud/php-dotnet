@@ -72,7 +72,7 @@ class debugView {
         if (Utils::IsSessionStart()) {
             $vars[] = [
                 "name"  => "PHP_SESSION", 
-                "value" => $_SESSION
+                "value" => console::objDump($_SESSION, false)
             ];
         }
 
