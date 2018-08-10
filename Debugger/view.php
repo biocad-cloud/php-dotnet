@@ -87,18 +87,34 @@ class debugView {
     }
 
     private static function Summary() {
-        $js  = dirname(self::Template()) . "/jquery.jsonview.min.js";        
-        $js  = base64_encode(file_get_contents($js));
-        $css = dirname(self::Template()) . "/jquery.jsonview.min.css";
-        $css = file_get_contents($css);
-
-        return array_merge([
+        $js   = dirname(self::Template()) . "/jquery.jsonview.min.js";        
+        $js   = base64_encode(file_get_contents($js));
+        $css  = dirname(self::Template()) . "/jquery.jsonview.min.css";
+        $css  = file_get_contents($css);        
+        $vars = array_merge([
             "files"           => count(get_included_files()),
-            "memory_size"     => FileSystem::Lanudry(memory_get_usage()),
-            "total_time"      => time() - $_SERVER["REQUEST_TIME"],
+            "memory_size"     => FileSystem::Lanudry(memory_get_usage()),            
             "json_viewer_js"  => $js,
             "json_viewer_css" => $css
         ], self::$summary);
+
+        return self::benchmark($vars);
+    }
+
+    private static function benchmark($vars) {
+        # Benchmark : {$benchmark} ( Load:{$benchmark.load} Init:{$benchmark.init} Exec:{$benchmark.exec} Template:{$benchmark.template}
+        $total = $vars["benchmark.load"] + $vars["benchmark.init"] + $vars["benchmark.exec"] + $vars["benchmark.template"];
+        $total = Ubench::readableElapsedTime($total);
+
+        $vars["benchmark"]  = $total;
+        $vars["total_time"] = $total;
+
+        $vars["benchmark.load"]     = Ubench::readableElapsedTime($vars["benchmark.load"]);
+        $vars["benchmark.init"]     = Ubench::readableElapsedTime($vars["benchmark.init"]);
+        $vars["benchmark.exec"]     = Ubench::readableElapsedTime($vars["benchmark.exec"]);
+        $vars["benchmark.template"] = Ubench::readableElapsedTime($vars["benchmark.template"]);
+
+        return $vars;
     }
 
     /**
