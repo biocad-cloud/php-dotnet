@@ -145,11 +145,6 @@ class View {
 		$usingCache = DotNetRegistry::Read("CACHE", false);
 		$html       = file_get_contents($path);
 
-		if (APP_DEBUG) {
-			# 调试模式下缓存总是关闭的
-			$usingCache = false;
-		}
-
 		if ($usingCache && !Strings::Empty($path)) {			
 			# 在配置文件之中开启了缓存选项
 			$cache = self::getCachePath($path);			
