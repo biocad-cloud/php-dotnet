@@ -21,32 +21,41 @@ if (!defined('APP_DEBUG')) {
 */
 define("PHP_DOTNET", dirname(__FILE__));
 
-# 加载帮助函数模块
-include_once PHP_DOTNET . "/php/Utils.php";
-
-# 调试器必须要优先于其他模块进行加载，否则会出现
-# Uncaught Error: Class 'dotnetDebugger' not found
-# 的错误
-include_once PHP_DOTNET . "/Debugger/dotnetException.php";
-include_once PHP_DOTNET . "/Debugger/engine.php";
-include_once PHP_DOTNET . "/Debugger/view.php";
-include_once PHP_DOTNET . "/Debugger/console.php";
 include_once PHP_DOTNET . "/Debugger/Ubench/Ubench.php";
 
-# 加载工具框架
-include_once PHP_DOTNET . "/System/IO/File.php";
-include_once PHP_DOTNET . "/System/Diagnostics/StackTrace.php";
-include_once PHP_DOTNET . "/System/Text/StringBuilder.php";
-include_once PHP_DOTNET . "/Microsoft/VisualBasic/Strings.php";
-include_once PHP_DOTNET . "/Microsoft/VisualBasic/ApplicationServices/Debugger/Logging/LogFile.php";
+# 加载框架之中的一些必要的模块，并进行性能计数
+$load = new Ubench();
+$load->run(function() {
 
-include_once PHP_DOTNET . "/MSDN.php";
+    # 加载帮助函数模块
+    include_once PHP_DOTNET . "/php/Utils.php";
 
-# 加载Web框架部件
-include_once PHP_DOTNET . "/RFC7231/index.php";
-include_once PHP_DOTNET . "/Registry.php";
+    # 调试器必须要优先于其他模块进行加载，否则会出现
+    # Uncaught Error: Class 'dotnetDebugger' not found
+    # 的错误
+    include_once PHP_DOTNET . "/Debugger/dotnetException.php";
+    include_once PHP_DOTNET . "/Debugger/engine.php";
+    include_once PHP_DOTNET . "/Debugger/view.php";
+    include_once PHP_DOTNET . "/Debugger/console.php";
+
+    # 加载工具框架
+    include_once PHP_DOTNET . "/System/IO/File.php";
+    include_once PHP_DOTNET . "/System/Diagnostics/StackTrace.php";
+    include_once PHP_DOTNET . "/System/Text/StringBuilder.php";
+    include_once PHP_DOTNET . "/Microsoft/VisualBasic/Strings.php";
+    include_once PHP_DOTNET . "/Microsoft/VisualBasic/ApplicationServices/Debugger/Logging/LogFile.php";
+
+    include_once PHP_DOTNET . "/MSDN.php";
+
+    # 加载Web框架部件
+    include_once PHP_DOTNET . "/RFC7231/index.php";
+    include_once PHP_DOTNET . "/Registry.php";
+
+});
 
 debugView::LogEvent("--- App start ---");
+debugView::LogEvent("Load required modules in " . $load->getTime());
+debugView::AddItem("benchmark.load", $load->getTime(true));
 
 # PHP Warning:  date(): It is not safe to rely on the system's timezone settings. 
 # You are *required* to use the date.timezone setting or the date_default_timezone_set() function. 
@@ -203,6 +212,8 @@ class dotnet {
      *                             2. 包含有配置数据的字典数组
     */
 	public static function AutoLoad($config = NULL) {		       
+        $initiator = new Ubench();
+        $initiator->start();
 
         if (APP_DEBUG) {
             # 调试器必须先于Imports函数调用，否则会出现错误：
@@ -240,6 +251,10 @@ class dotnet {
         if (!DotNetRegistry::DisableErrorHandler()) {
             self::setupLogs();
         }
+
+        $initiator->end();
+        debugView::LogEvent("App init in " . $initiator->getTime());
+        debugView::AddItem("benchmark.init", $initiator->getTime(true));
     }
     
     private static function setupLogs() {        

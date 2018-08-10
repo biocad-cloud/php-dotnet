@@ -65,7 +65,7 @@ class View {
 		$html = self::Load($path, $vars, $lang, $suppressDebug);
 		$bench->end();
 
-		debugView::AddItem("benchmark.template", $bench->getTime());
+		debugView::AddItem("benchmark.template", $bench->getTime(true));
 		debugView::LogEvent("[Finish] Render html view");
 
 		echo $html;

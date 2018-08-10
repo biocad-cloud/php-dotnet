@@ -177,7 +177,7 @@ abstract class controller {
         }, $this);       
 
         debugView::LogEvent("[Finish] Handle user request");
-        debugView::AddItem("benchmark.exec", $bench->getTime());
+        debugView::AddItem("benchmark.exec", $bench->getTime(true));
 
         # 在末尾输出调试信息？
         # 只对view类型api调用的有效
