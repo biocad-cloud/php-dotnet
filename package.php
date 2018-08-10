@@ -371,23 +371,43 @@ class dotnet {
         include_once($mod);
                 
         if (APP_DEBUG) {
-            $bt    = debug_backtrace();             
-            $trace = array();
+            $initiator = [];
 
-            foreach($bt as $k=>$v) { 
-                // 解析出当前的栈片段信息
-                extract($v); 
-                array_push($trace, $file);    
-            } 
-
-            $initiatorOffset = 1 + $initiatorOffset;
-            $initiator       = $trace[$initiatorOffset];
-
-            # echo var_dump(self::$debugger);
-            if (!self::$debugger) {
-                 self::$debugger = new dotnetDebugger();    
+            foreach(debug_backtrace() as $k => $v) { 
+                // 解析出当前的栈片段信息                
+                if (self::isImportsCall($v)) {
+                    $initiator = $v["file"];
+                    break;
+                }
             }
+            
+            if (!self::$debugger) {
+                self::$debugger = new dotnetDebugger();    
+            }
+
             self::$debugger->add_loaded_script($mod, $initiator);
+        }
+    }
+
+    /**
+     * 判断当前的这个栈片段信息是否是Imports函数调用？
+    */
+    private static function isImportsCall($frame) {
+        $fileName  = $frame["file"];
+        $funcName  = $frame["function"];
+        $args      = $frame["args"];        
+        $is_dotnet = array_key_exists("class", $frame) && $frame["class"] === "dotnet";
+
+        if (basename($fileName) == basename(__FILE__)) {
+            return false;
+        } else if ($funcName !== "Imports") {
+            return false;
+        } else if ($args != 1) {
+            return false;
+        } else if ($is_dotnet) {
+            return false;
+        } else {
+            return true;
         }
     }
 

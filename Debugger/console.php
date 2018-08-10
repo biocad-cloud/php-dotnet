@@ -15,12 +15,10 @@ class console {
      * 在这个函数之中显示以及处理php的警告消息
     */
     public static function error_handler($errno, $errstr, $errfile, $errline) {
-        if (Strings::InStr($errstr, "data://text") > 0) {            
-            $errstr = substr($errstr, 0, 64) . "...";                
-        } 
+        echo $errstr . "\n\n\n\n\n";
         self::$logs[] = [
             "code"  => $errno, 
-            "msg"   => $errstr, 
+            "msg"   => Strings::Len($errstr) > 128 ? substr($errstr, 0, 128) . "..." : $errstr, 
             "file"  => self::shrinkPath($errfile), 
             "line"  => $errline, 
             "color" => "red"
