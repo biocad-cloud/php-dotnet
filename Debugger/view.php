@@ -71,8 +71,10 @@ class debugView {
         $envir = [];
         
         foreach(Utils::ArrayCopy($_SERVER) as $name => $value) {
-            
-            $vars[] = [
+            if ($name === "PATH" || $name === "PATHEXT") {
+                $value = explode(";", $value);
+            }
+            $envir[] = [
                 "name"  => $name, 
                 "value" => console::objDump($value, false)
             ];
