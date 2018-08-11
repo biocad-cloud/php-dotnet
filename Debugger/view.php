@@ -62,8 +62,23 @@ class debugView {
             "Events"   => self::$Events,
             "MySql"    => self::GetMySQLView(dotnet::$debugger),
             "Console"  => console::$logs,
-            "Vars"     => self::Vars()
+            "Vars"     => self::Vars(),
+            "Envir"    => self::Environment()
         ], self::Summary());
+    }
+
+    private static function Environment() {
+        $envir = [];
+        
+        foreach(Utils::ArrayCopy($_SERVER) as $name => $value) {
+            
+            $vars[] = [
+                "name"  => $name, 
+                "value" => console::objDump($value, false)
+            ];
+        }
+
+        return $envir;
     }
 
     private static function Vars() {
@@ -76,8 +91,10 @@ class debugView {
             ];
         }
 
-        $vars[] = ["name" => "REQUEST",     "value" => console::objDump($_REQUEST, false)];
-        $vars[] = ["name" => "ENVIRONMENT", "value" => console::objDump($_SERVER, false)];
+        $vars[] = [
+            "name"  => "REQUEST", 
+            "value" => console::objDump($_REQUEST, false)
+        ];        
 
         foreach(self::$vars as $name => $value) {           
             $vars[] = [
