@@ -67,6 +67,9 @@ class debugView {
         ], self::Summary());
     }
 
+    /**
+     * ``$_SERVER`` 环境变量
+    */
     private static function Environment() {
         $envir = [];
         
@@ -83,6 +86,9 @@ class debugView {
         return $envir;
     }
 
+    /**
+     * 显示用户视图的页面参数
+    */
     private static function Vars() {
         $vars = [];
 
@@ -133,9 +139,15 @@ class debugView {
         return self::benchmark($vars);
     }
 
+    /**
+     * 性能计数器 
+    */
     private static function benchmark($vars) {
         # Benchmark : {$benchmark} ( Load:{$benchmark.load} Init:{$benchmark.init} Exec:{$benchmark.exec} Template:{$benchmark.template}
-        $total = $vars["benchmark.load"] + $vars["benchmark.init"] + $vars["benchmark.exec"] + $vars["benchmark.template"];
+        $total = $vars["benchmark.load"] + 
+                 $vars["benchmark.init"] + 
+                 $vars["benchmark.exec"] + 
+                 $vars["benchmark.template"];
         $n     = 1000 / $total;
         $total = Ubench::readableElapsedTime($total);
 
@@ -181,39 +193,32 @@ class debugView {
      * @param dotnetDebugger $engine 
     */
 	public static function GetMySQLView($engine) {
-		
-        $mysql_history = $engine->mysql_history;
-
-        $MySql = array();
-        
+        $MySql   = [];        
         $queries = 0;
         $writes  = 0;
 
-		foreach ($mysql_history as $sql) {
-            
+		foreach ($engine->mysql_history as $sql) {
             $error = $sql["err"];
             $time  = $sql["time"];
             $type  = $sql["type"];
             $sql   = $sql["sql"];
             
-            if($type == "queries"){
+            if ($type == "queries") {
                 $queries++;
-            }else{
+            } else {
                 $writes++;
             }
         
-            //如果error不存在说明这条语句执行正常 
+            // 如果error不存在说明这条语句执行正常 
             if (!$error) {
                 $error = '';  
             }
             
-            $info = array(
+            $MySql[] = [
                 "error" => $error,
                 "sql"   => $sql,
                 "time"  => $time
-            );
-            
-            array_push($MySql, $info);
+            ];
         }
 
         self::AddItem("sql.queries", $queries);
