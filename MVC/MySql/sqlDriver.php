@@ -106,7 +106,7 @@ namespace MVC\MySql {
 		 * @return mysqli 返回数据库的链接
 		*/
 		protected function __init_MySql() {
-			$link = \mysqli_connect(
+			$link = @\mysqli_connect(
 				$this->host,   
 				$this->user,
 				$this->password, 
