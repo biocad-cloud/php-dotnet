@@ -15,6 +15,15 @@ include_once PHP_DOTNET . "/Microsoft/VisualBasic/Strings.php";
 class Utils {
 
     /**
+     * Does this php web server is running on a Windows server?
+     * 
+     * @return boolean
+    */
+    public static function IsWindowsOS() {
+        return strtoupper(substr(PHP_OS, 0, 3)) === 'WIN';            
+    }
+
+    /**
      * @return boolean
     */
     public static function IsSessionStart() {

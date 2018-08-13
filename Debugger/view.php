@@ -75,7 +75,11 @@ class debugView {
         
         foreach(Utils::ArrayCopy($_SERVER) as $name => $value) {
             if ($name === "PATH" || $name === "PATHEXT") {
-                $value = explode(";", $value);
+                if (Utils::IsWindowsOS()) {
+                    $value = explode(";", $value);
+                } else {
+                    $value = explode(":", $value);
+                }                
             }
             $envir[] = [
                 "name"  => $name, 
