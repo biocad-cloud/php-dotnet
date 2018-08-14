@@ -202,7 +202,7 @@ class debugView {
         $writes  = 0;
 
 		foreach ($engine->mysql_history as $sql) {
-            $error = $sql["err"];
+            $error = Utils::ReadValue($sql, "err", "");
             $time  = $sql["time"];
             $type  = $sql["type"];
             $sql   = $sql["sql"];
