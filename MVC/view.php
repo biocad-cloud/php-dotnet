@@ -14,6 +14,18 @@ Imports("Debugger.Ubench.Ubench");
 class View {
 	
 	/**
+	 * @param mixed $data any data
+	 * 
+	 * @return string script tag data with a given id. 
+	*/
+	public static function ScriptTagData($id, $data, $base64 = false) {
+		$data = json_encode($data);
+		$data = $base64 ? base64_encode($data) : $data;
+
+		return "<script id='$id' type='application/json'>$data</script>";
+	}
+
+	/**
 	 * 从html文件夹之中读取和当前函数同名的文件并显示出来
 	 * 
 	 * @param array $vars 需要在页面上进行显示的文本变量的值的键值对集合
