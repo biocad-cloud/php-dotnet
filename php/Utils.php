@@ -298,7 +298,7 @@ class Utils {
         $new = [];
 
         foreach($orderKeys as $key) {
-            $new[] = [$key => $array[$key]];
+            $new[$key] = $array[$key];
         }
 
         return $new;
