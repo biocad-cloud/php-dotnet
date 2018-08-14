@@ -291,22 +291,22 @@ class dotnet {
      * 对于这个函数额调用者而言，就是获取调用者所在的脚本的文件夹位置
      * 这个函数是使用``require_once``来进行模块调用的
      *
-     * @param string $mod: 直接为命名空间的路径，不需要考虑相对路径或者添加文件后缀名，例如需要导入VisualBasic的Strings模块的方法，
+     * @param string $module: 直接为命名空间的路径，不需要考虑相对路径或者添加文件后缀名，例如需要导入VisualBasic的Strings模块的方法，
      *                     只需要调用代码
      * 
      *     ``dotnet::Imports("Microsoft.VisualBasic.Strings");``
      * 
      * @return string 这个函数返回所导入的模块的完整的文件路径
     */
-    public static function Imports($mod) {        
+    public static function Imports($module) {        
 
         // 因为WithSuffixExtension这个函数会需要依赖小数点来判断文件拓展名，
         // 所以对小数点的替换操作要在if判断之后进行  
-        if (Utils::WithSuffixExtension($mod, "php")) {
-            $mod = str_replace(".", "/", $mod); 
-            $mod = PHP_DOTNET . "/{$mod}";
+        if (Utils::WithSuffixExtension($module, "php")) {
+            $module = str_replace(".", "/", $module); 
+            $module = PHP_DOTNET . "/{$module}";
         } else {
-            $mod = str_replace(".", "/", $mod);             
+            $module = str_replace(".", "/", $module);             
 
             # 2018-5-15 假若Imports("MVC.view");
             # 因为文件结构之中，有一个view.php和view文件夹
@@ -315,52 +315,60 @@ class dotnet {
             # 但是windows上面却不可以
             # 在这里假设偏向于加载文件
 
-            $php = PHP_DOTNET . "/{$mod}.php";
+            $php = PHP_DOTNET . "/{$module}.php";
 
             # 如果是文件存在，则只导入文件
             if (file_exists($php)) {
-                $mod = $php;
-            } elseif (file_exists($php = PHP_DOTNET . "/$mod/index.php")) {
+                $module = $php;
+            } elseif (file_exists($php = PHP_DOTNET . "/$module/index.php")) {
                 # 如果不存在，则使用index.php来进行判断
-                $mod = $php;
-            } elseif (is_dir($dir = PHP_DOTNET . "/$mod/")) {
+                $module = $php;
+            } elseif (is_dir($dir = PHP_DOTNET . "/$module/")) {
                 # 可能是一个文件夹
                 # 则认为是导入该命名空间文件夹下的所有的同级的文件夹文件
-                return self::importsAll(dirname($mod));
+                return self::importsAll(dirname($module));
             }
         }        
 
-        self::__imports($mod);
+        self::importsImpl($module);
 
         // 返回所导入的文件的全路径名
-        return $mod;
+        return $module;
     }
 
-    private static function __imports($mod) {
-        // 在这里导入需要导入的模块文件
-        include_once($mod);
+    /**
+     * 在这里导入需要导入的模块文件
+     * 
+     * @param string $module php文件的路径
+    */
+    private static function importsImpl($module) {
+        include_once($module);
                 
-        if (APP_DEBUG) {
-            $initiator = [];
-
-            foreach(debug_backtrace() as $k => $v) { 
-                // 解析出当前的栈片段信息                
-                if (self::isImportsCall($v)) {
-                    $initiator = $v["file"];
-                    break;
-                }
-            }
-            
-            if (!self::$debugger) {
-                self::$debugger = new dotnetDebugger();    
-            }
-
-            self::$debugger->add_loaded_script($mod, $initiator);
+        if (!APP_DEBUG) {
+            return;
         }
+
+        $initiator = [];
+
+        foreach(debug_backtrace() as $k => $v) { 
+            // 解析出当前的栈片段信息                
+            if (self::isImportsCall($v)) {
+                $initiator = $v["file"];
+                break;
+            }
+        }
+        
+        if (!self::$debugger) {
+            self::$debugger = new dotnetDebugger();    
+        }
+
+        self::$debugger->add_loaded_script($module, $initiator);
     }
 
     /**
      * 判断当前的这个栈片段信息是否是Imports函数调用？
+     * 
+     * @param array $frame 一个栈片段信息
     */
     private static function isImportsCall($frame) {
         $fileName  = $frame["file"];
@@ -383,6 +391,9 @@ class dotnet {
 
     /**
      * 导入目标命名空间文件夹之下的所有的php模块文件
+     * 
+     * 
+     * @param string $directory 包含有module文件的文件夹的路径
     */
     private static function importsAll($directory) {
         $files = [];
@@ -392,7 +403,7 @@ class dotnet {
 
         while ($dir && ($file = readdir($dir)) !== false) {
             if (Utils::WithSuffixExtension($file, "php")) {
-                self::__imports($file);
+                self::importsImpl($file);
                 array_push($files, $file);
             }
         }
