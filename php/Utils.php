@@ -292,6 +292,19 @@ class Utils {
     }
 
     /**
+     * 对字典数组之中的对象进行重新排序
+    */
+    public static function ArrayReorder($array, $orderKeys) {
+        $new = [];
+
+        foreach($orderKeys as $key) {
+            $new[] = [$key => $array[$key]];
+        }
+
+        return $new;
+    }
+
+    /**
      * 加密或者解密消息字符串
      * 
      * @param string $string 字符串，明文或密文
