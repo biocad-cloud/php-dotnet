@@ -593,6 +593,11 @@ class Table {
 			$SQL = "$SQL $groupBy";
 		}
 		if ($limit) {
+			# 2018-08-17
+			# 可能会出现limit的情况是，数据表太大了，如果要求性能的话，不加limit会导致
+			# 查询时间过长
+			# 当添加了limit的话，会明显加快效率，如果超过了limit，则最多返回limit条数的结果
+			# 例如将limit限制为1000，则如果超过了1000，就可以将结果显示为999+
 			$SQL = "$SQL $limit";
 		}
 
