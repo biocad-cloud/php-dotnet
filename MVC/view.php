@@ -161,7 +161,10 @@ class View {
 			# 在配置文件之中开启了缓存选项
 			$cache = self::getCachePath($path);			
 
-			if (!file_exists($cache)) {
+			# 在调试模式下总是不使用cache
+			# 为了将cache的信息也输出到调试终端，在这里设置条件为调试模式或者缓存文件
+			# 不存在都会进行缓存的生成
+			if (APP_DEBUG || !file_exists($cache)) {
 				# 当缓存文件不存在的时候，生成缓存，然后返回
 				
 				# 将html片段合并为一个完整的html文档
