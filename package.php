@@ -15,6 +15,13 @@ if (!defined('APP_DEBUG')) {
     define("APP_DEBUG", false);
 }
 
+if (!defined("SITE_PATH")) {
+    /**
+     * 当前的网站应用App的wwwroot文档根目录
+    */
+    define("SITE_PATH", $_SERVER["DOCUMENT_ROOT"]);
+}
+
 /**
  * PHP.NET框架的根文件夹位置
  * 获取得到package.php这个文件的所处的文件夹的位置

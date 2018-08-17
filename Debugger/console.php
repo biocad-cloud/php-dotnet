@@ -164,7 +164,7 @@ class console {
     /**
      * 返回输出缓冲区的内容
     */
-    private static function varDumpToString($var) {
+    public static function varDumpToString($var) {
         ob_start();
         var_dump($var);
         $result = ob_get_clean();
