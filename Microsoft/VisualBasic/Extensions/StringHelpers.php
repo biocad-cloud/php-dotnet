@@ -37,7 +37,14 @@ class StringHelpers {
             PREG_OFFSET_CAPTURE
         );
 
-        return !empty($matches) && count($matches) > 0;
+        if (empty($matches) || $matches === false || count($matches) !== 1) {
+            return false;
+        } else {
+            $pattern = $matches[0];
+            $pattern = $pattern[0];
+
+            return $pattern == $str;
+        }
     }
 
     /**
