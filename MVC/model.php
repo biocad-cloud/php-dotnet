@@ -569,7 +569,10 @@ class Table {
     }
 	
 	/**
+	 * 计数
+	 * 
 	 * select count(*) from where ``...``;
+	 * 这个方法可能会受到limit或者group by表达式的影响
 	 * 
 	 * @return integer
 	*/
@@ -578,6 +581,7 @@ class Table {
 		$assert  = $this->getWhere();
 		$groupBy = $this->getGroupBy();
 		$count   = "COUNT(*)";
+		$limit   = $this->getLimit();
 
         if ($assert) {
             $SQL = "SELECT $count FROM $ref WHERE $assert";
@@ -587,6 +591,9 @@ class Table {
 			
 		if ($groupBy) {
 			$SQL = "$SQL $groupBy";
+		}
+		if ($limit) {
+			$SQL = "$SQL $limit";
 		}
 
 		$count = $this->driver->ExecuteScalar($SQL);
