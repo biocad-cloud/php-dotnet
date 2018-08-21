@@ -2,6 +2,9 @@
 
 Imports("Microsoft.VisualBasic.Strings");
 
+/**
+ * String helper extensions
+*/
 class StringHelpers {
 
     /**
@@ -13,6 +16,35 @@ class StringHelpers {
     */
     public static function LineTokens($text) {
         return preg_split("/(\r|\n)+/", $text);
+    }
+
+    /**
+     * 判断目标字符串是否是目标正则表达式所表示的模式
+     * 
+     * @param string $str
+     * @param string $pattern 不需要添加//，这个函数会自动添加/包裹字符串
+     * 
+     * @return boolean
+    */
+    public static function IsPattern($str, $pattern) {
+        $matches = null;
+        $pattern = "/$pattern/";
+
+        preg_match(
+            $pattern, 
+            $str, 
+            $matches, 
+            PREG_OFFSET_CAPTURE
+        );
+
+        if (empty($matches) || $matches === false || count($matches) !== 1) {
+            return false;
+        } else {
+            $pattern = $matches[0];
+            $pattern = $pattern[0];
+
+            return $pattern == $str;
+        }
     }
 
     /**

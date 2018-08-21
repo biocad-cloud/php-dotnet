@@ -15,6 +15,13 @@ if (!defined('APP_DEBUG')) {
     define("APP_DEBUG", false);
 }
 
+if (!defined("SITE_PATH")) {
+    /**
+     * 当前的网站应用App的wwwroot文档根目录
+    */
+    define("SITE_PATH", $_SERVER["DOCUMENT_ROOT"]);
+}
+
 /**
  * PHP.NET框架的根文件夹位置
  * 获取得到package.php这个文件的所处的文件夹的位置
@@ -70,7 +77,7 @@ date_default_timezone_set('UTC');
  * @param string $namespace php module file path
 */
 function Imports($namespace) {
-    return dotnet::Imports($namespace, $initiatorOffset = 1);
+    return dotnet::Imports($namespace);
 }
 
 /**
@@ -263,10 +270,10 @@ class dotnet {
         // Report all PHP errors (see changelog)
         error_reporting(E_ALL);
         set_error_handler(function($errno, $errstr, $errfile, $errline) {
-             # 2018-3-5 Call to a member function LoggingHandler() on a non-object
+            # 2018-3-5 Call to a member function LoggingHandler() on a non-object
             // $logs = dotnet::$error_log;
-             //$logs->LoggingHandler($errno, $errstr, $errfile, $errline);
-             console::error_handler($errno, $errstr, $errfile, $errline);
+            //$logs->LoggingHandler($errno, $errstr, $errfile, $errline);
+            console::error_handler($errno, $errstr, $errfile, $errline);
         }, E_ALL);
     }
     
@@ -289,56 +296,26 @@ class dotnet {
 		return ["lang" => $lang];
     }
 
-    public static function printMySqlTransaction() {
-        if (APP_DEBUG) {
-            echo debugView::GetMySQLView(self::$debugger);
-        }
-    }
-
-    /**
-     * php写日志文件只能够写在自己的wwwroot文件夹之中 
-    */
-    public static function writeMySqlLogs($onlyErrors = FALSE) {      
-        if (APP_DEBUG) {
-            if (self::$debugger->hasMySqlLogs()) {
-                if ($onlyErrors) {
-                    if (self::$debugger->hasMySqlErrs()) {
-                        self::writeMySqlLogs2();
-                    }
-                } else {
-                    self::writeMySqlLogs2();
-                }            
-            }
-        }
-    }
-
-    private static function writeMySqlLogs2() {
-        $log = "./data/mysql_logs.log";
-
-        FileSystem::WriteAllText($log, "<h5>API: $_SERVER[REQUEST_URI]</h5>\n", TRUE);
-        FileSystem::WriteAllText($log, "<ul>" . debugView::GetMySQLView(self::$debugger) . "</ul>\n", TRUE);
-    }
-
     /**
      * 对于这个函数额调用者而言，就是获取调用者所在的脚本的文件夹位置
      * 这个函数是使用``require_once``来进行模块调用的
      *
-     * @param string $mod: 直接为命名空间的路径，不需要考虑相对路径或者添加文件后缀名，例如需要导入VisualBasic的Strings模块的方法，
+     * @param string $module: 直接为命名空间的路径，不需要考虑相对路径或者添加文件后缀名，例如需要导入VisualBasic的Strings模块的方法，
      *                     只需要调用代码
      * 
      *     ``dotnet::Imports("Microsoft.VisualBasic.Strings");``
      * 
      * @return string 这个函数返回所导入的模块的完整的文件路径
     */
-    public static function Imports($mod, $initiatorOffset = 0) {        
+    public static function Imports($module) {        
 
         // 因为WithSuffixExtension这个函数会需要依赖小数点来判断文件拓展名，
         // 所以对小数点的替换操作要在if判断之后进行  
-        if (Utils::WithSuffixExtension($mod, "php")) {
-            $mod = str_replace(".", "/", $mod); 
-            $mod = PHP_DOTNET . "/{$mod}";
+        if (Utils::WithSuffixExtension($module, "php")) {
+            $module = str_replace(".", "/", $module); 
+            $module = PHP_DOTNET . "/{$module}";
         } else {
-            $mod = str_replace(".", "/", $mod);             
+            $module = str_replace(".", "/", $module);             
 
             # 2018-5-15 假若Imports("MVC.view");
             # 因为文件结构之中，有一个view.php和view文件夹
@@ -347,65 +324,95 @@ class dotnet {
             # 但是windows上面却不可以
             # 在这里假设偏向于加载文件
 
-            $php = PHP_DOTNET . "/{$mod}.php";
+            $php = PHP_DOTNET . "/{$module}.php";
 
             # 如果是文件存在，则只导入文件
             if (file_exists($php)) {
-                $mod = $php;
-            } elseif (file_exists($php = PHP_DOTNET . "/$mod/index.php")) {
+                $module = $php;
+            } elseif (file_exists($php = PHP_DOTNET . "/$module/index.php")) {
                 # 如果不存在，则使用index.php来进行判断
-                $mod = $php;
-            } elseif (is_dir($dir = PHP_DOTNET . "/$mod/")) {
+                $module = $php;
+            } elseif (is_dir($dir = PHP_DOTNET . "/$module/")) {
                 # 可能是一个文件夹
                 # 则认为是导入该命名空间文件夹下的所有的同级的文件夹文件
-                return self::importsAll(dirname($mod), $initiatorOffset + 1);
+                return self::importsAll(dirname($module));
             }
         }        
 
-        self::__imports($mod, $initiatorOffset + 1);
+        self::importsImpl($module);
 
         // 返回所导入的文件的全路径名
-        return $mod;
+        return $module;
     }
 
-    private static function __imports($mod, $initiatorOffset) {
-        // 在这里导入需要导入的模块文件
-        include_once($mod);
+    /**
+     * 在这里导入需要导入的模块文件
+     * 
+     * @param string $module php文件的路径
+    */
+    private static function importsImpl($module) {
+        include_once($module);
                 
-        if (APP_DEBUG) {
-            $bt    = debug_backtrace();             
-            $trace = array();
+        if (!APP_DEBUG) {
+            return;
+        }
 
-            foreach($bt as $k=>$v) { 
-                // 解析出当前的栈片段信息
-                extract($v); 
-                array_push($trace, $file);    
-            } 
+        $initiator = [];
 
-            $initiatorOffset = 1 + $initiatorOffset;
-            $initiator       = $trace[$initiatorOffset];
-
-            # echo var_dump(self::$debugger);
-            if (!self::$debugger) {
-                 self::$debugger = new dotnetDebugger();    
+        foreach(debug_backtrace() as $k => $v) { 
+            // 解析出当前的栈片段信息                
+            if (self::isImportsCall($v)) {
+                $initiator = $v["file"];
+                break;
             }
-            self::$debugger->add_loaded_script($mod, $initiator);
+        }
+        
+        if (!self::$debugger) {
+            self::$debugger = new dotnetDebugger();    
+        }
+
+        self::$debugger->add_loaded_script($module, $initiator);
+    }
+
+    /**
+     * 判断当前的这个栈片段信息是否是Imports函数调用？
+     * 
+     * @param array $frame 一个栈片段信息
+    */
+    private static function isImportsCall($frame) {
+        $fileName  = $frame["file"];
+        $funcName  = $frame["function"];
+        $args      = $frame["args"];        
+        $is_dotnet = array_key_exists("class", $frame) && $frame["class"] === "dotnet";
+
+        if (basename($fileName) == basename(__FILE__)) {
+            return false;
+        } else if ($funcName !== "Imports") {
+            return false;
+        } else if ($args != 1) {
+            return false;
+        } else if ($is_dotnet) {
+            return false;
+        } else {
+            return true;
         }
     }
 
     /**
      * 导入目标命名空间文件夹之下的所有的php模块文件
+     * 
+     * 
+     * @param string $directory 包含有module文件的文件夹的路径
     */
-    private static function importsAll($directory, $initiatorOffset) {
-
-        echo $directory . "\n\n";
-
+    private static function importsAll($directory) {
         $files = [];
         $dir = opendir($directory);
 
+        console::log("Imports all module files from $directory");
+
         while ($dir && ($file = readdir($dir)) !== false) {
             if (Utils::WithSuffixExtension($file, "php")) {
-                self::__imports($file, $initiatorOffset + 1);
+                self::importsImpl($file);
                 array_push($files, $file);
             }
         }

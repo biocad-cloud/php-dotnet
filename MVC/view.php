@@ -14,6 +14,18 @@ Imports("Debugger.Ubench.Ubench");
 class View {
 	
 	/**
+	 * @param mixed $data any data
+	 * 
+	 * @return string script tag data with a given id. 
+	*/
+	public static function ScriptTagData($id, $data, $base64 = false) {
+		$data = json_encode($data);
+		$data = $base64 ? base64_encode($data) : $data;
+
+		return "<script id='$id' type='application/json'>$data</script>";
+	}
+
+	/**
 	 * 从html文件夹之中读取和当前函数同名的文件并显示出来
 	 * 
 	 * @param array $vars 需要在页面上进行显示的文本变量的值的键值对集合
@@ -149,7 +161,10 @@ class View {
 			# 在配置文件之中开启了缓存选项
 			$cache = self::getCachePath($path);			
 
-			if (!file_exists($cache)) {
+			# 在调试模式下总是不使用cache
+			# 为了将cache的信息也输出到调试终端，在这里设置条件为调试模式或者缓存文件
+			# 不存在都会进行缓存的生成
+			if (APP_DEBUG || !file_exists($cache)) {
 				# 当缓存文件不存在的时候，生成缓存，然后返回
 				
 				# 将html片段合并为一个完整的html文档
@@ -166,6 +181,7 @@ class View {
 				debugView::LogEvent("HTML view cache hits!");
 			}
 
+			$cache = realpath($cache);
 			debugView::LogEvent("Cache=$cache");
 			$html = file_get_contents($cache);
 		} else {

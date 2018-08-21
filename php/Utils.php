@@ -15,6 +15,22 @@ include_once PHP_DOTNET . "/Microsoft/VisualBasic/Strings.php";
 class Utils {
 
     /**
+     * Does this php web server is running on a Windows server?
+     * 
+     * @return boolean
+    */
+    public static function IsWindowsOS() {
+        return strtoupper(substr(PHP_OS, 0, 3)) === 'WIN';            
+    }
+
+    /**
+     * @return boolean
+    */
+    public static function IsSessionStart() {
+        return session_status() !== PHP_SESSION_NONE;
+    }
+
+    /**
      * 将只含有一个元素的[key => value]键值对转换为数组返回，可以使用list($key, $value)来进行赋值
      * 
      * @param array $table [key => value]
@@ -28,6 +44,22 @@ class Utils {
             
             return [$keys[0], $value];
         }
+    }
+
+    public static function TupleToObj($tuples,
+        $keyName   = "key", 
+        $valueName = "value") {
+
+        $list = [];
+
+        foreach($tuples as $tuple) {
+            $key   = $tuple[$keyName];
+            $value = $tuple[$valueName];
+
+            $list[$key] = $value;
+        }
+
+        return $list;
     }
 
     public static function KeyValueTuple($array, 
@@ -257,6 +289,19 @@ class Utils {
         } else {
             return (new ArrayObject($array))->getArrayCopy();
         }
+    }
+
+    /**
+     * 对字典数组之中的对象进行重新排序
+    */
+    public static function ArrayReorder($array, $orderKeys) {
+        $new = [];
+
+        foreach($orderKeys as $key) {
+            $new[$key] = $array[$key];
+        }
+
+        return $new;
     }
 
     /**

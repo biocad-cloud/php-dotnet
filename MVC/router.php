@@ -78,7 +78,7 @@ class Router {
 
 		# <api/user>security/modify_password
 		$pattern = "((<$fileNamePattern(/$fileNamePattern)*>)?$fileNamePattern)/($identifierPattern)";
-		$pattern = "#$pattern#";
+		$pattern = "#\{$pattern\}#";
 
 		# 使用正则匹配出所有的简写之后，对里面的字符串数据按照/作为分隔符拆开
 		# 然后拓展为正确的url
@@ -86,6 +86,7 @@ class Router {
 			$matches = $matches[0];
 			
 			foreach ($matches as $s) {
+				$s   = trim($s, "{}");
 				$dir = StringHelpers::GetStackValue($s, "<", ">");
 
 				if (Strings::Len($dir) > 0) {					
@@ -102,12 +103,15 @@ class Router {
 				$file   = $tokens[0];
 				$app    = $tokens[1];
 				$url    = "$dir/$file.php?app=$app";
+				
 				# 双引号下{}会被识别为字符串插值的操作
 				# 但是在单引号直接插入变量进行插值却失效了
 				# 所以在这里使用单引号加字符串连接来构建查找对象
-				$find   = '{'. $s .'}';
+				$find = '{'. $s .'}';
+				$html = Strings::Replace($html, $find, $url);
+				$s    = Strings::Replace($s, "<", "&lt;");
 
-				$html   = Strings::Replace($html, $find, $url);
+				console::log("<span style='color:blue;'><strong>$s</strong></span> => $url");
 			}
 		}
 

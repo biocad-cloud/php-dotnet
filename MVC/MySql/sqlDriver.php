@@ -32,6 +32,13 @@ namespace MVC\MySql {
 		 * @var string
 		*/
 		protected $last_mysql_expression;
+		
+		/**
+		 * Mysql链接的缓存池
+		 * 
+		 * @var array
+		*/
+		static $mysqliCache = [];
 
 		function __construct($database, $user, $password, $host = "localhost", $port = 3306) {
 			$this->database = $database;
@@ -60,7 +67,7 @@ namespace MVC\MySql {
 		public function Describe($tableName) {
 			$db   = $this->database;
 			$SQL  = "DESCRIBE `$db`.`$tableName`;";
-			$link = $this->__init_MySql();   
+			$link = $this->__init_MySql(false);   
 			
 			\mysqli_select_db($link, $db); 
 			\mysqli_query($link, "SET names 'utf8'");			      
@@ -83,7 +90,9 @@ namespace MVC\MySql {
 				\dotnet::ThrowException($message);
 			}
 
-			\mysqli_close($link);
+			# 2018-08-21 在这里是将打开的mysql链接加入到缓存池之中
+			# 所以在这里就不关闭mysql链接了
+			# \mysqli_close($link);
 
 			return $schema;
 		}		
@@ -103,10 +112,35 @@ namespace MVC\MySql {
 		 *    extension=php_mysql.dll
 		 *    extension=php_mysqli.dll
 		 * 
+		 * @param boolean $new 指示是否返回新的mysql链接而不是使用链接缓存池之中的旧对象
+		 * 
 		 * @return mysqli 返回数据库的链接
 		*/
-		protected function __init_MySql() {
-			$link = \mysqli_connect(
+		protected function __init_MySql($new = true) {
+			if ($new) {
+				return $this->openNew();
+			} else if (!array_key_exists($this->database, self::$mysqliCache)) {
+				self::$mysqliCache[$this->database] = $this->openNew();
+			}
+
+			$conn = self::$mysqliCache[$this->database];
+
+			# https://stackoverflow.com/questions/3075116/php-how-to-determine-if-a-database-connection-is-open
+			if (is_resource($conn) && get_resource_type($conn) === 'mysql link') {
+				# 这个链接是没有被关闭的
+				# do nothing
+				return $conn;
+			} else {
+				self::$mysqliCache[$this->database] = $this->openNew();
+				return self::$mysqliCache[$this->database];
+			}			
+		}
+
+		/**
+		 * @return mysqli
+		*/
+		private function openNew() {
+			$link = @\mysqli_connect(
 				$this->host,   
 				$this->user,
 				$this->password, 
@@ -151,6 +185,15 @@ namespace MVC\MySql {
 		*/
 		public function getLastMySql() {
 			return $this->last_mysql_expression;
+		}
+
+		/**
+		 * Returns a string description of the last mysql error
+		 * 
+		 * @return string The last mysql error
+		*/
+		public function getLastMySqlError() {
+			return \mysqli_error($this->__init_MySql(false));
 		}
     }
 

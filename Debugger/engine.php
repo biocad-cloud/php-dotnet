@@ -24,7 +24,8 @@ class dotnetDebugger {
 
 	/**
 	 * @param string $SQL
-	 * $type = "writes"表示对数据库进行了sql操作，对数据库的数据有影响， $type = "queries"表示只是对数据库进行了查询，对数据库的数据没有影响
+	 * @param string $type + ``writes``表示对数据库进行了sql操作，对数据库的数据有影响， 
+	 * 					   + ``queries``表示只是对数据库进行了查询，对数据库的数据没有影响
 	*/
 	public function add_mysql_history($SQL, $elapsed, $type) {
 		$this->mysql_history[] = [
@@ -43,6 +44,13 @@ class dotnetDebugger {
 		);
 
 		array_push($this->script_loading, $info);
+	}
+
+	/**
+	 * @return array [sql => error]
+	*/
+	public function last_mysql_error() {
+		return $this->mysql_history[count($this->mysql_history) - 1];
 	}
 
 	/**

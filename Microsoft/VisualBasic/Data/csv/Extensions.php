@@ -100,7 +100,8 @@ namespace Microsoft\VisualBasic\Data\csv {
             }
 
             fclose($file_handle);
-            return $line_of_text;            
+            
+            return $line_of_text;
         }
     }
 }

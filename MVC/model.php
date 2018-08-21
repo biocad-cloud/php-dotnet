@@ -57,10 +57,11 @@ class Table {
 	 *                             + (array) [dbname => table] when multiple database config exists.
 	*/
     function __construct($config, $condition = null) {
+		
 		# 2018-6-13 在这个构造函数之中对mysql的连接的初始化都是通过
 		# __initBaseOnExternalConfig这个函数来完成的
 		# 下面的if分支的差异仅在于不同的路径所获取得到的配置数据的方法上的差异
-
+		
 		if (is_string($config)) {	
 			// 如果是字符串，则说明这个是数据表的名称
 			// 通过表名称来进行初始化	
@@ -568,7 +569,10 @@ class Table {
     }
 	
 	/**
+	 * 计数
+	 * 
 	 * select count(*) from where ``...``;
+	 * 这个方法可能会受到limit或者group by表达式的影响
 	 * 
 	 * @return integer
 	*/
@@ -577,6 +581,7 @@ class Table {
 		$assert  = $this->getWhere();
 		$groupBy = $this->getGroupBy();
 		$count   = "COUNT(*)";
+		$limit   = $this->getLimit();
 
         if ($assert) {
             $SQL = "SELECT $count FROM $ref WHERE $assert";
@@ -586,6 +591,14 @@ class Table {
 			
 		if ($groupBy) {
 			$SQL = "$SQL $groupBy";
+		}
+		if ($limit) {
+			# 2018-08-17
+			# 可能会出现limit的情况是，数据表太大了，如果要求性能的话，不加limit会导致
+			# 查询时间过长
+			# 当添加了limit的话，会明显加快效率，如果超过了limit，则最多返回limit条数的结果
+			# 例如将limit限制为1000，则如果超过了1000，就可以将结果显示为999+
+			$SQL = "$SQL $limit";
 		}
 
 		$count = $this->driver->ExecuteScalar($SQL);

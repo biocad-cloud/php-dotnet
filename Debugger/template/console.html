@@ -13,13 +13,16 @@
 			<span style="color:#000;padding-right:12px;height:30px;line-height: 30px;display:inline-block;margin-right:3px;cursor: pointer;font-weight:700">Console</span>
 			<span style="color:#000;padding-right:12px;height:30px;line-height: 30px;display:inline-block;margin-right:3px;cursor: pointer;font-weight:700">SQL</span>
 			<span style="color:#000;padding-right:12px;height:30px;line-height: 30px;display:inline-block;margin-right:3px;cursor: pointer;font-weight:700">Variables</span>
+			<span style="color:#000;padding-right:12px;height:30px;line-height: 30px;display:inline-block;margin-right:3px;cursor: pointer;font-weight:700">Environment</span>
 		</div>
 
 		<div id="think_page_trace_tab_cont" style="overflow:auto;height:412px;padding: 0; line-height: 24px">
 			<div class="think_page_trace_tab_cont" style="display:none;">
 				<ol style="padding: 0; margin:0">
 					<li style="border-bottom:1px solid #EEE;font-size:14px;padding:0 12px">Http Header :
-						<?php echo Utils::Now(); ?> HTTP/1.1 GET :
+						<?php echo Utils::Now(); ?>
+						<?php echo $_SERVER["SERVER_PROTOCOL"]; ?>
+						<?php echo $_SERVER["REQUEST_METHOD"]; ?> :
 						<?php echo $_SERVER["REQUEST_URI"]; ?>
 					</li>
 					<li style="border-bottom:1px solid #EEE;font-size:14px;padding:0 12px">Benchmark : {$benchmark} ( Load:{$benchmark.load} Init:{$benchmark.init} Exec:{$benchmark.exec} Template:{$benchmark.template}
@@ -59,7 +62,10 @@
 
 					<foreach @Console>
 						<li style='border-bottom:1px solid #EEE;font-size:14px;padding:0 12px; color: @Console["color"];'>
-							<span style="display: inline-block;float: left;"><?php echo date("H:i:s", Utils::Now()); ?> &nbsp; [@Console["code"]] &nbsp;</span> <span style="display: inline-block;">@Console["msg"]</span> <span style="display: inline-block;float: right;">@Console["file"] at line @Console["line"]</span>
+							<span style="display: inline-block;float: left;">
+								@Console["time"] &nbsp;</span>
+							<span style="display: inline-block;">@Console["msg"]</span>
+							<span style="display: inline-block;float: right;">@Console["file"] at line @Console["line"]</span>
 						</li>
 					</foreach>
 
@@ -80,6 +86,16 @@
 					<foreach @Vars>
 						<li style="border-bottom:1px solid #EEE;font-size:14px;padding:0 12px">
 							<strong>@Vars["name"]:</strong> @Vars["value"]</li>
+					</foreach>
+
+				</ol>
+			</div>
+			<div class="think_page_trace_tab_cont" style="display:none;">
+				<ol style="padding: 0; margin:0">
+
+					<foreach @Envir>
+						<li style="border-bottom:1px solid #EEE;font-size:14px;padding:0 12px">
+							<strong>@Envir["name"]:</strong> @Envir["value"]</li>
 					</foreach>
 
 				</ol>
