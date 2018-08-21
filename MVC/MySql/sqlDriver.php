@@ -32,6 +32,13 @@ namespace MVC\MySql {
 		 * @var string
 		*/
 		protected $last_mysql_expression;
+		
+		/**
+		 * Mysql链接的缓存池
+		 * 
+		 * @var array
+		*/
+		static $mysqliCache = [];
 
 		function __construct($database, $user, $password, $host = "localhost", $port = 3306) {
 			$this->database = $database;
@@ -83,7 +90,9 @@ namespace MVC\MySql {
 				\dotnet::ThrowException($message);
 			}
 
-			\mysqli_close($link);
+			# 2018-08-21 在这里是将打开的mysql链接加入到缓存池之中
+			# 所以在这里就不关闭mysql链接了
+			# \mysqli_close($link);
 
 			return $schema;
 		}		
@@ -106,6 +115,17 @@ namespace MVC\MySql {
 		 * @return mysqli 返回数据库的链接
 		*/
 		protected function __init_MySql() {
+			if (!array_key_exists($this->database, self::$mysqliCache)) {
+				self::$mysqliCache[$this->database] = $this->openNew();
+			}
+
+			return self::$mysqliCache[$this->database];
+		}
+
+		/**
+		 * @return mysqli
+		*/
+		private function openNew() {
 			$link = @\mysqli_connect(
 				$this->host,   
 				$this->user,
@@ -151,6 +171,15 @@ namespace MVC\MySql {
 		*/
 		public function getLastMySql() {
 			return $this->last_mysql_expression;
+		}
+
+		/**
+		 * Returns a string description of the last mysql error
+		 * 
+		 * @return string The last mysql error
+		*/
+		public function getLastMySqlError() {
+			return \mysqli_error($this->__init_MySql());
 		}
     }
 
