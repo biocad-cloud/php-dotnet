@@ -86,7 +86,8 @@ namespace MVC\MySql {
 			}
 
 			\debugView::LogEvent("MySql query => ExecuteSql");
-			mysqli_close($mysql_exec);
+			# 因为采用了链接缓存池，所以在这里就不再关闭链接了
+			# mysqli_close($mysql_exec);
 			
 			return $out;
 		}
@@ -144,7 +145,8 @@ namespace MVC\MySql {
 				$resultStatus = "MySql error!";
 			}
 
-			mysqli_close($mysql_exec);
+			# 因为采用了链接缓存池，所以在这里就不再关闭链接了
+			# mysqli_close($mysql_exec);
 			\debugView::LogEvent("MySql query => Fetch => $resultStatus");
 
 			return $out;
