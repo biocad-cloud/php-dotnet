@@ -33,16 +33,29 @@ namespace MVC\MySql {
 
 		/**
 		 * 获取当前的这个实例之中所执行的最后一条MySql语句
+		 * 
+		 * @return string
 		*/
 		public function getLastMySql() {
 			return parent::getLastMySql();
 		}
+		
+		/**
+		 * Returns a string description of the last mysql error
+		 * 
+		 * @return string The last mysql error
+		*/
+		public function getLastMySqlError() {
+			return parent::getLastMySqlError();
+		}
 
 		/**
 		 * 使用这个函数来打开和mysql数据库的链接
+		 * 
+		 * @return mysqli 这个函数打开的是新的mysql数据库连接
 		*/
 		public function getMySqlLink() {
-			return parent::__init_MySql();
+			return parent::__init_MySql(true);
 		}
 
 		/**
@@ -51,7 +64,7 @@ namespace MVC\MySql {
 		*/
 		public function ExecuteSql($SQL) {
 			
-			$mysql_exec = parent::__init_MySql();			
+			$mysql_exec = parent::__init_MySql(false);			
 			
 			mysqli_select_db($mysql_exec, parent::GetDatabaseName()); 
 			mysqli_query($mysql_exec, "SET names 'utf8'");
@@ -106,7 +119,7 @@ namespace MVC\MySql {
 		 * @return boolean|array 如果数据库查询出错，会返回逻辑值False，反之会返回相对应的结果值
 		 */
 		public function Fetch($SQL) {
-			$mysql_exec = parent::__init_MySql();
+			$mysql_exec = parent::__init_MySql(false);
 
 			mysqli_select_db($mysql_exec, parent::GetDatabaseName()); 
 			mysqli_query($mysql_exec, "SET names 'utf8'");
@@ -154,9 +167,13 @@ namespace MVC\MySql {
 		
 		/**
 		 * 执行SQL查询然后返回一条数据
+		 * 
+		 * @param string $SQL
+		 * 
+		 * @return array
 		*/
 		public function ExecuteScalar($SQL) {			
-			$mysql_exec = parent::__init_MySql();
+			$mysql_exec = parent::__init_MySql(false);
 
 			mysqli_select_db($mysql_exec, parent::GetDatabaseName()); 
 			mysqli_query($mysql_exec, "SET names 'utf8'");

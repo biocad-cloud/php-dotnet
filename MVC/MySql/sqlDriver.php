@@ -67,7 +67,7 @@ namespace MVC\MySql {
 		public function Describe($tableName) {
 			$db   = $this->database;
 			$SQL  = "DESCRIBE `$db`.`$tableName`;";
-			$link = $this->__init_MySql();   
+			$link = $this->__init_MySql(false);   
 			
 			\mysqli_select_db($link, $db); 
 			\mysqli_query($link, "SET names 'utf8'");			      
@@ -193,7 +193,7 @@ namespace MVC\MySql {
 		 * @return string The last mysql error
 		*/
 		public function getLastMySqlError() {
-			return \mysqli_error($this->__init_MySql());
+			return \mysqli_error($this->__init_MySql(false));
 		}
     }
 
