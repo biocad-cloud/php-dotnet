@@ -168,6 +168,11 @@ namespace MVC\MySql\Expression {
          * @return string
         */
         public static function ValueExpression($value) {
+            if (strlen($value) == 0) {
+                # mysql值是一个空字符串
+                return "''";
+            }
+            
             if ($value[0] === "~") {
                 # 是一个表达式，则不需要额外的处理
                 # 只需要将第一个字符删除掉即可
@@ -191,6 +196,11 @@ namespace MVC\MySql\Expression {
          * @return string SQL语句之中的值表达式
         */
         public static function AutoValue($value) {
+            if (strlen($value) == 0) {
+                # mysql值是一个空字符串
+                return "''";
+            }
+
             if ($value[0] === "~") {
                 # 是一个表达式，则不需要额外的处理
                 # 只需要将第一个字符删除掉即可
