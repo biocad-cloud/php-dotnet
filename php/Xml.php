@@ -20,9 +20,7 @@ class XmlParser {
     // Use 'url' or 'contents' for the parameter 
     var $type; 
 
-
-    // function with the default parameter value 
-    function __construct($url='http://www.example.com', $type='url') { 
+    function __construct($url, $type = 'url') { 
         $this->type = $type; 
         $this->url  = $url; 
         $this->parse(); 
@@ -33,44 +31,64 @@ class XmlParser {
     */
     private function parse() {
         $this->parser = xml_parser_create();
-        $data         = ''; 
-
+       
         xml_set_object($this->parser, $this); 
         xml_set_element_handler($this->parser, 'startXML', 'endXML'); 
         xml_set_character_data_handler($this->parser, 'charXML');
 
         xml_parser_set_option($this->parser, XML_OPTION_CASE_FOLDING, false); 
 
-        if ($this->type == 'url') { 
+        if ($this->type == 'url') {
             // if use type = 'url' now we open the XML with fopen 
-            
-            if (!($fp = @fopen($this->url, 'rb'))) { 
-                $this->error("Cannot open {$this->url}"); 
-            } 
-
-            while (($data = fread($fp, 8192))) { 
-                if (!xml_parse($this->parser, $data, feof($fp))) { 
-                    $this->error(sprintf('XML error at line %d column %d', 
-                    xml_get_current_line_number($this->parser), 
-                    xml_get_current_column_number($this->parser))); 
-                } 
-            } 
-        } else if ($this->type == 'contents') { 
+            $this->parseResource();
+        } else if ($this->type == 'contents') {
             // Now we can pass the contents, maybe if you want 
             // to use CURL, SOCK or other method. 
-            $lines = explode("\n",$this->url); 
-            foreach ($lines as $val) { 
-                if (trim($val) == '') 
-                    continue; 
-                $data = $val . "\n"; 
-                if (!xml_parse($this->parser, $data)) { 
-                    $this->error(sprintf('XML error at line %d column %d', 
-                    xml_get_current_line_number($this->parser), 
-                    xml_get_current_column_number($this->parser))); 
-                } 
+            $this->parseContent();
+        } else {
+            self::error("Invalid data type!");
+        }
+    } 
+
+    private function parseContent() {
+        $lines = explode("\n", $this->url); 
+        $data  = "";
+        
+        foreach ($lines as $val) { 
+            if (trim($val) == '') {
+                continue; 
+            } else {
+                $data = $val . "\n";
+            }
+            
+            if (!xml_parse($this->parser, $data)) {
+                $this->throwFileError();
             } 
         } 
-    } 
+    }
+
+    private function throwFileError() {
+        $line = xml_get_current_line_number($this->parser);
+        $colm = xml_get_current_column_number($this->parser);
+        $msg  = 'XML error at line %d column %d';
+        $msg  = sprintf($msg, $line, $colm);
+
+        self::error($msg); 
+    }
+
+    private function parseResource() {
+        if (!($fp = @fopen($this->url, 'rb'))) { 
+            self::error("Cannot open {$this->url}"); 
+        } 
+
+        $data = ''; 
+
+        while (($data = fread($fp, 8192))) { 
+            if (!xml_parse($this->parser, $data, feof($fp))) {
+                $this->throwFileError();
+            } 
+        } 
+    }
 
     private function startXML($parser, $name, $attr) {
         $this->stack[$name] = []; 
