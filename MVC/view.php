@@ -256,13 +256,11 @@ class View {
 		if ($vars && count($vars) > 0) {
 			# 用户在Controller里面所定义的vars的优先级要高于lang之中的定义值
 			# 所以在这里会覆盖掉lang之中的值
-
 			foreach($vars as $key => $value) {
 				$lang[$key] = $value;
 			}
 
 			$vars = $lang;
-
 		} else {
 			# vars是空的，则直接用lang替换掉vars
 			$vars = $lang;

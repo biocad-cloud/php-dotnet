@@ -93,11 +93,11 @@ class debugView {
         global $_DOC;
 
         $vars = [];
-       
-		if (!empty($_DOC)) {
+
+		if (!empty($_DOC)) {  
             $vars[] = [
                 "name"  => "PHP_DOC", 
-                "value" => console::objDump($_DOC)
+                "value" => console::objDump($_DOC, false)
             ];
         }
 
