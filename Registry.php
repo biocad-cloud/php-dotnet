@@ -18,6 +18,9 @@ define("ERR_HANDLER",         "ERR_HANDLER");
 define("RFC7231",             "RFC7231");
 
 # MVC
+/**
+ * 默认的模板文档的文件夹为根文件夹下面的命名为html的文件夹
+*/
 define("MVC_VIEW_ROOT",    "MVC_VIEW_ROOT");
 define("DEFAULT_LANGUAGE", "DEFAULT_LANGUAGE");
 define("DEFAULT_AUTH_KEY", "DEFAULT_AUTH_KEY");
