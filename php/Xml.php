@@ -20,6 +20,9 @@ class XmlParser {
     // Use 'url' or 'contents' for the parameter 
     var $type; 
 
+    /**
+     * Passing url/contents
+    */
     function __construct($url, $type = 'url') { 
         $this->type = $type; 
         $this->url  = $url; 
