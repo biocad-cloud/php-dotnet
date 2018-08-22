@@ -200,7 +200,7 @@ abstract class controller {
     /**
      * 假若没有权限的话，会执行这个函数进行重定向
     */
-    abstract public function Redirect();    
+    abstract public function Redirect();
 
     /**
      * 在完成了这个函数的调用之后，服务器将会返回成功代码
