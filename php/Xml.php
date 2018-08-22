@@ -12,6 +12,12 @@ class XmlParser {
     var $parser; 
     var $data  = []; 
     var $stack = []; 
+
+    /**
+     * XML节点的访问路径，是一个临时变量来的
+     * 
+     * @var string 
+    */
     var $keys; 
 
     #endregion
@@ -29,6 +35,21 @@ class XmlParser {
         $this->parse(); 
     }
     
+    /**
+     * 从XML文件之中加载XMl数据，请注意这个函数是使用fopen进行数据的获取
+     * 如果是网络资源，请先使用其他方法得到数据之后再使用LoadFromXml函数进行解析
+    */
+    public static function LoadFromURL($url) {
+        return (new XmlParser($url, "url"))->data;
+    }
+
+    /**
+     * 从XML文本之中加载XML数据
+    */
+    public static function LoadFromXml($text) {
+        return (new XmlParser($text, "contents"))->data;
+    }
+
     /**
      * parse XML data 
     */
@@ -115,13 +136,26 @@ class XmlParser {
         } 
 
         if (array_key_exists($keys, $this->data)) {
-            $this->data[$keys][] = $attr; 
+            $x = $this->data[$keys];
+            
+            if (self::isSingleNode($x)) {
+                $this->data[$keys] = [$x, $attr];
+            } else {
+                $this->data[$keys][] = $attr; 
+            }
         } else {
             $this->data[$keys] = $attr;
         }
             
+        // keys是一个字符串，不是数组
         $this->keys = $keys;
     } 
+
+    private static function isSingleNode($x) {
+        $first = $x[array_keys($x)[0]];
+        $is    = count($x) > 1 && is_string($first);
+        return $is;
+    }
 
     private function endXML($parser, $name) { 
         end($this->stack);
@@ -134,7 +168,14 @@ class XmlParser {
     private function charXML($parser, $data) { 
         if (trim($data) != '') {
             $val = trim(str_replace("\n", '', $data));
-            $this->data[$this->keys]['data'][] = $val; 
+            
+            if (self::isSingleNode($this->data[$this->keys])) {
+                $this->data[$this->keys]['data']  = $val; 
+            } else {
+                $array = $this->data[$this->keys];
+                $array[count($array) - 1]['data'] = $val;
+                $this->data[$this->keys] = $array;
+            }
         }
     } 
 
