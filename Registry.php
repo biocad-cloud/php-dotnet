@@ -117,12 +117,8 @@ class DotNetRegistry {
      * @return string html模板文件的文件夹路径字符串值
     */
     public static function GetMVCViewDocumentRoot() {
-        $script = $_SERVER["SCRIPT_FILENAME"];
-        $script = explode("/", $script);
-        $script = $script[count($script) - 1];
-        $script = explode(".", $script)[0];
-
         $config = self::Read(MVC_VIEW_ROOT);
+        $script = self::GetInitialScriptName();
 
         if (empty($config) || count($config) == 0) {
             # 是空的，则返回默认路径
@@ -139,6 +135,15 @@ class DotNetRegistry {
         }
     }
 
+    public static function GetInitialScriptName() {
+        $script = $_SERVER["SCRIPT_FILENAME"];
+        $script = explode("/", $script);
+        $script = $script[count($script) - 1];
+        $script = explode(".", $script)[0];
+
+        return $script;
+    }
+
     public static function ConfigIsNothing() {
         return is_int(self::$config) || !self::$config;
     }
@@ -146,9 +151,12 @@ class DotNetRegistry {
     public static function SetMVCViewDocumentRoot($wwwroot) {
         if (self::ConfigIsNothing()) {
             self::$config = array();
-        }       
+        } 
+        if (!array_key_exists(MVC_VIEW_ROOT, slef::$config)) {
+            self::$config[MVC_VIEW_ROOT] = [];
+        }
 
-        self::$config[MVC_VIEW_ROOT] = $wwwroot;
+        self::$config[MVC_VIEW_ROOT][self::GetInitialScriptName()] = $wwwroot;
     }
 
     /**
