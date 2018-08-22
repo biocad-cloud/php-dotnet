@@ -151,7 +151,14 @@ class XmlParser {
         $this->keys = $keys;
     } 
 
+    /**
+     * 判断目标XML文档节点数据是一个单一的节点还是一个节点数组
+    */
     private static function isSingleNode($x) {
+        if (empty($x) || count($x) == 0) {
+            return true;
+        }
+
         $first = $x[array_keys($x)[0]];
         $is    = count($x) > 1 && is_string($first);
         return $is;
@@ -165,6 +172,9 @@ class XmlParser {
         }
     } 
 
+    /**
+     * 在这个函数之中处理xml的标签之间的文本数据
+    */
     private function charXML($parser, $data) { 
         if (trim($data) != '') {
             $val = trim(str_replace("\n", '', $data));
