@@ -6,6 +6,8 @@ Imports("php.Utils");
 
 /**
  * 解析php的函数注释文档
+ * 
+ * @author xieguigang
 */
 class DocComment {
 
@@ -17,6 +19,13 @@ class DocComment {
      * @var string
     */
     public $summary;
+    /**
+     * 模块的作者列表，作者之间使用英文分号进行分割
+     * 
+     * @var array
+    */
+    public $authors;
+
     /**
      * @var array
     */
@@ -47,6 +56,32 @@ class DocComment {
         $this->tags    = $tags;    
         $this->access  = Utils::ReadValue($tags, "access");
         $this->access  = Utils::ReadValue($this->access, "description");
+        $this->authors = $this->GetDescription("author");
+        
+        if (!empty($this->authors) || !Strings::Empty($this->authors)) {
+            $authors = explode(";", $this->authors);
+
+            for($i = 0; $i < count($authors); $i++) {
+                $authors[$i] = trim($authors[$i]);
+            }
+
+            $this->authors = $authors;
+        }
+    }
+
+    /**
+     * @param string $tagName
+     * 
+     * @return string The description property data in a given tag data
+    */
+    public function GetDescription($tagName, $default = null) {
+        $tagData = Utils::ReadValue($this->tags, $tagName);
+
+        if (empty($tagData)) {
+            return $default;
+        } else {
+            return Utils::ReadValue($tagData, "description", $default);
+        }
     }
 
     /**
@@ -94,7 +129,7 @@ class DocComment {
 
         $doc = new DocComment(trim($title), trim($summary), $tags);
         $doc->params = $params;        
-        $doc->return = $return;       
+        $doc->return = $return;
 
         return $doc;
     }
