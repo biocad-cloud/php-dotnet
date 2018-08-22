@@ -45,15 +45,11 @@ class debugView {
     /**
      * 在这里主要是将变量组织之后传递给视图引擎进行调试器视图的渲染
     */
-    public static function Display() {        
-        # 在这里自动添加结束标记
-        self::LogEvent("--- App Exit ---");
-        
-        View::Show(
-            debugView::Template(), 
-            debugView::union(), 
-            null, true
-        );
+    public static function Display() {      
+        $template = debugView::Template();  
+        $vars     = debugView::union();
+
+        View::Show($template, $vars, null, true);
     }
 
     private static function union() {

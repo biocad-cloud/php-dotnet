@@ -72,7 +72,7 @@ class View {
 			$html  = $bench->run(function() use ($path, $vars, $lang, $suppressDebug) {
 				return self::Load($path, $vars, $lang, $suppressDebug);
 			});
-		*/	
+		*/
 
 		# 这个普通的函数调用方式所得到的堆栈信息是正常的
 		$bench->start();
