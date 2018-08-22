@@ -7,29 +7,34 @@
 */
 class xx_xml { 
 
-    // XML parser variables 
+    #region "XML parser variables"
+
     var $parser; 
     var $name; 
     var $attr; 
-    var $data  = array(); 
-    var $stack = array(); 
+    var $data  = []; 
+    var $stack = []; 
     var $keys; 
     var $path; 
-    
+
+    #endregion
+
     // either you pass url atau contents. 
     // Use 'url' or 'contents' for the parameter 
     var $type; 
+
 
     // function with the default parameter value 
     function __construct($url='http://www.example.com', $type='url') { 
         $this->type = $type; 
         $this->url  = $url; 
         $this->parse(); 
-    } 
+    }
     
-    // parse XML data 
-    function parse() 
-    { 
+    /**
+     * parse XML data 
+    */
+    function parse() {
         $data = ''; 
         $this->parser = xml_parser_create(); 
         xml_set_object($this->parser, $this); 
@@ -69,45 +74,65 @@ class xx_xml {
         } 
     } 
 
-    function startXML($parser, $name, $attr)    { 
-        $this->stack[$name] = array(); 
-        $keys = ''; 
-        $total = count($this->stack)-1; 
-        $i=0; 
+    private function startXML($parser, $name, $attr) { 
+        $this->stack[$name] = []; 
+        $keys  = ''; 
+        $total = count($this->stack) - 1; 
+        $i     = 0; 
+
         foreach ($this->stack as $key => $val)    { 
             if (count($this->stack) > 1) { 
-                if ($total == $i) 
+                if ($total == $i) {
                     $keys .= $key; 
-                else 
-                    $keys .= $key . '|'; // The saparator 
-            } 
-            else 
-                $keys .= $key; 
-            $i++; 
+                } else {
+                    // The saparator
+                    $keys .= $key . '|'; 
+                }
+            } else {
+                $keys .= $key;
+            }
+
+            $i++;
         } 
-        if (array_key_exists($keys, $this->data))    { 
+
+        if (array_key_exists($keys, $this->data)) { 
             $this->data[$keys][] = $attr; 
-        }    else 
-            $this->data[$keys] = $attr; 
+        } else {
+            $this->data[$keys] = $attr;
+        }
+            
         $this->keys = $keys; 
     } 
 
-    function endXML($parser, $name)    { 
-        end($this->stack); 
-        if (key($this->stack) == $name) 
-            array_pop($this->stack); 
+    private function endXML($parser, $name) { 
+        end($this->stack);
+
+        if (key($this->stack) == $name) {
+            array_pop($this->stack);
+        }
     } 
 
-    function charXML($parser, $data)    { 
-        if (trim($data) != '') 
-            $this->data[$this->keys]['data'][] = trim(str_replace("\n", '', $data)); 
+    private function charXML($parser, $data) { 
+        if (trim($data) != '') {
+            $val = trim(str_replace("\n", '', $data));
+            $this->data[$this->keys]['data'][] = $val; 
+        }
     } 
 
-    function error($msg)    { 
-        echo "<div align=\"center\"> 
-            <font color=\"red\"><b>Error: $msg</b></font> 
+    /**
+     * 输出错误消息然后退出执行
+     * 
+     * @param string $msg 错误消息
+    */
+    public static function error($msg) { 
+        echo "
+            <div align='center'> 
+                <span style='color:red;'>
+                    <strong>Error: $msg</strong>
+                </span> 
             </div>"; 
-        exit(); 
+
+        exit(500); 
     } 
 } 
 
