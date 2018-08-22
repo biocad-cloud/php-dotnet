@@ -94,7 +94,16 @@ class debugView {
      * 显示用户视图的页面参数
     */
     private static function Vars() {
+        global $_DOC;
+
         $vars = [];
+       
+		if (!empty($_DOC)) {
+            $vars[] = [
+                "name"  => "PHP_DOC", 
+                "value" => console::objDump($_DOC)
+            ];
+        }
 
         if (Utils::IsSessionStart()) {
             $vars[] = [
