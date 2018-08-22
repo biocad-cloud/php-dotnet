@@ -5,17 +5,14 @@
  * 
  * > http://php.net/manual/zh/function.xml-parse.php
 */
-class xx_xml { 
+class XmlParser { 
 
     #region "XML parser variables"
 
     var $parser; 
-    var $name; 
-    var $attr; 
     var $data  = []; 
     var $stack = []; 
     var $keys; 
-    var $path; 
 
     #endregion
 
@@ -34,12 +31,13 @@ class xx_xml {
     /**
      * parse XML data 
     */
-    function parse() {
-        $data = ''; 
-        $this->parser = xml_parser_create(); 
+    private function parse() {
+        $this->parser = xml_parser_create();
+        $data         = ''; 
+
         xml_set_object($this->parser, $this); 
         xml_set_element_handler($this->parser, 'startXML', 'endXML'); 
-        xml_set_character_data_handler($this->parser, 'charXML'); 
+        xml_set_character_data_handler($this->parser, 'charXML');
 
         xml_parser_set_option($this->parser, XML_OPTION_CASE_FOLDING, false); 
 
@@ -74,13 +72,13 @@ class xx_xml {
         } 
     } 
 
-    private function startXML($parser, $name, $attr) { 
+    private function startXML($parser, $name, $attr) {
         $this->stack[$name] = []; 
         $keys  = ''; 
         $total = count($this->stack) - 1; 
         $i     = 0; 
 
-        foreach ($this->stack as $key => $val)    { 
+        foreach ($this->stack as $key => $val) {
             if (count($this->stack) > 1) { 
                 if ($total == $i) {
                     $keys .= $key; 
@@ -95,13 +93,13 @@ class xx_xml {
             $i++;
         } 
 
-        if (array_key_exists($keys, $this->data)) { 
+        if (array_key_exists($keys, $this->data)) {
             $this->data[$keys][] = $attr; 
         } else {
             $this->data[$keys] = $attr;
         }
             
-        $this->keys = $keys; 
+        $this->keys = $keys;
     } 
 
     private function endXML($parser, $name) { 
