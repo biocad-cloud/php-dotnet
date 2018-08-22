@@ -10,6 +10,8 @@ Imports("Debugger.Ubench.Ubench");
 
 /**
  * html user interface view handler
+ * 
+ * @author xieguigang
 */
 class View {
 	
@@ -70,7 +72,7 @@ class View {
 			$html  = $bench->run(function() use ($path, $vars, $lang, $suppressDebug) {
 				return self::Load($path, $vars, $lang, $suppressDebug);
 			});
-		*/	
+		*/
 
 		# 这个普通的函数调用方式所得到的堆栈信息是正常的
 		$bench->start();
@@ -114,23 +116,14 @@ class View {
 	 * 这个函数还会额外的处理includes关系
 	*/
 	public static function Load($path, $vars = NULL, $lang = null, $suppressDebug = false) {
+		global $_DOC;
+		
 		if (Strings::Empty($lang)) {
 			$lang = dotnet::GetLanguageConfig()["lang"];	
 		}			
+		
 		$vars = self::LoadLanguage($path, $lang, $vars);
-
-		global $_DOC;
-
-		if (!empty($_DOC)) {
-			if (!empty($vars) && count($vars) > 0) {
-				if (!array_key_exists("title", $vars)) {
-					$vars["title"] = $_DOC->title;
-				}
-			} else {
-				# $vars是空的
-				$vars = ["title" => $_DOC->title]; 
-			}
-		}
+		$vars = self::unionPhpDocs($_DOC, $vars);
 
 		if (file_exists($path)) {
 			$html = self::loadTemplate($path);
@@ -144,6 +137,45 @@ class View {
 		}
 
 		return View::InterpolateTemplate($html, $vars);
+	}
+
+	/**
+	 * 将php注释写入到html的meta信息之中
+	 * 
+	 * 在这里主要是使用php的注释文档进行填充html的head部分所定义的meta数据的信息
+	 * 如果需要进行填充的话，需要html文档之中有title，description，authors变量
+	 * title变量是单独的<title>标签标记，description和authors则写入在<meta>标签里面
+	 * 
+	 * @param DocComment $_DOC
+	 * @param array $vars
+	 * 
+	 * @return array
+	*/
+	private static function unionPhpDocs($_DOC, $vars) {
+		if (empty($_DOC)) {
+			return $vars;
+		}
+
+		if (!empty($vars) && count($vars) > 0) {
+			if (!array_key_exists("title", $vars)) {
+				$vars["title"] = $_DOC->title;
+			}
+			if (!array_key_exists("description", $vars)) {
+				$vars["description"] = $_DOC->summary;
+			}
+			if (!array_key_exists("authors", $vars) && !empty($_DOC->authors)) {
+				$vars["authors"] = join(", ", $_DOC->authors);
+			}
+		} else {
+			# $vars是空的
+			$vars = [
+				"title"       => $_DOC->title, 
+				"description" => $_DOC->summary,
+				"authors"     => Strings::Join($_DOC->authors, ", ")
+			]; 
+		}
+
+		return $vars;
 	}
 
 	/**
@@ -224,13 +256,11 @@ class View {
 		if ($vars && count($vars) > 0) {
 			# 用户在Controller里面所定义的vars的优先级要高于lang之中的定义值
 			# 所以在这里会覆盖掉lang之中的值
-
 			foreach($vars as $key => $value) {
 				$lang[$key] = $value;
 			}
 
 			$vars = $lang;
-
 		} else {
 			# vars是空的，则直接用lang替换掉vars
 			$vars = $lang;

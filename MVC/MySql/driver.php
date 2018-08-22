@@ -21,22 +21,41 @@ namespace MVC\MySql {
 		 * @param string $host
 		 * @param integer $port
 		*/
-		function __construct($database, $user, $password, $host = "localhost", $port = 3306) {
+		function __construct(
+			$database, 
+			$user, 
+			$password, 
+			$host = "localhost", 
+			$port = 3306) {
+				
 			parent::__construct($database, $user, $password, $host, $port);
 		}
 
 		/**
 		 * 获取当前的这个实例之中所执行的最后一条MySql语句
+		 * 
+		 * @return string
 		*/
 		public function getLastMySql() {
 			return parent::getLastMySql();
 		}
+		
+		/**
+		 * Returns a string description of the last mysql error
+		 * 
+		 * @return string The last mysql error
+		*/
+		public function getLastMySqlError() {
+			return parent::getLastMySqlError();
+		}
 
 		/**
 		 * 使用这个函数来打开和mysql数据库的链接
+		 * 
+		 * @return mysqli 这个函数打开的是新的mysql数据库连接
 		*/
 		public function getMySqlLink() {
-			return parent::__init_MySql();
+			return parent::__init_MySql(true);
 		}
 
 		/**
@@ -45,7 +64,7 @@ namespace MVC\MySql {
 		*/
 		public function ExecuteSql($SQL) {
 			
-			$mysql_exec = parent::__init_MySql();			
+			$mysql_exec = parent::__init_MySql(false);			
 			
 			mysqli_select_db($mysql_exec, parent::GetDatabaseName()); 
 			mysqli_query($mysql_exec, "SET names 'utf8'");
@@ -80,7 +99,8 @@ namespace MVC\MySql {
 			}
 
 			\debugView::LogEvent("MySql query => ExecuteSql");
-			mysqli_close($mysql_exec);
+			# 因为采用了链接缓存池，所以在这里就不再关闭链接了
+			# mysqli_close($mysql_exec);
 			
 			return $out;
 		}
@@ -99,7 +119,7 @@ namespace MVC\MySql {
 		 * @return boolean|array 如果数据库查询出错，会返回逻辑值False，反之会返回相对应的结果值
 		 */
 		public function Fetch($SQL) {
-			$mysql_exec = parent::__init_MySql();
+			$mysql_exec = parent::__init_MySql(false);
 
 			mysqli_select_db($mysql_exec, parent::GetDatabaseName()); 
 			mysqli_query($mysql_exec, "SET names 'utf8'");
@@ -138,7 +158,8 @@ namespace MVC\MySql {
 				$resultStatus = "MySql error!";
 			}
 
-			mysqli_close($mysql_exec);
+			# 因为采用了链接缓存池，所以在这里就不再关闭链接了
+			# mysqli_close($mysql_exec);
 			\debugView::LogEvent("MySql query => Fetch => $resultStatus");
 
 			return $out;
@@ -146,9 +167,13 @@ namespace MVC\MySql {
 		
 		/**
 		 * 执行SQL查询然后返回一条数据
+		 * 
+		 * @param string $SQL
+		 * 
+		 * @return array
 		*/
 		public function ExecuteScalar($SQL) {			
-			$mysql_exec = parent::__init_MySql();
+			$mysql_exec = parent::__init_MySql(false);
 
 			mysqli_select_db($mysql_exec, parent::GetDatabaseName()); 
 			mysqli_query($mysql_exec, "SET names 'utf8'");
@@ -174,74 +199,6 @@ namespace MVC\MySql {
 			} else {
 				return false;
 			}
-		}
-    }
-
-    /**
-     * 这个模块并不执行mysql语句，而是将mysql语句显示出来
-    */
-    class MySqlDebugger extends sqlDriver implements ISqlDriver {
-
-		private $buffer;
-
-		/**
-		 * @param resource $buffer 将SQL语句进行调试输出的句柄值，默认是将SQL语句打印在
-		 *                         终端上面或者可以通过这个构造函数参数指定一个文件
-		 * 
-		 * @abstract 因为上层调用的表模型对象任然会需要schema信息来生成SQL语句，
-		 *           所以这个调试器对象尽管并不执行SQL语句，但是仍然会需求数据库
-		 *           连接参数来提供表结构信息
-		*/
-		function __construct($database, $user, $password, $host = "localhost", $port = 3306, $buffer = null) {
-			parent::__construct($database, $user, $password, $host, $port);
-			
-			if ($buffer) {
-				$this->buffer = $buffer;
-			} else {
-				// 如果函数参数为空的话，默认是将调试数据打印在终端上面的
-				$this->buffer = self::ConsoleBuffer();
-			}			
-		}
-
-		/**
-		 * 向一个文本文件输出文本数据
-		*/
-		public static function FileBuffer($filePath) {
-			$parent = dirname($filePath);			
-			mkdir($parent, 0777, true);
-			return fopen($filePath, "w+");
-		}
-
-		/**
-		 * 向终端输出文本数据
-		*/
-		public static function ConsoleBuffer() {
-			return fopen('php://stdout', 'w');
-		}
-
-		public function getLastMySql() {
-			return parent::getLastMySql();
-		}
-
-		public function ExecuteSql($SQL) {
-			$this->last_mysql_expression = $SQL;
-			fwrite($this->buffer, "$SQL\n");
-
-			return null;
-		}
-
-		public function Fetch($SQL) {
-			$this->last_mysql_expression = $SQL;
-			fwrite($this->buffer, "$SQL\n");
-
-			return null;
-		}
-
-		public function ExecuteScalar($SQL) {
-			$this->last_mysql_expression = $SQL;
-			fwrite($this->buffer, "$SQL\n");
-
-			return null;
 		}
     }
 }

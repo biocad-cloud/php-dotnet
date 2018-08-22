@@ -182,6 +182,8 @@ abstract class controller {
         # 在末尾输出调试信息？
         # 只对view类型api调用的有效
 		if (APP_DEBUG && $this->getUsage() == "view") {
+            # 在这里自动添加结束标记
+            debugView::LogEvent("--- App Exit ---");
 			debugView::Display();
         }
         

@@ -138,7 +138,7 @@ class console {
     /**
      * @param boolean $var_dump 是进行var_dump输出还是普通的字符串输出？
     */
-    public static function objDump($obj, $var_dump) {        
+    public static function objDump($obj, $var_dump = true) {        
         if (is_array($obj) || is_object($obj)) {
             $id   = "json" . Utils::RandomASCIIString(6);
             $json = json_encode($obj);
