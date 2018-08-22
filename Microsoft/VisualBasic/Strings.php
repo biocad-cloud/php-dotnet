@@ -36,7 +36,14 @@ class Strings {
 	 * @return string Returns a string created by joining a number of substrings contained in an array.
 	*/
 	public static function Join($list, $deli = " ") {
-		return join($deli, $list);
+		if (empty($list)) {
+			# 20180822 如果参数数组是空的话，会出现php警告
+			# join(): Invalid arguments passed 
+			# 在这里判断一下
+			return "";
+		} else {
+			return join($deli, $list);
+		}		
 	}
 	
 	/**

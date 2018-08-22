@@ -163,7 +163,7 @@ class View {
 			if (!array_key_exists("description", $vars)) {
 				$vars["description"] = $_DOC->summary;
 			}
-			if (!array_key_exists("authors", $vars)) {
+			if (!array_key_exists("authors", $vars) && !empty($_DOC->authors)) {
 				$vars["authors"] = join(", ", $_DOC->authors);
 			}
 		} else {
@@ -171,7 +171,7 @@ class View {
 			$vars = [
 				"title"       => $_DOC->title, 
 				"description" => $_DOC->summary,
-				"authors"     => join(", ", $_DOC->authors)
+				"authors"     => Strings::Join($_DOC->authors, ", ")
 			]; 
 		}
 
