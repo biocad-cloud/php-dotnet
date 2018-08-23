@@ -77,9 +77,11 @@ abstract class controller {
      * 
      * @return string Returns the controller api return type:
      * 
-     *    - `api`  This controller is a rest API, and returns a json string, not html document.
-     *    - `view` This controller is a html view api, and returns the html document.
-     *    - `soap` This controller is a soap API, and returns a XML document.
+     *    - `api`    This controller is a rest API, and returns a json string, not html document.
+     *    - `view`   This controller is a html view api, and returns the html document.
+     *    - `soap`   This controller is a soap API, and returns a XML document.
+     *    - `router` This controller is a browser redirect controls, browser will be redirect to 
+     *               another location.
      * 
     */
     public function getUsage() {
@@ -113,6 +115,9 @@ abstract class controller {
                 break;
             case "soap":
                 header("Content-Type: text/xml");
+                break;
+            case "router":
+                # 浏览器重定向这里怎么表述？
                 break;
 
             default:
@@ -181,7 +186,7 @@ abstract class controller {
 
         # 在末尾输出调试信息？
         # 只对view类型api调用的有效
-		if (APP_DEBUG && $this->getUsage() == "view") {
+		if (APP_DEBUG && strtolower($this->getUsage()) == "view") {
             # 在这里自动添加结束标记
             debugView::LogEvent("--- App Exit ---");
 			debugView::Display();

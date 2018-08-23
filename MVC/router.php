@@ -47,6 +47,17 @@ class Router {
 	}
 
 	/**
+	 * 设置简写字符串的匹配的规则
+	 * 文件名除了一些在文件系统上的非法字符串之外，其他的字符串都是能够被匹配上的
+	 * 但是在这里规定文件名只能够使用数字字母以及小数点下划线
+	*/
+	const fileNamePattern = '[a-zA-Z0-9\_\.]+';
+	/**
+	 * php之中的标识符则只允许字母，数字和下划线
+	*/
+	const identifierPattern = "[a-zA-Z0-9\_]+";
+
+	/**
 	 * 为了方便，在html里面的控制器的链接可能为简写形式，例如：``{index/upload}``
 	 * 则根据控制器的解析规则，应该在这个函数之中被拓展为结果url字符串：
 	 * 
@@ -69,50 +80,50 @@ class Router {
 	 * @param string $html 包含有路由器规则占位符的HTML文档 
 	*/
 	public static function AssignController($html) {
-		# 设置简写字符串的匹配的规则
-		# 文件名除了一些在文件系统上的非法字符串之外，其他的字符串都是能够被匹配上的
-		# 但是在这里规定文件名只能够使用数字字母以及小数点下划线
-		$fileNamePattern = '[a-zA-Z0-9\_\.]+';
-		# php之中的标识符则只允许字母，数字和下划线
-		$identifierPattern = "[a-zA-Z0-9\_]+";
+		$fileName   = self::fileNamePattern;
+		$identifier = self::identifierPattern; 
 
 		# <api/user>security/modify_password
-		$pattern = "((<$fileNamePattern(/$fileNamePattern)*>)?$fileNamePattern)/($identifierPattern)";
+		$pattern = "((<$fileName(/$fileName)*>)?$fileName)/($identifier)";
 		$pattern = "#\{$pattern\}#";
 
 		# 使用正则匹配出所有的简写之后，对里面的字符串数据按照/作为分隔符拆开
 		# 然后拓展为正确的url
 		if (preg_match_all($pattern, $html, $matches, PREG_PATTERN_ORDER) > 0) {
-			$matches = $matches[0];
-			
-			foreach ($matches as $s) {
-				$s   = trim($s, "{}");
-				$dir = StringHelpers::GetStackValue($s, "<", ">");
+			$html = self::assignImpl($html, $matches[0]);
+		}
 
-				if (Strings::Len($dir) > 0) {					
-					# 因为在这里需要使用dir变量进行替换，所以dir应该在route变量的后面，
-					# 即在完成替换之后才赋值
-					$route = Strings::Replace($s, "<$dir>", "");
-					$dir   = "/$dir";
-				} else {
-					$dir   = "";
-					$route = $s; 
-				}
+		return $html;
+	}
 
-				$tokens = Strings::Split($route, "/");
-				$file   = $tokens[0];
-				$app    = $tokens[1];
-				$url    = "$dir/$file.php?app=$app";
-				
-				# 双引号下{}会被识别为字符串插值的操作
-				# 但是在单引号直接插入变量进行插值却失效了
-				# 所以在这里使用单引号加字符串连接来构建查找对象
-				$find = '{'. $s .'}';
-				$html = Strings::Replace($html, $find, $url);
-				$s    = Strings::Replace($s, "<", "&lt;");
+	private static function assignImpl($html, $matches) {
+		foreach ($matches as $s) {
+			$s   = trim($s, "{}");
+			$dir = StringHelpers::GetStackValue($s, "<", ">");
 
-				console::log("<span style='color:blue;'><strong>$s</strong></span> => $url");
+			if (Strings::Len($dir) > 0) {					
+				# 因为在这里需要使用dir变量进行替换，所以dir应该在route变量的后面，
+				# 即在完成替换之后才赋值
+				$route = Strings::Replace($s, "<$dir>", "");
+				$dir   = "/$dir";
+			} else {
+				$dir   = "";
+				$route = $s; 
 			}
+
+			$tokens = Strings::Split($route, "/");
+			$file   = $tokens[0];
+			$app    = $tokens[1];
+			$url    = "$dir/$file.php?app=$app";
+			
+			# 双引号下{}会被识别为字符串插值的操作
+			# 但是在单引号直接插入变量进行插值却失效了
+			# 所以在这里使用单引号加字符串连接来构建查找对象
+			$find = '{'. $s .'}';
+			$html = Strings::Replace($html, $find, $url);
+			$s    = Strings::Replace($s, "<", "&lt;");
+
+			console::log("<span style='color:blue;'><strong>$s</strong></span> =&gt; $url");
 		}
 
 		return $html;
