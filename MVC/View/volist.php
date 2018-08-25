@@ -2,7 +2,9 @@
 
 namespace MVC\Views {
 
+    Imports("System.Text.RegularExpressions.Regex");
     Imports("MVC.View.foreach");
+    Imports("php.Utils");
     Imports("php.Xml");
 
     /**
@@ -39,9 +41,6 @@ namespace MVC\Views {
         }
 
         private static function processTemplate($volist, $template, $array) {
-            # 对变量名称的重命名，如果不存在，则直接使用原始变量名来进行命名
-            $id    = \Utils::ReadValue($volist, "id", $volist["name"]);
-
             if (empty($array) || count($array) == 0) {
                 # 如果变量数组是空的时候的替代值
                 $name  = $volist["name"];
@@ -53,7 +52,19 @@ namespace MVC\Views {
                 return $empty;
             }
             
-            
+            # 对变量名称的重命名，如果不存在，则直接使用原始变量名来进行命名
+            $id      = \Utils::ReadValue($volist, "id", $volist["name"]);
+            $pattern = "\{\}";
+            $vars    = \Regex::Matches($template, $pattern);
+
+            if (count($vars) == 0) {
+                # 没有定义模板变量？？
+                return "";
+            } else {
+                return self::buildImpl(
+                    $array, $template, $var, $vars
+                );
+            }
         }
     }
 }
