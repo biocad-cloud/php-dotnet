@@ -97,6 +97,8 @@ namespace MVC\Views {
                 $templ = $template . "";
 
                 foreach($vars as $ref => $name) {
+                    $ref   = $name["ref"];
+                    $name  = $name["name"];
                     $val   = \Utils::ReadValue($var, $name, "");                   
                     $templ = str_replace($ref, $val, $templ);
                 }
