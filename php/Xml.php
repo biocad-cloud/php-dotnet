@@ -59,7 +59,7 @@ class XmlParser {
     */
     private function parse() {
         $this->parser = xml_parser_create();
-       
+
         xml_set_object($this->parser, $this); 
         xml_set_element_handler($this->parser, 'startXML', 'endXML'); 
         xml_set_character_data_handler($this->parser, 'charXML');
@@ -199,14 +199,7 @@ class XmlParser {
      * @param string $msg 错误消息
     */
     public static function error($msg) { 
-        echo "
-            <div align='center'> 
-                <span style='color:red;'>
-                    <strong>Error: $msg</strong>
-                </span> 
-            </div>"; 
-
-        exit(500); 
+        \dotnet::ThrowException("XmlParser error: $msg"); 
     } 
 } 
 
