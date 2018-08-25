@@ -1,6 +1,7 @@
 <?php
 
 define("APP_DEBUG", true);
+define("SITE_PATH", dirname(__FILE__));
 
 include "../../package.php";
 include "App.php";

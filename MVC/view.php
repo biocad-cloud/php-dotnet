@@ -5,6 +5,7 @@ Imports("System.Linq.Enumerable");
 Imports("Microsoft.VisualBasic.Strings");
 Imports("MVC.View.foreach");
 Imports("MVC.View.inline");
+Imports("MVC.View.volist");
 Imports("Debugger.Ubench.Ubench");
 
 
