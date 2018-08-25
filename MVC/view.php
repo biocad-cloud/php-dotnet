@@ -39,6 +39,11 @@ class View {
 		$name    = StackTrace::GetCallerMethodName();
 		$wwwroot = DotNetRegistry::GetMVCViewDocumentRoot();
 
+		if (strpos($wwwroot, "./") == 0) {
+			$wwwroot = trim($wwwroot, ".");
+			$wwwroot = SITE_PATH . $wwwroot;
+		}
+
 		# 假若直接放在和index.php相同文件夹之下，那么apache服务器会优先读取
 		# index.html这个文件的，这就导致无法正确的通过这个框架来启动Web程序了
 		# 所以html文件规定放在html文件夹之中
@@ -50,7 +55,10 @@ class View {
 			$path = str_replace("//", "/", $path);
 		}		
 
-		console::log("HTML document path is: $path");		
+		console::log("HTML document path is: $path");
+		console::log("View name='$name'");
+		console::log("View wwwroot='$wwwroot'");
+
 		View::Show($path, $vars, $lang);
 	}
 	
