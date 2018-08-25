@@ -19,11 +19,42 @@ namespace MVC\Views {
             }
 
             foreach($templates as $template) {
-                $Xml = \XmlParser::LoadFromXml($template);
-                
+                $Xml    = \XmlParser::LoadFromXml($template);
+                $volist = $Xml["volist"]; 
+                # 变量名称，必须要存在这个属性值，否则无法得到渲染的数据源
+                $name = \Utils::ReadValue($volist, "name");
+
+                if (\Strings::Empty($name)) {
+                    $template = "<pre>$template</pre>";
+                    $msg      = "volist syntax error: variable name is missing.
+                        <br />
+                        <br />$template<br />";
+                    \dotnet::ThrowException($msg);
+                } else {
+                    $src  = \Utils::ReadValue($vars, $name);
+                    $fill = self::processTemplate($volist, $template, $src);
+                    $html = \str_replace($template, $fill, $html); 
+                }                
             }
         }
 
+        private static function processTemplate($volist, $template, $array) {
+            # 对变量名称的重命名，如果不存在，则直接使用原始变量名来进行命名
+            $id    = \Utils::ReadValue($volist, "id", $volist["name"]);
+
+            if (empty($array) || count($array) == 0) {
+                # 如果变量数组是空的时候的替代值
+                $name  = $volist["name"];
+                $empty = \Utils::ReadValue(
+                    $volist, "empty", 
+                    "<span style='color:red;'>Empty volist=$name</span>"
+                );
+
+                return $empty;
+            }
+            
+            
+        }
     }
 }
 
