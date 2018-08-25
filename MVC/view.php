@@ -359,7 +359,7 @@ class View {
 				$include = file_get_contents($path);
 				$include = self::interpolate_includes($include, $path);
 
-				$html    = Strings::Replace($html, $s, $include);				
+				$html = Strings::Replace($html, $s, $include);				
 			}
 		}
 		
@@ -395,6 +395,8 @@ class View {
 
 		# 处理数组循环变量，根据模板生成表格或者列表
 		$html = MVC\Views\ForEachView::InterpolateTemplate($html, $vars);
+		# 可以使用foreach标签的同时，也支持部分的thinkphp的volist标签语法
+		$html = MVC\Views\volistViews::InterpolateTemplate($html, $vars);
 		# 处理内联的表达式，例如if条件显示
 		$html = MVC\Views\InlineView::RenderInlineTemplate($html);
 		# 最后将完整的页面里面的url简写按照路由规则还原
