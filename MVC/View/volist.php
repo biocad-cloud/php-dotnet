@@ -52,6 +52,8 @@ namespace MVC\Views {
                 );
 
                 return $empty;
+            } else {
+                $template = \StringHelpers::GetStackValue($template, ">", "<");
             }
             
             # 对变量名称的重命名，如果不存在，则直接使用原始变量名来进行命名
