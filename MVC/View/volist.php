@@ -38,6 +38,8 @@ namespace MVC\Views {
                     $html = \str_replace($template, $fill, $html); 
                 }                
             }
+
+            return $html;
         }
 
         private static function processTemplate($volist, $template, $array) {
@@ -62,13 +64,45 @@ namespace MVC\Views {
                 return $template;
             } else {
                 return self::buildImpl(
-                    $array, $template, $vars
+                    $array, $template, self::nameslist($vars)
                 );
             }
         }
 
-        private static function buildImpl($array, $template, $vars) {
+        private static function nameslist($vars) {
+            $names = [];
 
+            foreach($vars as $ref) {
+                $ref0 = $ref;
+                $ref  = trim($ref, '{}');
+                $ref  = \StringHelpers::GetTagValue($ref, ".");
+
+                list($nil, $ref) = \Utils::Tuple($ref);
+
+                $names[] = [
+                    "ref"  => $ref0, 
+                    "name" => $ref
+                ];
+            }
+
+            return $names;
+        }
+
+        private static function buildImpl($array, $template, $vars) {
+            $html = "";
+
+            foreach($array as $var) {
+                $templ = $template . "";
+
+                foreach($vars as $ref => $name) {
+                    $val   = \Utils::ReadValue($var, $name, "");                   
+                    $templ = str_replace($ref, $val, $templ);
+                }
+
+                $html = $html . "\n" . $templ;
+            }
+
+            return $html;
         }
     }
 }
