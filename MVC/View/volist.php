@@ -54,17 +54,21 @@ namespace MVC\Views {
             
             # 对变量名称的重命名，如果不存在，则直接使用原始变量名来进行命名
             $id      = \Utils::ReadValue($volist, "id", $volist["name"]);
-            $pattern = "\{\}";
+            $pattern = '{[$]' . $id . "\..+?}";
             $vars    = \Regex::Matches($template, $pattern);
 
-            if (count($vars) == 0) {
+            if (empty($vars) || count($vars) == 0) {
                 # 没有定义模板变量？？
-                return "";
+                return $template;
             } else {
                 return self::buildImpl(
-                    $array, $template, $var, $vars
+                    $array, $template, $vars
                 );
             }
+        }
+
+        private static function buildImpl($array, $template, $vars) {
+
         }
     }
 }
