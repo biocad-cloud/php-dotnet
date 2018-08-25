@@ -1,12 +1,27 @@
 <?php
 
-include "../package.php";
+define("APP_DEBUG", true);
+
+include "../../package.php";
 include "App.php";
 
-dotnet::Imports("System.Diagnostics.StackTrace");
-dotnet::AutoLoad("etc/config.php");
+Imports("System.Diagnostics.StackTrace");
 
-Control::$debug = false;
-Control::HandleRequest(new App());
+dotnet::AutoLoad("etc/config.php");
+dotnet::HandleRequest(new App());
+
+class c extends controller {
+	
+    public function accessControl() {
+        return true;
+    }
+
+    /**
+     * 假若没有权限的话，会执行这个函数进行重定向
+    */
+    public function Redirect() {
+        Redirect("/");
+    }
+}
 
 ?>

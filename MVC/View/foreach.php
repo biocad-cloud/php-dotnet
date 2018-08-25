@@ -30,16 +30,14 @@ namespace MVC\Views {
          * </ul>
         */
 
-        public static function ParseTemplates($html) {
-            # 首先使用正则表达式解析出文档碎片之中的模板
+        /**
+         * 首先使用正则表达式解析出文档碎片之中的模板
+        */
+        public static function ParseTemplates($html, $tagName = "foreach") {
             # flags表示正则表达式引擎忽略大小写并且以单行模式工作
-            $pattern   = "<foreach(.*?)<\/foreach>";
+            $pattern   = "<$tagName(.*?)<\/$tagName>";
             $flags     = "is";
             $templates = \Regex::Matches($html, $pattern, null, $flags); 
-
-            # echo $html . "\n";
-            # echo $pattern . "\n";
-            # echo \var_dump($templates);
 
             return $templates;
         }
