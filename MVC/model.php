@@ -493,7 +493,7 @@ class Table {
 	private function buildJoin() {
 		$exp = [];
 
-		if (array_key_exists("left_join", $this->condition)) {
+		if (!$this->is_empty("left_join")) {
 			array_push($exp, JoinScript::AsExpression(
 				$this->condition["left_join"], "left_join"
 			));
