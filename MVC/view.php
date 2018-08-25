@@ -37,9 +37,9 @@ class View {
 	 *                     系统会强制使用这个语言项进行页面显示
 	*/
 	public static function Display($vars = NULL, $lang = null) {
-		$name    = StackTrace::GetCallerMethodName();
+		$name    = StackTrace::GetCallerMethodName();		
 		$wwwroot = DotNetRegistry::GetMVCViewDocumentRoot();
-
+		
 		if (strpos($wwwroot, "./") == 0) {
 			$wwwroot = trim($wwwroot, ".");
 			$wwwroot = SITE_PATH . $wwwroot;

@@ -15,7 +15,7 @@ class App {
 	/**
 	 * @uses view
 	*/
-	public function volist() {
+	public function volist() {		
 		View::Display(["persons" => [
 			["name" => "a", "age" => 55],
 			["name" => "a1", "age" => 77],

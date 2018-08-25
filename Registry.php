@@ -119,8 +119,8 @@ class DotNetRegistry {
     public static function GetMVCViewDocumentRoot() {
         $config = self::Read(MVC_VIEW_ROOT);
         $script = self::GetInitialScriptName();
-
-        if (empty($config) || count($config) == 0) {
+        
+        if (empty($config) || (is_array($config) && count($config) == 0)) {
             # 是空的，则返回默认路径
             return "./html";
         } else if (is_string($config) && strlen($config) > 0) {
