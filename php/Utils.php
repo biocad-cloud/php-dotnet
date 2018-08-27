@@ -36,7 +36,7 @@ class Utils {
      * @param array $table [key => value]
     */
     public static function Tuple($table) {
-        if (!$table) {
+        if (!$table || count($table) == 0) {
             return [];
         } else {
             $keys  = array_keys($table);

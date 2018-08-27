@@ -133,6 +133,9 @@ class debugView {
         self::$summary[$name] = $value;
     }
 
+    /**
+     * json组件需要jquery才能够正常工作
+    */
     private static function Summary() {
         $js   = dirname(self::Template()) . "/jquery.jsonview.min.js";        
         $js   = base64_encode(file_get_contents($js));

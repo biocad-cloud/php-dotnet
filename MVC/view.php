@@ -5,6 +5,7 @@ Imports("System.Linq.Enumerable");
 Imports("Microsoft.VisualBasic.Strings");
 Imports("MVC.View.foreach");
 Imports("MVC.View.inline");
+Imports("MVC.View.volist");
 Imports("Debugger.Ubench.Ubench");
 
 
@@ -36,13 +37,19 @@ class View {
 	 *                     系统会强制使用这个语言项进行页面显示
 	*/
 	public static function Display($vars = NULL, $lang = null) {
-		$name    = StackTrace::GetCallerMethodName();
+		$name    = StackTrace::GetCallerMethodName();		
 		$wwwroot = DotNetRegistry::GetMVCViewDocumentRoot();
+		
+		if (strpos($wwwroot, "./") == 0) {
+			$wwwroot = trim($wwwroot, ".");
+			$wwwroot = SITE_PATH . $wwwroot;
+		}
 
 		# 假若直接放在和index.php相同文件夹之下，那么apache服务器会优先读取
 		# index.html这个文件的，这就导致无法正确的通过这个框架来启动Web程序了
 		# 所以html文件规定放在html文件夹之中
-		$path = realpath("$wwwroot/$name.html");
+		$wwwroot = str_replace("\\", "/", $wwwroot);
+		$path    = realpath("$wwwroot/$name.html");
 
 		if (file_exists($path)) {
 			$path = realpath($path);
@@ -50,7 +57,10 @@ class View {
 			$path = str_replace("//", "/", $path);
 		}		
 
-		console::log("HTML document path is: $path");		
+		console::log("HTML document path is: $path");
+		console::log("View name='$name'");
+		console::log("View wwwroot='$wwwroot'");
+
 		View::Show($path, $vars, $lang);
 	}
 	
@@ -350,7 +360,7 @@ class View {
 				$include = file_get_contents($path);
 				$include = self::interpolate_includes($include, $path);
 
-				$html    = Strings::Replace($html, $s, $include);				
+				$html = Strings::Replace($html, $s, $include);				
 			}
 		}
 		
@@ -386,6 +396,8 @@ class View {
 
 		# 处理数组循环变量，根据模板生成表格或者列表
 		$html = MVC\Views\ForEachView::InterpolateTemplate($html, $vars);
+		# 可以使用foreach标签的同时，也支持部分的thinkphp的volist标签语法
+		$html = MVC\Views\volistViews::InterpolateTemplate($html, $vars);
 		# 处理内联的表达式，例如if条件显示
 		$html = MVC\Views\InlineView::RenderInlineTemplate($html);
 		# 最后将完整的页面里面的url简写按照路由规则还原
