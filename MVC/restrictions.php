@@ -74,6 +74,11 @@ class Restrictions {
         $this->rates    = $rates;
         $this->resource = $controller->ref;
         $this->user     = $user;
+
+        if (APP_DEBUG) {
+            console::log("User visit restrict resource: <code>{$this->user} @ {$this->resource}</code>");
+            console::objDump($this->rates, false);
+        }
     }
 
     #region "Get resource restriction values"
@@ -157,6 +162,10 @@ class Restrictions {
         $visits = FileSystem::ReadAllText($logs, "{}");
         $visits = json_decode($visits);
         $now    = time();
+
+        if (APP_DEBUG) {
+            console::log("Visit Restrictions Logs: $logs");
+        }
 
         // json_decode函数返回来的是一个对象
         // 不可以直接使用数组的方式进行数据读取操作
