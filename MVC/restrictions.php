@@ -136,6 +136,8 @@ class Restrictions {
         $visits = json_decode($visits);
         $now    = time();
 
+        // json_decode函数返回来的是一个对象
+        // 不可以直接使用数组的方式进行数据读取操作
         $q = new Queue(Utils::ReadValue($visits, $uid, []));
         $q->Push($now);
 
@@ -151,10 +153,10 @@ class Restrictions {
             }
         }
 
-        $visits[$uid] = $q->ToArray();
+        $visits->{$uid} = $q->ToArray();
         FileSystem::WriteAllText($logs, json_encode($visits));
 
-        return $visits[$uid];
+        return $visits->{$uid};
     }
 
     /**
