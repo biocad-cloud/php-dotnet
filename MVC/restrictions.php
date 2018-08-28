@@ -77,7 +77,7 @@ class Restrictions {
 
         if (APP_DEBUG) {
             console::log("User visit restrict resource: <code>{$this->user} @ {$this->resource}</code>");
-            console::objDump($this->rates, false);
+            console::dump($this->rates);
         }
     }
 
