@@ -94,9 +94,8 @@ class Restrictions {
      *     true表示已经超过了限制阈值
      *     false表示还没有超过限制阈值，可以进行正常访问
     */
-    public function Check() {
-        $uid    = "{$this->user} @ {$this->resource}";
-        $visits = self::getVisits($uid);
+    public function Check() {        
+        $visits = $this->getVisits();
         
         $dayLimits = $this->day();
         $minLimits = $this->minute();
@@ -128,11 +127,14 @@ class Restrictions {
      * 
      * @return array 历史访问的时间点的timestamp
     */
-    private static function getVisits($uid) {
-        $visits = 
-        $now = time();
-        $q   = new Queue();
+    private function getVisits() {
+        $uid    = "{$this->user} @ {$this->resource}";
+        $logs   = dotnet::getMyTempDirectory() . "/visits/{$this->user}.log";
+        $visits = FileSystem::ReadAllText($logs, "[]");
+        $visits = json_decode($visits);
+        $now    = time();
 
+        $q = new Queue(Utils::ReadValue($visits, $uid, []));
         $q->Push($now);
 
         # 将大于一天的间隔的时间点都删除掉
@@ -147,10 +149,10 @@ class Restrictions {
             }
         }
 
-        $visits = $q->ToArray();
+        $visits[$uid] = $q->ToArray();
+        FileSystem::WriteAllText($logs, json_encode($visits));
 
-
-        return $visits;
+        return $visits[$uid];
     }
 
     /**
