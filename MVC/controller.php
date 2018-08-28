@@ -96,9 +96,7 @@ abstract class controller {
      * @return boolean 返回一个逻辑值来表示当前的服务器资源是否具有访问量的限制？
     */
     public function HasRateLimits() {
-        return (!empty($this->docComment)) && 
-            array_key_exists("tags", $this->docComment) && 
-            array_key_exists("rate", $this->docComment["tags"]);
+        return (!empty($this->docComment)) && array_key_exists("rate", $this->docComment->tags);
     }
 
     /**
