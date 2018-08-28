@@ -170,16 +170,20 @@ abstract class controller {
      * 
      * @return controller 函数返回这个控制器本身
     */
-    public function Hook($app) {
-        $controller   = $this;
+    public function Hook($app) {        
         $this->appObj = $app;
 
-        $this->appObj->success = function($message) use ($controller) {
+        /*
+        # Add method dynamics not working
+        $controller = $this;
+
+        $this->appObj->{"success"} = function($message) use ($controller) {
             $controller->success($message);
         };
-        $this->appObj->error = function($message, $errCode = 500) use ($controller) {
+        $this->appObj->{"error"} = function($message, $errCode = 500) use ($controller) {
             $controller->error($message, $errCode);
         };
+        */
 
         // 先检查目标方法是否存在于逻辑层之中
         if (!method_exists($app, $page = Router::getApp())) {
