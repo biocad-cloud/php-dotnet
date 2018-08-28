@@ -89,6 +89,17 @@ abstract class controller {
     }
 
     /**
+     * 当前的服务器资源是否具有访问量的限制？
+     * 
+     * 使用``@rate``标签来注释当前的控制器函数的访问量限制阈值
+     * 
+     * @return boolean 返回一个逻辑值来表示当前的服务器资源是否具有访问量的限制？
+    */
+    public function HasRateLimits() {
+        return (!empty($this->docComment)) && array_key_exists("rate", $this->docComment);
+    }
+
+    /**
      * 查看当前的这个控制器是否所有人都可以访问？
      * 
      * 如果当前的这个控制器函数的``@access``标记的值是``*``
@@ -204,6 +215,18 @@ abstract class controller {
      * @return boolean 当前的访问权限是否验证成功？
     */
     abstract public function accessControl();
+
+    /**
+     * 对当前用户访问当前的这个服务器资源的访问量控制的控制器函数
+     * 
+     * @return boolean 当前用户对当前的这个服务器资源的访问量是否超过了配额？
+     *      如果这个函数返回true，则表示已经超过了配额限制，则会拒绝访问
+     *      如果这个函数返回false，则表示当前的用户访问正常
+    */
+    public function Restrictions() {
+        # 可以重载这个控制器函数来实现对某一个服务器资源的访问量的限制
+        return false;
+    }
 
     /**
      * 假若没有权限的话，会执行这个函数进行重定向
