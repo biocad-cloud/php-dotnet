@@ -33,6 +33,15 @@ abstract class controller {
     protected $docComment;
 
     /**
+     * 当前的这个控制器所指向的服务器资源的唯一标记，格式为：
+     * 
+     *   ``scriptName/appName``
+     * 
+     * @var string
+    */
+    var $ref;
+
+    /**
      * Get php function document comment 
      * 
      * Get php function document comment parsed object 
@@ -178,7 +187,10 @@ abstract class controller {
             $message = "Web app `<strong>$page</strong>` is not available in this controller!";
 			dotnet::PageNotFound($message);
         } else {
-            debugView::LogEvent("Reflects on web app => $page");
+            $this->ref = DotNetRegistry::GetInitialScriptName();
+            $this->ref = "{$this->ref}/$page";
+
+            debugView::LogEvent("Reflects on web app => {$this->ref}");
         }
 
         if (!is_object($app)) {
