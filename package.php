@@ -177,13 +177,22 @@ class dotnet {
             $injection = $wwwroot;
         }
 
+        # 如果当前的服务器资源上面存在访问控制器的话，则进行用户权限的控制
         if ($injection) {
             debugView::LogEvent("Hook controller");
             $injection->Hook($app);
 
+            # 用户访问权限控制
             if (!$injection->accessControl()) {
                  $injection->Redirect();
                  exit(403);
+
+            # 服务器资源访问量的限制
+            } else if ($injection->Restrictions()) {
+                 $injection->Redirect();
+                 exit(403);
+
+            # 可以正常访问
             } else {
                 global $_DOC;
                 $_DOC = $injection->getDocComment();
