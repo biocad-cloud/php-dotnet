@@ -1,5 +1,7 @@
 <?php
 
+Imports("System.Collection.Generic.Queue");
+
 /**
  * 对某一个服务器资源进行用户访问量的限制
 */
