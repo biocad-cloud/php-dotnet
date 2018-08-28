@@ -157,7 +157,7 @@ class Restrictions {
         $visits = FileSystem::ReadAllText($logs, "{}");
         $visits = json_decode($visits);
         $now    = time();
-echo var_dump($logs);
+
         // json_decode函数返回来的是一个对象
         // 不可以直接使用数组的方式进行数据读取操作
         $q = new Queue(Utils::ReadValue($visits, $uid, []));
