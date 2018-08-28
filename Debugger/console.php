@@ -126,7 +126,7 @@ class console {
             $trace = self::backtrace();
             self::$logs[]  = [
                 "code"  => $code,
-                "msg"   => self::objDump($obj, true),
+                "msg"   => self::objDump($obj, false),
                 "file"  => $trace["file"],
                 "line"  => $trace["line"], 
                 "color" => "black",

@@ -101,22 +101,10 @@ class View {
 	private static function getCachePath($path) {
 		// temp/{yyymmmdd}/viewName
 		$version = filemtime($path);
-		$temp    = sys_get_temp_dir();
-		$appName = DotNetRegistry::Read("APP_NAME", "php.NET");
+		$temp    = dotnet::getMyTempDirectory();
 		$file    = basename($path);
-
-		if (strtolower($temp) == strtolower("C:\Windows")) {
-			# 不可以写入Windows文件夹
-			# 写入自己的data文件夹下面的临时文件夹
-			if (defined("APP_PATH")) {
-				$temp = APP_PATH . "/data/cache";
-			} else {
-				$temp = "./data/cache";
-			}			
-		}
-
-		$path  = md5($_SERVER["REQUEST_URI"]);
-		$cache = "$temp/$appName/$file/$version/$path.html";
+		$path    = md5($_SERVER["REQUEST_URI"]);
+		$cache   = "$temp/$file/$version/$path.html";
 
 		return $cache;
 	}

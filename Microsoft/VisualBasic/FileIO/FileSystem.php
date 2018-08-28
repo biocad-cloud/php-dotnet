@@ -27,35 +27,48 @@ class FileSystem {
 
 	/**
 	 * Writes text to a file.
+	 * 
+	 * 这个函数会自动创建文件夹
 	 *
+	 * @param string $file 文件路径
+	 * @param string $text 文件内容字符串
+	 * @param boolean $append 是否在原有的文件基础之上进行数据的追加？默认不是，会覆盖掉源文件
+	 * 
+	 * @return void This function returns nothing.
 	 */
 	public static function WriteAllText($file, $text, $append = FALSE) {
-		$dir = dirname($file);
+		if (!file_exists($file)) {
+			$dir = dirname($file);
 
-		if (!file_exists($dir)) {
-			mkdir($dir, 0777, true);
+			if (!file_exists($dir)) {
+				mkdir($dir, 0777, true);
+			}
 		}
 
 		if ($append) {
-			// echo ">>>>> append " . "\n";
-			// echo $text;
-			// echo ">>>>> to $file" . "\n";
-			file_put_contents($file, $text, FILE_APPEND);
+			return file_put_contents($file, $text, FILE_APPEND);
 		} else {
-			file_put_contents($file, $text);
-		}		
+			return file_put_contents($file, $text);
+		}
 	}
 		
 	/**
 	 * Returns the contents of a text file as a String.
 	 *
-	 * @param file: Name and path of the file to read.
+	 * 如果目标文件不存在的话，函数会直接返回空值
+	 * 
+	 * @param string $file Name and path of the file to read.
+	 * 
+	 * @return string 
 	 */
-	public static function ReadAllText($file) {
-		$text = file_get_contents($file);
-		return $text;
+	public static function ReadAllText($file, $default = null) {
+		if (!file_exists($file)) {
+			return $default;
+		} else {
+			return file_get_contents($file);
+		}
 	}
-		
+
 	/**
 	 * Renames a file.
 	 *

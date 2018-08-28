@@ -104,7 +104,11 @@ class DocComment {
         $return  = [];         
         $i       = 0;     
 
+        # 所有不是通过@符号起始的文本行都是描述性的文本段
+
+        # 第一段文本被规定为函数的标题
         list($i, $title)   = Utils::Tuple(self::blankSplit($docComment, $i));
+        # 如果存在第二段文本的话，假设这第二段文本为当前函数的摘要信息
         list($i, $summary) = Utils::Tuple(self::blankSplit($docComment, $i));
 
         while($i < count($docComment)) {
@@ -135,12 +139,16 @@ class DocComment {
     }
 
     /**
+     * 可以在这里解析所有类型的标签注释
+     * 
+     * @param array $lines php的注释文档的按照newline进行切割得到的文本行
+     * @param integer $i 指向lines参数的行编号，表示这个函数会从这一行开始进行解析
      * 
      * @return array [i => [name => ..., type => ..., argName => ..., description => ...]]
     */
     private static function tagParser($lines, $i) {
         while($i < count($lines)) {
-            $l = trim($lines[$i]);            
+            $l = trim($lines[$i]);
 
             if (strlen($l) > 0) {
                 break;
@@ -149,7 +157,7 @@ class DocComment {
             }
         }
 
-        $line = trim($lines[$i]);        
+        $line = trim($lines[$i]);
         $i++;
 
         if ($line[0] != "@") {
@@ -186,12 +194,23 @@ class DocComment {
             }
         }
 
+        $description = trim($description);
+
+        if (!empty($description)) {
+            # 假设value是和description之间通过空格进行分割的
+            $value = explode(" ", $description);
+            $value = $value[0];
+        } else {
+            $value = "";
+        }
+
         $tagName = Strings::Mid($tagName, 2);
         $tagData = [
             "name"        => $tagName, 
-            "type"        => $type, 
+            "type"        => $type,
+            "value"       => $value, 
             "argName"     => $argName, 
-            "description" => trim($description)
+            "description" => $description
         ];
         
         return [$i => $tagData];

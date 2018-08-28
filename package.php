@@ -22,6 +22,35 @@ if (!defined("SITE_PATH")) {
     define("SITE_PATH", $_SERVER["DOCUMENT_ROOT"]);
 }
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    /**
+     * 当前的访问请求是否是一个POST请求
+    */
+    define("IS_POST", true);
+    /**
+     * 当前的访问请求是否是一个GET请求
+    */
+    define("IS_GET", false);
+} else if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    /**
+     * 当前的访问请求是否是一个POST请求
+    */
+    define("IS_POST", false);
+    /**
+     * 当前的访问请求是否是一个GET请求
+    */
+    define("IS_GET", true);
+} else {
+    /**
+     * 当前的访问请求是否是一个POST请求
+    */
+    define("IS_POST", false);
+    /**
+     * 当前的访问请求是否是一个GET请求
+    */
+    define("IS_GET", false);
+}
+
 /**
  * PHP.NET框架的根文件夹位置
  * 获取得到package.php这个文件的所处的文件夹的位置
@@ -177,13 +206,22 @@ class dotnet {
             $injection = $wwwroot;
         }
 
+        # 如果当前的服务器资源上面存在访问控制器的话，则进行用户权限的控制
         if ($injection) {
             debugView::LogEvent("Hook controller");
             $injection->Hook($app);
 
+            # 用户访问权限控制
             if (!$injection->accessControl()) {
-                 $injection->Redirect();
+                 $injection->Redirect(403);
                  exit(403);
+
+            # 服务器资源访问量的限制
+            } else if ($injection->Restrictions()) {
+                 $injection->Redirect(429);
+                 exit(429);
+
+            # 可以正常访问
             } else {
                 global $_DOC;
                 $_DOC = $injection->getDocComment();
@@ -220,7 +258,7 @@ class dotnet {
      *                             1. php文件路径，如果文件不存在，则会使用默认配置数据
      *                             2. 包含有配置数据的字典数组
     */
-	public static function AutoLoad($config = NULL) {		       
+	public static function AutoLoad($config = NULL) {
         $initiator = new Ubench();
         $initiator->start();
 
@@ -228,7 +266,7 @@ class dotnet {
             # 调试器必须先于Imports函数调用，否则会出现错误：
             # PHP Fatal error:  Call to a member function add_loaded_script() on a non-object
             if (!self::$debugger) {
-                 self::$debugger = new dotnetDebugger();    
+                 self::$debugger = new dotnetDebugger();
             }            
         }   
 
@@ -236,7 +274,7 @@ class dotnet {
 		dotnet::Imports("MVC.view");
 		dotnet::Imports("MVC.model");
 		dotnet::Imports("MVC.router");
-        dotnet::Imports("MVC.MySql.driver");       
+        dotnet::Imports("MVC.MySql.driver");
         dotnet::Imports("MVC.MySql.sqlBuilder");
         dotnet::Imports("MVC.MySql.expression");
 
@@ -277,6 +315,28 @@ class dotnet {
         }, E_ALL);
     }
     
+	/**
+	 * 获取目标html文档梭对应的缓存文件的文件路径
+	*/
+	public static function getMyTempDirectory() {		
+		$temp = sys_get_temp_dir();		
+
+		if (strtolower($temp) == strtolower("C:\Windows")) {
+			# 不可以写入Windows文件夹
+			# 写入自己的data文件夹下面的临时文件夹
+			if (defined("APP_PATH")) {
+				$temp = APP_PATH . "/data/cache";
+			} else {
+				$temp = "./data/cache";
+			}			
+		} else {
+            $appName = DotNetRegistry::Read("APP_NAME", "php.NET");
+            $temp    = "$temp/$appName"; 
+        }
+
+		return $temp;
+	}
+
     /**
      * 默认是zhCN中文语言
     */
@@ -435,7 +495,7 @@ class dotnet {
 		$exc   = dotnetException::FormatOutput($message, $trace);
 				
 		RFC7231Error::err500($exc);
-		exit(0);
+		exit(500);
     }
 
     /**
@@ -448,7 +508,7 @@ class dotnet {
 		$exc   = dotnetException::FormatOutput($message, $trace);
 				
 		RFC7231Error::err404($exc);
-		exit(0);
+		exit(404);
     }
 
     /**
@@ -461,9 +521,19 @@ class dotnet {
 		$exc   = dotnetException::FormatOutput($message, $trace);
 				
 		RFC7231Error::err403($exc);
-		exit(0);
+		exit(403);
     }
 
+    /**
+     * 429 请求次数过多
+    */
+    public static function TooManyRequests($message) {
+        $trace = StackTrace::GetCallStack();
+		$exc   = dotnetException::FormatOutput($message, $trace);
+				
+		RFC7231Error::err429($exc);
+		exit(429);
+    }
     #endregion
 }
 ?>

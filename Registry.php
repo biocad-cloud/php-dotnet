@@ -135,6 +135,11 @@ class DotNetRegistry {
         }
     }
 
+    /**
+     * 获取得到当前的用户请求的最开始的脚本文件的文件名
+     * 
+     * @return string 不包含拓展名的脚本文件名
+    */
     public static function GetInitialScriptName() {
         $script = $_SERVER["SCRIPT_FILENAME"];
         $script = explode("/", $script);

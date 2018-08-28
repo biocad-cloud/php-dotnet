@@ -33,6 +33,15 @@ abstract class controller {
     protected $docComment;
 
     /**
+     * 当前的这个控制器所指向的服务器资源的唯一标记，格式为：
+     * 
+     *   ``scriptName/appName``
+     * 
+     * @var string
+    */
+    var $ref;
+
+    /**
      * Get php function document comment 
      * 
      * Get php function document comment parsed object 
@@ -48,24 +57,39 @@ abstract class controller {
      * The controller access level, `*` means everyone!
     */
     public function getAccessLevel() {
-        return $this->getTagDescription("access");
+        return $this->getTagValue("access");
+    }
+
+    /**
+     * 获取对当前的服务器资源的访问量限制的阈值
+    */
+    public function getRateLimits() {
+        return $this->getTagValue("rate");
     }
 
     /**
      * 获取当前的控制器函数的注释文档里面的某一个标签的说明文本
     */
     public function getTagDescription($tag) {
-        if (!empty($this->docComment)) {
-            $tag = Utils::ReadValue($this->docComment->tags, $tag);
+        return $this->readTagImpl($tag, "description");
+    }
 
-            if (!empty($tag)) {
-                return $tag["description"];
-            } else {
-                return "";
-            }
+    private function readTagImpl($tag, $key) {
+        if (empty($this->docComment)) {
+            return "";
+        }
+
+        $tag = Utils::ReadValue($this->docComment->tags, $tag);
+
+        if (!empty($tag)) {
+            return $tag[$key];
         } else {
             return "";
         }
+    }
+
+    public function getTagValue($tag) {
+        return $this->readTagImpl($tag, "value");
     }
 
     /**
@@ -85,7 +109,18 @@ abstract class controller {
      * 
     */
     public function getUsage() {
-        return $this->getTagDescription("uses");
+        return $this->getTagValue("uses");
+    }
+
+    /**
+     * 当前的服务器资源是否具有访问量的限制？
+     * 
+     * 使用``@rate``标签来注释当前的控制器函数的访问量限制阈值
+     * 
+     * @return boolean 返回一个逻辑值来表示当前的服务器资源是否具有访问量的限制？
+    */
+    public function HasRateLimits() {
+        return (!empty($this->docComment)) && array_key_exists("rate", $this->docComment->tags);
     }
 
     /**
@@ -135,24 +170,32 @@ abstract class controller {
      * 
      * @return controller 函数返回这个控制器本身
     */
-    public function Hook($app) {
-        $this->appObj  = $app;
+    public function Hook($app) {        
+        $this->appObj = $app;
 
         /*
-        $this->appObj->success = function($message) {
-            $this->success($message);
+        # Add method dynamics not working
+        $controller = $this;
+
+        $this->appObj->{"success"} = function($message) use ($controller) {
+            $controller->success($message);
         };
-        $this->appObj->error = function($message, $errCode = 1) {
-            $this->error($message, $errCode);
-        }*/
+        $this->appObj->{"error"} = function($message, $errCode = 500) use ($controller) {
+            $controller->error($message, $errCode);
+        };
+        */
 
         // 先检查目标方法是否存在于逻辑层之中
         if (!method_exists($app, $page = Router::getApp())) {
             # 不存在，则抛出404
-            $message = "Web app `<strong>$page</strong>` is not available in this controller!";
+            $msg = "Web app `<strong>$page</strong>` is not available in this controller!";
 			dotnet::PageNotFound($message);
         } else {
-            debugView::LogEvent("Reflects on web app => $page");
+            $this->ref = DotNetRegistry::GetInitialScriptName();
+            $this->ref = "{$this->ref}/$page";
+
+            $msg = "Reflects on web app => <strong><code>{$this->ref}</code></strong>";
+            debugView::LogEvent($msg);
         }
 
         if (!is_object($app)) {
@@ -195,6 +238,8 @@ abstract class controller {
         exit(0);
     }
 
+    #region "Access control overrides"
+
     /**
      * 函数返回一个逻辑值，表明当前的访问是否具有权限，如果这个函数返回False，那么
      * web服务器将会默认响应403，访问被拒绝
@@ -202,10 +247,34 @@ abstract class controller {
      * @return boolean 当前的访问权限是否验证成功？
     */
     abstract public function accessControl();
+
+    /**
+     * 对当前用户访问当前的这个服务器资源的访问量控制的控制器函数
+     * 
+     * @return boolean 当前用户对当前的这个服务器资源的访问量是否超过了配额？
+     *      如果这个函数返回true，则表示已经超过了配额限制，则会拒绝访问
+     *      如果这个函数返回false，则表示当前的用户访问正常
+    */
+    public function Restrictions() {
+        # 可以重载这个控制器函数来实现对某一个服务器资源的访问量的限制
+        return false;
+    }
+
     /**
      * 假若没有权限的话，会执行这个函数进行重定向
+     * 这个函数默认是返回403错误页面
     */
-    abstract public function Redirect();
+    public function Redirect($code) {
+        if ($code == 403) {
+            dotnet::AccessDenied("Invalid credentials!");
+        } else if ($code == 429) {
+            dotnet::TooManyRequests("Too many request!");
+        } else {
+            dotnet::ThrowException("Unknown server error...");
+        }
+    }
+
+    #region
 
     /**
      * 在完成了这个函数的调用之后，服务器将会返回成功代码
@@ -215,12 +284,12 @@ abstract class controller {
      * 
      * @return void
     */
-    public function success($message) {
+    public static function success($message) {
         header("HTTP/1.1 200 OK");
         header("Content-Type: application/json");
 
         echo dotnet::successMsg($message);
-        exit();
+        exit(0);
     }
 
     /**
@@ -232,7 +301,7 @@ abstract class controller {
      * 
      * @return void
     */
-    public function error($message, $errCode = 1) {
+    public static function error($message, $errCode = 1) {
         header("HTTP/1.0 500 Internal Server Error");
         header("Content-Type: application/json");
 

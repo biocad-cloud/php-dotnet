@@ -42,6 +42,16 @@ namespace MVC\Views {
             return $html;
         }
 
+        /**
+         * <volist name="variable_name" id="alias" empty="empty_notices">
+         * 
+         * @param array $volist 将volist正则表达式的匹配模板结果进行XML格式的解析得到的数组
+         * @param string $template volist的原始的XML模板字符串数据
+         * @param array $array $volist之中的name所对应的变量值，这个是已经从所传递进来的数据源之中
+         *                     使用name取出来了的用于填充volist的数组对象 
+         * 
+         * @return string 经过填充的html字符串
+        */
         private static function processTemplate($volist, $template, $array) {
             if (empty($array) || count($array) == 0) {
                 # 如果变量数组是空的时候的替代值
@@ -71,6 +81,10 @@ namespace MVC\Views {
             }
         }
 
+        /**
+         * 将从模板之中解析出来得到的变量引用的列表转换为``[ref => name]``
+         * 的键值对
+        */
         private static function nameslist($vars) {
             $names = [];
 
@@ -90,6 +104,9 @@ namespace MVC\Views {
             return $names;
         }
 
+        /**
+         * 进行模板之中的循环变量的填充渲染处理
+        */
         private static function buildImpl($array, $template, $vars) {
             $html = "";
 
