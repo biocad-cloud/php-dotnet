@@ -265,13 +265,27 @@ class Utils {
      * 一个安全的数组读取函数，
      * 
      * 阻止出现警告提示： Notice: Undefined index: blabla...
+     * 
+     * @param string $key 数组之中的元素的引用键名，可以使用|来表示多个键名，这些键名表示或关系，
+     *      返回第一个被查找到的键名的值，这个表达式通常用来表示别名查找
     */
     public static function ReadValue($array, $key, $default = null) {
-        if (empty($array)) {           
+        if (empty($array)) {
             return $default;
-        } else if (array_key_exists($key, $array)) {          
+        } else if (array_key_exists($key, $array)) {
             return $array[$key];
-        } else {           
+        } else {
+            $keys = explode("|", $key);
+
+            if (count($keys) > 1) {
+                # 需要进行别名查找
+                foreach($keys as $aliasKey) {
+                    if (array_key_exists($aliasKey, $array)) {
+                        return $array[$aliasKey];
+                    }
+                }
+            }
+
             return $default;
         }
     }
