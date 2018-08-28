@@ -20,8 +20,7 @@ class Restrictions {
      * @param controller $controller 用户访问权限控制器，需要从控制器之中读取访问限制的注释数据
     */
     public function __construct($controller) {
-        $this->rates = $controller->getDocComment()->tags;
-        $this->rates = Utils::ReadValue($this->rates, "rate");
+        $this->rates = $controller->getRateLimits();
 
         echo var_dump($this->rates);
     }

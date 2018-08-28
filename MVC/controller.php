@@ -48,24 +48,39 @@ abstract class controller {
      * The controller access level, `*` means everyone!
     */
     public function getAccessLevel() {
-        return $this->getTagDescription("access");
+        return $this->getTagValue("access");
+    }
+
+    /**
+     * 获取对当前的服务器资源的访问量限制的阈值
+    */
+    public function getRateLimits() {
+        return $this->getTagValue("rate");
     }
 
     /**
      * 获取当前的控制器函数的注释文档里面的某一个标签的说明文本
     */
     public function getTagDescription($tag) {
-        if (!empty($this->docComment)) {
-            $tag = Utils::ReadValue($this->docComment->tags, $tag);
+        return $this->readTagImpl($tag, "description");
+    }
 
-            if (!empty($tag)) {
-                return $tag["description"];
-            } else {
-                return "";
-            }
+    private function readTagImpl($tag, $key) {
+        if (empty($this->docComment)) {
+            return "";
+        }
+
+        $tag = Utils::ReadValue($this->docComment->tags, $tag);
+
+        if (!empty($tag)) {
+            return $tag[$key];
         } else {
             return "";
         }
+    }
+
+    public function getTagValue($tag) {
+        return $this->readTagImpl($tag, "value");
     }
 
     /**
@@ -85,7 +100,7 @@ abstract class controller {
      * 
     */
     public function getUsage() {
-        return $this->getTagDescription("uses");
+        return $this->getTagValue("uses");
     }
 
     /**
