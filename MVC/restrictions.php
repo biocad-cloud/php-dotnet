@@ -39,7 +39,7 @@ class Restrictions {
         $str = "<h3>Resource: {$this->user} @ {$this->resource}</h3>";
         $str = "<p>Rate Limiting:
                     <ul>
-                        $limit
+                        $limits
                     </ul>
                 </p>";
 
