@@ -262,7 +262,7 @@ class Utils {
     }
 
     /**
-     * 一个安全的数组读取函数，
+     * 一个安全的数组读取函数，同时支持数组或者std类对象
      * 
      * 阻止出现警告提示： Notice: Undefined index: blabla...
      * 
@@ -272,21 +272,37 @@ class Utils {
     public static function ReadValue($array, $key, $default = null) {
         if (empty($array)) {
             return $default;
-        } else if (array_key_exists($key, $array)) {
-            return $array[$key];
-        } else {
-            $keys = explode("|", $key);
+        } else if (is_array($array)) {
 
-            if (count($keys) > 1) {
-                # 需要进行别名查找
-                foreach($keys as $aliasKey) {
-                    if (array_key_exists($aliasKey, $array)) {
-                        return $array[$aliasKey];
+            if (array_key_exists($key, $array)) {
+                return $array[$key];
+            } else {
+                $keys = explode("|", $key);
+
+                if (count($keys) > 1) {
+                    # 需要进行别名查找
+                    foreach($keys as $aliasKey) {
+                        if (array_key_exists($aliasKey, $array)) {
+                            return $array[$aliasKey];
+                        }
                     }
                 }
+    
+                return $default;
             }
 
-            return $default;
+        } else if (is_object($array)) {
+        
+            if (method_exists($array, $key)) {
+                return $array->{$key}();
+            } else if (property_exists($array, $key)) {
+                return $array->{$key};
+            } else {
+                return $default;
+            }
+
+        } else {
+            throw new dotnetException("Input object should be an array or std object!");
         }
     }
     
