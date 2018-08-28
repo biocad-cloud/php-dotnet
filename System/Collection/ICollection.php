@@ -8,6 +8,11 @@ Imports("Microsoft.VisualBasic.Data.csv.Extensions");
 */
 abstract class ICollection implements ArrayAccess {
 
+    /**
+     * 数组是序列对象的最基本数据存储结构对象
+     * 
+     * @var array
+    */
     protected $__data;
 	
     function __get($name) {
@@ -66,6 +71,8 @@ abstract class ICollection implements ArrayAccess {
         }
     }
 
+    #endregion
+
     /**
      * Save this data collection as csv file
      * 
@@ -83,7 +90,16 @@ abstract class ICollection implements ArrayAccess {
         );
     }
 
-    #endregion
+    /**
+     * Copies the elements of the ``System.Collections.ArrayList`` 
+     * to a new System.Object array.
+     * 
+     * @return array An ``System.Object`` array containing copies of the 
+     *    elements of the ``System.Collections.ArrayList``.
+    */
+    public function ToArray() {        
+        return (new ArrayObject($this->__data))->getArrayCopy();
+    }
 }
 
 ?>

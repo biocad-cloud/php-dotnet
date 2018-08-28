@@ -8,7 +8,7 @@ class Restrictions {
     /**
      * 访问量的控制指的是在一段时间内用户的对某一资源的访问次数的限制
      * 在访问量控制的注释标签之中，可以定义多个梯度的访问控制，时间的单位
-     * 分别为day, hour, min, second。
+     * 分别为day, hour, min。
      * 
      * @var array
     */
@@ -20,6 +20,12 @@ class Restrictions {
      * @var string
     */
     var $user;
+    /**
+     * 当前所访问的服务器资源的唯一标记
+     * 
+     * @var string
+    */
+    var $resource;
 
     /**
      * 从一个控制器实例对象构建出一个访问次数控制器
@@ -42,7 +48,8 @@ class Restrictions {
             $rates[strtolower($limit[1])] = floatval($limit[0]);
         }
 
-        $this->rates = $rates;
+        $this->rates    = $rates;
+        $this->resource = $controller->ref;
     }
 
     #region "Get resource restriction values"
@@ -68,14 +75,11 @@ class Restrictions {
         return Utils::ReadValue($this->rates, "hour", -1);
     }
 
-    /**
-     * 对当前的服务器资源的每秒的访问次数限制量
-    */
-    public function second() {
-        return Utils::ReadValue($this->rates, "sec|second", -1);
-    }
-
     #endregion
+
+    const MINUTE = 60;
+    const HOUR   = 3600;
+    const DAY    = 86400;
 
     /**
      * 判断当前用户是否已经超过了访问限制次数
@@ -91,6 +95,84 @@ class Restrictions {
      *     false表示还没有超过限制阈值，可以进行正常访问
     */
     public function Check() {
+        $uid    = "{$this->user} @ {$this->resource}";
+        $visits = self::getVisits($uid);
+        
+        $dayLimits = $this->day();
+        $minLimits = $this->minute();
+        $hourLimit = $this->hour();
 
+        if (($minLimits > 0) && (self::traceback($visits, self::MINUTE) >= $minLimits)) {
+            # 60秒以内的访问次数已经超过了限制数量
+            # 则拒绝用户的当前访问
+            return true;
+        }
+        if (($hourLimit > 0) && (self::traceback($visits, self::HOUR) >= $hourLimit)) {
+            # 一个小时内的访问次数已经超过了限制数量
+            # 则拒绝用户的当前访问
+            return true;
+        }
+        if (($dayLimits > 0) && (self::traceback($visits, self::DAY) > $dayLimits)) {
+            # 一天内的访问次数已经超过了限制数量
+            # 则拒绝用户的当前访问
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * 这个函数在获取得到uid指定的访问历史的同时还会向数据源中写入当前的访问
+     * 
+     * @param string $uid resources visit id for current user
+     * 
+     * @return array 历史访问的时间点的timestamp
+    */
+    private static function getVisits($uid) {
+        $visits = 
+        $now = time();
+        $q   = new Queue();
+
+        $q->Push($now);
+
+        # 将大于一天的间隔的时间点都删除掉
+        while (($t = $q->Peek()) > 0) {
+            if ($now - $t > self::DAY) {
+                # 时间点t和当前的时间间隔已经大于一天了
+                # 则删掉
+                $q->Pop();
+            } else {
+                # 数据没有了
+                break;
+            }
+        }
+
+        $visits = $q->ToArray();
+
+
+        return $visits;
+    }
+
+    /**
+     * 回溯指定时间间隔长度，并返回元素的计数
+     * 
+     * @param array $timePoints
+     * @param integer $span The time span length
+     * 
+     * @return integer 时间间隔内的元素的数量
+    */
+    private static function traceback($timePoints, $span) {
+        $now = time();
+        $x   = 0;
+
+        for ($i = count($timePoints) - 1; $i >= 0; $i--) {
+            if (($now - $timePoints[$i]) <= $span) {
+                $x++;
+            } else {
+                return $x;
+            }
+        }
+
+        return $x;
     }
 }

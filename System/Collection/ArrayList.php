@@ -60,16 +60,6 @@ class ArrayList extends ICollection {
     public function InsertAt(int $index, $obj) {
         die(dotnet::MethodNotImplemented);
     }
-
-    /**
-     * Copies the elements of the System.Collections.ArrayList to a new System.Object array.
-     * 
-     * @return array An System.Object array containing copies of the elements of the 
-     *               System.Collections.ArrayList.
-    */
-    public function ToArray() {        
-        return (new ArrayObject($this->__data))->getArrayCopy();
-    }
 }
 
 ?>

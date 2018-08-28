@@ -315,6 +315,28 @@ class dotnet {
         }, E_ALL);
     }
     
+	/**
+	 * 获取目标html文档梭对应的缓存文件的文件路径
+	*/
+	public static function getMyTempDirectory() {		
+		$temp = sys_get_temp_dir();		
+
+		if (strtolower($temp) == strtolower("C:\Windows")) {
+			# 不可以写入Windows文件夹
+			# 写入自己的data文件夹下面的临时文件夹
+			if (defined("APP_PATH")) {
+				$temp = APP_PATH . "/data/cache";
+			} else {
+				$temp = "./data/cache";
+			}			
+		} else {
+            $appName = DotNetRegistry::Read("APP_NAME", "php.NET");
+            $temp    = "$temp/$appName"; 
+        }
+
+		return $temp;
+	}
+
     /**
      * 默认是zhCN中文语言
     */
