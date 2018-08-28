@@ -195,6 +195,8 @@ abstract class controller {
         exit(0);
     }
 
+    #region "Access control overrides"
+
     /**
      * 函数返回一个逻辑值，表明当前的访问是否具有权限，如果这个函数返回False，那么
      * web服务器将会默认响应403，访问被拒绝
@@ -202,10 +204,16 @@ abstract class controller {
      * @return boolean 当前的访问权限是否验证成功？
     */
     abstract public function accessControl();
+
     /**
      * 假若没有权限的话，会执行这个函数进行重定向
+     * 这个函数默认是返回403错误页面
     */
-    abstract public function Redirect();
+    public function Redirect() {
+        dotnet::AccessDenied("Invalid credentials!");
+    }
+
+    #region
 
     /**
      * 在完成了这个函数的调用之后，服务器将会返回成功代码
