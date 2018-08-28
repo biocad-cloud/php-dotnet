@@ -171,26 +171,27 @@ abstract class controller {
      * @return controller 函数返回这个控制器本身
     */
     public function Hook($app) {
-        $this->appObj  = $app;
+        $controller   = $this;
+        $this->appObj = $app;
 
-        /*
-        $this->appObj->success = function($message) {
-            $this->success($message);
+        $this->appObj->success = function($message) use ($controller) {
+            $controller->success($message);
         };
-        $this->appObj->error = function($message, $errCode = 1) {
-            $this->error($message, $errCode);
-        }*/
+        $this->appObj->error = function($message, $errCode = 500) use ($controller) {
+            $controller->error($message, $errCode);
+        };
 
         // 先检查目标方法是否存在于逻辑层之中
         if (!method_exists($app, $page = Router::getApp())) {
             # 不存在，则抛出404
-            $message = "Web app `<strong>$page</strong>` is not available in this controller!";
+            $msg = "Web app `<strong>$page</strong>` is not available in this controller!";
 			dotnet::PageNotFound($message);
         } else {
             $this->ref = DotNetRegistry::GetInitialScriptName();
             $this->ref = "{$this->ref}/$page";
 
-            debugView::LogEvent("Reflects on web app => {$this->ref}");
+            $msg = "Reflects on web app => <strong><code>{$this->ref}</code></strong>";
+            debugView::LogEvent($msg);
         }
 
         if (!is_object($app)) {
