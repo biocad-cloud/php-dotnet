@@ -264,8 +264,14 @@ abstract class controller {
      * 假若没有权限的话，会执行这个函数进行重定向
      * 这个函数默认是返回403错误页面
     */
-    public function Redirect() {
-        dotnet::AccessDenied("Invalid credentials!");
+    public function Redirect($code) {
+        if ($code == 403) {
+            dotnet::AccessDenied("Invalid credentials!");
+        } else if ($code == 429) {
+            dotnet::TooManyRequests("Too many request!");
+        } else {
+            dotnet::ThrowException("Unknown server error...");
+        }
     }
 
     #region

@@ -213,13 +213,13 @@ class dotnet {
 
             # 用户访问权限控制
             if (!$injection->accessControl()) {
-                 $injection->Redirect();
+                 $injection->Redirect(403);
                  exit(403);
 
             # 服务器资源访问量的限制
             } else if ($injection->Restrictions()) {
-                 $injection->Redirect();
-                 exit(403);
+                 $injection->Redirect(429);
+                 exit(429);
 
             # 可以正常访问
             } else {
@@ -524,6 +524,16 @@ class dotnet {
 		exit(403);
     }
 
+    /**
+     * 429 请求次数过多
+    */
+    public static function TooManyRequests($message) {
+        $trace = StackTrace::GetCallStack();
+		$exc   = dotnetException::FormatOutput($message, $trace);
+				
+		RFC7231Error::err429($exc);
+		exit(429);
+    }
     #endregion
 }
 ?>

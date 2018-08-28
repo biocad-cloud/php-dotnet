@@ -29,6 +29,23 @@ class Restrictions {
     */
     var $resource;
 
+    public function Description() {
+        $limits = "";
+
+        foreach($this->rates as $time => $limit) {
+            $limits .= "<li>{$time} = {$limit}</li>";
+        }
+
+        $str = "<h3>Resource: {$this->user} @ {$this->resource}</h3>";
+        $str = "<p>Rate Limiting:
+                    <ul>
+                        $limit
+                    </ul>
+                </p>";
+
+        return $str;
+    }
+
     /**
      * 从一个控制器实例对象构建出一个访问次数控制器
      * 

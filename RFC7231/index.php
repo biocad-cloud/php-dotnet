@@ -68,6 +68,9 @@ class RFC7231Error {
 			case 500:
 				return "HTTP/1.0 500 Internal Server Error";
 				break;
+			case 429:
+				return "HTTP/1.0 429 Too Many Requests";
+				break;
 
 			default:
 				return "HTTP/1.0 $code $header";
@@ -88,6 +91,9 @@ class RFC7231Error {
 		self::Display(500, $message, "", $allow_custom);
 	}
 
+	public static function err429($message = NULL, $allow_custom = true) {
+		self::Display(429, $message, "", $allow_custom);
+	}
 	#endregion
 }
 
