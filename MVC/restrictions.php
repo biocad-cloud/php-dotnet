@@ -49,4 +49,12 @@ class Restrictions {
     public function minute() {
         return Utils::ReadValue($this->rates, "min|minute", -1);
     }
+
+    public function hour() {
+        return Utils::ReadValue($this->rates, "hour", -1);
+    }
+
+    public function second() {
+        return Utils::ReadValue($this->rates, "sec|second", -1);
+    }
 }
