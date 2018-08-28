@@ -25,8 +25,11 @@ class Restrictions {
      * 从一个控制器实例对象构建出一个访问次数控制器
      * 
      * @param controller $controller 用户访问权限控制器，需要从控制器之中读取访问限制的注释数据
-     * @param string $user 当前用户的唯一标识符
-     * 
+     * @param string $user 当前用户的唯一标识符，这个标识符可以是
+     *          1. 用户在数据库之中的id编号，
+     *          2. 也可以是一个ip地址，
+     *          3. 也可以是用户分组标记
+     *     可以根据实际需求进行自定义
     */
     public function __construct($user, $controller) {
         $rates = [];
