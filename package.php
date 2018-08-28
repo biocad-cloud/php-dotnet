@@ -258,7 +258,7 @@ class dotnet {
      *                             1. php文件路径，如果文件不存在，则会使用默认配置数据
      *                             2. 包含有配置数据的字典数组
     */
-	public static function AutoLoad($config = NULL) {		       
+	public static function AutoLoad($config = NULL) {
         $initiator = new Ubench();
         $initiator->start();
 
@@ -266,7 +266,7 @@ class dotnet {
             # 调试器必须先于Imports函数调用，否则会出现错误：
             # PHP Fatal error:  Call to a member function add_loaded_script() on a non-object
             if (!self::$debugger) {
-                 self::$debugger = new dotnetDebugger();    
+                 self::$debugger = new dotnetDebugger();
             }            
         }   
 
@@ -274,7 +274,7 @@ class dotnet {
 		dotnet::Imports("MVC.view");
 		dotnet::Imports("MVC.model");
 		dotnet::Imports("MVC.router");
-        dotnet::Imports("MVC.MySql.driver");       
+        dotnet::Imports("MVC.MySql.driver");
         dotnet::Imports("MVC.MySql.sqlBuilder");
         dotnet::Imports("MVC.MySql.expression");
 
@@ -495,7 +495,7 @@ class dotnet {
 		$exc   = dotnetException::FormatOutput($message, $trace);
 				
 		RFC7231Error::err500($exc);
-		exit(0);
+		exit(500);
     }
 
     /**
@@ -508,7 +508,7 @@ class dotnet {
 		$exc   = dotnetException::FormatOutput($message, $trace);
 				
 		RFC7231Error::err404($exc);
-		exit(0);
+		exit(404);
     }
 
     /**
@@ -521,7 +521,7 @@ class dotnet {
 		$exc   = dotnetException::FormatOutput($message, $trace);
 				
 		RFC7231Error::err403($exc);
-		exit(0);
+		exit(403);
     }
 
     #endregion

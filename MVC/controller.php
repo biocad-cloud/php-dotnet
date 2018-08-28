@@ -278,12 +278,12 @@ abstract class controller {
      * 
      * @return void
     */
-    public function success($message) {
+    public static function success($message) {
         header("HTTP/1.1 200 OK");
         header("Content-Type: application/json");
 
         echo dotnet::successMsg($message);
-        exit();
+        exit(0);
     }
 
     /**
@@ -295,7 +295,7 @@ abstract class controller {
      * 
      * @return void
     */
-    public function error($message, $errCode = 1) {
+    public static function error($message, $errCode = 1) {
         header("HTTP/1.0 500 Internal Server Error");
         header("Content-Type: application/json");
 
