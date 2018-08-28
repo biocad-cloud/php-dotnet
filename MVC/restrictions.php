@@ -42,19 +42,46 @@ class Restrictions {
         $this->rates = $rates;
     }
 
+    #region "Get resource restriction values"
+
+    /**
+     * 对当前的服务器资源的每天的访问次数限制量
+    */
     public function day() {
         return Utils::ReadValue($this->rates, "day", -1);
     }
 
+    /**
+     * 对当前的服务器资源的每分钟的访问次数限制量
+    */
     public function minute() {
         return Utils::ReadValue($this->rates, "min|minute", -1);
     }
 
+    /**
+     * 对当前的服务器资源的每小时的访问次数限制量
+    */
     public function hour() {
         return Utils::ReadValue($this->rates, "hour", -1);
     }
 
+    /**
+     * 对当前的服务器资源的每秒的访问次数限制量
+    */
     public function second() {
         return Utils::ReadValue($this->rates, "sec|second", -1);
+    }
+
+    #endregion
+
+    /**
+     * 判断当前用户是否已经超过了访问限制次数
+     * 
+     * @return boolean 返回来的逻辑值表示是否已经超过了访问限制次数
+     *     true表示已经超过了限制阈值
+     *     false表示还没有超过限制阈值，可以进行正常访问
+    */
+    public function Check() {
+
     }
 }
