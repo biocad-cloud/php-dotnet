@@ -22,6 +22,35 @@ if (!defined("SITE_PATH")) {
     define("SITE_PATH", $_SERVER["DOCUMENT_ROOT"]);
 }
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    /**
+     * 当前的访问请求是否是一个POST请求
+    */
+    define("IS_POST", true);
+    /**
+     * 当前的访问请求是否是一个GET请求
+    */
+    define("IS_GET", false);
+} else if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    /**
+     * 当前的访问请求是否是一个POST请求
+    */
+    define("IS_POST", false);
+    /**
+     * 当前的访问请求是否是一个GET请求
+    */
+    define("IS_GET", true);
+} else {
+    /**
+     * 当前的访问请求是否是一个POST请求
+    */
+    define("IS_POST", false);
+    /**
+     * 当前的访问请求是否是一个GET请求
+    */
+    define("IS_GET", false);
+}
+
 /**
  * PHP.NET框架的根文件夹位置
  * 获取得到package.php这个文件的所处的文件夹的位置
