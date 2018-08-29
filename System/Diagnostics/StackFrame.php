@@ -16,7 +16,7 @@ class StackFrame {
      * 
      * @var integer
     */
-    public const OFFSET_UNKNOWN = -1;
+    const OFFSET_UNKNOWN = -1;
 
     /**
      * @param array $frame
