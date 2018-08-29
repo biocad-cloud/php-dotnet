@@ -7,7 +7,7 @@ class dotnetException extends Exception {
 	
 	function __constructor($message) {
 		$this->message    = $message;
-		$this->stackTrace = StackTrace::GetCallStack();
+		$this->stackTrace = StackTrace::GetCallStack()->ToString();
 	}	
 	
 	public static function FormatOutput($message, $stackTrace) {
