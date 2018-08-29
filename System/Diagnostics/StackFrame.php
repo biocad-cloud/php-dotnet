@@ -66,5 +66,13 @@ class StackFrame {
     public function GetFileLineNumber() {
         return $this->frame["line"];
     }
+
+    public function ToString() {        
+        $file     = $this->GetFileName();
+        $line     = $this->GetFileLineNumber();
+        $function = $this->GetMethod();
+        
+        return "    at $function in $file:line $line";
+    }
 }
  
