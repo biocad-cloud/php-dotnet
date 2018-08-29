@@ -15,11 +15,11 @@ namespace PhpDotNet {
                 $module = PHP_DOTNET . "/{$module}";
             } else if (\Strings::EndWith($module, "/*")) {
 
-                $info = array_reverse(debug_backtrace()); 
+                $info = debug_backtrace(); 
 
                 foreach($info as $k => $v) { 
                     // 解析出当前的栈片段信息
-                    if (!self::isImportsCall($v)) {
+                    if (self::isImportsCall($v)) {                        
                         // 当前的栈信息不是Imports，则可能是调用Imports函数的脚本文件
                         $file   = $v["file"];
                         $dir    = dirname($file);
@@ -29,7 +29,7 @@ namespace PhpDotNet {
                         break;
                     }
                 }
-    echo var_dump($module);
+
                 # 导入该文件夹下的所有模块文件
                 # 这个模式可以不要求是php.NET模块
                 return self::importsAll($module);
@@ -97,24 +97,35 @@ namespace PhpDotNet {
         /**
          * 判断当前的这个栈片段信息是否是Imports函数调用？
          * 
+         * 在这个函数之中会忽略掉package.php和bootstrap.php这两个文件之中的函数调用
+         * 
          * @param array $frame 一个栈片段信息
         */
         private static function isImportsCall($frame) {
-            $fileName  = $frame["file"];
+            $fileName  = basename($frame["file"]);
             $funcName  = $frame["function"];
             $args      = $frame["args"];
-            $is_dotnet = array_key_exists("class", $frame) && $frame["class"] === "dotnet";
+            $is_dotnet = self::isDotNetClass($frame);
 
-            if (basename($fileName) == basename(__FILE__)) {
+            if ($fileName == basename(__FILE__) || $fileName == "package.php") {
                 return false;
-            } else if ($funcName !== "Imports") {
+            } else if ($funcName !== "Imports" || $funcName == "LoadModule") {
                 return false;
-            } else if ($args != 1) {
+            } else if (count($args) != 1) {
                 return false;
             } else if ($is_dotnet) {
                 return false;
             } else {
                 return true;
+            }
+        }
+
+        private static function isDotNetClass($frame) {
+            if (!array_key_exists("class", $frame)) {
+                return false;
+            } else {
+                return $frame["class"] === "dotnet" || 
+                       $frame["class"] === "PhpDotNet\bootstrap";
             }
         }
 
@@ -125,12 +136,14 @@ namespace PhpDotNet {
         */
         private static function importsAll($directory) {
             $files = [];
-            $dir = opendir($directory);
+            $dir   = opendir($directory);
 
             \console::log("Imports all module files from $directory");
 
+            # 20180829 readdir函数返回来的文件名是不包含有文件夹路径的
             while ($dir && ($file = readdir($dir)) !== false) {
                 if (\Utils::WithSuffixExtension($file, "php")) {
+                    $file = "$directory/$file";
                     self::importsImpl($file);
                     array_push($files, $file);
                 }
