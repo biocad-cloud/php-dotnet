@@ -71,7 +71,7 @@ namespace PhpDotNet {
             } else {
                 list($isdir, $module) = \Utils::Tuple(self::getInternalModuleRefer($module));
 
-                if (\boolval($isdir)) {
+                if ($isdir === "true") {
                     self::importsAlls($module);
                 } else {
                     self::importsImpl($module);
