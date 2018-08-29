@@ -3,6 +3,7 @@
 namespace Microsoft\VisualBasic\Data\csv {
 
     Imports("Microsoft.VisualBasic.FileIO.FileSystem");
+    Imports("Microsoft.VisualBasic.Data.csv.Table");
 
     /**
      * The csv file I/O extensions
@@ -33,30 +34,18 @@ namespace Microsoft\VisualBasic\Data\csv {
                 # do nothing
             }	
 
-            $fp = fopen($path, 'w');
-          
-            # 确保域不是空的，即需要写入csv文件的列不是空集合
-            if (!$project) {                
-                $project = array();
+            $fp = fopen($path, 'w');     
 
-                foreach (array_keys($array[0]) as $fieldName) {
-                    $project[$fieldName] = $fieldName;
-                }
-            }
+            # 写入第一行标题行          
+            $project = TableView::FieldProjects($array, $project);
+            $project = TableView::Extract($project);
+            $fields  = $project["fields"];
 
-            # 写入第一行标题行
-            $names  = array();
-            $fields = array();
-            
-            foreach ($project as $field => $title) {
-                array_push($names,  $title);
-                array_push($fields, $field);
-            }
-            fputcsv($fp, $names);
+            fputcsv($fp, $project["title"]);
 
             # 写入所有行数据
             foreach ($array as $obj) {
-                $list = array();
+                $list = [];
 
                 # 按照给定的projection投影的顺序进行重排序
                 foreach ($fields as $key) {

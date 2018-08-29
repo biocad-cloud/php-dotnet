@@ -1,5 +1,6 @@
 <?php
 
+Imports("System.Diagnostics.StackFrame");
 Imports("System.Text.StringBuilder");
 Imports("Microsoft.VisualBasic.Strings");
 
@@ -12,8 +13,7 @@ class StackTrace {
     // public void AddLog(string message, 
     //                    [CallerMemberName] string memberName = "", 
     //                    [CallerFilePath] string sourceFilePath = "", 
-    //                    [CallerLineNumber] int sourceLineNumber = 0)
-    // {
+    //                    [CallerLineNumber] int sourceLineNumber = 0) {
     //     StringBuilder sb = new StringBuilder();
     //     sb.AppendLine("Message: " + message);
     //     sb.AppendLine("Member/Function name: " + memberName);
@@ -22,51 +22,74 @@ class StackTrace {
     //     
     //     //Create log file
     //     string FileName = @"D:\" + DateTime.Now.ToString("yyyyMMddhhmmss") + ".log";
-    //     if (File.Exists(FileName))
-    //     {
+    //     if (File.Exists(FileName)) {
     //         File.Delete(FileName); // remove existing
     //     }
-    //     using (StreamWriter sw = File.CreateText(FileName))
-    //     {
+    //     using (StreamWriter sw = File.CreateText(FileName)) {
     //         sw.Write(sb.ToString());         // write entire contents
     //         sw.Close();
-    //     }  
-    // } 
+    //     }
+    // }
 
+    /**
+     * @var array
+    */
+    var $frames;
+
+    /**
+     * 获取堆栈跟踪中的帧数。
+     *
+     * @return integer 堆栈跟踪中的帧数。
+    */
+    public function FrameCount() {
+        if (empty($this->frames)) {
+            return 0;
+        } else {
+            return count($this->frames);
+        }
+    }
+
+    /**
+     * 假若这个构造函数传递了初始参数，在这个构造函数之中会自动跳过第一个栈信息
+     * 所以不需要对传递进来的信息进行额外的处理
+     * 
+     * @param array $backtrace
+    */
+    public function __construct($backtrace = null) {
+        $first  = true;
+        $frames = [];
+
+        if (!$backtrace) {
+            $backtrace = debug_backtrace();
+        } else {
+            $first = false;
+        }
+
+        foreach($backtrace as $k => $v) {
+            if ($first) {
+                # 第一个栈片段信息是当前的这个函数
+                # 跳过
+                $first = false;
+                continue;
+            } else {
+                array_push($frames, new StackFrame($v));
+            }
+        }
+
+        $this->frames = $frames;
+    }
+
+    public function GetFrame($index) {
+        return $this->frames[$index];
+    }
 
     /**
      * 获取当前的函数调用堆栈
      * 
-     * @return void
+     * @return StackTrace
     */
     public static function GetCallStack() {
-  
-        $bt    = debug_backtrace(); 
-        $trace = new StringBuilder();
-        
-        $trace->AppendLine("<code>"); 
-    
-        foreach($bt as $k=>$v) { 
-            // 解析出当前的栈片段信息
-            extract($v); 
-            
-            if (!APP_DEBUG) {
-                # 在非调试模式下，将服务器的文件系统信息隐藏掉
-                if (defined("PHP_DOTNET")) $file = Strings::Replace($file, PHP_DOTNET, "/wwwroot/docker/ubuntu~/->/");
-                if (defined("APP_PATH"))   $file = Strings::Replace($file, APP_PATH,   "/wwwroot/docker/ubuntu~/->/");
-            } else {
-               
-            }            
-
-            $file = Strings::Replace($file, "\\", "/");
-            $file = Strings::Replace($file, "//", "/");
-            $trace->AppendLine("    at $function in $file:line $line<br/>");    
-        } 
-     
-        $trace->AppendLine("    --- End of inner exception stack trace ---<br/>")
-              ->AppendLine("</code>");
-
-        return $trace->ToString();
+        return new StackTrace(debug_backtrace());
     }
 
     /**
@@ -77,12 +100,10 @@ class StackTrace {
     public static function GetCallerFile() {
         $caller = False;
 
-        foreach(debug_backtrace() as $k=>$v) {
-
+        foreach(debug_backtrace() as $k => $v) {
             if ($caller) {
-                // 这里是第二个栈片段
-                extract($v); 
-                return $file;
+                // 这里是第二个栈片段 
+                return $v["file"];
             } else {
                 // 第一个栈片段是GetCallerFile这个函数，所以跳过
                 // 第二个站片段才是我们所需要的Caller所在的文件路径
@@ -104,7 +125,31 @@ class StackTrace {
 		$caller = $trace[2];
 		
 		return $caller['function'];
-	}
+    }
+    
+    /**
+     * 格式化输出栈追踪信息为字符串
+     * 
+     * @param boolean $html
+     * 
+     * @return string 经过格式化之后的栈追踪信息字符串
+    */
+    public function ToString($html = true) {
+        $newLine = $html ? "<br />" . PHP_EOL : PHP_EOL;
+        $trace   = new StringBuilder("", $newLine);
+
+        if ($html) {
+            $trace->Append("<code>");
+        }
+        foreach($this->frames as $frame) {
+            $trace->AppendLine($frame->ToString());
+        }
+        if ($html) {
+            $trace->Append("</code>");
+        }
+
+        return $trace->ToString();
+    }
 }
 
 ?>

@@ -33,7 +33,7 @@ class LogFile {
 			 ->AppendLine()
 			 ->AppendLine("<pre>" . $errstr . "</pre>")
 			 ->AppendLine("")
-			 ->AppendLine(StackTrace::GetCallStack())
+			 ->AppendLine(StackTrace::GetCallStack()->ToString())
 			 ->AppendLine("<br />");
 
 		// echo $errno   . "\n";
