@@ -40,15 +40,22 @@ class StackTrace {
      * @return void
     */
     public static function GetCallStack() {
-  
+        $first = true;
         $bt    = debug_backtrace(); 
         $trace = new StringBuilder();
         
         $trace->AppendLine("<code>"); 
     
-        foreach($bt as $k=>$v) { 
-            // 解析出当前的栈片段信息
-            extract($v); 
+        foreach($bt as $k=>$v) {
+            if ($first) {
+                # 第一个栈片段信息是当前的这个函数
+                # 跳过
+                $first = false;
+                continue;
+            } else {
+                // 解析出当前的栈片段信息
+                extract($v); 
+            }
             
             if (!APP_DEBUG) {
                 # 在非调试模式下，将服务器的文件系统信息隐藏掉
@@ -56,7 +63,7 @@ class StackTrace {
                 if (defined("APP_PATH"))   $file = Strings::Replace($file, APP_PATH,   "/wwwroot/docker/ubuntu~/->/");
             } else {
                
-            }            
+            }
 
             $file = Strings::Replace($file, "\\", "/");
             $file = Strings::Replace($file, "//", "/");
