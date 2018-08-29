@@ -250,7 +250,7 @@ class Strings {
 	 * 
 	 * @return bool
 	*/
-	public function EndWith($haystack, $needle, $caseSensitive = TRUE) {
+	public static function EndWith($haystack, $needle, $caseSensitive = TRUE) {
 		$length = strlen($needle);
 		
 		if ($length === 0) {

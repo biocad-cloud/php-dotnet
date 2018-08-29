@@ -374,6 +374,27 @@ class dotnet {
         if (Utils::WithSuffixExtension($module, "php")) {
             $module = str_replace(".", "/", $module); 
             $module = PHP_DOTNET . "/{$module}";
+        } else if (Strings::EndWith($module, "/*")) {
+
+            $info = array_reverse(debug_backtrace()); 
+
+            foreach($info as $k => $v) { 
+                // 解析出当前的栈片段信息
+                if (!self::isImportsCall($v)) {
+                    // 当前的栈信息不是Imports，则可能是调用Imports函数的脚本文件
+                    $file   = $v["file"];
+                    $dir    = dirname($file);
+                    $module = trim($module, "*");
+                    $module = "$dir/$module"; 
+
+                    break;
+                }
+            }
+echo var_dump($module);
+            # 导入该文件夹下的所有模块文件
+            # 这个模式可以不要求是php.NET模块
+            return self::importsAll($module);
+
         } else {
             $module = str_replace(".", "/", $module);             
 
@@ -428,7 +449,7 @@ class dotnet {
         }
         
         if (!self::$debugger) {
-            self::$debugger = new dotnetDebugger();    
+            self::$debugger = new dotnetDebugger();
         }
 
         self::$debugger->add_loaded_script($module, $initiator);
@@ -460,7 +481,6 @@ class dotnet {
 
     /**
      * 导入目标命名空间文件夹之下的所有的php模块文件
-     * 
      * 
      * @param string $directory 包含有module文件的文件夹的路径
     */
