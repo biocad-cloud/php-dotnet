@@ -10,10 +10,10 @@ namespace PhpDotNet {
         public static function LoadModule($module) {
             // 因为WithSuffixExtension这个函数会需要依赖小数点来判断文件拓展名，
             // 所以对小数点的替换操作要在if判断之后进行  
-            if (Utils::WithSuffixExtension($module, "php")) {
+            if (\Utils::WithSuffixExtension($module, "php")) {
                 $module = str_replace(".", "/", $module); 
                 $module = PHP_DOTNET . "/{$module}";
-            } else if (Strings::EndWith($module, "/*")) {
+            } else if (\Strings::EndWith($module, "/*")) {
 
                 $info = array_reverse(debug_backtrace()); 
 
@@ -87,11 +87,11 @@ namespace PhpDotNet {
                 }
             }
             
-            if (!self::$debugger) {
-                self::$debugger = new dotnetDebugger();
+            if (!\dotnet::$debugger) {
+                \dotnet::$debugger = new \dotnetDebugger();
             }
 
-            self::$debugger->add_loaded_script($module, $initiator);
+            \dotnet::$debugger->add_loaded_script($module, $initiator);
         }
 
         /**
@@ -127,10 +127,10 @@ namespace PhpDotNet {
             $files = [];
             $dir = opendir($directory);
 
-            console::log("Imports all module files from $directory");
+            \console::log("Imports all module files from $directory");
 
             while ($dir && ($file = readdir($dir)) !== false) {
-                if (Utils::WithSuffixExtension($file, "php")) {
+                if (\Utils::WithSuffixExtension($file, "php")) {
                     self::importsImpl($file);
                     array_push($files, $file);
                 }
