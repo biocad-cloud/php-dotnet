@@ -45,10 +45,10 @@ class console {
     private static function shrinkPath($file) {
         if (strpos($file, PHP_DOTNET) === 0) {
             $file = str_replace(PHP_DOTNET, "", $file);
-            $file = "[PHP_DOTNET]$file";
+            $file = "<code>[PHP_DOTNET]</code>$file";
         } elseif (defined("APP_PATH")) {
             $file = str_replace(APP_PATH, "", $file);
-            $file = "[APP_PATH]$file";
+            $file = "<code>[APP_PATH]</code>$file";
         }
 
         return $file;
