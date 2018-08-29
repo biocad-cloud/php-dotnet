@@ -36,6 +36,25 @@ class StackTrace {
     */
     var $frames;
 
+    /**
+     * 获取堆栈跟踪中的帧数。
+     *
+     * @return integer 堆栈跟踪中的帧数。
+    */
+    public function FrameCount() {
+        if (empty($this->frames)) {
+            return 0;
+        } else {
+            return count($this->frames);
+        }
+    }
+
+    /**
+     * 假若这个构造函数传递了初始参数，在这个构造函数之中会自动跳过第一个栈信息
+     * 所以不需要对传递进来的信息进行额外的处理
+     * 
+     * @param array $backtrace
+    */
     public function __construct($backtrace = null) {
         $first  = true;
         $frames = [];
@@ -58,6 +77,10 @@ class StackTrace {
         }
 
         $this->frames = $frames;
+    }
+
+    public function GetFrame($index) {
+        return $this->frames[$index];
     }
 
     /**
@@ -102,7 +125,31 @@ class StackTrace {
 		$caller = $trace[2];
 		
 		return $caller['function'];
-	}
+    }
+    
+    /**
+     * 格式化输出栈追踪信息为字符串
+     * 
+     * @param boolean $html
+     * 
+     * @return string 经过格式化之后的栈追踪信息字符串
+    */
+    public function ToString($html = true) {
+        $newLine = $html ? "<br />" . PHP_EOL : PHP_EOL;
+        $trace   = new StringBuilder("", $newLine);
+
+        if ($html) {
+            $trace->Append("<code>");
+        }
+        foreach($this->frames as $frame) {
+            $trace->AppendLine($frame->ToString());
+        }
+        if ($html) {
+            $trace->Append("</code>");
+        }
+
+        return $trace->ToString();
+    }
 }
 
 ?>
