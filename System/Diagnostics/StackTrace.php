@@ -65,7 +65,7 @@ class StackTrace {
             $first = false;
         }
 
-        foreach($bt as $k=>$v) {
+        foreach($backtrace as $k => $v) {
             if ($first) {
                 # 第一个栈片段信息是当前的这个函数
                 # 跳过

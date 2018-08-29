@@ -22,7 +22,7 @@ class StackFrame {
      * @param array $frame
     */
     public function __construct($frame) {
-        $this->$frame = $frame;
+        $this->frame = $frame;
     }
 
     /**
@@ -71,7 +71,7 @@ class StackFrame {
         $file     = $this->GetFileName();
         $line     = $this->GetFileLineNumber();
         $function = $this->GetMethod();
-        
+
         return "    at $function in $file:line $line";
     }
 }
