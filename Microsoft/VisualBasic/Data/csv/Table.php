@@ -6,8 +6,9 @@ namespace Microsoft\VisualBasic\Data\csv {
 
         /**
          * @param array $data
+         * @param boolean $bootstrap Add bootstrap class to the generated html table?
         */
-        public static function ToHTMLTable($data, $project = null) {
+        public static function ToHTMLTable($data, $project = null, $bootstrap = true) {
             $project = self::FieldProjects($data, $project);
             $project = self::Extract($project);
             $theads = "";
@@ -32,7 +33,13 @@ namespace Microsoft\VisualBasic\Data\csv {
                                  </tr>";
             }
 
-            return "<table>
+            if ($bootstrap) {
+                $bootstrap = "table table-hover";
+            } else {
+                $bootstrap = "";
+            }
+
+            return "<table class='$bootstrap'>
                         <thead>
                             <tr>$theads</tr>
                         </thead>
