@@ -8,7 +8,38 @@ namespace Microsoft\VisualBasic\Data\csv {
          * @param array $data
         */
         public static function ToHTMLTable($data, $project = null) {
+            $project = self::FieldProjects($data, $project);
+            $project = self::Extract($project);
+            $theads = "";
 
+            foreach($project["title"] as $title) {
+                $th     = "<th>$title</th>";
+                $theads = $theads . $th . "\n";
+            }
+
+            $project = $project["fields"];
+            $rows    = "";
+
+            foreach($data as $array) {
+                $td = "";
+
+                foreach($project as $field) {
+                    $td = $td . "<td>{$array[$field]}</td>";
+                }
+
+                $rows = $rows . "<tr>
+                                     $td
+                                 </tr>";
+            }
+
+            return "<table>
+                        <thead>
+                            <tr>$theads</tr>
+                        </thead>
+                        <tbody>
+                            $rows
+                        </tbody>
+                    </table>"; 
         }
 
         public static function ToMarkdownTable($data, $project = null) {
