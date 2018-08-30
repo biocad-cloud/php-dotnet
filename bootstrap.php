@@ -37,7 +37,6 @@ namespace PhpDotNet {
             # 在linux上面因为文件系统区分大小写，所以可以通过大小写来避免冲突
             # 但是windows上面却不可以
             # 在这里假设偏向于加载文件
-
             $php = PHP_DOTNET . "/{$module}.php";
 
             # 如果是文件存在，则只导入文件
@@ -46,13 +45,15 @@ namespace PhpDotNet {
             } elseif (file_exists($php = PHP_DOTNET . "/$module/index.php")) {
                 # 如果不存在，则使用index.php来进行判断
                 $module = $php;
-            } elseif (is_dir($dir = PHP_DOTNET . "/$module/")) {
+            } 
+
+            if (is_dir($dir = PHP_DOTNET . "/$module/")) {
                 # 可能是一个文件夹
                 # 则认为是导入该命名空间文件夹下的所有的同级的文件夹文件
                 return ["true" => dirname($module)];
+            } else {
+                return ["false" => $module];
             }
-
-            return ["false" => $module];
         }
 
         /**
@@ -158,10 +159,16 @@ namespace PhpDotNet {
 
             # 20180829 readdir函数返回来的文件名是不包含有文件夹路径的
             while ($dir && ($file = readdir($dir)) !== false) {
+                $file = "$directory/$file";
+
                 if (\Utils::WithSuffixExtension($file, "php")) {
-                    $file = "$directory/$file";
                     self::importsImpl($file);
                     array_push($files, $file);
+                } else if (is_dir($file)) {
+                    # 如果是一个文件夹，则继续递归加载？
+                    foreach(self::importsAlls($file) as $php) {
+                        array_push($files, $php);
+                    }
                 }
             }
 
