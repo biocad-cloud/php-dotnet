@@ -159,7 +159,11 @@ namespace PhpDotNet {
 
             # 20180829 readdir函数返回来的文件名是不包含有文件夹路径的
             while ($dir && ($file = readdir($dir)) !== false) {
-                $file = "$directory/$file";
+                if ($file == "." || $file == "..") {
+                    continue;
+                } else {
+                    $file = "$directory/$file";
+                }
 
                 if (\Utils::WithSuffixExtension($file, "php")) {
                     self::importsImpl($file);
