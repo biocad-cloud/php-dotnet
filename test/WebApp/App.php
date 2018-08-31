@@ -31,11 +31,11 @@ class App {
 		$aes = new AES128CBC("1234567890abcdef");
 		$message = $aes->Encrypt("hello world!");
 
-		echo $message . "\n\n";
+		echo "\n" . $message . "\n\n";
 
 		$message = $aes->Decrypt($message);
 
-		echo "Raw message is:  $message";
+		echo "Raw message is:  [$message]";
 	}
 }
 ?>

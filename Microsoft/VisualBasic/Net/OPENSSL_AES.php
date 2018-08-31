@@ -48,7 +48,7 @@ class AES128CBC {
         return $ciphertext;
     }
 
-    public function Decrypt($data) {
+    public function Decrypt($ciphertext) {
         $ciphertext = base64_decode($ciphertext);
         $iv         = substr($ciphertext, 0, $this->ivlen);
         $ciphertext = substr($ciphertext, $this->ivlen + 1);
