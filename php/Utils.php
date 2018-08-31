@@ -449,7 +449,6 @@ class Utils {
      * 获取消息请求的客户端的ip地址
     */
     public static function UserIPAddress() {     
-           
         if (isset($_SERVER)) {
             if (isset($_SERVER["HTTP_X_FORWARDED_FOR"])) {
                 return $_SERVER["HTTP_X_FORWARDED_FOR"];
@@ -471,4 +470,3 @@ class Utils {
         return false;
     }
 }
-?>
