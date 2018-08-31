@@ -1,19 +1,26 @@
-<script type="text/javascript" src="http://cdn.biodeep.cn/vendor/aes-js/aes.js"></script>
 <script type="text/javascript" src="http://cdn.biodeep.cn/vendor/jquery.min.js"></script>
+<script type="text/javascript" src="http://cdn.biodeep.cn/vendor/aes-js/aes.js"></script>
 <script type="text/javascript">
 
     $.get("{index/aes_message}", function(message) {
         if (message.code == 0) {
 
             var key = message.info.key;
-            var msg = new String(message.info.msg);
+            var msg = new String(Base64Decode(message.info.msg));
             var iv  = msg.substr(0, 16);
+
+            console.log(msg)
+            console.log(iv);
+            console.log(message);
 
             key = aesjs.utils.utf8.stringASCIIBytes(key);
             iv  = aesjs.utils.utf8.stringASCIIBytes(iv);
             msg = msg.substr(16);
 
-            var encryptedBytes = aesjs.utils.hex.toBytes(msg);
+            var encryptedBytes = aesjs.utils.utf8.stringASCIIBytes(msg);
+
+            console.log(msg);
+
             var aesCbc = new aesjs.ModeOfOperation.cbc(key, iv);
             var decryptedBytes = aesCbc.decrypt(encryptedBytes);
 
@@ -25,6 +32,12 @@
             console.error(message);
         }
     });
+
+    function Base64Decode(str, encoding = 'utf-8') {
+        var bytes = aesjs.utils.utf8.stringASCIIBytes(str);
+        var buffer = new Uint8Array(bytes);
+        return new (TextDecoder || TextDecoderLite)(encoding).decode(buffer);
+    }
 
 /*
     // An example 128-bit key

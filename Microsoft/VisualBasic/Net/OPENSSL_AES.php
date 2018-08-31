@@ -29,7 +29,7 @@ class AES128CBC {
      * @param string $key 要求字符串的长度必须为16的整数倍，并且应该为ASCII字符串
     */
     public function __construct($key) {
-        $this->$key  = $key;
+        $this->key  = $key;
         $this->ivlen = openssl_cipher_iv_length($cipher = AES128CBC::cipher);
 
         console::log("AES-128-CBC iv-length={$this->ivlen}");
