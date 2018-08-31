@@ -31,6 +31,8 @@ class AES128CBC {
     public function __construct($key) {
         $this->$key  = $key;
         $this->ivlen = openssl_cipher_iv_length($cipher = AES128CBC::cipher);
+
+        console::log("AES-128-CBC iv-length={$this->ivlen}");
     }
 
     public function Encrypt($message) {
