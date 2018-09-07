@@ -376,7 +376,8 @@ class View {
 				# 这个可能是后面的foreach循环的数据源
 				# 不做任何处理？？
 				#
-				# DO NOTHING
+				# 给出警告
+				console::log("[$name] is an array, this variable will render with <code>foreach</code> or <code>volist</code>.");
 			} else {
 				$html = Strings::Replace($html, $name, $value);
 			}			
