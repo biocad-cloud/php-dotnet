@@ -42,6 +42,13 @@ abstract class controller {
     var $ref;
 
     /**
+     * 指示控制器是否已经发送了content-type http头信息
+     * 
+     * @var boolean
+    */
+    private static $hasSendContentType = false;
+
+    /**
      * Get php function document comment 
      * 
      * Get php function document comment parsed object 
@@ -140,7 +147,9 @@ abstract class controller {
      * 这个可以在访问控制器之中应用，这个函数只对定义了@uses标签的控制器有效
      * 如果控制器函数没有定义@uses标签，则不会写入任何content-type的数据
     */
-    public function sendContentType() {        
+    public function sendContentType() {     
+        self::$hasSendContentType = true;
+        
         switch(strtolower($this->getUsage())) {
             case "api":
                 header("Content-Type: application/json");
@@ -157,6 +166,7 @@ abstract class controller {
 
             default:
                 # DO NOTHING
+                self::$hasSendContentType = false;
         }
     }
 
