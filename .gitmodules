@@ -1,0 +1,6 @@
+[submodule "MySqli/runtime/mysqli"]
+	path = MySqli/runtime/mysqli
+	url = https://github.com/xieguigang/mysqli.vb.git
+[submodule "MySqli/runtime/sciBASIC#"]
+	path = "MySqli/runtime/sciBASIC#"
+	url = https://github.com/xieguigang/sciBASIC.git
