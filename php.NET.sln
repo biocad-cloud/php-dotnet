@@ -5,18 +5,33 @@ VisualStudioVersion = 15.0.27130.2036
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "php_dotnet", "php_dotnet.phpproj", "{514A0082-0F05-48BE-9DA1-7AB24B3C5567}"
 EndProject
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "ORM", "ORM\ORM.vbproj", "{7C7C244B-BD82-42CE-A4F1-A934A9412364}"
+EndProject
 Global
-	GlobalSection(SolutionConfigurationPlatforms) = preSolution		
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Biodeep_UNIX_x64|Any CPU = Biodeep_UNIX_x64|Any CPU
 		Biodeep_UNIX_x64|x64 = Biodeep_UNIX_x64|x64
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{514A0082-0F05-48BE-9DA1-7AB24B3C5567}.Biodeep_UNIX_x64|Any CPU.ActiveCfg = Release|Any CPU
+		{7C7C244B-BD82-42CE-A4F1-A934A9412364}.Biodeep_UNIX_x64|Any CPU.ActiveCfg = Release|Any CPU
+		{7C7C244B-BD82-42CE-A4F1-A934A9412364}.Biodeep_UNIX_x64|Any CPU.Build.0 = Release|Any CPU
+		{7C7C244B-BD82-42CE-A4F1-A934A9412364}.Biodeep_UNIX_x64|x64.ActiveCfg = Release|Any CPU
+		{7C7C244B-BD82-42CE-A4F1-A934A9412364}.Biodeep_UNIX_x64|x64.Build.0 = Release|Any CPU
+		{7C7C244B-BD82-42CE-A4F1-A934A9412364}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C7C244B-BD82-42CE-A4F1-A934A9412364}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C7C244B-BD82-42CE-A4F1-A934A9412364}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{7C7C244B-BD82-42CE-A4F1-A934A9412364}.Debug|x64.Build.0 = Debug|Any CPU
+		{7C7C244B-BD82-42CE-A4F1-A934A9412364}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C7C244B-BD82-42CE-A4F1-A934A9412364}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7C7C244B-BD82-42CE-A4F1-A934A9412364}.Release|x64.ActiveCfg = Release|Any CPU
+		{7C7C244B-BD82-42CE-A4F1-A934A9412364}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{F184B08F-C81C-45F6-A57F-5ABD9991F28F} = {F184B08F-C81C-45F6-A57F-5ABD9991F28F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {75507F09-62CF-4D69-B9C1-8C37932F601B}
