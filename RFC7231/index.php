@@ -54,27 +54,26 @@ class RFC7231Error {
 		exit($code);
 	}
 	
+	public static $httpErrors = [
+		"404" => "Not Found",
+		"403" => "Forbidden",
+		"500" => "Internal Server Error",
+		"429" => "Too Many Requests"
+	]; 
+
 	/**
 	 * @return string The http status code header
 	*/
 	private static function getRFC($code, $header = "Unknown") {
-		switch ($code) {
-			case 404:
-				return "HTTP/1.0 404 Not Found";
-				break;
-			case 403:
-				return "HTTP/1.0 403 Forbidden";
-				break;
-			case 500:
-				return "HTTP/1.0 500 Internal Server Error";
-				break;
-			case 429:
-				return "HTTP/1.0 429 Too Many Requests";
-				break;
+		$code = strval($code);
 
-			default:
-				return "HTTP/1.0 $code $header";
+		if (array_key_exists($code, self::$httpErrors)) {
+			$msg = self::$httpErrors[$code];
+		} else {
+			$msg = $header;
 		}
+
+		return "HTTP/1.0 $code $msg";		
 	}
 	
 	#region "Framework prefix error code page entry"
