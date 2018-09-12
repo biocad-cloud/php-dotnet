@@ -51,11 +51,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     define("IS_GET", false);
 }
 
+#region "file_loads"
+
 /**
  * PHP.NET框架的根文件夹位置
  * 获取得到package.php这个文件的所处的文件夹的位置
 */
-define("PHP_DOTNET", dirname(__FILE__));
+define("PHP_DOTNET", dirname(__FILE__) . "/Framework");
 
 include_once PHP_DOTNET . "/Debugger/Ubench/Ubench.php";
 
@@ -93,6 +95,8 @@ $load->run(function() {
 
 });
 
+#endregion
+
 debugView::LogEvent("--- App start ---");
 debugView::LogEvent("Load required modules in " . $load->getTime());
 debugView::AddItem("benchmark.load", $load->getTime(true));
@@ -103,6 +107,8 @@ debugView::AddItem("benchmark.load", $load->getTime(true));
 # misspelled the timezone identifier. We selected the timezone 'UTC' for now, 
 # but please set date.timezone to select your timezone.
 date_default_timezone_set('UTC');
+
+#region "global function"
 
 /**
  * Global function for load php.NET package modules.
@@ -131,3 +137,5 @@ function Redirect($URL) {
 function session($name, $value) {
     $_SESSION[$name] = $value;
 }
+
+#endregion
