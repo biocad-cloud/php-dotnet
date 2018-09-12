@@ -63,6 +63,8 @@ namespace MVC\MySql {
 		 *    DESCRIBE TableName
 		 * 
 		 * @param string $tableName The table name for get schema structure info.
+		 * 
+		 * @return array
 		*/
 		public function Describe($tableName) {
 			$db   = $this->database;
