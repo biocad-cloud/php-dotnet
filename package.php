@@ -22,33 +22,40 @@ if (!defined("SITE_PATH")) {
     define("SITE_PATH", $_SERVER["DOCUMENT_ROOT"]);
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    /**
-     * 当前的访问请求是否是一个POST请求
-    */
-    define("IS_POST", true);
-    /**
-     * 当前的访问请求是否是一个GET请求
-    */
-    define("IS_GET", false);
-} else if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    /**
-     * 当前的访问请求是否是一个POST请求
-    */
-    define("IS_POST", false);
-    /**
-     * 当前的访问请求是否是一个GET请求
-    */
-    define("IS_GET", true);
-} else {
-    /**
-     * 当前的访问请求是否是一个POST请求
-    */
-    define("IS_POST", false);
-    /**
-     * 当前的访问请求是否是一个GET请求
-    */
-    define("IS_GET", false);
+if (array_key_exists($_SERVER, "REQUEST_METHOD")) {
+	
+	if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+		/**
+		 * 当前的访问请求是否是一个POST请求
+		*/
+		define("IS_POST", true);
+		/**
+		 * 当前的访问请求是否是一个GET请求
+		*/
+		define("IS_GET", false);
+		
+	} else if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+		
+		/**
+		 * 当前的访问请求是否是一个POST请求
+		*/
+		define("IS_POST", false);
+		/**
+		 * 当前的访问请求是否是一个GET请求
+		*/
+		define("IS_GET", true);
+	}	
+} 
+
+if (!defined("IS_GET") && !defined("IS_POST")) {
+	/**
+	 * 当前的访问请求是否是一个POST请求
+	*/
+	define("IS_POST", false);
+	/**
+	 * 当前的访问请求是否是一个GET请求
+	*/
+	define("IS_GET", false);
 }
 
 #region "file_loads"
