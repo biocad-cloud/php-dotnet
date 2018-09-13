@@ -118,3 +118,17 @@ public function Restrictions() {
 
 + If this function returns ``false``, then means the specific server resource access restrictions is not exceed, your user can access the server resource normally;
 + If this function returns ``true``, which means your server resource access restrictions has been breached, then the current user access will be restricted, server will returns 429 error code until the rate limits is restored.
+
+## Apply the accessController
+
+Just create a new instance of your ``accessController`` class object, and then passing it to the second parameter of the ``dotnet::HandleRequest`` function for you web app ``App`` class object instance:
+
+```php
+<?php
+
+include "./modules/dotnet/package.php";
+include "./accessController.php";
+
+dotnet::AutoLoad("./etc/config.php");
+dotnet::HandleRequest(new App(), new accessController());
+```
