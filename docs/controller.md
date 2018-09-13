@@ -94,3 +94,27 @@ public function search() {
     # ...
 }
 ```
+
+## Restrictions
+
+As you can see, there is a ``rate`` tag data that you can write into the comment docs as meta data, so that you can apply the ``Restrictions`` controller on a specific server resource in your web app, you should implements this ``Restrictions`` feature in your access controller by overrides the function ``Restrictions``:
+
+```php
+<?php
+
+/**
+ * 对当前的用户在某一个服务器资源上的访问量控制
+*/
+public function Restrictions() {
+    if (!$this->HasRateLimits()) {
+        return false;
+    } else {
+        global $limitTest;
+        $limitTest = (new Restrictions(Common::CurrentUserId(), $this));
+        return $limitTest->Check();
+    }
+}
+```
+
++ If this function returns ``false``, then means the specific server resource access restrictions is not exceed, your user can access the server resource normally;
++ If this function returns ``true``, which means your server resource access restrictions has been breached, then the current user access will be restricted, server will returns 429 error code until the rate limits is restored.
