@@ -31,3 +31,32 @@ Which means you must overrides this accessControl function in you declared ``acc
 
 + If you think current user request is allowed to access your server resource, then you should make this function return a logical value ``true``.
 + Otherwise, you should make this function return a logical value ``false``, which means your server will return a ``403 access denied`` error code to your user by default.
+
+By default, when a user request is not allowed to access the server resource, then the ``redirect`` function will be calls, this redirect can redirect user to a login page or display a http error page, and you can overrides this ``redirect`` function in your ``accessController`` class, example like:
+
+```php
+<?php
+
+/**
+ * 假若没有权限的话，会执行这个函数进行重定向
+*/
+public function Redirect($code) {
+    // 并且记录下用户的活动信息
+    (new Table(["my_biodeep" => "activity"]))
+        ->add([
+            "user_id"    => Common::CurrentUserId(),
+            "action"     => Utils::URL(),
+            "time"       => Utils::Now(),
+            "error_code" => $code
+        ]);
+
+    if ($code == 403) {
+        Redirect("http://passport.biodeep.cn/");
+    } else if ($code == 429) {
+        global $limitTest;
+        dotnet::TooManyRequests($limitTest->Description());
+    } else {
+        dotnet::ThrowException("Oops, unknown server error...");
+    }
+} 
+```
