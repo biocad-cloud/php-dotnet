@@ -1,41 +1,19 @@
 <div id="think_page_trace" style="position: fixed;bottom:0;right:0;font-size:12px;width:100%;z-index: 999999;color: #000;text-align:left;font-family:'Microsoft YaHei';">
 
 	<script src="data:application/x-javascript;base64,{$json_viewer_js}"></script>
-	<style type="text/css">
+	<style>
 		{$json_viewer_css}
-	</style>
-	<style type="text/css">
-		.tp-panel-title {
-			color: #000;
-			padding-right: 12px;
-			height: 30px;
-			line-height: 30px;
-			display: inline-block;
-			margin-right: 3px;
-			cursor: pointer;
-			font-weight: 700
-		}
-
-		.think_page_trace_tab_tit {
-			height: 30px;
-			padding: 0px 3px 15px 10px;
-			border-bottom: 1px solid white;
-			border-top: 1px solid white;
-			font-size: 14px;
-			background-color: rgb(240, 240, 240);
-			box-shadow: 0px -5px 5px #888888;
-		}
 	</style>
 
 	<div id="think_page_trace_tab" style="display: none;background:white;margin:0;height: 450px;">
-		<div class="think_page_trace_tab_tit" id="think_page_trace_tab_tit">
-			<span class="tp-panel-title">Summary</span>
-			<span class="tp-panel-title">Includes</span>
-			<span class="tp-panel-title">App Events</span>
-			<span class="tp-panel-title">Console</span>
-			<span class="tp-panel-title">SQL</span>
-			<span class="tp-panel-title">Variables</span>
-			<span class="tp-panel-title">Environment</span>
+		<div id="think_page_trace_tab_tit" style="height:30px;padding: 0px 3px 15px 10px;border-bottom:1px solid rgb(20,20,20);border-top:1px solid rgb(20,20,20);font-size:14px; background-color:rgb(240,240,240);">
+			<span style="color:#000;padding-right:12px;height:30px;line-height: 30px;display:inline-block;margin-right:3px;cursor: pointer;font-weight:700">Summary</span>
+			<span style="color:#000;padding-right:12px;height:30px;line-height: 30px;display:inline-block;margin-right:3px;cursor: pointer;font-weight:700">Includes</span>
+			<span style="color:#000;padding-right:12px;height:30px;line-height: 30px;display:inline-block;margin-right:3px;cursor: pointer;font-weight:700">App Events</span>
+			<span style="color:#000;padding-right:12px;height:30px;line-height: 30px;display:inline-block;margin-right:3px;cursor: pointer;font-weight:700">Console</span>
+			<span style="color:#000;padding-right:12px;height:30px;line-height: 30px;display:inline-block;margin-right:3px;cursor: pointer;font-weight:700">SQL</span>
+			<span style="color:#000;padding-right:12px;height:30px;line-height: 30px;display:inline-block;margin-right:3px;cursor: pointer;font-weight:700">Variables</span>
+			<span style="color:#000;padding-right:12px;height:30px;line-height: 30px;display:inline-block;margin-right:3px;cursor: pointer;font-weight:700">Environment</span>
 		</div>
 
 		<div id="think_page_trace_tab_cont" style="overflow:auto;height:412px;padding: 0; line-height: 24px">
@@ -47,13 +25,12 @@
 						<?php echo $_SERVER["REQUEST_METHOD"]; ?> :
 						<?php echo $_SERVER["REQUEST_URI"]; ?>
 					</li>
-					<li style="border-bottom:1px solid #EEE;font-size:14px;padding:0 12px">Benchmark : {$benchmark} ( Load:{$benchmark.load}
-						Init:{$benchmark.init} Exec:{$benchmark.exec} Template:{$benchmark.template} )
+					<li style="border-bottom:1px solid #EEE;font-size:14px;padding:0 12px">Benchmark : {$benchmark} ( Load:{$benchmark.load} Init:{$benchmark.init} Exec:{$benchmark.exec} Template:{$benchmark.template}
+						)
 					</li>
 					<li style="border-bottom:1px solid #EEE;font-size:14px;padding:0 12px">Traffic : {$benchmark_n} req/s</li>
 					<li style="border-bottom:1px solid #EEE;font-size:14px;padding:0 12px">Memory : {$memory_size}</li>
-					<li style="border-bottom:1px solid #EEE;font-size:14px;padding:0 12px">SQL : {$sql.queries} queries {$sql.writes} writes
-						</li>
+					<li style="border-bottom:1px solid #EEE;font-size:14px;padding:0 12px">SQL : {$sql.queries} queries {$sql.writes} writes </li>
 					<li style="border-bottom:1px solid #EEE;font-size:14px;padding:0 12px">File Loaded : {$files}</li>
 					<li style="border-bottom:1px solid #EEE;font-size:14px;padding:0 12px">Cache : {$cache.path} </li>
 					<li style="border-bottom:1px solid #EEE;font-size:14px;padding:0 12px">PHP_SESSION :

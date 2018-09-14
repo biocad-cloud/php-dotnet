@@ -30,14 +30,16 @@ namespace MVC\Views {
          * </ul>
         */
 
-        /**
-         * 首先使用正则表达式解析出文档碎片之中的模板
-        */
-        public static function ParseTemplates($html, $tagName = "foreach") {
+        public static function ParseTemplates($html) {
+            # 首先使用正则表达式解析出文档碎片之中的模板
             # flags表示正则表达式引擎忽略大小写并且以单行模式工作
-            $pattern   = "<$tagName(.*?)<\/$tagName>";
+            $pattern   = "<foreach(.*?)<\/foreach>";
             $flags     = "is";
             $templates = \Regex::Matches($html, $pattern, null, $flags); 
+
+            # echo $html . "\n";
+            # echo $pattern . "\n";
+            # echo \var_dump($templates);
 
             return $templates;
         }
@@ -134,54 +136,49 @@ namespace MVC\Views {
          * @param string $var 在模板之中的数组变量名称
         */
         public static function Build($array, $template, $var) {
-            $pattern = "@$var\[\".+?\"\]";
-            $vars = \Regex::Matches($template, $pattern);
+            $varPattern = "@$var\[\".+?\"\]";
+            $vars = \Regex::Matches($template, $varPattern);
 
             if (count($vars) == 0) {
                 # 没有定义模板变量？？
                 return "";
             } else {
-                return self::buildImpl(
-                    $array, $template, $var, $vars
-                );
-            }
-        }
 
-        private static function buildImpl($array, $template, $var, $vars) {
-            # 将索引名称都取出来
-            $replaceAs = [];
+                # 将索引名称都取出来
+                $replaceAs = [];
 
-            foreach($vars as $var) {
-                $name = \StringHelpers::GetStackValue($var, '"', '"');
-                $replaceAs[$name] = $var;
-            }
-
-            $list    = new \ArrayList();
-            $nesting = self::nestingTemplate($template);
-
-            # echo var_dump($nesting);
-
-            foreach ($array as $row) {
-                $str = $template;
-
-                foreach ($replaceAs as $name => $index) {
-                    $str_val = \Utils::ReadValue($row, $name);
-
-                    if (is_array($str_val)) {
-                        # 可能是内嵌的模板的数据源
-
-                    } else {
-                        $str = \Strings::Replace($str, $index, $str_val);
-                    }                        
-                }
-                foreach (self::BuildNesting($nesting, $row) as $templ => $nesting_page) {
-                    $str = \Strings::Replace($str, $templ, $nesting_page);
+                foreach($vars as $var) {
+                    $name = \StringHelpers::GetStackValue($var, '"', '"');
+                    $replaceAs[$name] = $var;
                 }
 
-                $list->Add($str);
-            }
+                $list    = new \ArrayList();
+                $nesting = self::nestingTemplate($template);
 
-            return \Strings::Join($list->ToArray(), "\n\n");
+                # echo var_dump($nesting);
+
+                foreach ($array as $row) {
+                    $str = $template;
+
+                    foreach ($replaceAs as $name => $index) {
+                        $str_val = \Utils::ReadValue($row, $name);
+
+                        if (is_array($str_val)) {
+                            # 可能是内嵌的模板的数据源
+
+                        } else {
+                            $str = \Strings::Replace($str, $index, $str_val);
+                        }                        
+                    }
+                    foreach (self::BuildNesting($nesting, $row) as $templ => $nesting_page) {
+                        $str = \Strings::Replace($str, $templ, $nesting_page);
+                    }
+
+                    $list->Add($str);
+                }
+
+                return \Strings::Join($list->ToArray(), "\n\n");
+            }
         }
 
         /**

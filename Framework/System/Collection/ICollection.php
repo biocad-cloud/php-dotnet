@@ -71,6 +71,23 @@ abstract class ICollection implements ArrayAccess {
         }
     }
 
+    /**
+     * Save this data collection as csv file
+     * 
+     * @param string $path The csv file path for save this collection object.
+     * @param string $encoding The text file content encoding, by default is utf8 encoding. 
+     * @param array $project The csv file header mapping.
+     * 
+     * @return boolean
+    */
+    public function SaveTo($path, $project = null, $encoding = "utf8") {
+        return Microsoft\VisualBasic\Data\csv\Extensions::SaveTo(
+            $this->__data, $path, 
+            $project, 
+            $encoding
+        );
+    }
+
     #endregion
 
     /**
