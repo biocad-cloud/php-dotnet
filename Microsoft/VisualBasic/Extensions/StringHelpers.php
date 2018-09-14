@@ -2,6 +2,9 @@
 
 Imports("Microsoft.VisualBasic.Strings");
 
+/**
+ * String helper extensions
+*/
 class StringHelpers {
 
     /**
@@ -12,7 +15,36 @@ class StringHelpers {
      * @return array
     */
     public static function LineTokens($text) {
-        return explode("\n", $text);
+        return preg_split("/(\r|\n)+/", $text);
+    }
+
+    /**
+     * 判断目标字符串是否是目标正则表达式所表示的模式
+     * 
+     * @param string $str
+     * @param string $pattern 不需要添加//，这个函数会自动添加/包裹字符串
+     * 
+     * @return boolean
+    */
+    public static function IsPattern($str, $pattern) {
+        $matches = null;
+        $pattern = "/$pattern/";
+
+        preg_match(
+            $pattern, 
+            $str, 
+            $matches, 
+            PREG_OFFSET_CAPTURE
+        );
+
+        if (empty($matches) || $matches === false || count($matches) !== 1) {
+            return false;
+        } else {
+            $pattern = $matches[0];
+            $pattern = $pattern[0];
+
+            return $pattern == $str;
+        }
     }
 
     /**
@@ -46,6 +78,11 @@ class StringHelpers {
     /**
      * Text parser for the format: ``tagName{<paramref name="delimiter"/>}value``
      * 这个函数返回一个tuple:  ``[key => value]``
+     * 
+     * @param string $str
+     * @param string $delimiter
+     * 
+     * @return array ``[key => value]``
     */
     public static function GetTagValue($str, $delimiter = " ") {
         if (empty($str)) {
@@ -63,10 +100,15 @@ class StringHelpers {
 
         return [$key => $value];
     }
-   
+
     /**
      * 在字符串前面填充指定长度的00序列，假若输入的字符串长度大于fill的长度，
      * 则不再进行填充
+     * 
+     * @param mixed $n
+     * @param string $fill
+     * 
+     * @return string 
     */
     public static function FormatZero($n, $fill = "00") {
         $s = strval($n);

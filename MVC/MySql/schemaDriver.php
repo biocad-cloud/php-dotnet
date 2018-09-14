@@ -29,16 +29,14 @@ namespace MVC\MySql {
         public $ref;
 
 		function __construct($tableName, $driver) {
-
-			# echo var_dump($driver);
-			# echo var_dump($tableName);
-
             $this->schema         = self::GetSchema($tableName, $driver);     
             $this->auto_increment = $this->schema["AI"];  
             $this->schema         = $this->schema["schema"];	
             $this->databaseName   = $driver->GetDatabaseName();
             $this->tableName      = $tableName;
-            $this->ref            = "`{$this->databaseName}`.`{$this->tableName}`";
+			$this->ref            = "`{$this->databaseName}`.`{$this->tableName}`";
+			
+			\debugView::LogEvent("Create Model: {$this->ref}");
 		}
 
 		#region "MySql table schema cache"

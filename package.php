@@ -1,5 +1,12 @@
 <?php
 
+# 2018-08-08 在命令行之中快速查找php的配置文件位置
+
+/**
+ * echo "<?php echo phpinfo(); ?>" | php | grep php.ini
+ *  
+*/
+
 // APP_DEBUG常数在引用这个文件之前必须首先进行定义
 if (!defined('APP_DEBUG')) {
     /**
@@ -8,37 +15,83 @@ if (!defined('APP_DEBUG')) {
     define("APP_DEBUG", false);
 }
 
+if (!defined("SITE_PATH")) {
+    /**
+     * 当前的网站应用App的wwwroot文档根目录
+    */
+    define("SITE_PATH", $_SERVER["DOCUMENT_ROOT"]);
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    /**
+     * 当前的访问请求是否是一个POST请求
+    */
+    define("IS_POST", true);
+    /**
+     * 当前的访问请求是否是一个GET请求
+    */
+    define("IS_GET", false);
+} else if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    /**
+     * 当前的访问请求是否是一个POST请求
+    */
+    define("IS_POST", false);
+    /**
+     * 当前的访问请求是否是一个GET请求
+    */
+    define("IS_GET", true);
+} else {
+    /**
+     * 当前的访问请求是否是一个POST请求
+    */
+    define("IS_POST", false);
+    /**
+     * 当前的访问请求是否是一个GET请求
+    */
+    define("IS_GET", false);
+}
+
 /**
  * PHP.NET框架的根文件夹位置
  * 获取得到package.php这个文件的所处的文件夹的位置
 */
 define("PHP_DOTNET", dirname(__FILE__));
 
-# 加载帮助函数模块
-include_once PHP_DOTNET . "/php/Utils.php";
+include_once PHP_DOTNET . "/Debugger/Ubench/Ubench.php";
 
-# 调试器必须要优先于其他模块进行加载，否则会出现
-# Uncaught Error: Class 'dotnetDebugger' not found
-# 的错误
-include_once PHP_DOTNET . "/Debugger/dotnetException.php";
-include_once PHP_DOTNET . "/Debugger/engine.php";
-include_once PHP_DOTNET . "/Debugger/view.php";
-include_once PHP_DOTNET . "/Debugger/console.php";
+# 加载框架之中的一些必要的模块，并进行性能计数
+$load = new Ubench();
+$load->run(function() {
 
-# 加载工具框架
-include_once PHP_DOTNET . "/System/IO/File.php";
-include_once PHP_DOTNET . "/System/Diagnostics/StackTrace.php";
-include_once PHP_DOTNET . "/System/Text/StringBuilder.php";
-include_once PHP_DOTNET . "/Microsoft/VisualBasic/Strings.php";
-include_once PHP_DOTNET . "/Microsoft/VisualBasic/ApplicationServices/Debugger/Logging/LogFile.php";
+    # 加载帮助函数模块
+    include_once PHP_DOTNET . "/php/Utils.php";
 
-include_once PHP_DOTNET . "/MSDN.php";
+    # 调试器必须要优先于其他模块进行加载，否则会出现
+    # Uncaught Error: Class 'dotnetDebugger' not found
+    # 的错误
+    include_once PHP_DOTNET . "/Debugger/dotnetException.php";
+    include_once PHP_DOTNET . "/Debugger/engine.php";
+    include_once PHP_DOTNET . "/Debugger/view.php";
+    include_once PHP_DOTNET . "/Debugger/console.php";
 
-# 加载Web框架部件
-include_once PHP_DOTNET . "/RFC7231/index.php";
-include_once PHP_DOTNET . "/Registry.php";
+    # 加载工具框架
+    include_once PHP_DOTNET . "/System/IO/File.php";
+    include_once PHP_DOTNET . "/System/Diagnostics/StackTrace.php";
+    include_once PHP_DOTNET . "/System/Text/StringBuilder.php";
+    include_once PHP_DOTNET . "/Microsoft/VisualBasic/Strings.php";
+    include_once PHP_DOTNET . "/Microsoft/VisualBasic/ApplicationServices/Debugger/Logging/LogFile.php";
 
-# session_start();
+    include_once PHP_DOTNET . "/MSDN.php";
+
+    # 加载Web框架部件
+    include_once PHP_DOTNET . "/RFC7231/index.php";
+    include_once PHP_DOTNET . "/Registry.php";
+
+});
+
+debugView::LogEvent("--- App start ---");
+debugView::LogEvent("Load required modules in " . $load->getTime());
+debugView::AddItem("benchmark.load", $load->getTime(true));
 
 # PHP Warning:  date(): It is not safe to rely on the system's timezone settings. 
 # You are *required* to use the date.timezone setting or the date_default_timezone_set() function. 
@@ -53,14 +106,16 @@ date_default_timezone_set('UTC');
  * @param string $namespace php module file path
 */
 function Imports($namespace) {
-    return dotnet::Imports($namespace, $initiatorOffset = 1);
+    return dotnet::Imports($namespace);
 }
 
 /**
- * 对用户的浏览器进行重定向，支持路由规则
+ * 对用户的浏览器进行重定向，支持路由规则。
+ * 注意，在使用这个函数进行重定向之后，脚本将会从这里退出执行
 */
 function Redirect($URL) {   
     header("Location: " . Router::AssignController($URL));
+    exit(0);
 }
 
 /**
@@ -86,17 +141,23 @@ function session($name, $value) {
  *
  * php 不像VB.NET一样允许函数重载，所以同一个class模块之中不可以出现相同名字的函数
 */
-class dotnet {
+class dotnet {    
 
-    public static $error_log;
+    /**
+     * @var dotnetDebugger
+    */
     public static $debugger;
 
     /**
-     * 函数返回成功消息的json字符串(这个函数只返回json数据，并没有echo输出)
+     * 函数返回成功消息的json字符串``{code: 0, info: $msg}``.
+     * (这个函数只返回json数据，并没有echo输出)
      * 
-     * @return mixed Message code is ZERO 
+     * @param string|array $msg The message that will be responsed to 
+     *                          the http client.
+     * 
+     * @return string The success message json with `code` is ZERO 
     */ 
-    public static function successMsg($msg) {	
+    public static function successMsg($msg) {
 		return json_encode([
 			'code' => 0,
             'info' => $msg
@@ -104,9 +165,13 @@ class dotnet {
 	}
     
     /**
-     * 函数返回失败消息的json字符串(这个函数只返回json数据，并没有echo输出)
+     * 函数返回失败消息的json字符串``{code: 0, info: $msg}``.
+     * (这个函数只返回json数据，并没有echo输出)
      * 
      * @param integer $errorCode Default error code is 1. And zero for no error.
+     * @param string|array $msg The message that will be responsed to 
+     *                          the http client.
+     * 
     */ 
 	public static function errorMsg($msg, $errorCode = 1) {
 		return json_encode([
@@ -118,12 +183,16 @@ class dotnet {
     /**
      * Handle web http request
      * 
-     * @example 
+     * 使用这个函数来进行web请求的处理操作
      * 
-     *   dotnet::HandleRequest(new App());
-     *   dotnet::HandleRequest(new App(), "./");
-     *   dotnet::HandleRequest(new App(), new accessControl());
-     *   dotnet::HandleRequest(new App(), "./", new accessControl());
+     * @example 函数的第一个参数必须是一个class对象，第二个参数为html模板的文件路径或者控制器对象
+     *          如果指定了wwwroot html模板文件夹，想要再挂载控制器对象的话，可以将控制器对象的
+     *          实例传递到函数的第三个参数
+     * 
+     *    dotnet::HandleRequest(new App());
+     *    dotnet::HandleRequest(new App(), "./");
+     *    dotnet::HandleRequest(new App(), new accessControl());
+     *    dotnet::HandleRequest(new App(), "./", new accessControl());
      * 
      * @param object $app The web app logical layer
      * @param string|controller $wwwroot The html views document root directory.
@@ -132,11 +201,13 @@ class dotnet {
     public static function HandleRequest($app, $wwwroot = NULL, $injection = NULL) {
         if ($wwwroot && is_string($wwwroot)) {
             DotNetRegistry::SetMVCViewDocumentRoot($wwwroot);
+            debugView::LogEvent("SetMVCViewDocumentRoot => $wwwroot");
         } else if ($wwwroot && is_object($wwwroot)) {
             $injection = $wwwroot;
         }
 
         if ($injection) {
+            debugView::LogEvent("Hook controller");
             $injection->Hook($app);
 
             if (!$injection->accessControl()) {
@@ -146,10 +217,18 @@ class dotnet {
                 global $_DOC;
                 $_DOC = $injection->getDocComment();
             }
-        }
 
-        // 具有访问权限的正常访问
-        Router::HandleRequest($app);
+            debugView::LogEvent("[Begin] Handle user request");
+
+            $injection->sendContentType();
+            $injection->handleRequest();
+
+        } else {
+            // 没有定义控制器的时候，使用router进行访问请求的处理操作
+
+            // 具有访问权限的正常访问
+            Router::HandleRequest($app);
+        }       
     }
 
     /**
@@ -171,6 +250,8 @@ class dotnet {
      *                             2. 包含有配置数据的字典数组
     */
 	public static function AutoLoad($config = NULL) {		       
+        $initiator = new Ubench();
+        $initiator->start();
 
         if (APP_DEBUG) {
             # 调试器必须先于Imports函数调用，否则会出现错误：
@@ -180,6 +261,7 @@ class dotnet {
             }            
         }   
 
+        # 在这里加载框架之中的基本的MVC驱动程序模块
 		dotnet::Imports("MVC.view");
 		dotnet::Imports("MVC.model");
 		dotnet::Imports("MVC.router");
@@ -207,20 +289,20 @@ class dotnet {
         if (!DotNetRegistry::DisableErrorHandler()) {
             self::setupLogs();
         }
+
+        $initiator->end();
+        debugView::LogEvent("App init in " . $initiator->getTime());
+        debugView::AddItem("benchmark.init", $initiator->getTime(true));
     }
     
-    private static function setupLogs() {
-        // 使用本框架的错误处理工具
-        dotnet::$error_log = new LogFile(DotNetRegistry::LogFile());                    
-
-        # echo dotnet::$logs->handle . "\n";
-
+    private static function setupLogs() {        
         // Report all PHP errors (see changelog)
         error_reporting(E_ALL);
         set_error_handler(function($errno, $errstr, $errfile, $errline) {
-             # 2018-3-5 Call to a member function LoggingHandler() on a non-object
-             $logs = dotnet::$error_log;
-             $logs->LoggingHandler($errno, $errstr, $errfile, $errline);
+            # 2018-3-5 Call to a member function LoggingHandler() on a non-object
+            // $logs = dotnet::$error_log;
+            //$logs->LoggingHandler($errno, $errstr, $errfile, $errline);
+            console::error_handler($errno, $errstr, $errfile, $errline);
         }, E_ALL);
     }
     
@@ -243,56 +325,26 @@ class dotnet {
 		return ["lang" => $lang];
     }
 
-    public static function printMySqlTransaction() {
-        if (APP_DEBUG) {
-            echo debugView::GetMySQLView(self::$debugger);
-        }
-    }
-
-    /**
-     * php写日志文件只能够写在自己的wwwroot文件夹之中 
-    */
-    public static function writeMySqlLogs($onlyErrors = FALSE) {      
-        if (APP_DEBUG) {
-            if (self::$debugger->hasMySqlLogs()) {
-                if ($onlyErrors) {
-                    if (self::$debugger->hasMySqlErrs()) {
-                        self::writeMySqlLogs2();
-                    }
-                } else {
-                    self::writeMySqlLogs2();
-                }            
-            }
-        }
-    }
-
-    private static function writeMySqlLogs2() {
-        $log = "./data/mysql_logs.log";
-
-        FileSystem::WriteAllText($log, "<h5>API: $_SERVER[REQUEST_URI]</h5>\n", TRUE);
-        FileSystem::WriteAllText($log, "<ul>" . debugView::GetMySQLView(self::$debugger) . "</ul>\n", TRUE);
-    }
-
     /**
      * 对于这个函数额调用者而言，就是获取调用者所在的脚本的文件夹位置
      * 这个函数是使用``require_once``来进行模块调用的
      *
-     * @param string $mod: 直接为命名空间的路径，不需要考虑相对路径或者添加文件后缀名，例如需要导入VisualBasic的Strings模块的方法，
+     * @param string $module: 直接为命名空间的路径，不需要考虑相对路径或者添加文件后缀名，例如需要导入VisualBasic的Strings模块的方法，
      *                     只需要调用代码
      * 
      *     ``dotnet::Imports("Microsoft.VisualBasic.Strings");``
      * 
      * @return string 这个函数返回所导入的模块的完整的文件路径
     */
-    public static function Imports($mod, $initiatorOffset = 0) {        
+    public static function Imports($module) {        
 
         // 因为WithSuffixExtension这个函数会需要依赖小数点来判断文件拓展名，
         // 所以对小数点的替换操作要在if判断之后进行  
-        if (Utils::WithSuffixExtension($mod, "php")) {
-            $mod = str_replace(".", "/", $mod); 
-            $mod = PHP_DOTNET . "/{$mod}";
+        if (Utils::WithSuffixExtension($module, "php")) {
+            $module = str_replace(".", "/", $module); 
+            $module = PHP_DOTNET . "/{$module}";
         } else {
-            $mod = str_replace(".", "/", $mod);             
+            $module = str_replace(".", "/", $module);             
 
             # 2018-5-15 假若Imports("MVC.view");
             # 因为文件结构之中，有一个view.php和view文件夹
@@ -301,65 +353,95 @@ class dotnet {
             # 但是windows上面却不可以
             # 在这里假设偏向于加载文件
 
-            $php = PHP_DOTNET . "/{$mod}.php";
+            $php = PHP_DOTNET . "/{$module}.php";
 
             # 如果是文件存在，则只导入文件
-            if (File::Exists($php)) {
-                $mod = $php;
-            } elseif (File::Exists($php = PHP_DOTNET . "/$mod/index.php")) {
+            if (file_exists($php)) {
+                $module = $php;
+            } elseif (file_exists($php = PHP_DOTNET . "/$module/index.php")) {
                 # 如果不存在，则使用index.php来进行判断
-                $mod = $php;
-            } elseif (is_dir($dir = PHP_DOTNET . "/$mod/")) {
+                $module = $php;
+            } elseif (is_dir($dir = PHP_DOTNET . "/$module/")) {
                 # 可能是一个文件夹
                 # 则认为是导入该命名空间文件夹下的所有的同级的文件夹文件
-                return self::importsAll(dirname($mod), $initiatorOffset + 1);
+                return self::importsAll(dirname($module));
             }
         }        
 
-        self::__imports($mod, $initiatorOffset + 1);
+        self::importsImpl($module);
 
         // 返回所导入的文件的全路径名
-        return $mod;
+        return $module;
     }
 
-    private static function __imports($mod, $initiatorOffset) {
-        // 在这里导入需要导入的模块文件
-        include_once($mod);
+    /**
+     * 在这里导入需要导入的模块文件
+     * 
+     * @param string $module php文件的路径
+    */
+    private static function importsImpl($module) {
+        include_once($module);
                 
-        if (APP_DEBUG) {
-            $bt    = debug_backtrace();             
-            $trace = array();
+        if (!APP_DEBUG) {
+            return;
+        }
 
-            foreach($bt as $k=>$v) { 
-                // 解析出当前的栈片段信息
-                extract($v); 
-                array_push($trace, $file);    
-            } 
+        $initiator = [];
 
-            $initiatorOffset = 1 + $initiatorOffset;
-            $initiator       = $trace[$initiatorOffset];
-
-            # echo var_dump(self::$debugger);
-            if (!self::$debugger) {
-                 self::$debugger = new dotnetDebugger();    
+        foreach(debug_backtrace() as $k => $v) { 
+            // 解析出当前的栈片段信息                
+            if (self::isImportsCall($v)) {
+                $initiator = $v["file"];
+                break;
             }
-            self::$debugger->add_loaded_script($mod, $initiator);
+        }
+        
+        if (!self::$debugger) {
+            self::$debugger = new dotnetDebugger();    
+        }
+
+        self::$debugger->add_loaded_script($module, $initiator);
+    }
+
+    /**
+     * 判断当前的这个栈片段信息是否是Imports函数调用？
+     * 
+     * @param array $frame 一个栈片段信息
+    */
+    private static function isImportsCall($frame) {
+        $fileName  = $frame["file"];
+        $funcName  = $frame["function"];
+        $args      = $frame["args"];        
+        $is_dotnet = array_key_exists("class", $frame) && $frame["class"] === "dotnet";
+
+        if (basename($fileName) == basename(__FILE__)) {
+            return false;
+        } else if ($funcName !== "Imports") {
+            return false;
+        } else if ($args != 1) {
+            return false;
+        } else if ($is_dotnet) {
+            return false;
+        } else {
+            return true;
         }
     }
 
     /**
      * 导入目标命名空间文件夹之下的所有的php模块文件
+     * 
+     * 
+     * @param string $directory 包含有module文件的文件夹的路径
     */
-    private static function importsAll($directory, $initiatorOffset) {
-
-        echo $directory . "\n\n";
-
+    private static function importsAll($directory) {
         $files = [];
         $dir = opendir($directory);
 
+        console::log("Imports all module files from $directory");
+
         while ($dir && ($file = readdir($dir)) !== false) {
             if (Utils::WithSuffixExtension($file, "php")) {
-                self::__imports($file, $initiatorOffset + 1);
+                self::importsImpl($file);
                 array_push($files, $file);
             }
         }
@@ -372,7 +454,10 @@ class dotnet {
     #region "error codes"
 
 	/**
-	 * 500 PHP throw exception helper for show exception in .NET exception style
+	 * 500 PHP throw exception helper for show exception in .NET 
+     * exception style
+     * 
+     * @param string $message The error message to display.
 	*/
     public static function ThrowException($message) {      
 		$trace = StackTrace::GetCallStack();
@@ -384,6 +469,8 @@ class dotnet {
 
     /**
      * 404 资源没有找到
+     * 
+     * @param string $message The error message to display.
     */
     public static function PageNotFound($message) {
         $trace = StackTrace::GetCallStack();
@@ -395,6 +482,8 @@ class dotnet {
 
     /**
      * 403 用户当前的身份凭证没有访问权限，访问被拒绝
+     * 
+     * @param string $message The error message to display.
     */
     public static function AccessDenied($message) {
         $trace = StackTrace::GetCallStack();

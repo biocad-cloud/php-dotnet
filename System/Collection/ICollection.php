@@ -1,5 +1,7 @@
 <?php 
 
+Imports("Microsoft.VisualBasic.Data.csv.Extensions");
+
 /**
  * Defines size, enumerators, and synchronization methods for all nongeneric collections.
  * 对集合类型的基本抽象
@@ -62,6 +64,23 @@ abstract class ICollection implements ArrayAccess {
         } else {
            return null;
         }
+    }
+
+    /**
+     * Save this data collection as csv file
+     * 
+     * @param string $path The csv file path for save this collection object.
+     * @param string $encoding The text file content encoding, by default is utf8 encoding. 
+     * @param array $project The csv file header mapping.
+     * 
+     * @return boolean
+    */
+    public function SaveTo($path, $project = null, $encoding = "utf8") {
+        return Microsoft\VisualBasic\Data\csv\Extensions::SaveTo(
+            $this->__data, $path, 
+            $project, 
+            $encoding
+        );
     }
 
     #endregion

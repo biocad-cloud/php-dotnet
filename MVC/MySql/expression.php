@@ -77,61 +77,68 @@ namespace MVC\MySql\Expression {
 
             # 在这个表达式构造函数之中，使用~前导字符作为表达式的标记
             foreach($asserts as $name => $value) {
-
-                # 可能是一个很复杂的逻辑表达式的模型
-                # 
-                # LogicalExpression模型的定义在sqlBuilder.php脚本文件之中 
-                #
-                if (is_object($value) && get_class($value) == "LogicalExpression") {
-                    $value = $value->Join($name);
-                    array_push($list, "( $value )");
-                    continue;
-                }
-
-                # $name可能是多个字段名，字段名之间使用 |(OR) 或者 &(AND) 来分割
-                # 如果存在()，则意味着是一个表达式，而非字段名
-                $value      = self::ValueExpression($value);
-                $buffer     = array();
-                $exp        = null;
-                $expression = array();
-
-                array_push($expression, " ( ");
-
-                foreach(str_split($name) as $c) {
-                    if ($c === "|" || $c === "&") {
-                        $exp    = self::KeyExpression(implode($buffer));
-                        $buffer = array();
-                        
-                        array_push($expression, "( ");
-                        array_push($expression, $exp);
-                        array_push($expression, $value);
-                        array_push($expression, ") ");
-
-                        if ($c === "|") {
-                            array_push($expression, " OR ");
-                        } else {
-                            array_push($expression, " AND ");
-                        }
-                    } else {
-                        array_push($buffer, $c);
-                    }
-                }
-
-                # 因为分隔符|或者&只能够出现在中间，所以在结束上面的循环之后
-                # 肯定会有剩余的buffer，在这里需要将这个buffer也添加进来
-                $exp = self::KeyExpression(implode($buffer));
-
-                array_push($expression, "( ");
-                array_push($expression, $exp);
-                array_push($expression, $value);
-                array_push($expression, ") ");
-
-                # 结束条件堆栈
-                array_push($expression, ") ");
-                array_push($list, \Strings::Join($expression, " "));
+                array_push($list, self::exprInternal($name, $value));
             }
 
             return \Strings::Join($list, " AND ");
+        }
+
+        /**
+         * @return string
+        */
+        private static function exprInternal($name, $value) {
+
+            # 可能是一个很复杂的逻辑表达式的模型
+            # 
+            # LogicalExpression模型的定义在sqlBuilder.php脚本文件之中 
+            #
+            if (is_object($value) && get_class($value) == "LogicalExpression") {
+                $value = $value->Join($name);
+                return "( $value )";
+            }
+
+            # $name可能是多个字段名，字段名之间使用 |(OR) 或者 &(AND) 来分割
+            # 如果存在()，则意味着是一个表达式，而非字段名
+            $value      = self::ValueExpression($value);
+            $buffer     = array();
+            $exp        = null;
+            $expression = array();
+
+            array_push($expression, " ( ");
+
+            foreach(str_split($name) as $c) {
+                if ($c === "|" || $c === "&") {
+                    $exp    = self::KeyExpression(implode($buffer));
+                    $buffer = array();
+                    
+                    array_push($expression, "( ");
+                    array_push($expression, $exp);
+                    array_push($expression, $value);
+                    array_push($expression, ") ");
+
+                    if ($c === "|") {
+                        array_push($expression, " OR ");
+                    } else {
+                        array_push($expression, " AND ");
+                    }
+                } else {
+                    array_push($buffer, $c);
+                }
+            }
+
+            # 因为分隔符|或者&只能够出现在中间，所以在结束上面的循环之后
+            # 肯定会有剩余的buffer，在这里需要将这个buffer也添加进来
+            $exp = self::KeyExpression(implode($buffer));
+
+            array_push($expression, "( ");
+            array_push($expression, $exp);
+            array_push($expression, $value);
+            array_push($expression, ") ");
+
+            # 结束条件堆栈
+            array_push($expression, ") ");
+            
+            return \Strings::Join($expression, " ");
         }
 
         /**
@@ -161,6 +168,11 @@ namespace MVC\MySql\Expression {
          * @return string
         */
         public static function ValueExpression($value) {
+            if (strlen($value) == 0) {
+                # mysql值是一个空字符串
+                return "''";
+            }
+            
             if ($value[0] === "~") {
                 # 是一个表达式，则不需要额外的处理
                 # 只需要将第一个字符删除掉即可
@@ -174,6 +186,42 @@ namespace MVC\MySql\Expression {
             }
         }
 
+        /**
+         * 进行值表达式的构建
+         * 
+         * + 如果是~起始，则说明是一个表达式，则截取第二个字符起始的剩余的字符串之后返回
+         * + 如果目标是被两个`````或者``'``符号包裹，则说明是字段的引用或者值，则不做任何处理
+         * + 多于其他的任意情况，都会将目标表达式看作为一个值，在值的两边添加``'``符号构成一个值表达式之后返回
+         * 
+         * @return string SQL语句之中的值表达式
+        */
+        public static function AutoValue($value) {
+            if (strlen($value) == 0) {
+                # mysql值是一个空字符串
+                return "''";
+            }
+
+            if ($value[0] === "~") {
+                # 是一个表达式，则不需要额外的处理
+                # 只需要将第一个字符删除掉即可
+                return substr($value, 1);
+            } else if (self::InStack($value, "'") || self::InStack($value, "`")) {
+                # 自身就是一个字符串或者对象表达式了
+                # 不会再进行任何处理
+                return $value;
+            } else {
+                return "'$value'";
+            }
+        }
+
+        /**
+         * 判断所给定的字符串的起始字符和终止字符是否都是所给定的char?
+         * 
+         * @param string $str 值表达式字符串
+         * @param string $char 所需要进行判断的一个字符
+         * 
+         * @return boolean 
+        */
         public static function InStack($str, $char) {
             return ($str[0] == $char) && ($str[count($str)] == $char);
         }

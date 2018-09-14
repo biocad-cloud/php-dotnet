@@ -1,6 +1,7 @@
 <?php
 
 Imports("System.Collection.ArrayList");
+Imports("System.Collection.ICollection");
 
 /**
  * Supports a simple iteration over a non-generic collection. And 
@@ -11,7 +12,7 @@ Imports("System.Collection.ArrayList");
 class IEnumerator {
 
     /**
-     * Array
+     * @var Array
     */
     private $sequence;
 
@@ -19,6 +20,8 @@ class IEnumerator {
      * Returns the number of elements in a sequence. Or returns a number that 
      * represents how many elements in the specified sequence satisfy a 
      * condition if the ``assert`` is not null.
+     * 
+     * @return integer Returns the count of the target sequence.
     */
     public function Count($assert = null) {
         if ($assert) {
@@ -39,14 +42,14 @@ class IEnumerator {
      * @return IEnumerator
     */
     public function Where($predicate) {
-
+        return new IEnumerator(Enumerable::Where($this->sequence, $predicate));
     }
 
     /**
      * @return IEnumerator
     */
     public function Select($project) {
-
+        return new IEnumerator(Enumerable::Select($this->sequence, $predicate));
     }
 
     /**
@@ -60,28 +63,28 @@ class IEnumerator {
      * @return IEnumerator
     */
     public function OrderBy($keySelector) {
-
+        return new IEnumerator(Enumerable::OrderBy($this->sequence, $keySelector));
     }
 
     /**
      * @return IEnumerator
     */
     public function OrderByDescending($keySelector) {
-
+        return new IEnumerator(Enumerable::OrderByDescending($this->sequence, $keySelector));
     }
 
     /**
      * @return IEnumerator
     */
     public function Take($n) {
-
+        return new IEnumerator(array_slice($this->sequence, 0, $n));
     }
 
     /**
      * @return IEnumerator
     */
     public function Skip($n) {
-        
+        return new IEnumerator(array_slice($this->sequence, $n));
     }
 
     /**
@@ -96,7 +99,7 @@ class IEnumerator {
      *                     specified by predicate.
     */
     public function SkipWhile($predicate) {
-
+        return new IEnumerator(Enumerable::SkipWhile($this->sequence, $predicate));
     }
 
     /**
@@ -121,7 +124,7 @@ class IEnumerator {
      * @return IEnumerator An ``System.Collections.Generic.IEnumerable<T>`` that contains 
      *                     distinct elements from the source sequence.
     */
-    public function Distinct($keySelector) {
+    public function Distinct($keySelector = null) {
 
     }
 
@@ -135,7 +138,13 @@ class IEnumerator {
      *                 otherwise, false.
     */
     public function All($predicate) {
+        foreach($this->sequence as $x) {
+            if (!$predicate($x)) {
+                return false;
+            }
+        }
 
+        return true;
     }
 
     /**
@@ -147,7 +156,13 @@ class IEnumerator {
      *                 the specified predicate; otherwise, false.
     */
     public function Any($predicate) {
+        foreach($this->sequence as $x) {
+            if ($predicate($x)) {
+                return true;
+            }
+        }
 
+        return $false;
     }
 
     /**
@@ -164,7 +179,23 @@ class IEnumerator {
      *                 otherwise, false.
     */
     public function SequenceEquals($another, $compares = null) {
+        if ($this->count() != count($another)) {
+            return false;
+        }
 
+        if (!$compares) {
+            $compares = function($x, $y) {
+                return $x == $y;
+            };
+        }
+
+        for($i = 0; $i < count($another); $i++) {
+            if (!$compares($this->sequence[$i], $another[$i])) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -174,15 +205,39 @@ class IEnumerator {
      *                     input sequence in reverse order.
     */
     public function Reverse() {
-
+        return new IEnumerator(array_reverse($this->sequence));
     }
 
+    /**
+     * Returns the first element of a sequence.
+     * 
+     * @param function $predicate If this parameter is not null, then returns the 
+     *      first element in a sequence that satisfies a specified condition.
+    */
     public function First($predicate = null) {
+        if (!$predicate) {
+            $predicate = function($x) {
+                return true;
+            };
+        }
 
+        foreach($this->sequence as $x) {
+            if ($predicate($x)) {
+                return $x;
+            }
+        }
+
+        return null;
     }
 
+    /**
+     * Returns the last element of a sequence.
+     * 
+     * @param function $predicate If this parameter is not null, then returns the 
+     *      last element of a sequence that satisfies a specified condition.
+    */
     public function Last($predicate = null) {
-
+        return $this->Reverse()->First();
     }
 
     public function Sum($cast = null) {

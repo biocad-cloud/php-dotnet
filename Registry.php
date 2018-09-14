@@ -18,6 +18,9 @@ define("ERR_HANDLER",         "ERR_HANDLER");
 define("RFC7231",             "RFC7231");
 
 # MVC
+/**
+ * 默认的模板文档的文件夹为根文件夹下面的命名为html的文件夹
+*/
 define("MVC_VIEW_ROOT",    "MVC_VIEW_ROOT");
 define("DEFAULT_LANGUAGE", "DEFAULT_LANGUAGE");
 define("DEFAULT_AUTH_KEY", "DEFAULT_AUTH_KEY");
@@ -106,9 +109,39 @@ class DotNetRegistry {
 
     /**
      * 获取html模板文件的文件夹路径
+     * 
+     * 相关的配置项可以直接是文件夹路径字符串，或者字典数组
+     * 假若是字典数组的话，则要求数组的键名应该是脚本的不带有拓展名的文件名
+     * 键值则是该键名所对应的html模板文件的文件夹路径
+     * 
+     * @return string html模板文件的文件夹路径字符串值
     */
     public static function GetMVCViewDocumentRoot() {
-        return self::Read(MVC_VIEW_ROOT, "./html");       
+        $config = self::Read(MVC_VIEW_ROOT);
+        $script = self::GetInitialScriptName();
+        
+        if (empty($config) || (is_array($config) && count($config) == 0)) {
+            # 是空的，则返回默认路径
+            return "./html";
+        } else if (is_string($config) && strlen($config) > 0) {
+            # 配置的值是一个字符串，则直接返回
+            return $config;
+        } else if (is_array($config) && array_key_exists($script, $config)) {
+            # 是一个数组，并且配置项存在
+            return $config[$script];
+        } else {
+            # 是一个数组，但是配置项不存在，则使用默认
+            return "./html";
+        }
+    }
+
+    public static function GetInitialScriptName() {
+        $script = $_SERVER["SCRIPT_FILENAME"];
+        $script = explode("/", $script);
+        $script = $script[count($script) - 1];
+        $script = explode(".", $script)[0];
+
+        return $script;
     }
 
     public static function ConfigIsNothing() {
@@ -118,9 +151,12 @@ class DotNetRegistry {
     public static function SetMVCViewDocumentRoot($wwwroot) {
         if (self::ConfigIsNothing()) {
             self::$config = array();
-        }       
+        } 
+        if (!array_key_exists(MVC_VIEW_ROOT, slef::$config)) {
+            self::$config[MVC_VIEW_ROOT] = [];
+        }
 
-        self::$config[MVC_VIEW_ROOT] = $wwwroot;
+        self::$config[MVC_VIEW_ROOT][self::GetInitialScriptName()] = $wwwroot;
     }
 
     /**

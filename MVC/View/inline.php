@@ -32,7 +32,7 @@ namespace MVC\Views {
 
             if ($missing && count($missing) > 0) {
                 # 任然存在未被替换掉的变量，给出警告消息
-                echo self::warnings($missing);              
+                \console::error(self::warnings($missing));              
             }
 
             if (!self::checkPHPinline($template)) {
@@ -68,8 +68,8 @@ namespace MVC\Views {
 
                 */
 
-                $warnings = "<!-- PHP inline scripting required option ``allow_url_include = On`` -->";
-                $template = $warnings . "\n\n\n" . $template;
+                $warnings = "PHP inline scripting required option <strong>allow_url_include = On</strong>";
+                \console::error($warnings);
 
                 return $template;
 
@@ -83,9 +83,9 @@ namespace MVC\Views {
         */
         public static function InlineScripting($template) {
             if (APP_DEBUG) {
-                $template = "<!-- Using output buffer for dynamics includes -->" . $template;
+                \debugView::LogEvent("do InlineScripting");
             }
-          
+
             # 2018-6-16 try...catch not working?
 
             # try {
@@ -102,8 +102,7 @@ namespace MVC\Views {
 
             if (empty($output) && !empty($template)) {
                 $notWorking = "<span style='color:red;'>ERROR: include inline => ob_get_clean() is not working!</span>";
-                $notWorking = $notWorking . "<br /><br /><br /><br />"; 
-                $output     = $notWorking . $template;
+                \console::error($notWorking);
             }
 
             return $output;

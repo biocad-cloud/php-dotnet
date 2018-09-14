@@ -1,9 +1,13 @@
 <?php
 
 Imports("Microsoft.VisualBasic.Extensions.StringHelpers");
+Imports("Microsoft.VisualBasic.Strings");
+Imports("php.Utils");
 
 /**
  * 解析php的函数注释文档
+ * 
+ * @author xieguigang
 */
 class DocComment {
 
@@ -15,6 +19,13 @@ class DocComment {
      * @var string
     */
     public $summary;
+    /**
+     * 模块的作者列表，作者之间使用英文分号进行分割
+     * 
+     * @var array
+    */
+    public $authors;
+
     /**
      * @var array
     */
@@ -28,11 +39,49 @@ class DocComment {
     */
     public $tags;
     public $return;
+
+    /**
+     * @var string
+    */
     public $access;
 
-    function __construct($title, $summary) {
+    /**
+     * @param string $title
+     * @param string $summary
+     * @param array $tags
+    */
+    function __construct($title, $summary, $tags) {
         $this->title   = $title;
-        $this->summary = $summary;        
+        $this->summary = $summary;    
+        $this->tags    = $tags;    
+        $this->access  = Utils::ReadValue($tags, "access");
+        $this->access  = Utils::ReadValue($this->access, "description");
+        $this->authors = $this->GetDescription("author");
+        
+        if (!empty($this->authors) || !Strings::Empty($this->authors)) {
+            $authors = explode(";", $this->authors);
+
+            for($i = 0; $i < count($authors); $i++) {
+                $authors[$i] = trim($authors[$i]);
+            }
+
+            $this->authors = $authors;
+        }
+    }
+
+    /**
+     * @param string $tagName
+     * 
+     * @return string The description property data in a given tag data
+    */
+    public function GetDescription($tagName, $default = null) {
+        $tagData = Utils::ReadValue($this->tags, $tagName);
+
+        if (empty($tagData)) {
+            return $default;
+        } else {
+            return Utils::ReadValue($tagData, "description", $default);
+        }
     }
 
     /**
@@ -44,9 +93,10 @@ class DocComment {
      * 
      * @return DocComment
     */
-    public static function Parse($docComment) {
+    public static function Parse($docComment) {        
         $docComment = StringHelpers::LineTokens($docComment);
         $docComment = self::Trim($docComment);
+        
         $title   = "";
         $summary = "";
         $params  = [];
@@ -77,10 +127,9 @@ class DocComment {
             }
         }
 
-        $doc = new DocComment(trim($title), trim($summary));
-        $doc->params = $params;
-        $doc->tags   = $tags;
-        $doc->return = $return;       
+        $doc = new DocComment(trim($title), trim($summary), $tags);
+        $doc->params = $params;        
+        $doc->return = $return;
 
         return $doc;
     }
@@ -152,9 +201,16 @@ class DocComment {
         $text = "";
 
         while($i < count($lines)) {
-            $line = $lines[$i];
+            $line = trim($lines[$i]);
 
+            # 如果遇到空白行，就退出
             if (strlen($line) == 0 && strlen(trim($text)) > 0) {
+                break;
+
+            # 2018-7-24 bugs修复
+            } else if (strlen($line) > 0 && trim($line)[0] == "@") {
+                # 如果遇到了标签的起始符
+                # 则结束
                 break;
             } else {
                 $text = $text . " " . $line;
@@ -166,12 +222,19 @@ class DocComment {
         return [$i => $text];
     }
 
+    /**
+     * 函数将左边以及右边的``/``,``*``和空白符号删除
+    */
     private static function Trim($doc) {
         for($i = 0; $i < count($doc); $i ++) {
-            $line = $doc[$i];
-            $line = ltrim($line, " */");
-            $line = rtrim($line);
 
+            # 2018-08-03 因为php的版本的问题？
+            # 可能会导致注释的解析左边出现空白，导致ltrim失败？
+            # 在这里首先将左右的空白都trim掉来解决这个bug
+            $line = $doc[$i];
+            $line = trim($line);
+            $line = ltrim($line, " */");
+            
             $doc[$i] = $line;
         }
 
