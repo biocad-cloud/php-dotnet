@@ -24,5 +24,38 @@ class App {
 			["name" => "a4", "age" => 45]
 		]]);		
 	}
+
+	/**
+	 * @uses view
+	 * @access *
+	*/
+	public function aesTest() {
+		Imports("Microsoft.VisualBasic.Net.OPENSSL_AES");
+
+		$aes = new AES128CBC("1234567890abcdef");
+		$message = $aes->Encrypt("hello world!");
+
+		echo "\n" . $message . "\n\n";
+
+		$message = $aes->Decrypt($message);
+
+		echo "Raw message is:  [$message]";
+	}
+
+	public function aes() {
+		View::Display();
+	}
+
+	public function aes_message() {
+		Imports("Microsoft.VisualBasic.Net.OPENSSL_AES");
+
+		$aes = new AES128CBC("1234567890abcdef");
+		$message = $aes->Encrypt("hello world!");
+
+		controller::success([
+			"msg" => $message, 
+			"key" => $aes->key
+		]);
+	}
 }
 ?>

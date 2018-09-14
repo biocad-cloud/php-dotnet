@@ -11,7 +11,7 @@ class c extends controller {
     /**
      * 假若没有权限的话，会执行这个函数进行重定向
     */
-    public function Redirect() {
+    public function Redirect($code) {
         Redirect("/");
     }
 }
