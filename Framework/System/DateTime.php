@@ -2,6 +2,8 @@
 
 namespace System {
     
+    use \DateTime as Time;
+
     /**
      * Representation of date and time.
     */
@@ -32,19 +34,39 @@ namespace System {
         */
         public $Second;
 
-        public function __construct() {
-            $this->Year   = self::year();
-            $this->Month  = self::month();
-            $this->Day    = self::day();
-            $this->Hour   = date("H");
-            $this->Minute = date("i");
-            $this->Second = date("s");
+        /**
+         * @param Time $date 一个给定的日期时间，如果这个参数被忽略，
+         *     则会创建一个当前的时间点
+        */
+        public function __construct($date = null) {
+            if (empty($date)) {
+                $this->Year   = self::year();
+                $this->Month  = self::month();
+                $this->Day    = self::day();
+                $this->Hour   = date("H");
+                $this->Minute = date("i");
+                $this->Second = date("s");
+            } else {
+                $this->Year   = $date->format("Y");
+                $this->Month  = $date->format("m");
+                $this->Day    = $date->format("d");
+                $this->Hour   = $date->format("H");
+                $this->Minute = $date->format("i");
+                $this->Second = $date->format("s");
+            }            
+        }
+
+        /**
+         * @return \DateTime
+        */
+        public function Date() {
+            return new \DateTime($this->ToString());
         }
 
         /**
          * @return DateTime
         */
-        public function DayOfStart() {
+        public static function DayOfStart() {
             $day = new \System\DateTime();
             $day->Hour   = 0;
             $day->Minute = 0;
@@ -56,13 +78,20 @@ namespace System {
         /**
          * @return DateTime
         */
-        public function DayOfEnd() {
+        public static function DayOfEnd() {
             $day = new \System\DateTime();
             $day->Hour   = 23;
             $day->Minute = 59;
             $day->Second = 59;
 
             return $day;
+        }
+
+        /**
+         * @return DateTime
+        */
+        public static function Now() {
+            return new DateTime();
         }
 
         public static function year() {
