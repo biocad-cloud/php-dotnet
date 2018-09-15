@@ -64,6 +64,15 @@ namespace System {
         }
 
         /**
+         * @param string $dateTimeStr
+         * 
+         * @return DateTime
+        */
+        public static function Parse($dateTimeStr) {
+            return new DateTime(Time::createFromFormat("Y-m-d H:i:s", $dateTimeStr));
+        }
+
+        /**
          * @return DateTime
         */
         public static function DayOfStart() {
