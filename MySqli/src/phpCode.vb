@@ -1,11 +1,27 @@
 ﻿Imports System.IO
-Imports Oracle.LinuxCompatibility.MySQL.CodeSolution
-Imports Oracle.LinuxCompatibility.MySQL.Reflection.Schema
+Imports Microsoft.VisualBasic.CommandLine
+Imports Microsoft.VisualBasic.CommandLine.Reflection
+Imports Oracle.LinuxCompatibility.MySQL.CodeSolution.PHP
 
 Public Module phpCode
 
-    Public Function GenerateCode(mysqlDoc As StreamReader) As String
-        Dim tables As Table() = mysqlDoc.LoadSQLDoc
+    Sub New()
+        VBDebugger.ForceSTDError = True
+    End Sub
 
+    Public Function Main() As Integer
+        Return GetType(phpCode).RunCLI(App.CommandLine)
+    End Function
+
+    <ExportAPI("/php")>
+    <Usage("/php /doc <structure.sql> [/out <mysqli.class.php>]")>
+    Public Function BuildSchemaCache(args As CommandLine) As Integer
+        Dim mysqlDoc As StreamReader = args.OpenStreamInput("/doc")
+
+        Using out As StreamWriter = args.OpenStreamOutput("/out")
+            Call out.WriteLine(mysqlDoc.GenerateCode())
+        End Using
+
+        Return 0
     End Function
 End Module
