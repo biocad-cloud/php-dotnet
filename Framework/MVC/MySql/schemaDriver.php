@@ -53,6 +53,13 @@ namespace MVC\MySql {
 		*/
 		private static $describCache = [];
 
+		public static function WriteCache($tableName, $schema) {
+			self::$describCache[$tableName] = [
+				"schema" => $schema,
+				"AI"     => self::GetAutoIncrementKey($schema)
+			];
+		}
+
 		/**
 		 * 从数据库之中获取表结构信息或者从缓存之中获取，如果表结构信息已经被缓存了的话
 		 * 
