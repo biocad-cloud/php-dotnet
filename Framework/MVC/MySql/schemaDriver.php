@@ -80,9 +80,7 @@ namespace MVC\MySql {
 		public static function GetAutoIncrementKey($schema) {	
 
 			foreach ($schema as $name => $type) {
-				
-				$Null    = ($type["Null"]  == "NO");
-				$Key     = ($type["Key"]   == "PRI");
+
 				$isAI    = ($type["Extra"] == "auto_increment");			
 				$type    =  $type["Type"];		
 				$isInt32 = (\Strings::InStr("$type", "int"));					
