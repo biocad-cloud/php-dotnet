@@ -20,6 +20,7 @@ Public Module phpCode
 
         Using out As StreamWriter = args.OpenStreamOutput("/out")
             Call out.WriteLine(mysqlDoc.GenerateCode())
+            Call out.Flush()
         End Using
 
         Return 0
