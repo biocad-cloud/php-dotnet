@@ -16,46 +16,66 @@ if (!defined('APP_DEBUG')) {
 }
 
 if (!defined("SITE_PATH")) {
-    /**
-     * 当前的网站应用App的wwwroot文档根目录
-    */
-    define("SITE_PATH", $_SERVER["DOCUMENT_ROOT"]);
+	if (array_key_exists("DOCUMENT_ROOT", $_SERVER)) {
+        /**
+         * 当前的网站应用App的wwwroot文档根目录
+        */
+        define("SITE_PATH", $_SERVER["DOCUMENT_ROOT"]);
+    } else {
+        # 如果是命令行环境的话，DOCUMENT_ROOT可能不存在
+        # 则这个时候就使用当前文件夹
+        define("SITE_PATH", getcwd());
+    }    
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    /**
-     * 当前的访问请求是否是一个POST请求
-    */
-    define("IS_POST", true);
-    /**
-     * 当前的访问请求是否是一个GET请求
-    */
-    define("IS_GET", false);
-} else if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    /**
-     * 当前的访问请求是否是一个POST请求
-    */
-    define("IS_POST", false);
-    /**
-     * 当前的访问请求是否是一个GET请求
-    */
-    define("IS_GET", true);
-} else {
-    /**
-     * 当前的访问请求是否是一个POST请求
-    */
-    define("IS_POST", false);
-    /**
-     * 当前的访问请求是否是一个GET请求
-    */
-    define("IS_GET", false);
+if (array_key_exists("REQUEST_METHOD", $_SERVER)) {
+
+	# 2018-09-13 
+	# 在命令行环境下，这个值是不存在的，会导致定义失败
+	# 所以在这里会需要先判断一下是否存在
+	# 如果REQUEST_METHOD不存在的话，则下面的两个常量都不会被定义，
+	# 则在下面的代码之中都会被定义为false
+	
+	if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+		/**
+		 * 当前的访问请求是否是一个POST请求
+		*/
+		define("IS_POST", true);
+		/**
+		 * 当前的访问请求是否是一个GET请求
+		*/
+		define("IS_GET", false);
+		
+	} else if ($_SERVER['REQUEST_METHOD'] === 'GET') {		
+		/**
+		 * 当前的访问请求是否是一个POST请求
+		*/
+		define("IS_POST", false);
+		/**
+		 * 当前的访问请求是否是一个GET请求
+		*/
+		define("IS_GET", true);
+	}	
+} 
+
+if (!defined("IS_GET") && !defined("IS_POST")) {
+	/**
+	 * 当前的访问请求是否是一个POST请求
+	*/
+	define("IS_POST", false);
+	/**
+	 * 当前的访问请求是否是一个GET请求
+	*/
+	define("IS_GET", false);
 }
+
+#region "file_loads"
 
 /**
  * PHP.NET框架的根文件夹位置
  * 获取得到package.php这个文件的所处的文件夹的位置
 */
-define("PHP_DOTNET", dirname(__FILE__));
+define("PHP_DOTNET", dirname(__FILE__) . "/Framework");
 
 include_once PHP_DOTNET . "/Debugger/Ubench/Ubench.php";
 
@@ -90,8 +110,9 @@ $load->run(function() {
     # 加载Web框架部件
     include_once PHP_DOTNET . "/RFC7231/index.php";
     include_once PHP_DOTNET . "/Registry.php";
-
 });
+
+#endregion
 
 debugView::LogEvent("--- App start ---");
 debugView::LogEvent("Load required modules in " . $load->getTime());
@@ -103,6 +124,8 @@ debugView::AddItem("benchmark.load", $load->getTime(true));
 # misspelled the timezone identifier. We selected the timezone 'UTC' for now, 
 # but please set date.timezone to select your timezone.
 date_default_timezone_set('UTC');
+
+#region "global function"
 
 /**
  * Global function for load php.NET package modules.
@@ -131,3 +154,5 @@ function Redirect($URL) {
 function session($name, $value) {
     $_SESSION[$name] = $value;
 }
+
+#endregion

@@ -168,9 +168,11 @@ namespace MVC\MySql {
 		/**
 		 * 执行SQL查询然后返回一条数据
 		 * 
+		 * 如果查询失败会返回逻辑值false
+		 * 
 		 * @param string $SQL
 		 * 
-		 * @return array
+		 * @return array|boolean
 		*/
 		public function ExecuteScalar($SQL) {			
 			$mysql_exec = parent::__init_MySql(false);

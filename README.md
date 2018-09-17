@@ -37,10 +37,10 @@ dotnet class simulation in php language
    Imports('System.Diagnostics.StackTrace');
 ?>
 
-at GetCallStack in D:\Develop\mod\php.NET\test\index.php:line 7
-at stackTraceTest in D:\Develop\mod\php.NET\test\index.php:line 11
-at __caller2 in D:\Develop\mod\php.NET\test\index.php:line 15
-at __caller3 in D:\Develop\mod\php.NET\test\index.php:line 19
-at __initCaller in D:\Develop\mod\php.NET\test\index.php:line 22
---- End of inner exception stack trace ---
+# at StackTrace::GetCallStack in /modules/dotnet/dotnet.php:line 268
+# at dotnet::PageNotFound in /modules/dotnet/MVC/controller.php:line 202
+# at controller::Hook in /modules/dotnet/dotnet.php:line 84
+# at dotnet::HandleRequest in /bootstrap.php:line 23
+# at include in /index.php:line 3
+# --- End of inner exception stack trace ---
 ```
