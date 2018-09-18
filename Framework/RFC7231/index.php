@@ -39,8 +39,8 @@ class RFC7231Error {
 		$allow_custom = true) {
 			
 		if (!is_integer($code)) {
-			$link = MSDN::link("System.Int32");
-			dotnet::ThrowException("RFC7231 error code must be an <a href='$link'>System.Int32</a> numeric type!");
+			$msg = "Error code must be an " . MSDN::link("System.Int32") . " numeric type!";
+			dotnet::ThrowException($msg);
 		} else {
 			header($httpResponse = RFC7231Error::getRFC($code, $header));	
 		}	
