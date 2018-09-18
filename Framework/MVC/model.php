@@ -24,7 +24,7 @@ class Table {
 	/**
 	 * MySql数据库驱动程序
 	 * 
-	 * @var sqlDriver
+	 * @var MVC\MySql\MySqlExecDriver
 	*/
 	private $driver;
 
@@ -609,6 +609,8 @@ class Table {
 
 	/**
 	 * select but limit 1
+	 * 
+	 * 如果查询失败会返回逻辑值false
 	*/
     public function find() {
 		$ref     = $this->schema->ref;

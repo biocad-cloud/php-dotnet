@@ -1,7 +1,7 @@
 <?php
 
 /** 
- * The strings module functions in VisualBasic language. The Strings module contains 
+ * The strings module functions in ``VisualBasic`` language. The Strings module contains 
  * procedures used to perform string operations.
 */
 class Strings {
