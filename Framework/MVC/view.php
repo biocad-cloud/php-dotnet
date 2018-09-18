@@ -8,7 +8,6 @@ Imports("MVC.View.inline");
 Imports("MVC.View.volist");
 Imports("Debugger.Ubench.Ubench");
 
-
 /**
  * html user interface view handler
  * 
