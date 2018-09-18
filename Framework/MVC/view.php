@@ -8,7 +8,6 @@ Imports("MVC.View.inline");
 Imports("MVC.View.volist");
 Imports("Debugger.Ubench.Ubench");
 
-
 /**
  * html user interface view handler
  * 
@@ -103,6 +102,8 @@ class View {
 		$version = filemtime($path);
 		$temp    = dotnet::getMyTempDirectory();
 		$file    = basename($path);
+		# 2018-09-18 从下面的代码之中可以看见，因为缓存页面是和用户请求有关的
+		# 所以没有办法为每一个视图页面生成缓存页面
 		$path    = md5($_SERVER["REQUEST_URI"]);
 		$cache   = "$temp/$file/$version/$path.html";
 
