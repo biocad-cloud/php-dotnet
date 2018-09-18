@@ -192,10 +192,23 @@ namespace MVC\MySql\Expression {
          * + 如果是~起始，则说明是一个表达式，则截取第二个字符起始的剩余的字符串之后返回
          * + 如果目标是被两个`````或者``'``符号包裹，则说明是字段的引用或者值，则不做任何处理
          * + 多于其他的任意情况，都会将目标表达式看作为一个值，在值的两边添加``'``符号构成一个值表达式之后返回
+         * + 如果是一个对象，则会尝试分别使用``ToString``或者``__toString``方法获取值
          * 
          * @return string SQL语句之中的值表达式
         */
         public static function AutoValue($value) {
+            if (is_object($value)) {
+                if (method_exists($value, "ToString")) {
+                    $str = $value->ToString();
+                } else {
+                    $str = $value->__toString();
+                }
+
+                return "'$str'";
+            } else if (!is_string($value)) {
+                return "'$value'";
+            }
+
             if (strlen($value) == 0) {
                 # mysql值是一个空字符串
                 return "''";
