@@ -136,6 +136,21 @@ class DotNetRegistry {
     }
 
     /**
+     * 如果配置只是一个文件夹路径字符串，则会使用一个键名为``*``的字典数组返回值
+    */
+    public static function GetMVCViewDocumentRootTable() {
+        $config = self::Read(MVC_VIEW_ROOT);
+
+        if (empty($config)) {
+            return [];
+        } else if (is_string($config)) {
+            return ["*" => $config];
+        } else {
+            return $config;
+        }
+    }
+
+    /**
      * 获取得到当前的用户请求的最开始的脚本文件的文件名
      * 
      * @return string 不包含拓展名的脚本文件名
