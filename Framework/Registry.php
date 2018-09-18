@@ -71,6 +71,9 @@ class DotNetRegistry {
         }
     }
 
+    /**
+     * 获取网页显示的语言默认配置值，默认配置语言是中文语言``zhCN``。
+    */
     public static function DefaultLanguage() {
         return self::Read(DEFAULT_LANGUAGE, "zhCN");
     }
@@ -83,7 +86,7 @@ class DotNetRegistry {
      * The default config file data.
     */
     public static function DefaultConfig() {
-        return array();
+        return [];
     }
 
     public static function DisableErrorHandler() {    
@@ -164,6 +167,9 @@ class DotNetRegistry {
         return $script;
     }
 
+    /**
+     * 这个函数判断当前的配置文件是否是空值？
+    */
     public static function ConfigIsNothing() {
         return is_int(self::$config) || !self::$config;
     }
@@ -180,7 +186,15 @@ class DotNetRegistry {
     }
 
     /**
-     * 如果在配置文件之中设置的参数值为False，则这个函数会返回True，所以可能需要根据上下文添加!操作符进行反义 
+     * 如果在配置文件之中设置的参数值为False，则这个函数会返回True，
+     * 所以可能需要根据上下文添加!操作符进行反义
+     * 
+     * @param string $key 配置文件数据之中的一个配置项的字符串名称
+     * 
+     * @return boolean 如果配置项在配置文件之中不存在或者其逻辑值或者其字符串值可以
+     *   被解释为``false``的话，则这个函数会返回``true``，表示该所给定的配置项在配置
+     *   文件之中的配置值为逻辑值``false``，反之这个函数返回``false``，表示其配置值
+     *   不是``false``
     */
     private static function optFalse($key) {
         if (self::hasValue($key)) {
@@ -191,6 +205,14 @@ class DotNetRegistry {
         }        
     } 
 
+    /**
+     * 判断所给定的配置项在配置文件之中是否具有值?
+     * 
+     * @param string $key 配置文件数据之中的一个配置项的字符串名称
+     * 
+     * @return boolean 如果所给定的配置项在配置文件之中不存在的话，函数会返回``false``，
+     *     反之返回``true``则表示该配置项存在于配置文件之中。
+    */
     private static function hasValue($key) {
         $config = self::$config;
 
