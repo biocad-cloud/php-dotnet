@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Represents a mutable string of characters.
+*/
 class StringBuilder {
 
     /**
@@ -26,6 +29,9 @@ class StringBuilder {
     }
 
     /**
+     * Appends the default line terminator, or a copy of a specified string 
+     * and the default line terminator, to the end of this instance.
+     * 
      * @return StringBuilder
     */
     public function AppendLine($str = "") {
@@ -44,12 +50,19 @@ class StringBuilder {
         return $this;
     }
 
+    /**
+     * Removes all characters from the current StringBuilder instance.
+    */
     public function Clear() {
         $this->buffer = "";
     }
 
     /**
-     * @return string
+     * Converts the value of a StringBuilder to a String.
+     * 
+     * 将当前的这个StringBuilder对象之中的字符串缓冲字符串输出
+     * 
+     * @return string 最终所拼接出来的文本字符串数据
     */
     public function ToString() {
         return $this->buffer;

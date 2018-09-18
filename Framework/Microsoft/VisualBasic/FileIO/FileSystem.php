@@ -26,6 +26,28 @@ class FileSystem {
 	}
 
 	/**
+	 * 函数返回一个函数指针，使用``!wq``指令来关闭文件
+	 * 
+	 * @return callable 只接受一个文件数据的输入参数
+	*/
+	public static function OpenWriter($file, $appendNewLine = FALSE, $append = FALSE) {
+		$mode   = $append ? "a" : "w";
+		$handle = fopen($file, $mode);
+
+		return function($text) use ($handle, $appendNewLine) {
+			if ($text === "!wq") {
+				fclose($handle);
+			} else {
+				fwrite($handle, $text);
+
+				if ($appendNewLine) {
+					fwrite($handle, "\n");
+				}
+			}
+		};
+	}
+
+	/**
 	 * Writes text to a file.
 	 * 
 	 * 这个函数会自动创建文件夹
