@@ -56,7 +56,7 @@ namespace MVC\MySql {
 		/**
 		 * 从数据库之中获取表结构信息或者从缓存之中获取，如果表结构信息已经被缓存了的话
 		 * 
-		 * @param Model $driver 当前的class类型的实例，数据库抽象层的底层驱动
+		 * @param sqlDriver $driver 当前的class类型的实例，数据库抽象层的底层驱动
 		*/
 		public static function GetSchema($tableName, $driver) {
 			if (!array_key_exists($tableName, self::$describCache)) {
