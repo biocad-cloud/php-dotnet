@@ -1,15 +1,13 @@
-<?php
+<?
 
-namespace System {
+class Object {
 
-    class TObject {
+    public function GetType() {
+        
+    }
 
-        public function GetType() {
-            
-        }
-    
-        public function ToString() {
-            return __toString();
-        }
+    public function ToString() {
+        return __toString();
     }
 }
+?>
