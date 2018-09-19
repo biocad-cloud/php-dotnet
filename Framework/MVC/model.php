@@ -123,8 +123,8 @@ class Table {
 	 * 
 	 * @return Table
 	*/
-	public static function GetDebugger($tableName, $schemaCache) {
-		$debugger = new \MVC\MySql\MySqlDebugger();
+	public static function GetDebugger($tableName, $database, $schemaCache) {
+		$debugger = new \MVC\MySql\MySqlDebugger($database);
 		$tbl      = [$tableName => ""];
 
 		if ($schemaCache && file_exists($schemaCache)) {

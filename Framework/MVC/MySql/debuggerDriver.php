@@ -22,7 +22,7 @@ namespace MVC\MySql {
 		 *           连接参数来提供表结构信息
 		*/
         function __construct(
-            $database = NULL, 
+            $database = "test", 
             $user     = NULL, 
             $password = NULL, 
             $host     = "localhost", 
