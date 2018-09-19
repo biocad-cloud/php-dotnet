@@ -845,9 +845,11 @@ class Table {
 		
 		foreach ($this->schema->schema as $fieldName => $def) {
 			# 只更新存在的数据，所以在这里只需要这一个if分支即可
+			# 更新语句的值可能会存在表达式，表达式的前缀为~符号
 			if (array_key_exists($fieldName, $data)) {
 				$value = $data[$fieldName];
-				$set   = "`$fieldName` = '$value'";
+				$value = MVC\MySql\Expression\WhereAssert::AutoValue($value);
+				$set   = "`$fieldName` = $value";
 				
 				array_push($updates, $set);
 			}
@@ -857,10 +859,8 @@ class Table {
 		$SQL     = "UPDATE $ref SET $updates";
 		
 		if (!$assert) {
-			
 			# 更新所有的数据？？？要不要给出警告信息
 			$SQL = $SQL . ";";
-			
 		} else {
 			$SQL = $SQL . " WHERE " . $assert . " LIMIT 1;";
 		}
