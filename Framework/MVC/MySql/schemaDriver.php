@@ -28,8 +28,18 @@ namespace MVC\MySql {
         */
         public $ref;
 
-		function __construct($tableName, $driver) {
-            $this->schema         = self::GetSchema($tableName, $driver);     
+		/**
+		 * @param string $tableName 目标数据模型的数据库表名称
+		 * @param MySqlExecDriver $driver 主要是需要通过这个mysql驱动程序对象的链接信息
+		 * 从数据库之中得到表的结构信息，在进行调试的时候，如果存在schemaCache数据的话，
+		 * 可以将这个参数设置为空值
+		 * 
+		 * @param string $schemaCache 数据库结构缓存信息的php文件的文件路径，假若使用``describ``描述来
+		 * 从数据库服务器之中得到结构信息的话，每一次创建模型都会链接数据库，导致数据库服务器需要处理的请求
+		 * 增多，通过本地生成的mysql结构缓存，可以减少这部分的服务器请求量。
+		*/
+		function __construct($tableName, $driver, $schemaCache) {
+            $this->schema         = self::GetSchema($tableName, $driver);
             $this->auto_increment = $this->schema["AI"];  
             $this->schema         = $this->schema["schema"];	
             $this->databaseName   = $driver->GetDatabaseName();
