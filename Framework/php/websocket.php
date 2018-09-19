@@ -104,9 +104,22 @@ class WebSocket {
         }
     }
 
+	private function disConnect($socket) {
+		$index = array_search($socket, $this->sockets);
+        socket_close($socket);
+        
+        echo ($socket . " DISCONNECTED!\n");
+        
+		if ($index >= 0){
+			array_splice($this->sockets, $index, 1); 
+        }
+        
+        return true;
+	}
+
     private function handleRequest($socket) {
         if(@socket_recv($socket, $buffer, 2048, 0) == 0) {
-            return false;
+            return $this->disConnect($socket);
         }
 
         if (!$this->handshake) {
@@ -149,16 +162,15 @@ class WebSocket {
             or die("socket_create() failed");
         socket_set_option($this->master, SOL_SOCKET, SO_REUSEADDR, 1)  
             or die("socket_option() failed");
-        socket_bind($this->master, $address, $port)                    
+        socket_bind($this->master, $this->address, $port)                    
             or die("socket_bind() failed");
         socket_listen($this->master, 2)                               
             or die("socket_listen() failed");
 
         $this->sockets[] = $this->master;
-        $this->mask      = $mask;
 
         // debug
-        echo("Master socket  : ".$this->master."\n");
+        echo("Master socket: {$this->master}\n");
 
         while(true) {
             if (!$this->loopTask()) {
@@ -208,8 +220,10 @@ class WebSocket {
     private function doHandShake($socket, $req) {
         // 获取加密key
         $acceptKey = $this->encry($req);
-        $upgrade   = self::response($acceptKey) . chr(0);
+        $upgrade   = self::response($acceptKey);
     
+        echo "$acceptKey\n";
+
         // 写入socket
         socket_write($socket, $upgrade, strlen($upgrade));
         // 标记握手已经成功，下次接受数据采用数据帧格式
