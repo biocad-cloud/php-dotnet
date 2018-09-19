@@ -40,6 +40,9 @@ namespace MVC\MySql {
 		*/
 		static $mysqliCache = [];
 
+		/**
+		 * 在这个构造函数之中传递构建mysqllink所必须的参数
+		*/
 		function __construct($database, $user, $password, $host = "localhost", $port = 3306) {
 			$this->database = $database;
 			$this->user     = $user;
@@ -49,6 +52,8 @@ namespace MVC\MySql {
 		}
 		
 		/**
+		 * 得到所连接的数据库的名称
+		 * 
 		 * @return string
 		*/
         public function GetDatabaseName() {
