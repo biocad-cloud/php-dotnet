@@ -39,6 +39,11 @@ namespace MVC\MySql {
 		 * 增多，通过本地生成的mysql结构缓存，可以减少这部分的服务器请求量。
 		*/
 		function __construct($tableName, $driver, $schemaCache) {
+			if ($schemaCache && file_exists($schemaCache)) {
+				# 在自动生成的脚本里面有一个自动加载的函数
+				include_once $schemaCache;
+			}
+
             $this->schema         = self::GetSchema($tableName, $driver);
             $this->auto_increment = $this->schema["AI"];  
             $this->schema         = $this->schema["schema"];	
@@ -93,14 +98,16 @@ namespace MVC\MySql {
 
 		/**
 		 * Get the field name of the auto increment field.
+		 * 
+		 * @return string
 		*/
 		public static function GetAutoIncrementKey($schema) {	
 
 			foreach ($schema as $name => $type) {
 
-				$isAI    = ($type["Extra"] == "auto_increment");			
+				$isAI    = ($type["Extra"] == "auto_increment");
 				$type    =  $type["Type"];		
-				$isInt32 = (\Strings::InStr("$type", "int"));					
+				$isInt32 = (\Strings::InStr("$type", "int"));
 				
 				if (($isInt32 == 1) && $isAI) {
 					return $name;
@@ -114,6 +121,8 @@ namespace MVC\MySql {
 		 * MySql schema table to php schema dictionary array, 
 		 * the key in the dictionary is the field name in 
 		 * table.
+		 * 
+		 * @return array
 		*/
 		public static function ArrayOfSchema($schema) {
 			$array = [];
