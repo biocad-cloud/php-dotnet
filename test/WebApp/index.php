@@ -1,12 +1,15 @@
 <?php
 
-include "../package.php";
+define("APP_DEBUG", true);
+define("SITE_PATH", dirname(__FILE__));
+
+include "../../package.php";
 include "App.php";
+include "accessController.php";
 
-dotnet::Imports("System.Diagnostics.StackTrace");
+Imports("System.Diagnostics.StackTrace");
+
 dotnet::AutoLoad("etc/config.php");
-
-Control::$debug = false;
-Control::HandleRequest(new App());
+dotnet::HandleRequest(new App(), new c());
 
 ?>
