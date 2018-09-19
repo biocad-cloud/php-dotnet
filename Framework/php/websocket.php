@@ -92,7 +92,7 @@ foreach ($this->sockets as $socket) {
         if($bytes == 0) return;
         if (!$this->handshake) {
             // 如果没有握手，先握手回应
-            //doHandShake($socket, $buffer);
+            $this->doHandShake($socket, $buffer);
             echo "shakeHands\n";
         } else {
             // 如果已经握手，直接接受数据，并处理
@@ -105,19 +105,50 @@ foreach ($this->sockets as $socket) {
     }
 
     /**
+     * 解析数据帧 
+    */ 
+    private function decode($buffer)  {
+        $len = $masks = $data = $decoded = null;
+        $len = ord($buffer[1]) & 127;
+
+        if ($len === 126)  {
+            $masks = substr($buffer, 4, 4);
+            $data = substr($buffer, 8);
+        } else if ($len === 127)  {
+            $masks = substr($buffer, 10, 4);
+            $data = substr($buffer, 14);
+        } else  {
+            $masks = substr($buffer, 2, 4);
+            $data = substr($buffer, 6);
+        }
+
+        for ($index = 0; $index < strlen($data); $index++) {
+            $decoded .= $data[$index] ^ $masks[$index % 4];
+        }
+        
+        return $decoded;
+    }
+
+    private static function response($acceptKey) {
+        return (new StringBuilder("", "\r\n"))
+            ->AppendLine("HTTP/1.1 101 Switching Protocols")
+            ->AppendLine("Upgrade: websocket")
+            ->AppendLine("Connection: Upgrade")
+            ->AppendLine("Sec-WebSocket-Accept: $acceptKey")
+            ->AppendLine("")
+            ->ToString();
+    }
+
+    /**
      * @param string $req 浏览器端发送过来的请求头
     */
-    private function dohandshake($socket, $req) {
+    private function doHandShake($socket, $req) {
         // 获取加密key
         $acceptKey = $this->encry($req);
-        $upgrade = "HTTP/1.1 101 Switching Protocols\r\n" .
-                   "Upgrade: websocket\r\n" .
-                   "Connection: Upgrade\r\n" .
-                   "Sec-WebSocket-Accept: " . $acceptKey . "\r\n" .
-                   "\r\n";
+        $upgrade   = self::response($acceptKey) . chr(0);
     
         // 写入socket
-        socket_write(socket,$upgrade.chr(0), strlen($upgrade.chr(0)));
+        socket_write($socket, $upgrade, strlen($upgrade));
         // 标记握手已经成功，下次接受数据采用数据帧格式
         $this->handshake = true;
     }
