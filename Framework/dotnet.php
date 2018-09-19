@@ -189,13 +189,18 @@ class dotnet {
     
 	/**
 	 * 获取目标html文档梭对应的缓存文件的文件路径
+     * 
+     * 因为这个文件夹可能会因为清除缓存的原因被删除掉，所以在这个文件夹之中不应该持久性的存储重要的数据文件
+     * 
+     * @return string 缓存文件夹的路径字符串
 	*/
 	public static function getMyTempDirectory() {		
 		$temp = sys_get_temp_dir();		
 
-		if (strtolower($temp) == strtolower("C:\Windows")) {
+		if (strtolower($temp) == strtolower("C:\\Windows")) {
 			# 不可以写入Windows文件夹
-			# 写入自己的data文件夹下面的临时文件夹
+            # 写入自己的data文件夹下面的临时文件夹
+            # 因为是写在自己的文件夹之中了，所以在这里就不用再加appName了
 			if (defined("APP_PATH")) {
 				$temp = APP_PATH . "/data/cache";
 			} else {
@@ -207,7 +212,21 @@ class dotnet {
         }
 
 		return $temp;
-	}
+    }
+    
+    /**
+     * 删除缓存文件夹
+    */
+    public static function DeleteCache() {
+        $cache = self::getMyTempDirectory();
+
+        if (empty($cache) || $cache == "/" || $cache == "C:\\Windows") {
+            # 系统的根目录
+            # 不做任何操作
+        } else {
+            unlink($cache);
+        }
+    }
 
     /**
      * 默认是zhCN中文语言
