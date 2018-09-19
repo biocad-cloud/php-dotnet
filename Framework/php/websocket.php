@@ -17,9 +17,17 @@
 # Sec-WebSocket-Protocol: chat, superchat
 # Sec-WebSocket-Version: 13
 
+# demo code
+#
+# (new WebSocket("localhost", "258EAFA5-E914-47DA-95CA-C5AB0DC85B11"))
+#     ->createServer(function($data, $write) {
+#         $write(Utils::Now() . ": " . $data);
+#     })
+#     ->listen(5005);
+
 Imports("System.Text.StringBuilder");
 
-Class WebSocket {
+class WebSocket {
 
     /**
      * 连接 server 的 client
@@ -43,8 +51,99 @@ Class WebSocket {
      * @var string
     */
     var $mask;
+    var $dataResponse;
+    /**
+     * @var string
+    */
+    var $address;
+    /**
+     * @var integer
+    */
+    var $bufferSize;
 
-    function __construct($address, $port, $mask) {
+    function __construct($address = "localhost", 
+                         $mask    = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11", 
+                         $bufSize = 2048) {
+
+        $this->address    = $address;
+        $this->mask       = $mask;
+        $this->bufferSize = $bufSize;
+    }
+
+    private function loopTask() {
+        // 自动选择来消息的 socket 如果是握手 自动选择主机
+        $write  = NULL;
+        $except = NULL;
+        socket_select($this->sockets, $write, $except, NULL);
+
+        foreach ($this->sockets as $socket) {
+            //连接主机的 client 
+            if ($socket == $this->master) {
+                $this->tryConnect();
+            } else {
+                if (!$this->handleRequest($socket)) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    private function tryConnect() {
+        $client = socket_accept($this->master);
+
+        if ($client < 0) {
+            // debug
+            echo "socket_accept() failed";
+            return;
+        } else {
+            //connect($client);
+            array_push($this->sockets, $client);
+            echo "connect client\n";
+        }
+    }
+
+    private function handleRequest($socket) {
+        if(@socket_recv($socket, $buffer, 2048, 0) == 0) {
+            return false;
+        }
+
+        if (!$this->handshake) {
+            // 如果没有握手，先握手回应
+            $this->doHandShake($socket, $buffer);
+            echo "shakeHands\n";
+        } else {
+            // 如果已经握手，直接接受数据，并处理
+            $buffer  = $this->decode($buffer);
+            $handles = $this->dataResponse;
+            $write   = function($data) use ($socket) {
+                socket_write($socket, $data, strlen($data));
+            };
+            $handles($buffer, $write);
+
+            echo "send file\n";
+        }
+
+        return true;
+    }
+
+    /**
+     * @param callable ($buffer, $write) => void
+     * 
+     * @return WebSocket
+    */
+    public function createServer($dataResponse) {
+        $this->dataResponse = $dataResponse;
+        return $this;
+    }
+
+    /**
+     * 启动这个WebSocket服务器
+     * 
+     * @param integer $port 所监听的端口
+    */
+    public function listen($port) {
         // 建立一个 socket 套接字
         $this->master = socket_create(AF_INET, SOCK_STREAM, SOL_TCP)   
             or die("socket_create() failed");
@@ -57,67 +156,31 @@ Class WebSocket {
 
         $this->sockets[] = $this->master;
         $this->mask      = $mask;
-    }
 
-    public function Run() {
         // debug
         echo("Master socket  : ".$this->master."\n");
 
         while(true) {
-            $this->loopTask();
+            if (!$this->loopTask()) {
+                break;
+            }
         }
-    }
-
-    private function loopTask() {
-//自动选择来消息的 socket 如果是握手 自动选择主机
-$write = NULL;
-$except = NULL;
-socket_select($this->sockets, $write, $except, NULL);
-
-foreach ($this->sockets as $socket) {
-    //连接主机的 client 
-    if ($socket == $this->master){
-        $client = socket_accept($this->master);
-        if ($client < 0) {
-            // debug
-            echo "socket_accept() failed";
-            continue;
-        } else {
-            //connect($client);
-            array_push($this->sockets, $client);
-            echo "connect client\n";
-        }
-    } else {
-        $bytes = @socket_recv($socket,$buffer,2048,0);
-        if($bytes == 0) return;
-        if (!$this->handshake) {
-            // 如果没有握手，先握手回应
-            $this->doHandShake($socket, $buffer);
-            echo "shakeHands\n";
-        } else {
-            // 如果已经握手，直接接受数据，并处理
-            $buffer = decode($buffer);
-            //process($socket, $buffer); 
-            echo "send file\n";
-        }
-    }
-}
     }
 
     /**
      * 解析数据帧 
     */ 
-    private function decode($buffer)  {
+    private function decode($buffer) {
         $len = $masks = $data = $decoded = null;
         $len = ord($buffer[1]) & 127;
 
-        if ($len === 126)  {
+        if ($len === 126) {
             $masks = substr($buffer, 4, 4);
             $data = substr($buffer, 8);
-        } else if ($len === 127)  {
+        } else if ($len === 127) {
             $masks = substr($buffer, 10, 4);
             $data = substr($buffer, 14);
-        } else  {
+        } else {
             $masks = substr($buffer, 2, 4);
             $data = substr($buffer, 6);
         }
