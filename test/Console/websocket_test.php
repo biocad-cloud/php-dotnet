@@ -1,6 +1,6 @@
 <?php
 
-include "../../package.php";
+include dirname(__FILE__) . "/../../package.php";
 
 dotnet::AutoLoad();
 

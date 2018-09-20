@@ -1,12 +1,12 @@
 <?php
 
-#  +--------+   1. Send Sec-WebSocket-Key                 +--------+
-#  |        | ------------------------------------------> |        |
-#  |        |   2. Return encrypted Sec-WebSocket-Accept  |        |
-#  | client | <------------------------------------------ | server |
-#  |        |   3. Verify locally                         |        |
-#  |        | ------------------------------------------> |        |
-#  +--------+                                             +--------+
+#  +--------+  1. Send Sec-WebSocket-Key                 +--------+
+#  |        | -----------------------------------------> |        |
+#  |        |  2. Return encrypted Sec-WebSocket-Accept  |        |
+#  | client | <----------------------------------------- | server |
+#  |        |  3. Verify locally                         |        |
+#  |        | -----------------------------------------> |        |
+#  +--------+                                            +--------+
 
 # GET /chat HTTP/1.1
 # Host: server.example.com
@@ -247,8 +247,12 @@ class WebSocket {
      * @return string
     */
     private static function getKey($req) {
-        if (preg_match("/Sec-WebSocket-Key: (.*)\r\n/", $req, $match)) { 
-            return $match[1]; 
+        if (preg_match("/Sec-WebSocket-Key: (.*)\r\n/", $req, $match)) {
+            $key = $match[1];
+
+            echo $req . "\n\n";
+            echo $key . "\n\n";
+            return $key;
         } else {
             return null;
         }
