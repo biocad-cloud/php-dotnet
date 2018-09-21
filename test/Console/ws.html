@@ -3,13 +3,16 @@ var ws = new WebSocket("ws://localhost:5005");
 
 ws.onopen = function(){
     console.log("握手成功");
+	ws.send("Hello world!");
 };
 ws.onmessage = function(e){
     console.log("message:" + e.data);
+	
+	setTimeout(function() {
+		ws.send("ddddd");
+	}, 1000);
 };
 ws.onerror = function(){
     console.log("error");
 };
-
-ws.send("Hello world!");
 </script>
