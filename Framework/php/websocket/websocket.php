@@ -99,6 +99,8 @@ class WsAppHandler implements PHP\WebSocket\SocketListener {
      * + connect(PHP\WebSocket\SocketServer, PHP\WebSocket\SocketClient)
      * + disconnect(PHP\WebSocket\SocketServer, PHP\WebSocket\SocketClient)
      * + log(PHP\WebSocket\SocketServer, $message)
+     * 
+     * @return WsAppHandler
     */
     public function on($name, $handler) {
         if (array_key_exists($name = strtolower($name), self::$appNames)) {
@@ -106,6 +108,8 @@ class WsAppHandler implements PHP\WebSocket\SocketListener {
         } else {
             throw new Exception("[$name] is not recognized as any WS app!");
         }
+
+        return $this;
     }
 }
 
