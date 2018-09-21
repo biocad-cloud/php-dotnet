@@ -126,7 +126,7 @@ class SocketClient {
 	 */
 	public function send($message) {
 		if ($this->state == self::STATE_CLOSED) {
-			throw new Exception(
+			throw new \Exception(
 				'Unable to send message, connection has been closed'
 			);
 		}
@@ -175,11 +175,11 @@ class SocketClient {
 	 *
 	 * @param string $buffer Buffer sent by the client
 	 * @return bool Was the handshake successful
-	 * @throws Exception If something goes wrong
+	 * @throws \Exception If something goes wrong
 	 */
 	public function performHandshake($buffer) {
 		if ($this->state != self::STATE_CONNECTING) {
-			throw new Exception(
+			throw new \Exception(
 				'Unable to perform handshake, client is not in connecting state'
 			);
 		}
@@ -206,7 +206,7 @@ class SocketClient {
 			if ($sent === false) {
 				$error = $this->server->getLastError();
 
-				throw new Exception(
+				throw new \Exception(
 					'Sending handshake failed: : '.$error->message.
 					' ['.$error->code.']'
 				);

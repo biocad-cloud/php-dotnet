@@ -190,13 +190,13 @@ class SocketServer {
 	 * - message: translated error code as message
 	 *
 	 * @param resource $socket Optional socket resource
-	 * @return stdClass Error as stdClass instance with fields code and message
+	 * @return \stdClass Error as stdClass instance with fields code and message
 	 */
 	public static function getLastError($socket = null) {
 		$lastErrorCode = socket_last_error($socket);
 		$lastErrorMessage = socket_strerror($lastErrorCode);
 
-		$error = new stdClass();
+		$error = new \stdClass();
 		$error->code = $lastErrorCode;
 		$error->message = $lastErrorMessage;
 
@@ -207,7 +207,7 @@ class SocketServer {
 	 * Starts the server by binding to a port
 	 *
 	 * @param integer $maxConnections Max number of incoming backlog connections
-	 * @throws Exception If something goes wrong
+	 * @throws \Exception If something goes wrong
 	 */
 	public function listen($port, $maxConnections = SOMAXCONN) {
 		$this->port = $port;
@@ -220,7 +220,7 @@ class SocketServer {
 		if ($this->socket === false) {
 			$error = self::getLastError();
 
-			throw new Exception(
+			throw new \Exception(
 				'Creating socket failed: '.$error->message.' ['.$error->code.']'
 			);
 		}
@@ -237,7 +237,7 @@ class SocketServer {
 		) {
 			$error = self::getLastError($this->socket);
 
-			throw new Exception(
+			throw new \Exception(
 				'Setting socket option to reuse address to true failed: '.
 				$error->message.' ['.$error->code.']'
 			);
@@ -246,7 +246,7 @@ class SocketServer {
 		if (socket_bind($this->socket, $this->host, $this->port) === false) {
 			$error = self::getLastError($this->socket);
 
-			throw new Exception(
+			throw new \Exception(
 				'Binding to port '.$this->port.' on host "'.$this->host.
 				'" failed: '.$error->message.' ['.$error->code.']'
 			);
@@ -255,7 +255,7 @@ class SocketServer {
 		if (socket_listen($this->socket, $maxConnections) === false) {
 			$error = self::getLastError($this->socket);
 
-			throw new Exception(
+			throw new \Exception(
 				'Starting to listen on the socket on port '.$this->port.
 				' and host "'.$this->host.'" failed: '.$error->message.
 				' ['.$error->code.']'
@@ -281,7 +281,7 @@ class SocketServer {
 
 			$error = self::getLastError($this->socket);
 
-			throw new Exception(
+			throw new \Exception(
 				'Checking for changed sockets failed: '.$error->message.
 				' ['.$error->code.']'
 			);
@@ -475,7 +475,7 @@ class SocketServer {
 	 * @param resource $socket Socket to send the message to
 	 * @param mixed $message Message to send
 	 * @param integer $bufferSize Buffer size to use
-	 * @throws Exception If something goes wrong
+	 * @throws \Exception If something goes wrong
 	 */
 	public function send(
 		$socket,
