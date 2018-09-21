@@ -10,8 +10,8 @@ $app = (new WsAppHandler())
 	/**
 	 * Called when a client sends a message to the server.
 	 *
-	 * @param SocketServer $server The server instance
-	 * @param SocketClient $client Client that sent the message
+	 * @param PHP\WebSocket\SocketServer $server The server instance
+	 * @param PHP\WebSocket\SocketClient $client Client that sent the message
 	 * @param string $message Sent message
 	*/
 	  ->on("message", function($server, $sender, $message) {
@@ -20,23 +20,23 @@ $app = (new WsAppHandler())
 	/**
 	 * Called when a new client connects to the server.
 	 *
-	 * @param SocketServer $server The server instance
-	 * @param SocketClient $client Client that connected
+	 * @param PHP\WebSocket\SocketServer $server The server instance
+	 * @param PHP\WebSocket\SocketClient $client Client that connected
 	*/
 	})->on("connect", function($server, $client) {
 		echo "[+] $client\n";
 	/**
 	 * Called when a  client disconnects from the server.
 	 *
-	 * @param SocketServer $server The server instance
-	 * @param SocketClient $client Client that disconnected
+	 * @param PHP\WebSocket\SocketServer $server The server instance
+	 * @param PHP\WebSocket\SocketClient $client Client that disconnected
 	*/
 	})->on("disconnect", function($server, $client) {
 		echo "[-] $client\n";
 	/**
 	 * Called when the server generates a log message.
 	 *
-	 * @param SocketServer $server The server
+	 * @param PHP\WebSocket\SocketServer $server The server
 	 * @param string $message Log message
 	*/
 	})->on("log", function($server, $message) {
