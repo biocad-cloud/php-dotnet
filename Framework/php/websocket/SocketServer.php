@@ -334,6 +334,11 @@ class SocketServer {
 				E_USER_WARNING
 			);
 
+			# 2018-09-21
+			# 在这里应该把当前的socket进行删除
+			# 否则会出现死循环
+			$this->disconnectClient($socket);
+
 			return;
 		}
 
