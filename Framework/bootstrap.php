@@ -2,6 +2,9 @@
 
 namespace PhpDotNet {
 
+    /**
+     * 内部模块文件加载程序
+    */
     class bootstrap {
 
         /**
@@ -67,10 +70,12 @@ namespace PhpDotNet {
             if (\Utils::WithSuffixExtension($module, "php")) {
                 $module = str_replace(".", "/", $module); 
                 $module = PHP_DOTNET . "/{$module}";
-            } else if (\Strings::EndWith($module, "/*")) {                
+            } else if (\Strings::EndWith($module, "/*")) {
                 self::moduleImports($module);
             } else {
-                list($isdir, $module) = \Utils::Tuple(self::getInternalModuleRefer($module));
+                list($isdir, $module) = \Utils::Tuple(
+                    self::getInternalModuleRefer($module)
+                );
 
                 if ($isdir === "true") {
                     self::importsAlls($module);

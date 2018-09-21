@@ -1,6 +1,5 @@
 <?php
 
-
 /**
  * Socket server listener interface.
  *

@@ -77,7 +77,7 @@ class SocketClient {
 	 *
 	 * @var mixed
 	 */
-	public $data = array();
+	public $data = [];
 
 	/**
 	 * User is connecting, handshake not yet performed.
@@ -182,22 +182,21 @@ class SocketClient {
 			);
 		}
 
-		$headers = $this->parseRequestHeader($buffer);
-		$key = $headers['Sec-WebSocket-Key'];
-		$hash = base64_encode(
+		$headers = self::parseRequestHeader($buffer);
+		$key     = $headers['Sec-WebSocket-Key'];
+		$hash    = base64_encode(
+			# 2018-09-21 下面的guid是一个magic string，永远不会变的常量
 			sha1($key.'258EAFA5-E914-47DA-95CA-C5AB0DC85B11', true)
 		);
 
-		$headers = array(
+		$headers = [
 			'HTTP/1.1 101 Switching Protocols',
 			'Upgrade: websocket',
 			'Connection: Upgrade',
 			'Sec-WebSocket-Accept: '.$hash
-		);
-
-		$headers = implode("\r\n", $headers)."\r\n\r\n";
-
-		$left = strlen($headers);
+		];
+		$headers = implode("\r\n", $headers) . "\r\n\r\n";
+		$left    = strlen($headers);
 
 		do {
 			$sent = @socket_send($this->socket, $headers, $left, 0);
@@ -209,15 +208,15 @@ class SocketClient {
 					'Sending handshake failed: : '.$error->message.
 					' ['.$error->code.']'
 				);
+			} else {
+				$left -= $sent;
 			}
-
-			$left -= $sent;
 
 			if ($sent > 0) {
 				$headers = substr($headers, $sent);
 			}
-		}
-		while ($left > 0);
+			
+		} while($left > 0);
 
 		$this->state = self::STATE_OPEN;
 	}
@@ -228,8 +227,8 @@ class SocketClient {
 	 * @param string $request The request
 	 * @return array Array containing the resource, headers and security code
 	 */
-	private function parseRequestHeader($request) {
-		$headers = array();
+	private static function parseRequestHeader($request) {
+		$headers = [];
 
 		foreach (explode("\r\n", $request) as $line) {
 			if (strpos($line, ': ') !== false) {

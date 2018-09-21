@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Simple WebSocket server implementation.
  *
@@ -35,7 +36,7 @@
  * @author Priit Kallas <kallaspriit@gmail.com>
  * @package WebSocket
  */
-Class SocketServer {
+class SocketServer {
 
 	/**
 	 * Host to bind to.
@@ -56,7 +57,7 @@ Class SocketServer {
 	 *
 	 * @var SocketClient[]
 	 */
-	protected $clients = array();
+	protected $clients = [];
 
 	/**
 	 * The master socket acting as server.
@@ -70,14 +71,16 @@ Class SocketServer {
 	 *
 	 * @var resource[]
 	 */
-	protected $sockets = array();
+	protected $sockets = [];
 
 	/**
 	 * Array of socket listeners.
+	 * 
+	 * (应用逻辑实现在这里)
 	 *
 	 * @var SocketListener[]
 	 */
-	protected $listeners = array();
+	protected $listeners = [];
 
 	const FIN                  = 128;
 	const MASK                 = 128;
@@ -104,9 +107,12 @@ Class SocketServer {
 	 * Adds a new socket listener.
 	 *
 	 * @param SocketListener $listener Listener to add
+	 * 
+	 * @return SocketServer
 	 */
 	public function addListener(SocketListener $listener) {
 		$this->listeners[] = $listener;
+		return $this;
 	}
 
 	/**
@@ -257,6 +263,118 @@ Class SocketServer {
 		$this->run();
 	}
 
+	private function loopTask() {
+		$changedSockets = $this->sockets;
+		$write  = $except = $tv = $tvu = null;
+		$result = socket_select(
+			$changedSockets,
+			$write,
+			$except,
+			$tv,
+			$tvu
+		);
+
+		if ($result === false) {
+			socket_close($this->socket);
+
+			$error = self::getLastError($this->socket);
+
+			throw new Exception(
+				'Checking for changed sockets failed: '.$error->message.
+				' ['.$error->code.']'
+			);
+		}
+
+		foreach ($changedSockets as $socket) {
+			if ($socket == $this->socket) {
+				$newSocket = socket_accept($this->socket);
+
+				if ($newSocket !== false) {
+					$this->connectClient($newSocket);
+				} else {
+					$error = self::getLastError($this->socket);
+
+					trigger_error(
+						'Failed to accept incoming client: '.
+						$error->message.' ['.$error->code.']',
+						E_USER_WARNING
+					);
+				}
+			} else {
+				$client = $this->getClientBySocket($socket);
+
+				if (!isset($client)) {
+					trigger_error(
+						'Failed to match given socket to client',
+						E_USER_WARNING
+					);
+
+					socket_close($socket);
+
+					continue;
+				}
+
+				$buffer = '';
+				$message = '';
+
+				$bytes = @socket_recv($socket, $buffer, 4096, 0);
+
+				if ($bytes === false) {
+					$error = self::getLastError($this->socket);
+
+					trigger_error(
+						'Failed to receive data from client #'.$client->id.': '.
+						$error->message.' ['.$error->code.']',
+						E_USER_WARNING
+					);
+
+					continue;
+				}
+
+				$len = ord($buffer[1]) & 127;
+
+				$masks = null;
+				$data = null;
+
+				if ($len === 126) {
+					$masks = substr($buffer, 4, 4);
+					$data = substr($buffer, 8);
+				} else if ($len === 127) {
+					$masks = substr($buffer, 10, 4);
+					$data = substr($buffer, 14);
+				} else {
+					$masks = substr($buffer, 2, 4);
+					$data = substr($buffer, 6);
+				}
+
+				for ($index = 0; $index < strlen($data); $index++) {
+					$message .= $data[$index] ^ $masks[$index % 4];
+				}
+
+				if ($bytes == 0) {
+					$this->disconnectClient($socket);
+				} else {
+					if ($client->state == SocketClient::STATE_OPEN) {
+						$client->lastRecieveTime = time();
+
+						$this->log('< ['.$client->id.'] '.$message);
+
+						foreach ($this->listeners as $listener) {
+
+							$listener->onMessageRecieved(
+								$this,
+								$client,
+								$message
+							);
+						}
+					} else if ($client->state == SocketClient::STATE_CONNECTING) {
+						$client->performHandshake($buffer);
+					}
+				}
+			}
+		}
+	}
+
 	/**
 	 * Runs the server as an infinite loop
 	 *
@@ -264,117 +382,7 @@ Class SocketServer {
 	 */
 	protected function run() {
 		while (true) {
-			$changedSockets = $this->sockets;
-
-			$write = $except = $tv = $tvu = null;
-
-			$result = socket_select(
-				$changedSockets,
-				$write,
-				$except,
-				$tv,
-				$tvu
-			);
-
-			if ($result === false) {
-				socket_close($this->socket);
-
-				$error = self::getLastError($this->socket);
-
-				throw new Exception(
-					'Checking for changed sockets failed: '.$error->message.
-					' ['.$error->code.']'
-				);
-			}
-
-			foreach ($changedSockets as $socket) {
-				if ($socket == $this->socket) {
-					$newSocket = socket_accept($this->socket);
-
-					if ($newSocket !== false) {
-						$this->connectClient($newSocket);
-					} else {
-						$error = self::getLastError($this->socket);
-
-						trigger_error(
-							'Failed to accept incoming client: '.
-							$error->message.' ['.$error->code.']',
-							E_USER_WARNING
-						);
-					}
-				} else {
-					$client = $this->getClientBySocket($socket);
-
-					if (!isset($client)) {
-						trigger_error(
-							'Failed to match given socket to client',
-							E_USER_WARNING
-						);
-
-						socket_close($socket);
-
-						continue;
-					}
-
-					$buffer = '';
-					$message = '';
-
-					$bytes = @socket_recv($socket, $buffer, 4096, 0);
-
-					if ($bytes === false) {
-						$error = self::getLastError($this->socket);
-
-						trigger_error(
-							'Failed to receive data from client #'.$client->id.': '.
-							$error->message.' ['.$error->code.']',
-							E_USER_WARNING
-						);
-
-						continue;
-					}
-
-					$len = ord($buffer[1]) & 127;
-
-					$masks = null;
-					$data = null;
-
-					if ($len === 126) {
-						$masks = substr($buffer, 4, 4);
-						$data = substr($buffer, 8);
-					} else if ($len === 127) {
-						$masks = substr($buffer, 10, 4);
-						$data = substr($buffer, 14);
-					} else {
-						$masks = substr($buffer, 2, 4);
-						$data = substr($buffer, 6);
-					}
-
-					for ($index = 0; $index < strlen($data); $index++) {
-						$message .= $data[$index] ^ $masks[$index % 4];
-					}
-
-					if ($bytes == 0) {
-						$this->disconnectClient($socket);
-					} else {
-						if ($client->state == SocketClient::STATE_OPEN) {
-							$client->lastRecieveTime = time();
-
-							$this->log('< ['.$client->id.'] '.$message);
-
-							foreach ($this->listeners as $listener) {
-
-								$listener->onMessageRecieved(
-									$this,
-									$client,
-									$message
-								);
-							}
-						} else if ($client->state == SocketClient::STATE_CONNECTING) {
-							$client->performHandshake($buffer);
-						}
-					}
-				}
-			}
+			$this->loopTask();
 		}
 	}
 
@@ -432,8 +440,6 @@ Class SocketServer {
 				unset($this->clients[$clientKey]);
 			}
 		}
-
-
 	}
 
 	/**
@@ -495,13 +501,11 @@ Class SocketServer {
 				$payloadLength = $bufferLength;
 				$payloadLengthExtended = '';
 				$payloadLengthExtendedLength = 0;
-			}
-			elseif ($bufferLength <= 65535) {
+			} elseif ($bufferLength <= 65535) {
 				$payloadLength = self::PAYLOAD_LENGTH_16;
 				$payloadLengthExtended = pack('n', $bufferLength);
 				$payloadLengthExtendedLength = 2;
-			}
-			else {
+			} else {
 				$payloadLength = self::PAYLOAD_LENGTH_63;
 				$payloadLengthExtended = pack('xxxxN', $bufferLength); // pack 32 bit int, should really be 64 bit int
 				$payloadLengthExtendedLength = 8;
@@ -512,20 +516,18 @@ Class SocketServer {
 
 			// send frame
 			$socket = $socket;
-
 			$left = 2 + $payloadLengthExtendedLength + $bufferLength;
+
 			do {
 				$sent = @socket_send($socket, $buffer, $left, 0);
 				if ($sent === false) return false;
 
 				$left -= $sent;
 				if ($sent > 0) $buffer = substr($buffer, $sent);
-			}
-			while ($left > 0);
+			} while ($left > 0);
 		}
 
 		$client = $this->getClientBySocket($socket);
-
 		$clientId = -1;
 
 		if ($client != null) {
@@ -551,6 +553,5 @@ Class SocketServer {
 			);
 		}
 	}
-
 }
 
