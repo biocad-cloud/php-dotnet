@@ -4,7 +4,7 @@ include __DIR__ . "../../../package.php";
 
 dotnet::AutoLoad();
 
-Imports("php.websocket.*");
+Imports("php.websocket");
 
 class testApp implements SocketListener {
 

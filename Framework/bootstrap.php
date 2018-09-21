@@ -50,7 +50,7 @@ namespace PhpDotNet {
             if (is_dir($dir = PHP_DOTNET . "/$module/")) {
                 # 可能是一个文件夹
                 # 则认为是导入该命名空间文件夹下的所有的同级的文件夹文件
-                return ["true" => dirname($module)];
+                return ["true"  => dirname($dir)];
             } else {
                 return ["false" => $module];
             }
