@@ -1,12 +1,17 @@
 <?php
 
-include __DIR__ . "./SocketServer.php";
-include  __DIR__ . "./SocketClient.php";
-include __DIR__ . "./SocketListener.php";
 
-class testApp implements SocketListener {
+/**
+ * Socket server listener interface.
+ *
+ * Implement this to communicate with the socket server.
+ *
+ * @author Priit Kallas <kallaspriit@gmail.com>
+ * @package WebSocket
+ */
+interface SocketListener {
 
-    /**
+	/**
 	 * Called when a client sends a message to the server.
 	 *
 	 * @param SocketServer $server The server instance
@@ -17,11 +22,7 @@ class testApp implements SocketListener {
 		SocketServer $server,
 		SocketClient $sender,
 		$message
-	) {
-        $sender->send(" say hello from: " . date("Y-m-d H:i:s"));
-
-        echo "[~] $message\n";
-    }
+	);
 
 	/**
 	 * Called when a new client connects to the server.
@@ -32,9 +33,7 @@ class testApp implements SocketListener {
 	public function onClientConnected(
 		SocketServer $server,
 		SocketClient $client
-	) {
-        echo "[+] $client\n";
-    }
+	);
 
 	/**
 	 * Called when a  client disconnects from the server.
@@ -45,9 +44,7 @@ class testApp implements SocketListener {
 	public function onClientDisconnected(
 		SocketServer $server,
 		SocketClient $client
-	) {
-        echo "[-] $client\n";
-    }
+	);
 
 	/**
 	 * Called when the server generates a log message.
@@ -58,11 +55,5 @@ class testApp implements SocketListener {
 	public function onLogMessage(
 		SocketServer $server,
 		$message
-	) {
-        echo "[:] $message\n";
-    }
+	);
 }
-
-$server =  new SocketServer("localhost", "5005");
-$server->addListener(new testApp());
-$server->start();
