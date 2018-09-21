@@ -131,9 +131,14 @@ namespace System {
             return "$year-$month-$day $hour:$minute:$second";
         }
 
+        /**
+         * 尝试自动对小于零的数字进行前导零的填充
+        */
         private static function format($n) {
-            if ($n < 10) {
-                return "0$n";
+            $x = intval($n);
+
+            if ($x < 10) {
+                return "0$x";
             } else {
                 return $n;
             }
