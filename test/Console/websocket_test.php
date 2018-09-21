@@ -65,6 +65,6 @@ class testApp implements SocketListener {
     }
 }
 
-$server =  new SocketServer("localhost", "5005");
-$server->addListener(new testApp());
-$server->start();
+(new SocketServer("localhost"))
+	->addListener(new testApp())
+	->listen(5005);

@@ -96,11 +96,9 @@ class SocketServer {
 	 * @param integer $port Port to bind to, defaults to 8080
 	 */
 	public function __construct(
-		$host = '127.0.0.1',
-		$port = 8080
+		$host = '127.0.0.1'
 	) {
 		$this->host = $host;
-		$this->port = $port;
 	}
 
 	/**
@@ -209,7 +207,9 @@ class SocketServer {
 	 * @param integer $maxConnections Max number of incoming backlog connections
 	 * @throws Exception If something goes wrong
 	 */
-	public function start($maxConnections = SOMAXCONN) {
+	public function listen($port, $maxConnections = SOMAXCONN) {
+		$this->port = $port;
+		
 		set_time_limit(0);
 		ob_implicit_flush();
 
