@@ -286,92 +286,101 @@ class SocketServer {
 		}
 
 		foreach ($changedSockets as $socket) {
-			if ($socket == $this->socket) {
-				$newSocket = socket_accept($this->socket);
+			$this->handle($socket);
+		}
+	}
 
-				if ($newSocket !== false) {
-					$this->connectClient($newSocket);
-				} else {
-					$error = self::getLastError($this->socket);
+	private function acceptSocket() {
+		$newSocket = socket_accept($this->socket);
 
-					trigger_error(
-						'Failed to accept incoming client: '.
-						$error->message.' ['.$error->code.']',
-						E_USER_WARNING
-					);
-				}
-			} else {
-				$client = $this->getClientBySocket($socket);
+		if ($newSocket !== false) {
+			$this->connectClient($newSocket);
+		} else {
+			$error = self::getLastError($this->socket);
 
-				if (!isset($client)) {
-					trigger_error(
-						'Failed to match given socket to client',
-						E_USER_WARNING
-					);
+			trigger_error(
+				'Failed to accept incoming client: '.
+				$error->message.' ['.$error->code.']',
+				E_USER_WARNING
+			);
+		}
+	}
 
-					socket_close($socket);
+	private function handleRequest($socket) {
+		$client = $this->getClientBySocket($socket);
 
-					continue;
-				}
+		if (!isset($client)) {
+			trigger_error(
+				'Failed to match given socket to client',
+				E_USER_WARNING
+			);
 
-				$buffer = '';
-				$message = '';
+			socket_close($socket);
+			return;
+		}
 
-				$bytes = @socket_recv($socket, $buffer, 4096, 0);
+		$buffer  = '';
+		$message = '';
+		$bytes   = @socket_recv($socket, $buffer, 4096, 0);
 
-				if ($bytes === false) {
-					$error = self::getLastError($this->socket);
+		if ($bytes === false) {
+			$error = self::getLastError($this->socket);
 
-					trigger_error(
-						'Failed to receive data from client #'.$client->id.': '.
-						$error->message.' ['.$error->code.']',
-						E_USER_WARNING
-					);
+			trigger_error(
+				'Failed to receive data from client #'.$client->id.': '.
+				$error->message.' ['.$error->code.']',
+				E_USER_WARNING
+			);
 
-					continue;
-				}
+			return;
+		}
 
-				$len = ord($buffer[1]) & 127;
+		$len   = ord($buffer[1]) & 127;
+		$masks = null;
+		$data  = null;
 
-				$masks = null;
-				$data = null;
+		if ($len === 126) {
+			$masks = substr($buffer, 4, 4);
+			$data  = substr($buffer, 8);
+		} else if ($len === 127) {
+			$masks = substr($buffer, 10, 4);
+			$data  = substr($buffer, 14);
+		} else {
+			$masks = substr($buffer, 2, 4);
+			$data  = substr($buffer, 6);
+		}
 
-				if ($len === 126) {
-					$masks = substr($buffer, 4, 4);
-					$data = substr($buffer, 8);
-				} else if ($len === 127) {
-					$masks = substr($buffer, 10, 4);
-					$data = substr($buffer, 14);
-				} else {
-					$masks = substr($buffer, 2, 4);
-					$data = substr($buffer, 6);
-				}
+		for ($index = 0; $index < strlen($data); $index++) {
+			$message .= $data[$index] ^ $masks[$index % 4];
+		}
 
-				for ($index = 0; $index < strlen($data); $index++) {
-					$message .= $data[$index] ^ $masks[$index % 4];
-				}
+		if ($bytes == 0) {
+			$this->disconnectClient($socket);
+			return;
+		} 
 
-				if ($bytes == 0) {
-					$this->disconnectClient($socket);
-				} else {
-					if ($client->state == SocketClient::STATE_OPEN) {
-						$client->lastRecieveTime = time();
+		if ($client->state == SocketClient::STATE_OPEN) {
+			$client->lastRecieveTime = time();
 
-						$this->log('< ['.$client->id.'] '.$message);
+			$this->log('< ['.$client->id.'] '.$message);
 
-						foreach ($this->listeners as $listener) {
-
-							$listener->onMessageRecieved(
-								$this,
-								$client,
-								$message
-							);
-						}
-					} else if ($client->state == SocketClient::STATE_CONNECTING) {
-						$client->performHandshake($buffer);
-					}
-				}
+			foreach ($this->listeners as $listener) {
+				$listener->onMessageRecieved(
+					$this,
+					$client,
+					$message
+				);
 			}
+		} else if ($client->state == SocketClient::STATE_CONNECTING) {
+			$client->performHandshake($buffer);
+		}
+	}
+
+	private function handle($socket) {
+		if ($socket == $this->socket) {
+			$this->acceptSocket();
+		} else {
+			$this->handleRequest($socket);
 		}
 	}
 
