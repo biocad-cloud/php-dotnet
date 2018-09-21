@@ -1,5 +1,7 @@
 <?php
 
+namespace PHP\WebSocket;
+
 /**
  * Socket server listener interface.
  *

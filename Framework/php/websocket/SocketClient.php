@@ -1,5 +1,7 @@
 <?php
 
+namespace PHP\WebSocket;
+
 /**
  * Class representing a WebSocket client.
  */

@@ -1,5 +1,7 @@
 <?php
 
+namespace PHP\WebSocket;
+
 /**
  * Simple WebSocket server implementation.
  *
@@ -209,7 +211,7 @@ class SocketServer {
 	 */
 	public function listen($port, $maxConnections = SOMAXCONN) {
 		$this->port = $port;
-		
+
 		set_time_limit(0);
 		ob_implicit_flush();
 
