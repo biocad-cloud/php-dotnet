@@ -1,8 +1,10 @@
 <?php
 
-include __DIR__ . "./SocketServer.php";
-include  __DIR__ . "./SocketClient.php";
-include __DIR__ . "./SocketListener.php";
+include "../../package.php";
+
+dotnet::AutoLoad();
+
+Imports("php.websocket.*");
 
 class testApp implements SocketListener {
 
