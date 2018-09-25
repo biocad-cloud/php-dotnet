@@ -2,6 +2,9 @@
 
 namespace PhpDotNet {
 
+    /**
+     * 内部模块文件加载程序
+    */
     class bootstrap {
 
         /**
@@ -50,7 +53,7 @@ namespace PhpDotNet {
             if (is_dir($dir = PHP_DOTNET . "/$module/")) {
                 # 可能是一个文件夹
                 # 则认为是导入该命名空间文件夹下的所有的同级的文件夹文件
-                return ["true" => dirname($module)];
+                return ["true"  => dirname($dir)];
             } else {
                 return ["false" => $module];
             }
@@ -67,10 +70,12 @@ namespace PhpDotNet {
             if (\Utils::WithSuffixExtension($module, "php")) {
                 $module = str_replace(".", "/", $module); 
                 $module = PHP_DOTNET . "/{$module}";
-            } else if (\Strings::EndWith($module, "/*")) {                
+            } else if (\Strings::EndWith($module, "/*")) {
                 self::moduleImports($module);
             } else {
-                list($isdir, $module) = \Utils::Tuple(self::getInternalModuleRefer($module));
+                list($isdir, $module) = \Utils::Tuple(
+                    self::getInternalModuleRefer($module)
+                );
 
                 if ($isdir === "true") {
                     self::importsAlls($module);
