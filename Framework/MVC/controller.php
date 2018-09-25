@@ -75,12 +75,22 @@ abstract class controller {
     }
 
     /**
+     * 获取跨域访问控制
+    */
+    public function getAccessAllowOrigin() {
+        return $this->getTagValue("origin");
+    }
+
+    /**
      * 获取当前的控制器函数的注释文档里面的某一个标签的说明文本
     */
     public function getTagDescription($tag) {
         return $this->readTagImpl($tag, "description");
     }
 
+    /**
+     * 如果tag或者tag之中不存在所给定的key，这两种情况都会返回空字符串
+    */
     private function readTagImpl($tag, $key) {
         if (empty($this->docComment)) {
             return "";
@@ -227,7 +237,13 @@ abstract class controller {
      * 
      * 如果需要显示调试窗口，还需要将该控制器标记为view类型
     */
-    public function handleRequest() {       
+    public function handleRequest() {
+        $origin = $this->getAccessAllowOrigin();
+
+        if (!Strings::Empty($origin)) {
+            header("Access-Control-Allow-Origin: $origin");
+        }
+
         # 在这里执行用户的控制器函数
         $bench = new \Ubench();
         $code  = $bench->run(function($controller) {
