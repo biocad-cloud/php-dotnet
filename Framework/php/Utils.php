@@ -179,9 +179,15 @@ class Utils {
      * 
      * @return string A specific length random ascii string 
     */
-    public static function RandomASCIIString($len) {
+    public static function RandomASCIIString($len, $justDigits = false) {
 		$s = "";
-		$template = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                
+        if ($justDigits) {
+            $template = "0123456789";
+        } else {
+            $template = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        }
+
 		$template = str_split($template);
         $max      = count($template) - 1;
         
