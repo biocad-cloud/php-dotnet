@@ -125,11 +125,11 @@ class View {
 			$lang = dotnet::GetLanguageConfig()["lang"];	
 		}			
 		
-		$vars = self::LoadLanguage($path, $lang, $vars);
+		$lang = self::LoadLanguage($path, $lang, NULL);
 		$vars = self::unionPhpDocs($_DOC, $vars);
 
 		if (file_exists($path)) {
-			$html = self::loadTemplate($path);
+			$html = self::loadTemplate($path, $lang);
 		} else {
 			# 给出文件不存在的警告信息
 			return "HTML document view <strong>&lt;$path></strong> could not be found!";
@@ -185,10 +185,11 @@ class View {
 	 * Load or read from cache for get html template
 	 * 
 	 * @param string $path The file path of the html template file
+	 * @param array $language 这个函数除了加载模板文件，还会将语言文本数据渲染到模板上面
 	 * 
 	 * @return string
 	*/
-	private static function loadTemplate($path) {
+	private static function loadTemplate($path, $language) {
 		$usingCache = DotNetRegistry::Read("CACHE", false);
 		$html       = file_get_contents($path);
 
@@ -205,24 +206,29 @@ class View {
 				# 将html片段合并为一个完整的html文档
 				# 得到了完整的html模板
 				$cachePage = View::interpolate_includes($html, $path);
-				$cacheDir = dirname($cache);
+				$cachePage = View::valueAssign($cachePage, $language);
+				$cacheDir  = dirname($cache);
 				
 				if (!file_exists($cacheDir)) {
 					mkdir($cacheDir, 0777, true);
 				}				
 				file_put_contents($cache, $cachePage);
+
 				debugView::LogEvent("HTML view cache created!");
 			} else {
 				debugView::LogEvent("HTML view cache hits!");
 			}
 
-			$cache = realpath($cache);
+			$cache = realpath($cache);			
+			$html  = file_get_contents($cache);
+
 			debugView::LogEvent("Cache=$cache");
-			$html = file_get_contents($cache);
 		} else {
 			$cache = 'disabled';
 			# 不使用缓存，需要进行页面模板的拼接渲染
-			$html = View::interpolate_includes($html, $path);
+			$html  = View::interpolate_includes($html, $path);
+			$html  = View::valueAssign($html, $language);
+
 			debugView::LogEvent("Cache=disabled");
 		}	
 
@@ -237,7 +243,7 @@ class View {
 	 * @param string $lang 语言的标识符，例如:enUS, zhCN
 	 * @param string $path html文件的文件路径
 	*/
-	private static function LoadLanguage($path, $lang, $vars) {
+	private static function LoadLanguage($path, $lang, $vars = NULL) {
 		$name = pathinfo($path);
 		$name = $name['filename'];
 		$lang = dirname($path) . "/$name.$lang.php";		
@@ -342,10 +348,12 @@ class View {
 			
 			# ${includes/head.html}
 			foreach ($matches as $s) { 
-				$path    = Strings::Mid($s, 3, strlen($s) - 3);				
-				$path    = realpath("$dirName/$path");			
+				$path = Strings::Mid($s, 3, strlen($s) - 3);
+				$path = realpath("$dirName/$path");
 
-				# echo $path . "\n\n";
+				if (APP_DEBUG && !empty($path)) {
+					console::log("Found template segment: $path");
+				}
 
 				# 读取获得到了文档的碎片
 				# 可能在当前的文档碎片里面还会存在依赖
@@ -361,16 +369,20 @@ class View {
 	}
 
 	/**
-	 * html页面之上存在有额外的需要进行设置的字符串变量参数
-	 * 在这里进行字符串替换操作
+	 * 进行简单的字符串替换操作
+	 * 
+	 * @param string $html 模板html文本
+	 * @param array $vars 需要进行渲染的数据
 	*/
-	public static function Assign($html, $vars) {
-		
+	private static function valueAssign($html, $vars) {
 		# 在这里需要按照键名称长度倒叙排序，防止出现可能的错误替换		
 		// $vars = Enumerable::OrderByKeyDescending($vars, function($key) {
-		// 	return strlen($key);
+		// 		return strlen($key);
 		// });		
-		
+		if (empty($vars)) {
+			return $html;
+		}
+
 		# 变量的名称$name的值为名称字符串，例如 id
 		# 而在html文件之中需要进行申明的形式则是 {$id}
 		# 需要在这里需要进行额外的字符串链接操作才能够正常的替换掉目标		
@@ -382,12 +394,24 @@ class View {
 				# 不做任何处理？？
 				#
 				# 给出警告
-				console::log("[$name] is an array, this variable will render with <code>foreach</code> or <code>volist</code>.");
+				console::log("[$name] is an array, will render with <code>foreach</code> or <code>volist</code>.");
 			} else {
 				$html = Strings::Replace($html, $name, $value);
-			}			
-		}		
+			}
+		}
 
+		return $html;
+	}
+
+	/**
+	 * html页面之上存在有额外的需要进行设置的字符串变量参数
+	 * 在这里进行字符串替换操作
+	 * 
+	 * @param string $html 模板html文本
+	 * @param array $vars 需要进行渲染的数据
+	*/
+	public static function Assign($html, $vars) {
+		$html = self::valueAssign($html, $vars);
 		# 处理数组循环变量，根据模板生成表格或者列表
 		$html = MVC\Views\ForEachView::InterpolateTemplate($html, $vars);
 		# 可以使用foreach标签的同时，也支持部分的thinkphp的volist标签语法
