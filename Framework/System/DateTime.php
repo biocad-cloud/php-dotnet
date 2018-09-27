@@ -73,10 +73,17 @@ namespace System {
         }
 
         /**
+         * 获取今天开始的时间点
+         * 
+         * @param DateTime $day 如果这个参数被忽略掉了，就默认为今天
+         * 
          * @return DateTime
         */
-        public static function DayOfStart() {
-            $day = new \System\DateTime();
+        public static function DayOfStart($day = NULL) {
+            if (empty($day)) {
+                $day = new \System\DateTime();
+            }
+            
             $day->Hour   = 0;
             $day->Minute = 0;
             $day->Second = 0;
@@ -85,10 +92,17 @@ namespace System {
         }
 
         /**
+         * 获取今天结束的时间点
+         * 
+         * @param DateTime $day 如果这个参数被忽略掉了，就默认为今天
+         * 
          * @return DateTime
         */
-        public static function DayOfEnd() {
-            $day = new \System\DateTime();
+        public static function DayOfEnd($day = NULL) {
+            if (empty($day)) {
+                $day = new \System\DateTime();
+            }
+            
             $day->Hour   = 23;
             $day->Minute = 59;
             $day->Second = 59;
