@@ -101,11 +101,15 @@ class View {
 		// temp/{yyymmmdd}/viewName
 		$version = filemtime($path);
 		$temp    = dotnet::getMyTempDirectory();
+		# 因为缓存的路径和主html文件的修改时间相关，所以如果只是文档碎片被更新了
+		# 会因为主html文件没有被修改的原因而没有更新cache
+		# 在这里使用app version来更新缓存
+		$appVer  = DotNetRegistry::Read("APP_VERSION", "0.0.0");
 		$file    = basename($path);
 		# 2018-09-18 从下面的代码之中可以看见，因为缓存页面是和用户请求有关的
 		# 所以没有办法为每一个视图页面生成缓存页面
 		$path    = md5($_SERVER["REQUEST_URI"]);
-		$cache   = "$temp/$file/$version/$path.html";
+		$cache   = "$temp/$appVer/$file/$version/$path.html";
 
 		return $cache;
 	}
