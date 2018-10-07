@@ -78,13 +78,18 @@ class Table {
 			// config对象已经是一个可以直接使用的driver对象了
 			// 直接进行赋值使用
 
+			# condition = [tableName => condition]
+			# 在这里得到的tuple之中，condition可能是空的
 			list($tableName, $condition) = Utils::Tuple($condition);
 
 			$this->tableName = $tableName;
 			$this->driver    = $config;
 			$this->schema    = new SchemaDriver(
 				$this->tableName, 
-				$this->driver
+				$this->driver,
+				# 是直接从已经存在的数据库驱动对象构建，说明前面可能已经加载了缓存文件，
+				# 在这里使用NULL忽略掉可能的重复加载
+				NULL  
 			);
 
 		} else {
@@ -111,6 +116,27 @@ class Table {
 	}
 	
 	/**
+	 * 这个函数只适用于命令行终端环境下的数据库查询调试
+	 * 
+	 * @param string $schemaCache 表结构信息的本地缓存php文件的路径
+	 * @param string $tableName 所需要进行调试的目标表的名称
+	 * 
+	 * @return Table
+	*/
+	public static function GetDebugger($tableName, $database, $schemaCache) {
+		$debugger = new \MVC\MySql\MySqlDebugger($database);
+		$tbl      = [$tableName => ""];
+
+		if ($schemaCache && file_exists($schemaCache)) {
+			include_once $schemaCache;
+		} else {
+			throw new Exception("No mysqli schema info was found!");
+		}
+
+		return new Table($debugger, $tbl);
+	}
+
+	/**
 	 * 判断目标配置信息是否是有效的数据库连接参数配置数组？
 	 * 
 	 * @return boolean
@@ -129,6 +155,10 @@ class Table {
 	 * 来进行初始化
 	*/
 	private function __initBaseOnExternalConfig($tableName, $config) {
+		# mysql数据库的表结构缓存信息，这个配置可能是不存在的
+		# 不存在的时候就需要从数据库进行describ了
+		$cacheSchema = Utils::ReadValue($config, "DB_SCHEMA");
+
 		$this->tableName    = $tableName;
 		$this->driver       = $config;
 		$this->databaseName = $this->driver["DB_NAME"];
@@ -143,7 +173,8 @@ class Table {
 		# 获取数据库的目标数据表的表结构
 		$this->schema = new SchemaDriver(
 			$this->tableName, 
-			$this->driver
+			$this->driver,
+			$cacheSchema
 		);
 	}
 
@@ -814,9 +845,11 @@ class Table {
 		
 		foreach ($this->schema->schema as $fieldName => $def) {
 			# 只更新存在的数据，所以在这里只需要这一个if分支即可
+			# 更新语句的值可能会存在表达式，表达式的前缀为~符号
 			if (array_key_exists($fieldName, $data)) {
 				$value = $data[$fieldName];
-				$set   = "`$fieldName` = '$value'";
+				$value = MVC\MySql\Expression\WhereAssert::AutoValue($value);
+				$set   = "`$fieldName` = $value";
 				
 				array_push($updates, $set);
 			}
@@ -826,10 +859,8 @@ class Table {
 		$SQL     = "UPDATE $ref SET $updates";
 		
 		if (!$assert) {
-			
 			# 更新所有的数据？？？要不要给出警告信息
 			$SQL = $SQL . ";";
-			
 		} else {
 			$SQL = $SQL . " WHERE " . $assert . " LIMIT 1;";
 		}

@@ -22,12 +22,12 @@ namespace MVC\MySql {
 		 *           连接参数来提供表结构信息
 		*/
         function __construct(
-            $database, 
-            $user, 
-            $password, 
-            $host = "localhost", 
-            $port = 3306, 
-            $buffer = null) {
+            $database = "test", 
+            $user     = NULL, 
+            $password = NULL, 
+            $host     = "localhost", 
+            $port     = 3306, 
+            $buffer   = NULL) {
                 
 			parent::__construct($database, $user, $password, $host, $port);
 			
