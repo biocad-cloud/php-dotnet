@@ -46,6 +46,18 @@ class Strings {
 		}		
 	}
 	
+	public static function Unique($strings) {
+		$distinct = [];
+
+		foreach($strings as $key) {
+			if (!array_key_exists($key, $strings)) {
+				$distinct[$key] = true;
+			}
+		}
+
+		return array_keys($distinct);
+	}
+
 	/**
 	 * Returns an integer specifying the start position of the first occurrence of one 
 	 * string within another.
