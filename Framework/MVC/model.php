@@ -569,10 +569,11 @@ class Table {
 	 * 默认是``*``，即选择全部字段)
 	 * 
 	 * @param array $fields A string array.
+	 * @param string $keyBy 如果这个参数不是空的话，则返回来的数组将会使用这个字段的值作为index key.
 	 * 
 	 * @return array
 	*/
-    public function select($fields = null) {
+    public function select($fields = null, $keyBy = null) {
 		$ref     = $this->schema->ref;
         $assert  = $this->getWhere();        
 		$orderBy = $this->getOrderBy();
@@ -596,9 +597,20 @@ class Table {
 			$SQL = "$SQL $limit";
 		}
 
-		$SQL = $SQL . ";";
+		$data = $this->driver->Fetch($SQL . ";");
+		
+		if (!empty($keyBy) && strlen($keyBy) > 0) {
+			$out = [];
 
-        return $this->driver->Fetch($SQL);
+			foreach($data as $row) {
+				$key       = $row[$keyBy];
+				$out[$key] = $row;
+			}
+
+			return $out;
+		} else {
+			return $data;
+		}
     }
 	
 	/**
