@@ -4,6 +4,13 @@ Imports("System.Text.StringBuilder");
 
 class ScriptBuilder extends StringBuilder implements ArrayAccess {
 
+    /**
+     * @param string $string The initialize string buffer
+    */
+    public function __construct($string = NULL, $newLine = PHP_EOL) {
+        parent::__construct($string, $newLine);
+    }
+
     #region "implements ArrayAccess: charAt index function/symbol replacement"
 
     /**
