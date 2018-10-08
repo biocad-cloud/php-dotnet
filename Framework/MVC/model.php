@@ -603,7 +603,7 @@ class Table {
 			$out = [];
 
 			foreach($data as $row) {
-				$key       = $row[$keyBy];
+				$key       = strval($row[$keyBy]);
 				$out[$key] = $row;
 			}
 
