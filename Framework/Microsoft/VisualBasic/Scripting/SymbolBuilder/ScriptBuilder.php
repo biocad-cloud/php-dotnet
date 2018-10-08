@@ -2,6 +2,9 @@
 
 Imports("System.Text.StringBuilder");
 
+/**
+ * 在StringBuilder的基础之上增加了更加方便的字符串替换方法
+*/
 class ScriptBuilder extends StringBuilder implements ArrayAccess {
 
     /**
