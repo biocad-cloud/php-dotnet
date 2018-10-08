@@ -6,9 +6,11 @@
 class StringBuilder implements ArrayAccess {
 
     /**
+     * 最终所生成的字符串数据
+     * 
      * @var string 
     */
-    private $buffer;
+    protected $buffer;
 
     /**
      * @var string
