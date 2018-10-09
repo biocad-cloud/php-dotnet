@@ -67,20 +67,20 @@ namespace MVC\MySql\Expression {
         /**
          * 将条件数组转化为MySQL之中的条件表达式 
          * 
-         * @param asserts: 条件数组
-         * @param op: 条件之间的相互关系，默认为AND关系
+         * @param array $asserts: 条件数组
+         * @param string $op: 条件之间的相互关系，默认为AND关系
          * 
          * @return string MySql查询条件表达式
          */
-        public static function AsExpression($asserts) {
-            $list = array();
+        public static function AsExpression($asserts, $op = "AND") {
+            $list = [];
 
             # 在这个表达式构造函数之中，使用~前导字符作为表达式的标记
             foreach($asserts as $name => $value) {
                 array_push($list, self::exprInternal($name, $value));
             }
 
-            return \Strings::Join($list, " AND ");
+            return \Strings::Join($list, " $op ");
         }
 
         /**
