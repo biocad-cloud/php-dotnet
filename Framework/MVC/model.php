@@ -449,6 +449,8 @@ class Table {
 	/**
 	 * LEFT JOIN
 	 * 
+	 * @param string $tableName Target table name
+	 * 
 	 * @return Table
 	*/
 	public function left_join($tableName) {
@@ -599,6 +601,23 @@ class Table {
         return $this->driver->Fetch($SQL);
     }
 	
+	/**
+	 * 这个函数通过一个数组返回目标列的所有数据
+	 * 
+	 * @param string $fieldName 数据表之中的列名称
+	 * @return array 返回来的列的数据
+	*/
+	public function project($fieldName) {
+		$data  = $this->select([$fieldName]);
+		$array = [];
+
+		foreach($data as $row) {
+			array_push($array, $row[$fieldName]);
+		}
+
+		return $array;
+	}
+
 	/**
 	 * 计数
 	 * 
