@@ -143,28 +143,6 @@ class SocketServer {
 	}
 
 	/**
-	 * Sets the host to use.
-	 *
-	 * Only has effect before starting the server.
-	 *
-	 * @param string $host Host to bind to
-	 */
-	public function setHost($host) {
-		$this->host = $host;
-	}
-
-	/**
-	 * Sets the host port to use.
-	 *
-	 * Only has effect before starting the server.
-	 *
-	 * @param integer $port Port to bind to
-	 */
-	public function setPort($port) {
-		$this->port = $port;
-	}
-
-	/**
 	 * Returns array of connected clients
 	 *
 	 * @return SocketClient[] Array of connected clients

@@ -145,3 +145,35 @@ class Websocket {
         $this->socket->listen($port, $maxConnections);
     }
 }
+
+class PushServer {
+
+    /**
+     * @var User[]
+    */
+    public $users = [];
+}
+
+class User {
+
+    /**
+     * 唯一标识符
+     * 
+     * @var string
+    */
+    public $ID;
+    /**
+     * @var PHP\WebSocket\SocketClient[]
+    */
+    public $connections = [];
+
+    public function __construct($user_id) {
+        $this->ID = strval($user_id);
+    }
+
+    public function Push($message) {
+        foreach($this->connections as $client) {
+            $client->send($message);
+        }
+    }
+}
