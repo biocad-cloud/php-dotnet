@@ -142,12 +142,17 @@ namespace PhpDotNet {
             }
         }
 
+		const DOTNET    = "dotnet";
+		const BOOTSTRAP = "PhpDotNet\\bootstrap";
+		
         private static function isDotNetClass($frame) {
             if (!array_key_exists("class", $frame)) {
                 return false;
             } else {
-                return $frame["class"] === "dotnet" || 
-                       $frame["class"] === "PhpDotNet\bootstrap";
+				$class  = $frame["class"];
+                $assert = $class === self::DOTNET || $class === self::BOOTSTRAP;
+				
+				return $assert;
             }
         }
 

@@ -66,7 +66,10 @@ class console {
             }
         }
 
-        return ["file" => "Invalid stack trace", "line" => 0];
+        return [
+            "file" => "Invalid stack trace", 
+            "line" => 0
+        ];
     }
     
     /**
@@ -84,15 +87,14 @@ class console {
             # 跳过这个函数的栈片段
             if ($i <= $top) {
                 $i++;
-            } else if ($v["class"] === "Ubench") {
+            } else if (array_key_exists("class", $v) && $v["class"] === "Ubench") {
                 # 因为认为在Ubench模块之中永远都不会出现调试器的代码调用
                 # 所以在这里是Ubench模块的话，当前的栈信息肯定是错位的
                 # 跳过这个错位的栈信息
                 break;
             } else {
-
-                # 缩短路径字符串，优化显示        
-                $v["file"] = self::shrinkPath($v["file"]);                    
+                # 缩短路径字符串，优化显示
+                $v["file"] = self::shrinkPath($v["file"]);
                 return $v;
             };
         }
