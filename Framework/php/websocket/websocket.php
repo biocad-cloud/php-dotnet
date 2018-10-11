@@ -146,12 +146,66 @@ class Websocket {
     }
 }
 
-class PushServer {
+class PushServer implements PHP\WebSocket\SocketListener {
 
     /**
      * @var User[]
     */
     public $users = [];
+
+    /**
+	 * Called when a client sends a message to the server.
+	 *
+	 * @param PHP\WebSocket\SocketServer $server The server instance
+	 * @param PHP\WebSocket\SocketClient $client Client that sent the message
+	 * @param string $message Sent message
+	 */
+	public function onMessageRecieved(
+		PHP\WebSocket\SocketServer $server,
+		PHP\WebSocket\SocketClient $sender,
+		$message
+	) {
+        // only accept php session id
+    }
+
+	/**
+	 * Called when a new client connects to the server.
+	 *
+	 * @param PHP\WebSocket\SocketServer $server The server instance
+	 * @param PHP\WebSocket\SocketClient $client Client that connected
+	 */
+	public function onClientConnected(
+		PHP\WebSocket\SocketServer $server,
+		PHP\WebSocket\SocketClient $client
+	) {
+        // do nothing
+    }
+
+	/**
+	 * Called when a  client disconnects from the server.
+	 *
+	 * @param PHP\WebSocket\SocketServer $server The server instance
+	 * @param PHP\WebSocket\SocketClient $client Client that disconnected
+	 */
+	public function onClientDisconnected(
+		PHP\WebSocket\SocketServer $server,
+		PHP\WebSocket\SocketClient $client
+	) {
+
+    }
+
+	/**
+	 * Called when the server generates a log message.
+	 *
+	 * @param PHP\WebSocket\SocketServer $server The server
+	 * @param string $message Log message
+	 */
+	public function onLogMessage(
+		PHP\WebSocket\SocketServer $server,
+		$message
+	) {
+
+    }
 }
 
 class User {
