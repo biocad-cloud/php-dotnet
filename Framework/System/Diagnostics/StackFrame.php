@@ -29,7 +29,7 @@ class StackFrame {
      * @return string
     */
     public function GetMethod() {
-        $className = Utils::ReadValue($this->frame, "class", "Unknown");
+        $className = Utils::ReadValue($this->frame, "class", "&lt;Unknown>");
 
         if (!empty($className)) {
             return "$className::{$this->frame['function']}";
