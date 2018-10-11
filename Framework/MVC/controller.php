@@ -336,7 +336,10 @@ abstract class controller {
      * @return void
     */
     public static function error($message, $errCode = 1) {
-        header("HTTP/1.0 500 Internal Server Error");
+        header("HTTP/1.1 200 OK");
+        # 2018-10-11 不能够在这里设置500错误码，这个会导致
+        # jquery的success参数回调判断失败，无法接受错误消息
+        # header("HTTP/1.0 500 Internal Server Error");
         header("Content-Type: application/json");
 
         echo dotnet::errorMsg($message, $errCode);
