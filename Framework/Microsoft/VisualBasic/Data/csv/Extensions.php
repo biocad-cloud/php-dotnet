@@ -112,6 +112,30 @@ namespace Microsoft\VisualBasic\Data\csv {
             return $line_of_text;
         }
 
+        /**
+         * Load tsv table
+        */
+        public static function LoadTable($path) {
+            $lines   = \file_get_contents($path);
+            $lines   = trim($lines, "\n\r");
+            $lines   = \StringHelpers::LineTokens($lines);
+            $headers = self::ParseTsvRow($lines[0]);
+            $table   = [];
+
+            for($j = 1; $j < count($lines); $j++) {
+                $row      = [];
+                $lineText = self::ParseTsvRow($lines[$j]);
+
+                for ($i = 0; $i < count($headers); $i++) {
+                    $row[$headers[$i]] = $lineText[$i];
+                }
+
+                $table[] = $row;
+            }
+
+            return $table;
+        }
+
         private static function ParseTsvRow($line) {
             $tokens = explode("\t", $line);
 
