@@ -117,7 +117,7 @@ namespace Microsoft\VisualBasic\Data\csv {
         */
         public static function LoadTable($path) {
             $lines   = \file_get_contents($path);
-            $lines   = trim($lines, "\n\r");
+            $lines   = \trim($lines, "\n\r");
             $lines   = \StringHelpers::LineTokens($lines);
             $headers = self::ParseTsvRow($lines[0]);
             $table   = [];

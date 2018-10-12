@@ -19,3 +19,11 @@ $data = csv::Load(__DIR__ . "/data/table.xls", true);
 foreach($data as $line) {
     echo json_encode($line) . "\n\n";
 }
+
+echo "\n\n=====================================================\n\n";
+
+$data = csv::LoadTable(__DIR__ . "/data/table.xls");
+
+foreach($data as $line) {
+    echo json_encode($line) . "\n\n";
+}
