@@ -7,12 +7,21 @@
  *  
 */
 
+#region "Constants"
+
 // APP_DEBUG常数在引用这个文件之前必须首先进行定义
 if (!defined('APP_DEBUG')) {
     /**
      * 这个常数会影响框架的调试器的输出行为，默认是关闭调试器
     */
     define("APP_DEBUG", false);
+}
+
+if (!defined("FRAMEWORK_DEBUG")) {
+    /**
+     * 进行框架内部的调试使用的一个常量
+    */
+    define("FRAMEWORK_DEBUG", false);
 }
 
 if (!defined("SITE_PATH")) {
@@ -68,6 +77,8 @@ if (!defined("IS_GET") && !defined("IS_POST")) {
 	*/
 	define("IS_GET", false);
 }
+
+#endregion
 
 #region "file_loads"
 

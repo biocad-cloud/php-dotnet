@@ -11,16 +11,20 @@ namespace PhpDotNet {
          * Imports the external library modules at here?
         */
         private static function moduleImports($module) {
-            $info = debug_backtrace(); 
+            $info = debug_backtrace();
 
-            foreach($info as $k => $v) { 
+            foreach($info as $k => $v) {
                 // 解析出当前的栈片段信息
-                if (self::isImportsCall($v)) {                        
+                if (self::isImportsCall($v)) {
                     // 当前的栈信息不是Imports，则可能是调用Imports函数的脚本文件
                     $file   = $v["file"];
                     $dir    = dirname($file);
                     $module = trim($module, "*");
                     $module = "$dir/$module"; 
+
+                    if (FRAMEWORK_DEBUG) {
+                        echo "Module imports: [$module]\n";
+                    }
 
                     break;
                 }
@@ -32,7 +36,7 @@ namespace PhpDotNet {
         }
 
         private static function getInternalModuleRefer($module) {
-            $module = str_replace(".", "/", $module);             
+            $module = str_replace(".", "/", $module);
 
             # 2018-5-15 假若Imports("MVC.view");
             # 因为文件结构之中，有一个view.php和view文件夹
