@@ -99,7 +99,8 @@ class FileSystem {
 
 		if ($handle) {
 			while (($line = fgets($handle)) !== false) {
-				yield $line;
+				# 右边肯定会存在一个\r或者\n换行符，在这里将其删除
+				yield rtrim($line, "\r\n");
 			}
 		
 			fclose($handle);
