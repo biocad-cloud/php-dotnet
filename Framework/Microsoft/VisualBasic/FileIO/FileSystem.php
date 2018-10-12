@@ -92,6 +92,24 @@ class FileSystem {
 	}
 
 	/**
+	 * 这是一个迭代器函数，只能够配合foreach一起使用
+	*/
+	public static function IteratesAllLines($path) {
+		$handle = fopen($path, "r");
+
+		if ($handle) {
+			while (($line = fgets($handle)) !== false) {
+				# 右边肯定会存在一个\r或者\n换行符，在这里将其删除
+				yield rtrim($line, "\r\n");
+			}
+		
+			fclose($handle);
+		} else {
+			// error opening the file.
+		} 
+	}
+
+	/**
 	 * Renames a file.
 	 *
 	 * @param file:    File to be renamed.

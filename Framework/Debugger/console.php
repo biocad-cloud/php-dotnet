@@ -15,7 +15,6 @@ class console {
      * 在这个函数之中显示以及处理php的警告消息
     */
     public static function error_handler($errno, $errstr, $errfile, $errline) {
-        echo $errstr . "\n\n\n\n\n";
         self::$logs[] = [
             "code"  => $errno, 
             "msg"   => Strings::Len($errstr) > 128 ? substr($errstr, 0, 128) . "..." : $errstr, 
@@ -24,19 +23,6 @@ class console {
             "color" => "red",
             "time"  => Utils::Now(false)
         ];
-    }
-
-    /**
-     * 当前是否是处于调试模式？
-     * 
-     * @return boolean
-    */
-    private static function isDebugMode() {
-        if (defined("APP_DEBUG")) {
-            return APP_DEBUG;
-        } else {
-            return false;
-        }
     }
 
     /**
@@ -60,6 +46,8 @@ class console {
     private static function backtrace(){
         $backtrace = array_reverse(debug_backtrace());
 
+        # 在这里主要是为了跳过当前的函数以及
+        # 上一层调用函数的堆栈信息
         foreach([2, 1] as $top) {
             if (!empty($trace = self::fixUbench($backtrace, $top))) {
                 return $trace;
@@ -106,8 +94,9 @@ class console {
      * 输出一般的调试信息，代码默认为零。表示无错误
     */
     public static function log($msg, $code = 0) {
-        if (self::isDebugMode()) {
+        if ((!IS_CLI) && APP_DEBUG) {
             $trace = self::backtrace();
+
             self::$logs[] = [
                 "code"  => $code, 
                 "msg"   => $msg, 
@@ -116,7 +105,10 @@ class console {
                 "color" => "black",
                 "time"  => Utils::Now(false)
             ];
-        }        
+        } else if (IS_CLI && FRAMEWORK_DEBUG) {
+            $time = Utils::Now(false);
+            echo "[$time] $msg\n";
+        }
     }
 
     /**
@@ -124,7 +116,7 @@ class console {
      * 
      */
     public static function dump($obj, $code =2) {
-        if (self::isDebugMode()) {
+        if (APP_DEBUG) {
             $trace = self::backtrace();
             self::$logs[]  = [
                 "code"  => $code,
@@ -174,7 +166,7 @@ class console {
     }
 
     public static function error($msg, $code = 1) {
-        if(self::isDebugMode()){
+        if (APP_DEBUG) {
             $trace = self::backtrace();
             self::$logs[] = [
                 "code"  => $code, 
@@ -188,7 +180,7 @@ class console {
     }
 
     public static function printCode($code) {
-        if(self::isDebugMode()){
+        if (APP_DEBUG) {
             $trace = self::backtrace();
             self::$logs[] = [
                 "code"  => 0, 
