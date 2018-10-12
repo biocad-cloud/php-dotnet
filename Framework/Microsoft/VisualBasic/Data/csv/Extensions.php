@@ -68,7 +68,7 @@ namespace Microsoft\VisualBasic\Data\csv {
          * 
          * @return array An array of object that read from the given csv file.
         */
-        public static function Load($path, $encoding = "utf8") {            
+        public static function Load($path, $encoding = "utf8") {
             $file_handle = fopen($path, 'r');
             $headers     = fgetcsv($file_handle);
 
