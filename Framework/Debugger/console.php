@@ -108,7 +108,7 @@ class console {
             ];
         } else if (IS_CLI && FRAMEWORK_DEBUG) {
             $time = Utils::Now(false);
-            echo "[$time] $msg";
+            echo "[$time] $msg\n";
         }
     }
 

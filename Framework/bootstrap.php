@@ -162,8 +162,6 @@ namespace PhpDotNet {
             $files = [];
             $dir   = opendir($directory);
 
-            \console::log("Imports all module files from $directory");
-
             # 20180829 readdir函数返回来的文件名是不包含有文件夹路径的
             while ($dir && ($file = readdir($dir)) !== false) {
                 if ($file == "." || $file == "..") {
@@ -172,7 +170,9 @@ namespace PhpDotNet {
                     $file = "$directory/$file";
                 }
 
+                # 当扫描到一个php代码文件的时候，函数会在这里结束递归
                 if (\Utils::WithSuffixExtension($file, "php")) {
+                    \console::log("Imports: $file");
                     self::importsImpl($file);
                     array_push($files, $file);
                 } else if (is_dir($file)) {

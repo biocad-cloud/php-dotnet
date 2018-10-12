@@ -30,6 +30,15 @@ if (!defined("FRAMEWORK_DEBUG")) {
 */
 define("IS_CLI", php_sapi_name() === 'cli');
 
+if (IS_CLI && FRAMEWORK_DEBUG) {
+    # 2018-10-12 很奇怪，在终端中调试输出的第一行肯定会有一个空格
+    # 这个多于的空格会影响输出的格式
+    # 在这里跳过第一行
+    echo "\n";
+    echo "";
+    echo chr(8);
+}
+
 if (!defined("SITE_PATH")) {
 	if (array_key_exists("DOCUMENT_ROOT", $_SERVER)) {
         /**
