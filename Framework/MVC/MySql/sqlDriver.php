@@ -97,6 +97,8 @@ namespace MVC\MySql {
 				\dotnet::ThrowException($message);
 			}
 
+			\console::log($SQL);
+
 			# 2018-08-21 在这里是将打开的mysql链接加入到缓存池之中
 			# 所以在这里就不关闭mysql链接了
 			# \mysqli_close($link);

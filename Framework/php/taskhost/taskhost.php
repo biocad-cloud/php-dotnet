@@ -20,7 +20,7 @@ class taskhost {
     */
     public function __construct($signal, $interval = 0) {
         $this->signal   = $signal;
-        $this->interval = $interval;        
+        $this->interval = $interval;
     }
 
     /**
@@ -97,6 +97,53 @@ class taskhost {
         }
 
         return false;
+    }
+
+    /**
+     * 运行R脚本的帮助函数
+     * 
+     * @param string|ScriptBuilder $R 所将要运行的目标R语言脚本的文件路径或者文本内容
+     * @param string $workspace 运行R脚本的工作区路径，如果R脚本参数是
+     *   脚本文本内容而非路径的话，则脚本会被保存在这个工作区参数所指定的
+     *   文件夹之中
+    */
+    public static function RunRscript($R, $workspace, $log = "Rscript.log") {
+        $R_HOME  = "/usr/lib64/R/bin";
+        $Rscript = "$R_HOME/Rscript";
+        $current = getcwd();
+
+        if (!file_exists($workspace)) {
+            mkdir($workspace, 0777, true);
+        }
+
+        if (!is_string($R) && (get_class($R) == "ScriptBuilder")) {
+            $R = $R->ToString();
+        }
+
+        if (strpos($R, "\n") > -1 || !file_exists($R)) {
+            $path = "$workspace/Rscript.R";
+            file_put_contents($path, $R);
+            $R = $path;
+        }
+
+        # 切换至目标工作区
+        chdir($workspace);
+
+        // 下面的if是为了兼容云服务器和本地服务器
+        // 因为二者上面的的R程序的文件位置可能不一样
+        if (file_exists($Rscript)) {
+            $CLI = "$Rscript --no-save --no-restore --verbose \"{$R}\" > {$workspace}/$log 2>&1";
+        } else {            
+            // 因为没有找到Rscript程序，则可能是因为运行的环境变了的原因，
+            // 所以在这里就直接通过Rscript命令来执行操作
+            // 假若已经在bash的环境之中添加了Rscript程序所处的文件夹路径的话，
+            // 这段代码是能够被正常的执行的
+            $CLI = "Rscript --no-save --no-restore --verbose \"{$R}\" > {$workspace}/$log 2>&1";
+        }
+
+        shell_exec($CLI);
+        # 切换回之前的工作区文件夹
+        chdir($current);
     }
 }
 ?>

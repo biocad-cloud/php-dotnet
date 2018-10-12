@@ -7,14 +7,14 @@ A very basic mysql connection arguments:
 ```php
 <?php
 
-[
+return [
 	'DB_TYPE' => 'mysql',
 	'DB_HOST' => 'localhost',
 	'DB_NAME' => 'mz_biodeep_cn',
 	'DB_USER' => 'root',
 	'DB_PWD'  => 'root',
 	'DB_PORT' => '3306'
-]
+];
 ```
 
 If your web app contains multiple database for power up your busness, then you must write a multiple database configuration, example as:
@@ -22,7 +22,7 @@ If your web app contains multiple database for power up your busness, then you m
 ```php
 <?php
 
-[
+return [
     // For master database
     'DB_TYPE' => 'mysql',
 	'DB_HOST' => 'localhost',
@@ -40,7 +40,7 @@ If your web app contains multiple database for power up your busness, then you m
         'DB_PWD'  => 'root',
         'DB_PORT' => '3306'
     ]
-]
+];
 ```
 
 ### 1. Create table model

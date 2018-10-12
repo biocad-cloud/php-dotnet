@@ -21,7 +21,7 @@ class DbPaging {
     /**
      * 返回分页数据
      * 
-     * @param string $tableName 数据表的名字或者数据库配置
+     * @param string|array $tableName 数据表的名字或者数据库配置
      * @param array|integer $id 可以是数字id或者一个数组用来指示id列
      *                          如果$id是一个数字的话，则默认数据表的id列的名称为`id`，则这个$id参数表示start的id编号
      *                          如果$id参数是一个数组的话，则需要传入的形式为：["idName" => start]

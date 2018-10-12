@@ -14,13 +14,65 @@ include_once PHP_DOTNET . "/Microsoft/VisualBasic/Strings.php";
 */
 class Utils {
 
+    #region "OSS工具"
+
+    /**
+	 * 在OSS文件系统之上创建文件夹的时候，不可以直接使用``mkdir``命令递归创建路径
+	 * 所以尝试使用这个新的函数来完成文件夹的递归创建操作
+	 *
+	 * @param string $directory 请注意，这个参数必须要使用全路径
+     * @param string $ossMountRoot OSS文件系统的挂载点，如果所传入的$directory参数不是
+     * 从这个挂载点开始的，则会被认为是普通的文件系统，将会使用普通的``mkdir``进行文件夹的
+     * 创建操作
+	*/
+	public static function OSSmkdir($directory, $ossMountRoot = "/mnt/ossfs") {
+		// 2017-10-9 在这里直接使用realpath函数会挂掉
+		// 可能是因为$directory文件夹必须要存在于文件系统之上的原因吧
+		$directory = str_replace(array("\\","//"), "/", $directory);
+		
+		// 假设OSS文件系统是固定被挂载在/mnt/ossfs文件夹处的
+		// 如果下面等于False，则说明不是移动到OSS文件系统，而是普通的文件系统
+		// 则直接使用php的mkdir函数就好了
+		//
+		// 因为假若/mnt/ossfs在最开始的话，函数会返回0
+		// 因为0等同于False，所以在这里需要在$directory前面加一个字符使strpos等于1
+		if (strpos("@" . $directory, $ossMountRoot) != 1) {
+            # 这个文件夹不是从OSS的挂载点起始的，则直接使用普通的mkdir
+			mkdir($directory, 0777, true);
+		} else {
+            $names = preg_split("/[\\/]+/", $directory);
+            $cur   = getcwd();
+            
+            chdir("/");
+            self::mkdir_internal($names, 0);		
+            chdir($cur);
+        }
+	}
+	
+	private static function mkdir_internal($names, $i) {
+		if ($i == count($names) - 1) {
+			return;
+		} else {
+			if (!file_exists($names[$i])) {
+				if (!mkdir($names[$i], 640)) {
+					// echo "FALSE!";
+				}
+			}
+			chdir($names[$i]);
+			
+			self::mkdir_internal($names, $i + 1);
+			chdir("..");
+		}
+	}
+    #endregion
+
     /**
      * Does this php web server is running on a Windows server?
      * 
      * @return boolean
     */
     public static function IsWindowsOS() {
-        return strtoupper(substr(PHP_OS, 0, 3)) === 'WIN';            
+        return strtoupper(substr(PHP_OS, 0, 3)) === 'WIN';
     }
 
     /**
@@ -31,9 +83,11 @@ class Utils {
     }
 
     /**
-     * 将只含有一个元素的[key => value]键值对转换为数组返回，可以使用list($key, $value)来进行赋值
+     * 将只含有一个元素的``[key => value]``键值对转换为数组返回，
+     * 可以使用``list($key, $value)``来进行赋值
      * 
      * @param array $table [key => value]
+     * @return array
     */
     public static function Tuple($table) {
         if (!$table || count($table) == 0) {
@@ -143,13 +197,17 @@ class Utils {
 
     /**
      * 函数返回当前的请求的完整URL
+     * 
+     * @return string
     */
     public static function URL() {
         return (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
     }
 	
-	/*
+	/**
 	 * 获取当前时间点的Unix时间戳
+     * 
+     * @return integer
 	*/
 	public static function UnixTimeStamp() {
 		return time();
@@ -159,6 +217,7 @@ class Utils {
      * 返回符合MySql所要求的格式的当前时间的字符串值
      * 
      * @param bool $MySqlStyle 返回的字符串格式是否是MySql数据库所要求的格式，默认是
+     * @return string
     */
     public static function Now($MySqlStyle = TRUE) {
         if ($MySqlStyle) {
@@ -176,12 +235,19 @@ class Utils {
      * 函数返回指定长度的随机ASCII字符串
      * 
      * @param integer $len The resulted string length
+     * @param boolean $justDigits
      * 
      * @return string A specific length random ascii string 
     */
-    public static function RandomASCIIString($len) {
+    public static function RandomASCIIString($len, $justDigits = false) {
 		$s = "";
-		$template = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                
+        if ($justDigits) {
+            $template = "0123456789";
+        } else {
+            $template = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        }
+
 		$template = str_split($template);
         $max      = count($template) - 1;
         
@@ -309,9 +375,9 @@ class Utils {
     /**
      * 进行数组的克隆
      * 
-     * @param array $array
+     * @param array $array 
      * 
-     * @return array
+     * @return array 如果array函数参数是空值，则这个函数会返回空集合
     */
     public static function ArrayCopy($array) {
         if (empty($array)) {
@@ -323,6 +389,11 @@ class Utils {
 
     /**
      * 对字典数组之中的对象进行重新排序
+     * 
+     * @param array $array
+     * @param string[] $orderKeys
+     * 
+     * @return array
     */
     public static function ArrayReorder($array, $orderKeys) {
         $new = [];
@@ -415,7 +486,7 @@ class Utils {
      * 
      * @param string $str 字符串文本
      * 
-     * @return array 输入的字符串文本参数经过分割之后得到的字符的数组
+     * @return string[] 输入的字符串文本参数经过分割之后得到的字符的数组
     */
     public static function Chars($str) {
         return str_split($str);
@@ -427,7 +498,7 @@ class Utils {
      * @param string $str 待查找的一个给定的字符串
      * @param string $find 用于进行位置查找的目标子字符串
      * 
-     * @param array 返回顶点位置的集合数组
+     * @param integer[] 返回顶点位置的集合数组
     */
     public static function Indices($str, $find) {
         $index = [];
@@ -448,7 +519,7 @@ class Utils {
     /**
      * 获取消息请求的客户端的ip地址
     */
-    public static function UserIPAddress() {     
+    public static function UserIPAddress() {
         if (isset($_SERVER)) {
             if (isset($_SERVER["HTTP_X_FORWARDED_FOR"])) {
                 return $_SERVER["HTTP_X_FORWARDED_FOR"];

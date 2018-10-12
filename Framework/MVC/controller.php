@@ -2,6 +2,14 @@
 
 Imports("php.DocComment");
 
+# 当前所支持的控制器函数的程序注解标签
+# 
+# @access 用户权限访问控制，后面跟着用户的分组名称，*表示不进行用户身份检查
+# @uses   定义当前的控制器函数所返回给客户端的数据类型，默认为html文档
+# @rate   用户对当前的控制器函数所指定的服务器资源的访问量的控制，即控制用户在某一段时间长度内的访问请求次数，
+#         一段时间内超过指定的访问次数服务器将会返回429错误代码拒绝用户的访问
+# @origin 控制请求的来源，即服务器的跨域请求配置，*表示当前的服务器资源不限制跨域请求
+
 /**
  * php.NET Access controller model
 */
@@ -75,12 +83,22 @@ abstract class controller {
     }
 
     /**
+     * 获取跨域访问控制
+    */
+    public function getAccessAllowOrigin() {
+        return $this->getTagValue("origin");
+    }
+
+    /**
      * 获取当前的控制器函数的注释文档里面的某一个标签的说明文本
     */
     public function getTagDescription($tag) {
         return $this->readTagImpl($tag, "description");
     }
 
+    /**
+     * 如果tag或者tag之中不存在所给定的key，这两种情况都会返回空字符串
+    */
     private function readTagImpl($tag, $key) {
         if (empty($this->docComment)) {
             return "";
@@ -227,7 +245,13 @@ abstract class controller {
      * 
      * 如果需要显示调试窗口，还需要将该控制器标记为view类型
     */
-    public function handleRequest() {       
+    public function handleRequest() {
+        $origin = $this->getAccessAllowOrigin();
+
+        if (!Strings::Empty($origin)) {
+            header("Access-Control-Allow-Origin: $origin");
+        }
+
         # 在这里执行用户的控制器函数
         $bench = new \Ubench();
         $code  = $bench->run(function($controller) {
@@ -312,7 +336,10 @@ abstract class controller {
      * @return void
     */
     public static function error($message, $errCode = 1) {
-        header("HTTP/1.0 500 Internal Server Error");
+        header("HTTP/1.1 200 OK");
+        # 2018-10-11 不能够在这里设置500错误码，这个会导致
+        # jquery的success参数回调判断失败，无法接受错误消息
+        # header("HTTP/1.0 500 Internal Server Error");
         header("Content-Type: application/json");
 
         echo dotnet::errorMsg($message, $errCode);
