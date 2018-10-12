@@ -10,6 +10,7 @@
 #region "Constants"
 
 // APP_DEBUG常数在引用这个文件之前必须首先进行定义
+
 if (!defined('APP_DEBUG')) {
     /**
      * 这个常数会影响框架的调试器的输出行为，默认是关闭调试器
@@ -23,6 +24,11 @@ if (!defined("FRAMEWORK_DEBUG")) {
     */
     define("FRAMEWORK_DEBUG", false);
 }
+
+/**
+ * Php script running in a cli environment?
+*/
+define("IS_CLI", php_sapi_name() === 'cli');
 
 if (!defined("SITE_PATH")) {
 	if (array_key_exists("DOCUMENT_ROOT", $_SERVER)) {
@@ -55,7 +61,7 @@ if (array_key_exists("REQUEST_METHOD", $_SERVER)) {
 		*/
 		define("IS_GET", false);
 		
-	} else if ($_SERVER['REQUEST_METHOD'] === 'GET') {		
+	} else if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 		/**
 		 * 当前的访问请求是否是一个POST请求
 		*/
@@ -127,6 +133,7 @@ $load->run(function() {
 
 debugView::LogEvent("--- App start ---");
 debugView::LogEvent("Load required modules in " . $load->getTime());
+
 debugView::AddItem("benchmark.load", $load->getTime(true));
 
 # PHP Warning:  date(): It is not safe to rely on the system's timezone settings. 

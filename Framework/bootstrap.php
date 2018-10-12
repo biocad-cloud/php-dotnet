@@ -22,9 +22,7 @@ namespace PhpDotNet {
                     $module = trim($module, "*");
                     $module = "$dir/$module"; 
 
-                    if (FRAMEWORK_DEBUG) {
-                        echo "Module imports: [$module]\n";
-                    }
+                    \console::log("Module imports: [$module]\n");
 
                     break;
                 }

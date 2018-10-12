@@ -95,7 +95,7 @@ class console {
      * 输出一般的调试信息，代码默认为零。表示无错误
     */
     public static function log($msg, $code = 0) {
-        if (APP_DEBUG) {
+        if ((!IS_CLI) && APP_DEBUG) {
             $trace = self::backtrace();
 
             self::$logs[] = [
@@ -106,7 +106,10 @@ class console {
                 "color" => "black",
                 "time"  => Utils::Now(false)
             ];
-        }        
+        } else if (IS_CLI && FRAMEWORK_DEBUG) {
+            $time = Utils::Now(false);
+            echo "[$time] $msg";
+        }
     }
 
     /**
