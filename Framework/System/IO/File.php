@@ -20,7 +20,17 @@ class File {
 	 * @returns A string containing all lines of the file.
 	 */
 	public static function ReadAllText($path, $encoding = "Utf8") {
-		
+		return file_get_contents($path);
+	}
+
+	/**
+	 * @param string $path The file path
+	 * @param string $encoding The text file encoding name.
+	 * 
+	 * @return string[]
+	*/
+	public static function ReadAllLines($path, $encoding = "Utf8") {
+		return StringHelpers::LineTokens(file_get_contents($path));
 	}
 
 	public static function Exists($path) {
