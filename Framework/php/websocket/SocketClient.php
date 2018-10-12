@@ -14,6 +14,8 @@ class SocketClient {
 	 */
 	static $instances = 0;
 
+	#region "Properties"
+
 	/**
 	 * Reference to server that created the client.
 	 *
@@ -80,6 +82,8 @@ class SocketClient {
 	 * @var mixed
 	 */
 	public $data = [];
+
+	#endregion
 
 	/**
 	 * User is connecting, handshake not yet performed.
