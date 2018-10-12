@@ -93,7 +93,7 @@ class DocComment {
      * 
      * @return DocComment
     */
-    public static function Parse($docComment) {        
+    public static function Parse($docComment) {
         $docComment = StringHelpers::LineTokens($docComment);
         $docComment = self::Trim($docComment);
         
@@ -101,8 +101,8 @@ class DocComment {
         $summary = "";
         $params  = [];
         $tags    = [];
-        $return  = [];         
-        $i       = 0;     
+        $return  = [];
+        $i       = 0;
 
         # 所有不是通过@符号起始的文本行都是描述性的文本段
 
@@ -132,7 +132,7 @@ class DocComment {
         }
 
         $doc = new DocComment(trim($title), trim($summary), $tags);
-        $doc->params = $params;        
+        $doc->params = $params;
         $doc->return = $return;
 
         return $doc;
@@ -157,6 +157,12 @@ class DocComment {
             }
         }
 
+        if ($i >= count($lines)) {
+            # 已经到达$lines的最末尾
+            # 下标越界了
+            return [$i => []]; 
+        }
+
         $line = trim($lines[$i]);
         $i++;
 
@@ -175,7 +181,7 @@ class DocComment {
         }
         if ($tagName == "@param") {
             $argName = $t[2];
-            $description = array_slice($t, 3);            
+            $description = array_slice($t, 3);
         } else if ($tagName == "@return") {
             $description = array_slice($t, 2);
         } else {
