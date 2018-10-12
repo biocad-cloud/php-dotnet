@@ -68,13 +68,17 @@ namespace Microsoft\VisualBasic\Data\csv {
          * 
          * @return array An array of object that read from the given csv file.
         */
-        public static function Load($path, $tsv = false, $maxLen = 2048, $encoding = "utf8") {
+        public static function Load($path, 
+            $tsv      = false, 
+            $maxLen   = 2048, 
+            $encoding = "utf8") {
+
             $file_handle = fopen($path, 'r');
             $delimiter   = $tsv ? "\t" : ",";
             $headers     = fgetcsv($file_handle, $maxLen, $delimiter);
 
             if (!file_exists($path) || filesize($path) == 0) {
-                \error_log("Target csv file \"$path\" is not exists or contains no data!");
+                \error_log("[\"$path\"] not exists or contains no data!");
                 return null;
             }
 
