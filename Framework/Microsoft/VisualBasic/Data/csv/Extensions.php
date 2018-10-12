@@ -93,6 +93,20 @@ namespace Microsoft\VisualBasic\Data\csv {
                 $line_of_text[] = $row;
             }
 
+            $n       = count($line_of_text) - 1;
+            $allNull = true;
+
+            foreach($line_of_text[$n] as $key => $val) {
+                if (!empty($val)) {
+                    $allNull = false;
+                    break;
+                }
+            }
+
+            if ($allNull) {
+                unset($line_of_text[$n]);
+            }
+
             fclose($file_handle);
             
             return $line_of_text;

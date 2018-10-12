@@ -6,9 +6,16 @@ Imports("Microsoft.VisualBasic.Data.csv.Extensions");
 
 use Microsoft\VisualBasic\Data\csv\Extensions as csv;
 
-echo var_dump(csv::Load( __DIR__ . "/data/table.csv"));
+$data = csv::Load( __DIR__ . "/data/table.csv");
 
+foreach($data as $line) {
+    echo json_encode($line) . "\n\n";
+}
 
 echo "\n\n=====================================================\n\n";
 
-echo var_dump(csv::Load(__DIR__ . "/data/table.xls", true));
+$data = csv::Load(__DIR__ . "/data/table.xls", true);
+
+foreach($data as $line) {
+    echo json_encode($line) . "\n\n";
+}
