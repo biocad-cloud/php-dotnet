@@ -35,9 +35,9 @@ if (IS_CLI && FRAMEWORK_DEBUG) {
     # 这个多于的空格会影响输出的格式
     # 在这里跳过第一行
     echo " ------------============ PHP.NET ============-------------\n\n";
-    echo " Repository: https://github.com/GCModeller-Cloud/php-dotnet";
-    echo " Author:     xieguigang <xie.guigang@gcmodeller.org>";
-    echo "\n";
+    echo " Repository: https://github.com/GCModeller-Cloud/php-dotnet\n";
+    echo " Author:     xieguigang <xie.guigang@gcmodeller.org>\n";
+    echo "\n\n";
 }
 
 if (!defined("SITE_PATH")) {
