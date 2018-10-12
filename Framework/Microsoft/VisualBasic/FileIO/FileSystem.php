@@ -5,10 +5,29 @@ dotnet::Imports("System.Text.RegularExpressions.Regex");
 
 /**
  * Provides properties and methods for working with drives, 
- * files, and directories.
+ * files, and directories in VisualBasic.
 */
 class FileSystem {
 	
+	/** 
+	 * Get file name from a given without extensions.
+	*/
+	public static function BaseName($path) {
+		$path = explode("/", $path);
+		$path = $path[count($path) - 1];
+		$path = explode("\\", $path);
+
+		$fileName = $path[count($path) - 1];
+		$fileName = explode(".", $fileName);
+		$tokens   = [];
+
+		for($i = 0; $i < count($fileName) - 1; $i++) {
+			array_push($tokens, $fileName[$i]);
+		}
+
+		return implode(".", $tokens);
+	}
+
 	/**
 	 * 
 	 * @param windowsStyle: If true, then all of the ``/`` will be replaced as ``\`` 
