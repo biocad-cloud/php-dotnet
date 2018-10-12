@@ -34,9 +34,9 @@ namespace Microsoft\VisualBasic\Data\csv {
                 # do nothing
             }	
 
-            $fp = fopen($path, 'w');     
+            $fp = fopen($path, 'w');
 
-            # 写入第一行标题行          
+            # 写入第一行标题行
             $project = TableView::FieldProjects($array, $project);
             $project = TableView::Extract($project);
             $fields  = $project["fields"];
@@ -96,6 +96,22 @@ namespace Microsoft\VisualBasic\Data\csv {
             fclose($file_handle);
             
             return $line_of_text;
+        }
+
+        private static function ParseTsvRow($line) {
+            $tokens = explode("\t", $line);
+
+            for($i = 0; $i < count($tokens); $i++) {
+                $t = $tokens[$i];
+
+                if (($t[0] == '"') && ($t[strlen($t) - 1] == '"')) {
+                    $t = trim($t, '"');
+                }
+
+                $tokens[$i] = $t;
+            }
+
+            return $tokens;
         }
     }
 }
