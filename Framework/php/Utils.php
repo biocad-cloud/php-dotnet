@@ -577,7 +577,7 @@ class Utils {
         }
 
         if (!file_exists($pathToThumbs)) {
-            mkdir($pathToThumbs, 777, true);
+            mkdir($pathToThumbs, 0777, true);
         }
 
         $n = 0;
@@ -639,7 +639,7 @@ class Utils {
         imagecopyresized( $tmp_img, $img, 0, 0, 0, 0, $new_width, $new_height, $width, $height );
 
         // save thumbnail into a file
-        imagejpeg($tmp_img, $thumbImage);
+        imagepng($tmp_img, $thumbImage);
 
         return true;
     }
