@@ -549,6 +549,8 @@ class Utils {
      * @param string $pathToImages 图片的文件夹路径或者一个图片的文件路径
      * @param string $pathToThumbs 缩略图的输出的文件夹路径
      * @param integer $thumbWidth 所生成的缩略图的最大宽度
+     * 
+     * @return integer 成功的数目
     */
     public static function createThumbs($pathToImages, $pathToThumbs, $thumbWidth = 120) {
         if (!file_exists($pathToImages)) {
@@ -619,7 +621,7 @@ class Utils {
     */
     public static function ImageThumbs($rawImage, $thumbImage, $thumbWidth = 120) {
         // load image and get image size
-        $img    = self::LoadImage($rawImage);
+        $img = self::LoadImage($rawImage);
 
         if (!$img) {
             return false;
