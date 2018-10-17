@@ -200,7 +200,7 @@ abstract class controller {
      * 这个可以在访问控制器之中应用，这个函数只对定义了@uses标签的控制器有效
      * 如果控制器函数没有定义@uses标签，则不会写入任何content-type的数据
     */
-    public function sendContentType() {     
+    public function sendContentType() {
         self::$hasSendContentType = true;
         
         switch(strtolower($this->getUsage())) {
@@ -233,7 +233,7 @@ abstract class controller {
      * 
      * @return controller 函数返回这个控制器本身
     */
-    public function Hook($app) {        
+    public function Hook($app) {
         $this->appObj = $app;
 
         /*
@@ -251,6 +251,7 @@ abstract class controller {
         // 先检查目标方法是否存在于逻辑层之中
         if (!method_exists($app, $page = Router::getApp())) {
             # 不存在，则抛出404
+            $this->handleNotFound();
             $msg = "Web app `<strong>$page</strong>` is not available in this controller!";
 			dotnet::PageNotFound($message);
         } else {
@@ -327,6 +328,13 @@ abstract class controller {
     public function Restrictions() {
         # 可以重载这个控制器函数来实现对某一个服务器资源的访问量的限制
         return false;
+    }
+
+    /**
+     * 处理所请求的资源找不到的错误
+    */
+    public function handleNotFound() {
+        // do nothing
     }
 
     /**
