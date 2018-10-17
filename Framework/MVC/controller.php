@@ -83,6 +83,41 @@ abstract class controller {
     }
 
     /**
+     * 获取当前的控制器所接受的访问的ip地址列表
+     * ``#localhost``标记会被自动转换为本地服务器
+     * 的ip地址列表
+     * 
+     * ip地址列表之中的地址使用``|``符号进行分隔
+    */
+    public function getAccepts() {
+        $iplist = $this->getTagValue("accept");
+
+        if ($iplist) {
+            // 仅限于来自于这个ip列表的数据请求
+            // 来自于其他的ip地址的数据请求一律拒绝
+            $iplist  = explode("|", $iplist);
+            $accepts = [];
+
+            foreach($iplist as $tagIP) {
+                if (strtolower($tagIP) === "@localhost") {
+                    foreach(localhost() as $ip) {
+                        $accepts[] = $ip;
+                    }
+                } else {
+                    $accepts[] = $tagIP;
+                }
+            }
+
+            $iplist = $accepts;
+        } else {
+            // 没有做任何限制
+            $iplist = [];
+        }
+
+        return $iplist;
+    }
+
+    /**
      * 获取跨域访问控制
     */
     public function getAccessAllowOrigin() {

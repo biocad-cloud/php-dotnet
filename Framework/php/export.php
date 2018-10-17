@@ -37,7 +37,7 @@ function month($textual = false) {
 }
 
 /**
- * 这个函数只适用于
+ * 这个函数只适用于linux系统
  * 
  * @return string[] 返回本地服务器的IP列表
 */
