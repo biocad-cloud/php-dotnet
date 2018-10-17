@@ -116,7 +116,7 @@ class taskhost {
             mkdir($workspace, 0777, true);
         }
 
-        if (get_class($R) == "ScriptBuilder") {
+        if (!is_string($R) && (get_class($R) == "ScriptBuilder")) {
             $R = $R->ToString();
         }
 

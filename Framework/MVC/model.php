@@ -577,6 +577,10 @@ class Table {
 		return $sql;
 	}
 
+	public function getLastMySqlError() {
+		return $this->driver->getLastMySqlError();
+	}
+
 	/**
 	 * select all.(函数参数``$fields``是需要选择的字段列表，如果没有传递任何参数的话，
 	 * 默认是``*``，即选择全部字段)
