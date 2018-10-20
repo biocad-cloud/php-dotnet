@@ -7,12 +7,21 @@
 # 可能会因为在本脚本的头部进行引用其他的脚本文件的时候，这个模块的脚本还
 # 没有被加载，所以会导致出现无法找到类Strings的错误
 # 在这里显式的引入一次这个文件即可解决问题
-include_once PHP_DOTNET . "/Microsoft/VisualBasic/Strings.php";
+bootstrapLoader::imports(".Microsoft.VisualBasic.Strings");
 
 /**
  * PHP WEB programming utils from php.NET framework
 */
 class Utils {
+
+    /**
+     * 获取得到序列之中的第一个元素
+    */
+    public static function First($array) {
+        foreach($array as $key => $value) {
+            return $value;
+        }
+    }
 
     #region "OSS工具"
 

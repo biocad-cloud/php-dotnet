@@ -33,6 +33,8 @@ class bootstrapLoader {
 
     /**
      * 最简单的加载函数，直接进行字符替换后加载模块文档
+     * 
+     * **注意，这个函数仅适合于框架初始化的时候使用，其他的时候请使用``Imports``全局函数来加载模块**
     */
     public static function imports($module) {
         $file = str_replace(".", "/", $module);
