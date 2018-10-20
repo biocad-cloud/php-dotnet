@@ -13,7 +13,10 @@ class dotnetException extends Exception {
 	public static function FormatOutput($message, $stackTrace) {
         $view = new StringBuilder();
 		$view->AppendLine("<div class='dotnet-exception'>")
-		     ->AppendLine("<p><span style='color:red'>" . $message . "</span>")
+			 ->AppendLine("<p>
+				 <span style='color:red'>
+					 <blockquote>$message</blockquote>
+				 </span>")
 		     ->AppendLine("<p>")
 		     ->AppendLine($stackTrace)
              ->AppendLine("</p>")

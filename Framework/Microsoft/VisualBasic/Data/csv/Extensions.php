@@ -34,9 +34,9 @@ namespace Microsoft\VisualBasic\Data\csv {
                 # do nothing
             }	
 
-            $fp = fopen($path, 'w');     
+            $fp = fopen($path, 'w');
 
-            # 写入第一行标题行          
+            # 写入第一行标题行
             $project = TableView::FieldProjects($array, $project);
             $project = TableView::Extract($project);
             $fields  = $project["fields"];
@@ -68,17 +68,22 @@ namespace Microsoft\VisualBasic\Data\csv {
          * 
          * @return array An array of object that read from the given csv file.
         */
-        public static function Load($path, $encoding = "utf8") {            
+        public static function Load($path, 
+            $tsv      = false, 
+            $maxLen   = 2048, 
+            $encoding = "utf8") {
+
             $file_handle = fopen($path, 'r');
-            $headers     = fgetcsv($file_handle);
+            $delimiter   = $tsv ? "\t" : ",";
+            $headers     = fgetcsv($file_handle, $maxLen, $delimiter);
 
             if (!file_exists($path) || filesize($path) == 0) {
-                \error_log("Target csv file \"$path\" is not exists or contains no data!");
+                \error_log("[\"$path\"] not exists or contains no data!");
                 return null;
             }
 
             while (!feof($file_handle) ) {
-                $lineText = fgetcsv($file_handle, 1024);
+                $lineText = fgetcsv($file_handle, $maxLen, $delimiter);
                 $row = [];
 
                 for ($i = 0; $i < count($headers); $i++) {
@@ -88,9 +93,63 @@ namespace Microsoft\VisualBasic\Data\csv {
                 $line_of_text[] = $row;
             }
 
+            $n       = count($line_of_text) - 1;
+            $allNull = true;
+
+            foreach($line_of_text[$n] as $key => $val) {
+                if (!empty($val)) {
+                    $allNull = false;
+                    break;
+                }
+            }
+
+            if ($allNull) {
+                unset($line_of_text[$n]);
+            }
+
             fclose($file_handle);
             
             return $line_of_text;
+        }
+
+        /**
+         * Load tsv table
+        */
+        public static function LoadTable($path) {
+            $lines   = \file_get_contents($path);
+            $lines   = \trim($lines, "\n\r");
+            $lines   = \StringHelpers::LineTokens($lines);
+            $headers = self::ParseTsvRow($lines[0]);
+            $table   = [];
+
+            for($j = 1; $j < count($lines); $j++) {
+                $row      = [];
+                $lineText = self::ParseTsvRow($lines[$j]);
+
+                for ($i = 0; $i < count($headers); $i++) {
+                    $row[$headers[$i]] = $lineText[$i];
+                }
+
+                $table[] = $row;
+            }
+
+            return $table;
+        }
+
+        private static function ParseTsvRow($line) {
+            $tokens = explode("\t", $line);
+
+            for($i = 0; $i < count($tokens); $i++) {
+                $t = $tokens[$i];
+
+                if (($t[0] == '"') && ($t[strlen($t) - 1] == '"')) {
+                    $t = trim($t, '"');
+                }
+
+                $tokens[$i] = $t;
+            }
+
+            return $tokens;
         }
     }
 }

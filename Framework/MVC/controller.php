@@ -83,6 +83,41 @@ abstract class controller {
     }
 
     /**
+     * 获取当前的控制器所接受的访问的ip地址列表
+     * ``#localhost``标记会被自动转换为本地服务器
+     * 的ip地址列表
+     * 
+     * ip地址列表之中的地址使用``|``符号进行分隔
+    */
+    public function getAccepts() {
+        $iplist = $this->getTagValue("accept");
+
+        if ($iplist) {
+            // 仅限于来自于这个ip列表的数据请求
+            // 来自于其他的ip地址的数据请求一律拒绝
+            $iplist  = explode("|", $iplist);
+            $accepts = [];
+
+            foreach($iplist as $tagIP) {
+                if (strtolower($tagIP) === "@localhost") {
+                    foreach(localhost() as $ip) {
+                        $accepts[] = $ip;
+                    }
+                } else {
+                    $accepts[] = $tagIP;
+                }
+            }
+
+            $iplist = $accepts;
+        } else {
+            // 没有做任何限制
+            $iplist = [];
+        }
+
+        return $iplist;
+    }
+
+    /**
      * 获取跨域访问控制
     */
     public function getAccessAllowOrigin() {
@@ -165,7 +200,7 @@ abstract class controller {
      * 这个可以在访问控制器之中应用，这个函数只对定义了@uses标签的控制器有效
      * 如果控制器函数没有定义@uses标签，则不会写入任何content-type的数据
     */
-    public function sendContentType() {     
+    public function sendContentType() {
         self::$hasSendContentType = true;
         
         switch(strtolower($this->getUsage())) {
@@ -198,7 +233,7 @@ abstract class controller {
      * 
      * @return controller 函数返回这个控制器本身
     */
-    public function Hook($app) {        
+    public function Hook($app) {
         $this->appObj = $app;
 
         /*
@@ -216,6 +251,7 @@ abstract class controller {
         // 先检查目标方法是否存在于逻辑层之中
         if (!method_exists($app, $page = Router::getApp())) {
             # 不存在，则抛出404
+            $this->handleNotFound();
             $msg = "Web app `<strong>$page</strong>` is not available in this controller!";
 			dotnet::PageNotFound($message);
         } else {
@@ -295,6 +331,13 @@ abstract class controller {
     }
 
     /**
+     * 处理所请求的资源找不到的错误
+    */
+    public function handleNotFound() {
+        // do nothing
+    }
+
+    /**
      * 假若没有权限的话，会执行这个函数进行重定向
      * 这个函数默认是返回403错误页面
     */
@@ -336,7 +379,10 @@ abstract class controller {
      * @return void
     */
     public static function error($message, $errCode = 1) {
-        header("HTTP/1.0 500 Internal Server Error");
+        header("HTTP/1.1 200 OK");
+        # 2018-10-11 不能够在这里设置500错误码，这个会导致
+        # jquery的success参数回调判断失败，无法接受错误消息
+        # header("HTTP/1.0 500 Internal Server Error");
         header("Content-Type: application/json");
 
         echo dotnet::errorMsg($message, $errCode);

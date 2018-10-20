@@ -7,12 +7,38 @@
  *  
 */
 
+#region "Constants"
+
+
 // APP_DEBUG常数在引用这个文件之前必须首先进行定义
+
 if (!defined('APP_DEBUG')) {
     /**
      * 这个常数会影响框架的调试器的输出行为，默认是关闭调试器
     */
     define("APP_DEBUG", false);
+}
+
+if (!defined("FRAMEWORK_DEBUG")) {
+    /**
+     * 进行框架内部的调试使用的一个常量
+    */
+    define("FRAMEWORK_DEBUG", false);
+}
+
+/**
+ * Php script running in a cli environment?
+*/
+define("IS_CLI", php_sapi_name() === 'cli');
+
+if (IS_CLI && FRAMEWORK_DEBUG) {
+    # 2018-10-12 很奇怪，在终端中调试输出的第一行肯定会有一个空格
+    # 这个多于的空格会影响输出的格式
+    # 在这里跳过第一行
+    echo " ------------============ PHP.NET ============-------------\n\n";
+    echo " Repository: https://github.com/GCModeller-Cloud/php-dotnet\n";
+    echo " Author:     xieguigang <xie.guigang@gcmodeller.org>\n";
+    echo "\n\n";
 }
 
 if (!defined("SITE_PATH")) {
@@ -46,7 +72,7 @@ if (array_key_exists("REQUEST_METHOD", $_SERVER)) {
 		*/
 		define("IS_GET", false);
 		
-	} else if ($_SERVER['REQUEST_METHOD'] === 'GET') {		
+	} else if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 		/**
 		 * 当前的访问请求是否是一个POST请求
 		*/
@@ -68,6 +94,8 @@ if (!defined("IS_GET") && !defined("IS_POST")) {
 	*/
 	define("IS_GET", false);
 }
+
+#endregion
 
 #region "file_loads"
 
@@ -116,6 +144,7 @@ $load->run(function() {
 
 debugView::LogEvent("--- App start ---");
 debugView::LogEvent("Load required modules in " . $load->getTime());
+
 debugView::AddItem("benchmark.load", $load->getTime(true));
 
 # PHP Warning:  date(): It is not safe to rely on the system's timezone settings. 
@@ -123,7 +152,7 @@ debugView::AddItem("benchmark.load", $load->getTime(true));
 # In case you used any of those methods and you are still getting this warning, you most likely 
 # misspelled the timezone identifier. We selected the timezone 'UTC' for now, 
 # but please set date.timezone to select your timezone.
-date_default_timezone_set('UTC');
+date_default_timezone_set('Asia/Shanghai');
 
 #region "global function"
 
