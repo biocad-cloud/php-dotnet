@@ -126,6 +126,7 @@ $load->run(function() {
     include_once PHP_DOTNET . "/Debugger/console.php";
 
     # 加载工具框架
+    include_once PHP_DOTNET . "/System/IDisposable.php";
     include_once PHP_DOTNET . "/System/IO/File.php";
     include_once PHP_DOTNET . "/System/Diagnostics/StackTrace.php";
     include_once PHP_DOTNET . "/System/Text/StringBuilder.php";
@@ -181,6 +182,12 @@ function Redirect($URL) {
 */
 function session($name, $value) {
     $_SESSION[$name] = $value;
+}
+
+function using(\System\IDisposable $obj, callable $procedure) {
+    $result = $procedure($obj);
+    $obj->Dispose();
+    return $result;
 }
 
 #endregion
