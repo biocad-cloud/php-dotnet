@@ -36,7 +36,7 @@ class bootstrapLoader {
     */
     public static function imports($module) {
         $file = str_replace(".", "/", $module);
-        $php  = PHP_DOTNET . "/$php.php";
+        $php  = PHP_DOTNET . "/$file.php";
 
         include_once $php;
 
