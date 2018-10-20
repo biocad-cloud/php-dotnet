@@ -231,6 +231,7 @@ class SocketClient implements \System\IDisposable {
 
 	/**
 	 * Parses the request header into resource, headers and security code
+	 * (解析http请求头部)
 	 *
 	 * @param string $request The request
 	 * @return array Array containing the resource, headers and security code

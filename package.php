@@ -191,7 +191,7 @@ debugView::AddItem("benchmark.load", $load->getTime(true));
 # In case you used any of those methods and you are still getting this warning, you most likely 
 # misspelled the timezone identifier. We selected the timezone 'UTC' for now, 
 # but please set date.timezone to select your timezone.
-date_default_timezone_set('UTC');
+date_default_timezone_set('Asia/Shanghai');
 
 #region "global function"
 
