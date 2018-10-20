@@ -2,16 +2,18 @@
 
 namespace PHP\WebSocket;
 
+Imports("System.IDisposable");
+
 /**
  * Class representing a WebSocket client.
  */
-class SocketClient {
+class SocketClient implements \System\IDisposable {
 
 	/**
 	 * Number of instances created.
 	 *
 	 * @var integer
-	 */
+	*/
 	static $instances = 0;
 
 	#region "Properties"
@@ -20,7 +22,7 @@ class SocketClient {
 	 * Reference to server that created the client.
 	 *
 	 * @var SocketServer
-	 */
+	*/
 	public $server;
 
 	/**
@@ -29,14 +31,14 @@ class SocketClient {
 	 * This starts from one and is incremented for every connecting user.
 	 *
 	 * @var integer
-	 */
+	*/
 	public $id;
 
 	/**
 	 * Client socket.
 	 *
 	 * @var resource
-	 */
+	*/
 	public $socket;
 
 	/**
@@ -45,7 +47,7 @@ class SocketClient {
 	 * One of SocketClient::STATE_.. constants.
 	 *
 	 * @var integer
-	 */
+	*/
 	public $state;
 
 	/**
@@ -250,5 +252,9 @@ class SocketClient {
 
     public function __toString() {
         return $this->ip;
-    }
+	}
+	
+	public function Dispose() {
+		$this->disconnect();
+	}
 }

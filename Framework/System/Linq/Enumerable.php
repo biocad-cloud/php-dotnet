@@ -7,6 +7,50 @@
 class Enumerable {
 
 	/**
+	 * @param array $a 序列1
+	 * @param array $b 序列2
+	 * @param string|array 如果这个参数为字符串，则应该是a和b相同名称的键名或者
+	 *                     如果这个参数为数组，则应该是[a => b]映射 
+	*/
+	public static function Join($a, $b, $on, $type = "left") {
+		if (is_string($on)) {
+			$keyA = $on;
+			$keyB = $on;
+		} else {
+			list($keyA, $keyB) = Utils::Tuple($on);
+		}
+
+		$listA = self::ToDictionary($a, $keyA);
+		$listB = self::ToDictionary($b, $keyB);
+
+		if ($type === "left") {
+			return self::joinLeft($listA, $listB);
+		} else {
+			return false;
+		}
+	}
+
+	private static function joinLeft($listA, $listB) {
+		$join = [];
+
+		foreach($listA as $key => $x) {
+			if (array_key_exists($key, $listB)) {
+				$obj = $listB[$key];
+			} else {
+				$obj = [];
+			}
+
+			foreach(array_keys($obj) as $name) {
+				$x[$name] = $obj[$name];
+			}
+
+			array_push($join, $x);
+		}
+
+		return $join;
+	}
+
+	/**
 	 * Sorts the elements of a sequence in ascending order according to a key. 
 	 * 
 	 * @param array $array A sequence of values to order.

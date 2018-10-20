@@ -87,4 +87,12 @@ class ScriptBuilder extends StringBuilder implements ArrayAccess {
     }
 
     #endregion
+
+    /** 
+     * @return ScriptBuilder
+    */
+    public static function LoadFile($path) {
+        $script = file_get_contents($path);
+        return new ScriptBuilder($script);
+    }
 }

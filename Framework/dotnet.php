@@ -172,11 +172,12 @@ class dotnet {
         }
 
         $initiator->end();
+
         debugView::LogEvent("App init in " . $initiator->getTime());
         debugView::AddItem("benchmark.init", $initiator->getTime(true));
     }
     
-    private static function setupLogs() {        
+    private static function setupLogs() {
         // Report all PHP errors (see changelog)
         error_reporting(E_ALL);
         set_error_handler(function($errno, $errstr, $errfile, $errline) {
@@ -194,8 +195,8 @@ class dotnet {
      * 
      * @return string 缓存文件夹的路径字符串
 	*/
-	public static function getMyTempDirectory() {		
-		$temp = sys_get_temp_dir();		
+	public static function getMyTempDirectory() {
+		$temp = sys_get_temp_dir();
 
 		if (strtolower($temp) == strtolower("C:\\Windows")) {
 			# 不可以写入Windows文件夹
