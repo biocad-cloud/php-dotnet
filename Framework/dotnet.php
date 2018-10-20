@@ -260,6 +260,11 @@ class dotnet {
      * @return string 这个函数返回所导入的模块的完整的文件路径
     */
     public static function Imports($module) {
+        // 在这里需要添加加载记录
+        // 否则isloaded函数任然会判断目标模块没有被加载
+        bootstrapLoader::push($module, []);
+        // 进行模块引用的预处理
+        // 然后执行解析出来的php文件的加载操作
         return \PhpDotNet\bootstrap::LoadModule($module);
     }
 

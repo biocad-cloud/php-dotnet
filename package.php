@@ -21,6 +21,10 @@ class bootstrapLoader {
     */
     public static $loaded = [];
 
+    public static function push($module, $files) {
+        self::$loaded[$module] = $files;
+    }
+
     /**
      * 使用这个函数来判断目标模块是否已经被加载
      * 
