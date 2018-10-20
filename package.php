@@ -7,6 +7,43 @@
  *  
 */
 
+/**
+ * 为了减轻Imports函数的性能影响而设置的一个帮助函数对象
+*/
+class bootstrapLoader {
+
+    /**
+     * 当前已经加载的模块字典表
+     * 
+     * ``[moduleName => path.php]``
+     * 
+     * @var array
+    */
+    public static $loaded = [];
+
+    /**
+     * 使用这个函数来判断目标模块是否已经被加载
+     * 
+     * @param string $module 命名空间（不是文件路径）
+     * @return boolean
+    */
+    public static function isLoaded($module) {
+        return array_key_exists($module, self::$loaded);
+    }
+
+    /**
+     * 最简单的加载函数，直接进行字符替换后加载模块文档
+    */
+    public static function imports($module) {
+        $file = str_replace(".", "/", $module);
+        $php  = PHP_DOTNET . "/$php.php";
+
+        include_once $php;
+
+        self::$loaded[$module] = $php;
+    }
+}
+
 #region "Constants"
 
 // APP_DEBUG常数在引用这个文件之前必须首先进行定义
@@ -104,40 +141,40 @@ if (!defined("IS_GET") && !defined("IS_POST")) {
 */
 define("PHP_DOTNET", dirname(__FILE__) . "/Framework");
 
-include_once PHP_DOTNET . "/Debugger/Ubench/Ubench.php";
+bootstrapLoader::imports("Debugger.Ubench.Ubench");
 
 # 加载框架之中的一些必要的模块，并进行性能计数
 $load = new Ubench();
 $load->run(function() {
 
     # 加载核心文件
-    include_once PHP_DOTNET . "/dotnet.php";
+    bootstrapLoader::imports("dotnet");
 
     # 加载帮助函数模块
-    include_once PHP_DOTNET . "/php/Utils.php";
-    include_once PHP_DOTNET . "/bootstrap.php";
+    bootstrapLoader::imports("php.Utils");
+    bootstrapLoader::imports("bootstrap");
 
     # 调试器必须要优先于其他模块进行加载，否则会出现
     # Uncaught Error: Class 'dotnetDebugger' not found
     # 的错误
-    include_once PHP_DOTNET . "/Debugger/dotnetException.php";
-    include_once PHP_DOTNET . "/Debugger/engine.php";
-    include_once PHP_DOTNET . "/Debugger/view.php";
-    include_once PHP_DOTNET . "/Debugger/console.php";
+    bootstrapLoader::imports("Debugger.dotnetException");
+    bootstrapLoader::imports("Debugger.engine");
+    bootstrapLoader::imports("Debugger.view");
+    bootstrapLoader::imports("Debugger.console");
 
     # 加载工具框架
-    include_once PHP_DOTNET . "/System/IDisposable.php";
-    include_once PHP_DOTNET . "/System/IO/File.php";
-    include_once PHP_DOTNET . "/System/Diagnostics/StackTrace.php";
-    include_once PHP_DOTNET . "/System/Text/StringBuilder.php";
-    include_once PHP_DOTNET . "/Microsoft/VisualBasic/Strings.php";
-    include_once PHP_DOTNET . "/Microsoft/VisualBasic/ApplicationServices/Debugger/Logging/LogFile.php";
+    bootstrapLoader::imports("System.IDisposable");
+    bootstrapLoader::imports("System.IO.File");
+    bootstrapLoader::imports("System.Diagnostics.StackTrace");
+    bootstrapLoader::imports("System.Text.StringBuilder");
+    bootstrapLoader::imports("Microsoft.VisualBasic.Strings");
+    bootstrapLoader::imports("Microsoft.VisualBasic.ApplicationServices.Debugger.Logging.LogFile");
 
-    include_once PHP_DOTNET . "/MSDN.php";
+    bootstrapLoader::imports("MSDN");
 
     # 加载Web框架部件
-    include_once PHP_DOTNET . "/RFC7231/index.php";
-    include_once PHP_DOTNET . "/Registry.php";
+    bootstrapLoader::imports("RFC7231.index");
+    bootstrapLoader::imports("Registry");
 });
 
 #endregion
@@ -162,7 +199,12 @@ date_default_timezone_set('UTC');
  * @param string $namespace php module file path
 */
 function Imports($namespace) {
-    return dotnet::Imports($namespace);
+    // 因为为了从namespace解析出所需要加载的php文件会执行比较多的预处理操作
+    // 所以为了减轻模块的加载压力，在这里会使用这个帮助模块来避免
+    // 不必要的加载预处理操作
+    if (!bootstrapLoader::isLoaded($namespace)) {
+        return dotnet::Imports($namespace);
+    }    
 }
 
 /**
