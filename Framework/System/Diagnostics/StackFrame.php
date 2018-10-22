@@ -29,7 +29,7 @@ class StackFrame {
      * @return string
     */
     public function GetMethod() {
-        $className = $this->frame["class"];
+        $className = Utils::ReadValue($this->frame, "class", "&lt;Unknown>");
 
         if (!empty($className)) {
             return "$className::{$this->frame['function']}";
@@ -47,16 +47,21 @@ class StackFrame {
         
         if (!APP_DEBUG) {
             # 在非调试模式下，将服务器的文件系统信息隐藏掉
+
             if (defined("PHP_DOTNET")) {
-                $file = Strings::Replace($file, PHP_DOTNET, "/wwwroot/docker/ubuntu~/->/");
+                $file = Strings::Replace($file, PHP_DOTNET, "/usr~/->/docker.libX64/php.NET/src/");
             } 
             if (defined("APP_PATH")) {
                 $file = Strings::Replace($file, APP_PATH,   "/wwwroot/docker/ubuntu~/->/");
+            }
+            if (defined("SITE_PATH")) {
+                $file = Strings::Replace($file, SITE_PATH,  "/wwwroot/docket/ubuntu~/->/");
             }
         } else {
             # do nothing
         }
         
+        // fix for windows path
         $file = Strings::Replace($file, "\\", "/");
         $file = Strings::Replace($file, "//", "/");
 
@@ -67,7 +72,7 @@ class StackFrame {
         return $this->frame["line"];
     }
 
-    public function ToString() {        
+    public function ToString() {
         $file     = $this->GetFileName();
         $line     = $this->GetFileLineNumber();
         $function = $this->GetMethod();

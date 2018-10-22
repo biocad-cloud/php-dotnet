@@ -5,10 +5,29 @@ dotnet::Imports("System.Text.RegularExpressions.Regex");
 
 /**
  * Provides properties and methods for working with drives, 
- * files, and directories.
+ * files, and directories in VisualBasic.
 */
 class FileSystem {
 	
+	/** 
+	 * Get file name from a given without extensions.
+	*/
+	public static function BaseName($path) {
+		$path = explode("/", $path);
+		$path = $path[count($path) - 1];
+		$path = explode("\\", $path);
+
+		$fileName = $path[count($path) - 1];
+		$fileName = explode(".", $fileName);
+		$tokens   = [];
+
+		for($i = 0; $i < count($fileName) - 1; $i++) {
+			array_push($tokens, $fileName[$i]);
+		}
+
+		return implode(".", $tokens);
+	}
+
 	/**
 	 * 
 	 * @param windowsStyle: If true, then all of the ``/`` will be replaced as ``\`` 
@@ -92,6 +111,24 @@ class FileSystem {
 	}
 
 	/**
+	 * 这是一个迭代器函数，只能够配合foreach一起使用
+	*/
+	public static function IteratesAllLines($path) {
+		$handle = fopen($path, "r");
+
+		if ($handle) {
+			while (($line = fgets($handle)) !== false) {
+				# 右边肯定会存在一个\r或者\n换行符，在这里将其删除
+				yield rtrim($line, "\r\n");
+			}
+		
+			fclose($handle);
+		} else {
+			// error opening the file.
+		} 
+	}
+
+	/**
 	 * Renames a file.
 	 *
 	 * @param file:    File to be renamed.
@@ -136,8 +173,11 @@ class FileSystem {
 	/**
 	 * Returns a read-only collection of strings representing the names of files within a directory.
 	 * 
-	 * @param directory Name and location of the directory.
-	 * @param suffix The file extension name. By default is get all files in target directory.
+	 * @param string $directory Name and location of the directory.
+	 * @param string $suffix The file extension name. By default is get all files in target directory.
+	 *               (*.ext或者ext这两种格式都允许，默认是*.*，即不做任何筛选)
+	 * 
+	 * @return string[] 文件的完整路径集合
 	 */
 	public static function GetFiles($directory, $suffix = "*") {
 		$list  = array_diff(scandir($directory), array('.', '..'));

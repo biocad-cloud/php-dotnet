@@ -2,22 +2,27 @@
 
 namespace PhpDotNet {
 
+    /**
+     * 内部模块文件加载程序
+    */
     class bootstrap {
 
         /**
          * Imports the external library modules at here?
         */
         private static function moduleImports($module) {
-            $info = debug_backtrace(); 
+            $info = debug_backtrace();
 
-            foreach($info as $k => $v) { 
+            foreach($info as $k => $v) {
                 // 解析出当前的栈片段信息
-                if (self::isImportsCall($v)) {                        
+                if (self::isImportsCall($v)) {
                     // 当前的栈信息不是Imports，则可能是调用Imports函数的脚本文件
                     $file   = $v["file"];
                     $dir    = dirname($file);
                     $module = trim($module, "*");
                     $module = "$dir/$module"; 
+
+                    \console::log("Module imports: [$module]\n");
 
                     break;
                 }
@@ -29,7 +34,7 @@ namespace PhpDotNet {
         }
 
         private static function getInternalModuleRefer($module) {
-            $module = str_replace(".", "/", $module);             
+            $module = str_replace(".", "/", $module);
 
             # 2018-5-15 假若Imports("MVC.view");
             # 因为文件结构之中，有一个view.php和view文件夹
@@ -50,7 +55,7 @@ namespace PhpDotNet {
             if (is_dir($dir = PHP_DOTNET . "/$module/")) {
                 # 可能是一个文件夹
                 # 则认为是导入该命名空间文件夹下的所有的同级的文件夹文件
-                return ["true" => dirname($module)];
+                return ["true"  => dirname($dir)];
             } else {
                 return ["false" => $module];
             }
@@ -67,10 +72,12 @@ namespace PhpDotNet {
             if (\Utils::WithSuffixExtension($module, "php")) {
                 $module = str_replace(".", "/", $module); 
                 $module = PHP_DOTNET . "/{$module}";
-            } else if (\Strings::EndWith($module, "/*")) {                
+            } else if (\Strings::EndWith($module, "/*")) {
                 self::moduleImports($module);
             } else {
-                list($isdir, $module) = \Utils::Tuple(self::getInternalModuleRefer($module));
+                list($isdir, $module) = \Utils::Tuple(
+                    self::getInternalModuleRefer($module)
+                );
 
                 if ($isdir === "true") {
                     self::importsAlls($module);
@@ -137,12 +144,17 @@ namespace PhpDotNet {
             }
         }
 
+		const DOTNET    = "dotnet";
+		const BOOTSTRAP = "PhpDotNet\\bootstrap";
+		
         private static function isDotNetClass($frame) {
             if (!array_key_exists("class", $frame)) {
                 return false;
             } else {
-                return $frame["class"] === "dotnet" || 
-                       $frame["class"] === "PhpDotNet\bootstrap";
+				$class  = $frame["class"];
+                $assert = $class === self::DOTNET || $class === self::BOOTSTRAP;
+				
+				return $assert;
             }
         }
 
@@ -155,8 +167,6 @@ namespace PhpDotNet {
             $files = [];
             $dir   = opendir($directory);
 
-            \console::log("Imports all module files from $directory");
-
             # 20180829 readdir函数返回来的文件名是不包含有文件夹路径的
             while ($dir && ($file = readdir($dir)) !== false) {
                 if ($file == "." || $file == "..") {
@@ -165,7 +175,9 @@ namespace PhpDotNet {
                     $file = "$directory/$file";
                 }
 
+                # 当扫描到一个php代码文件的时候，函数会在这里结束递归
                 if (\Utils::WithSuffixExtension($file, "php")) {
+                    \console::log("Imports: $file");
                     self::importsImpl($file);
                     array_push($files, $file);
                 } else if (is_dir($file)) {

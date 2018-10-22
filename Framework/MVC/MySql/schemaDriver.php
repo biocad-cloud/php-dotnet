@@ -68,8 +68,13 @@ namespace MVC\MySql {
 		*/
 		private static $describCache = [];
 
-		public static function WriteCache($tableName, $schema) {
-			self::$describCache[$tableName] = [
+		/**
+		 * 这个函数是开放给外部schema导入的接口
+		 * 
+		 * @param string $ref 格式为`databaseName`.`tableName`，表示一个数据库表对象的唯一标记
+		*/
+		public static function WriteCache($ref, $schema) {
+			self::$describCache[$ref] = [
 				"schema" => $schema,
 				"AI"     => self::GetAutoIncrementKey($schema)
 			];
@@ -78,22 +83,27 @@ namespace MVC\MySql {
 		/**
 		 * 从数据库之中获取表结构信息或者从缓存之中获取，如果表结构信息已经被缓存了的话
 		 * 
-		 * @param sqlDriver $driver 当前的class类型的实例，数据库抽象层的底层驱动
+		 * @param MySqlExecDriver $driver 当前的class类型的实例，数据库抽象层的底层驱动
 		*/
 		public static function GetSchema($tableName, $driver) {
-			if (!array_key_exists($tableName, self::$describCache)) {
+			# 2018-10-12 在这里必须要使用db.name的引用形式，否则在多个数据库的时候
+			# 假若遇到同名称的表则会出现schema错误的问题
+			$key = $driver->GetDatabaseName();
+			$key = "`$key`.`$tableName`";
+
+			if (!array_key_exists($key, self::$describCache)) {
 				# 不存在，则进行数据库查询构建
 				$schema = $driver->Describe($tableName);
 				$schema = self::ArrayOfSchema($schema);
 				$AI     = self::GetAutoIncrementKey($schema);
 				
-				self::$describCache[$tableName] = [
+				self::$describCache[$key] = [
 					"schema" => $schema, 
 					"AI"     => $AI
 				];
 			}
 
-			return self::$describCache[$tableName];
+			return self::$describCache[$key];
 		}
 
 		/**

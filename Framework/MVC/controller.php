@@ -2,6 +2,14 @@
 
 Imports("php.DocComment");
 
+# 当前所支持的控制器函数的程序注解标签
+# 
+# @access 用户权限访问控制，后面跟着用户的分组名称，*表示不进行用户身份检查
+# @uses   定义当前的控制器函数所返回给客户端的数据类型，默认为html文档
+# @rate   用户对当前的控制器函数所指定的服务器资源的访问量的控制，即控制用户在某一段时间长度内的访问请求次数，
+#         一段时间内超过指定的访问次数服务器将会返回429错误代码拒绝用户的访问
+# @origin 控制请求的来源，即服务器的跨域请求配置，*表示当前的服务器资源不限制跨域请求
+
 /**
  * php.NET Access controller model
 */
@@ -75,12 +83,57 @@ abstract class controller {
     }
 
     /**
+     * 获取当前的控制器所接受的访问的ip地址列表
+     * ``#localhost``标记会被自动转换为本地服务器
+     * 的ip地址列表
+     * 
+     * ip地址列表之中的地址使用``|``符号进行分隔
+    */
+    public function getAccepts() {
+        $iplist = $this->getTagValue("accept");
+
+        if ($iplist) {
+            // 仅限于来自于这个ip列表的数据请求
+            // 来自于其他的ip地址的数据请求一律拒绝
+            $iplist  = explode("|", $iplist);
+            $accepts = [];
+
+            foreach($iplist as $tagIP) {
+                if (strtolower($tagIP) === "@localhost") {
+                    foreach(localhost() as $ip) {
+                        $accepts[] = $ip;
+                    }
+                } else {
+                    $accepts[] = $tagIP;
+                }
+            }
+
+            $iplist = $accepts;
+        } else {
+            // 没有做任何限制
+            $iplist = [];
+        }
+
+        return $iplist;
+    }
+
+    /**
+     * 获取跨域访问控制
+    */
+    public function getAccessAllowOrigin() {
+        return $this->getTagValue("origin");
+    }
+
+    /**
      * 获取当前的控制器函数的注释文档里面的某一个标签的说明文本
     */
     public function getTagDescription($tag) {
         return $this->readTagImpl($tag, "description");
     }
 
+    /**
+     * 如果tag或者tag之中不存在所给定的key，这两种情况都会返回空字符串
+    */
     private function readTagImpl($tag, $key) {
         if (empty($this->docComment)) {
             return "";
@@ -147,7 +200,7 @@ abstract class controller {
      * 这个可以在访问控制器之中应用，这个函数只对定义了@uses标签的控制器有效
      * 如果控制器函数没有定义@uses标签，则不会写入任何content-type的数据
     */
-    public function sendContentType() {     
+    public function sendContentType() {
         self::$hasSendContentType = true;
         
         switch(strtolower($this->getUsage())) {
@@ -162,6 +215,10 @@ abstract class controller {
                 break;
             case "router":
                 # 浏览器重定向这里怎么表述？
+                break;
+            case "text":
+                # 返回的是存文本内容
+                header("Content-Type: text/plain");
                 break;
 
             default:
@@ -180,7 +237,7 @@ abstract class controller {
      * 
      * @return controller 函数返回这个控制器本身
     */
-    public function Hook($app) {        
+    public function Hook($app) {
         $this->appObj = $app;
 
         /*
@@ -198,6 +255,7 @@ abstract class controller {
         // 先检查目标方法是否存在于逻辑层之中
         if (!method_exists($app, $page = Router::getApp())) {
             # 不存在，则抛出404
+            $this->handleNotFound();
             $msg = "Web app `<strong>$page</strong>` is not available in this controller!";
 			dotnet::PageNotFound($message);
         } else {
@@ -227,7 +285,13 @@ abstract class controller {
      * 
      * 如果需要显示调试窗口，还需要将该控制器标记为view类型
     */
-    public function handleRequest() {       
+    public function handleRequest() {
+        $origin = $this->getAccessAllowOrigin();
+
+        if (!Strings::Empty($origin)) {
+            header("Access-Control-Allow-Origin: $origin");
+        }
+
         # 在这里执行用户的控制器函数
         $bench = new \Ubench();
         $code  = $bench->run(function($controller) {
@@ -268,6 +332,13 @@ abstract class controller {
     public function Restrictions() {
         # 可以重载这个控制器函数来实现对某一个服务器资源的访问量的限制
         return false;
+    }
+
+    /**
+     * 处理所请求的资源找不到的错误
+    */
+    public function handleNotFound() {
+        // do nothing
     }
 
     /**
@@ -312,7 +383,10 @@ abstract class controller {
      * @return void
     */
     public static function error($message, $errCode = 1) {
-        header("HTTP/1.0 500 Internal Server Error");
+        header("HTTP/1.1 200 OK");
+        # 2018-10-11 不能够在这里设置500错误码，这个会导致
+        # jquery的success参数回调判断失败，无法接受错误消息
+        # header("HTTP/1.0 500 Internal Server Error");
         header("Content-Type: application/json");
 
         echo dotnet::errorMsg($message, $errCode);

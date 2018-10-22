@@ -303,15 +303,21 @@ class Table {
 		# 否则在下面会抛出错误的
 		if ($this->is_empty("where")) {
             return null;
-        } 
+        }
 
 		$where = $this->condition["where"];
 		# expression -> string
 		# model      -> array
-		
+
 		if (!array_key_exists("expression", $where)) {
-			return MySqlScript::AsExpression($where["model"]);
+			// model数组还需要进行拼接
+			$model   = $where["model"];
+			$asserts = $model["assert"];
+			$op      = $model["and"] ? "AND" : "OR";
+
+			return MySqlScript::AsExpression($asserts, $op);
 		} else {
+			// expression表示其直接是一个可以直接使用的表达式
 			return $where["expression"];
 		}		
 	}
@@ -368,9 +374,9 @@ class Table {
 			$offset = $limit[0];
 			$n      = $limit[1];
 			
-			return "LIMIT $offset,$n";			
+			return "LIMIT $offset,$n";
 		} else {
-			return "LIMIT $limit";	
+			return "LIMIT $limit";
 		}
 	}
 	
@@ -386,7 +392,7 @@ class Table {
 		$debug = $debug . json_encode($this->schema);
 		$debug = $debug . "</code></pre>";
 		
-		dotnet::ThrowException($debug);   
+		dotnet::ThrowException($debug);
 	}
 
     /**
@@ -394,16 +400,23 @@ class Table {
 	 * (这个函数影响``SELECT``, ``UPDATE``, ``DELETE``，不会影响``INSERT``操作)
      *	  
      * @param mixed $assert The assert array of the where condition or an string expression.
+	 * @param boolean $isAnd This option is only works when ``assert`` parameter is an 
+	 *    test condition array.
 	 * 
 	 * @return Table Returns a new ``Table`` object instance for expression chaining.
     */
-    public function where($assert) {
+    public function where($assert, $and = true) {
 		$condition = null;
 
 		if (gettype($assert) === 'string') {
 			$condition["where"] = ["expression" => $assert];
 		} else {
-			$condition["where"] = ["model" => $assert];
+			$condition["where"] = [
+				"model" => [
+					"assert" => $assert,
+					"and"    => $and
+				]
+			];
 		}
 					
 		$opt  = $this->addOption($condition);
@@ -448,6 +461,8 @@ class Table {
 
 	/**
 	 * LEFT JOIN
+	 * 
+	 * @param string $tableName Target table name
 	 * 
 	 * @return Table
 	*/
@@ -562,15 +577,20 @@ class Table {
 		return $sql;
 	}
 
+	public function getLastMySqlError() {
+		return $this->driver->getLastMySqlError();
+	}
+
 	/**
 	 * select all.(函数参数``$fields``是需要选择的字段列表，如果没有传递任何参数的话，
 	 * 默认是``*``，即选择全部字段)
 	 * 
 	 * @param array $fields A string array.
+	 * @param string $keyBy 如果这个参数不是空的话，则返回来的数组将会使用这个字段的值作为index key.
 	 * 
 	 * @return array
 	*/
-    public function select($fields = null) {
+    public function select($fields = null, $keyBy = null) {
 		$ref     = $this->schema->ref;
         $assert  = $this->getWhere();        
 		$orderBy = $this->getOrderBy();
@@ -594,11 +614,39 @@ class Table {
 			$SQL = "$SQL $limit";
 		}
 
-		$SQL = $SQL . ";";
+		$data = $this->driver->Fetch($SQL . ";");
+		
+		if (!empty($keyBy) && strlen($keyBy) > 0) {
+			$out = [];
 
-        return $this->driver->Fetch($SQL);
+			foreach($data as $row) {
+				$key       = strval($row[$keyBy]);
+				$out[$key] = $row;
+			}
+
+			return $out;
+		} else {
+			return $data;
+		}
     }
 	
+	/**
+	 * 这个函数通过一个数组返回目标列的所有数据
+	 * 
+	 * @param string $fieldName 数据表之中的列名称
+	 * @return array 返回来的列的数据
+	*/
+	public function project($fieldName) {
+		$data  = $this->select([$fieldName]);
+		$array = [];
+
+		foreach($data as $row) {
+			array_push($array, $row[$fieldName]);
+		}
+
+		return $array;
+	}
+
 	/**
 	 * 计数
 	 * 
@@ -641,7 +689,7 @@ class Table {
 	/**
 	 * select but limit 1
 	 * 
-	 * 如果查询失败会返回逻辑值false
+	 * 如果查询失败会返回一个空值
 	*/
     public function find() {
 		$ref     = $this->schema->ref;

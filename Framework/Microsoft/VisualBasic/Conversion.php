@@ -76,6 +76,8 @@ class Conversion {
 
         if (empty($str)) {
             return false;
+        } elseif(is_bool($str)) {
+            return $str;
         } else {
             $key = Strings::LCase($str);
         }
