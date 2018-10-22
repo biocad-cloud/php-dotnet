@@ -689,7 +689,7 @@ class Table {
 	/**
 	 * select but limit 1
 	 * 
-	 * 如果查询失败会返回逻辑值false
+	 * 如果查询失败会返回一个空值
 	*/
     public function find() {
 		$ref     = $this->schema->ref;
