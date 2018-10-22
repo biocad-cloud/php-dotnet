@@ -83,6 +83,41 @@ abstract class controller {
     }
 
     /**
+     * 获取当前的控制器所接受的访问的ip地址列表
+     * ``#localhost``标记会被自动转换为本地服务器
+     * 的ip地址列表
+     * 
+     * ip地址列表之中的地址使用``|``符号进行分隔
+    */
+    public function getAccepts() {
+        $iplist = $this->getTagValue("accept");
+
+        if ($iplist) {
+            // 仅限于来自于这个ip列表的数据请求
+            // 来自于其他的ip地址的数据请求一律拒绝
+            $iplist  = explode("|", $iplist);
+            $accepts = [];
+
+            foreach($iplist as $tagIP) {
+                if (strtolower($tagIP) === "@localhost") {
+                    foreach(localhost() as $ip) {
+                        $accepts[] = $ip;
+                    }
+                } else {
+                    $accepts[] = $tagIP;
+                }
+            }
+
+            $iplist = $accepts;
+        } else {
+            // 没有做任何限制
+            $iplist = [];
+        }
+
+        return $iplist;
+    }
+
+    /**
      * 获取跨域访问控制
     */
     public function getAccessAllowOrigin() {
@@ -165,7 +200,7 @@ abstract class controller {
      * 这个可以在访问控制器之中应用，这个函数只对定义了@uses标签的控制器有效
      * 如果控制器函数没有定义@uses标签，则不会写入任何content-type的数据
     */
-    public function sendContentType() {     
+    public function sendContentType() {
         self::$hasSendContentType = true;
         
         switch(strtolower($this->getUsage())) {
@@ -180,6 +215,10 @@ abstract class controller {
                 break;
             case "router":
                 # 浏览器重定向这里怎么表述？
+                break;
+            case "text":
+                # 返回的是存文本内容
+                header("Content-Type: text/plain");
                 break;
 
             default:
@@ -198,7 +237,7 @@ abstract class controller {
      * 
      * @return controller 函数返回这个控制器本身
     */
-    public function Hook($app) {        
+    public function Hook($app) {
         $this->appObj = $app;
 
         /*
@@ -216,6 +255,7 @@ abstract class controller {
         // 先检查目标方法是否存在于逻辑层之中
         if (!method_exists($app, $page = Router::getApp())) {
             # 不存在，则抛出404
+            $this->handleNotFound();
             $msg = "Web app `<strong>$page</strong>` is not available in this controller!";
 			dotnet::PageNotFound($message);
         } else {
@@ -292,6 +332,13 @@ abstract class controller {
     public function Restrictions() {
         # 可以重载这个控制器函数来实现对某一个服务器资源的访问量的限制
         return false;
+    }
+
+    /**
+     * 处理所请求的资源找不到的错误
+    */
+    public function handleNotFound() {
+        // do nothing
     }
 
     /**
