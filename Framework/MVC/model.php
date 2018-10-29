@@ -581,6 +581,10 @@ class Table {
 		return $this->driver->getLastMySqlError();
 	}
 
+	private static function getFieldString($fields) {
+		return empty($fields) ? "*" : Strings::Join($fields, ", ");
+	}
+
 	/**
 	 * select all.(函数参数``$fields``是需要选择的字段列表，如果没有传递任何参数的话，
 	 * 默认是``*``，即选择全部字段)
@@ -597,7 +601,7 @@ class Table {
 		$groupBy = $this->getGroupBy();
 		$limit   = $this->getLimit();
 		$join    = $this->buildJoin();
-		$fields  = empty($fields) ? "*" : Strings::Join($fields, ", ");
+		$fields  = self::getFieldString($fields);
 
         if ($assert) {
             $SQL = "SELECT $fields FROM $ref $join WHERE $assert";
@@ -691,17 +695,18 @@ class Table {
 	 * 
 	 * 如果查询失败会返回一个空值
 	*/
-    public function find() {
+    public function find($fields = null) {
 		$ref     = $this->schema->ref;
 		$assert  = $this->getWhere();   
 		$join    = $this->buildJoin();		
 		// 排序操作会影响到limit 1的结果
 		$orderBy = $this->getOrderBy();
+		$fields  = self::getFieldString($fields);
 
         if ($assert) {
-            $SQL = "SELECT * FROM $ref $join WHERE $assert";
+            $SQL = "SELECT $fields FROM $ref $join WHERE $assert";
         } else {
-            $SQL = "SELECT * FROM $ref $join";
+            $SQL = "SELECT $fields FROM $ref $join";
         }	
 		if ($orderBy) {
 			$SQL = "$SQL $orderBy";
