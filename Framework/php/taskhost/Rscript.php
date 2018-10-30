@@ -23,6 +23,8 @@ namespace PHP\taskhost {
          * + 如果目标字符串不为空，但是字符串值为NULL,NA等在R脚本之中表示NULL的值的时候，也会被判断为空值
          * + 如果目标字符串全部都是空格或者TAB符号，则也会被判断为空
          * 
+         * @param string $str 待判断的目标字符串
+         * 
          * @return boolean
         */
         public static function IsNullOrEmpty($str) {
