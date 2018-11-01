@@ -91,10 +91,15 @@ class ZipLib {
      * http://php.net/manual/en/class.ziparchive.php
      * 
      * Usage: 
+     * 
+     * ```php
      *   ZipLib::ZipDirectory('/path/to/sourceDir', '/path/to/out.zip'); 
+     * ```
      * 
      * @param string $sourcePath Path of directory to be zip. 
      * @param string $outZipPath Path of output zip file. 
+     * 
+     * @return void
      */ 
     public static function ZipDirectory($sourcePath, $outZipPath) { 
         $pathInfo   = pathInfo($sourcePath); 
@@ -103,8 +108,11 @@ class ZipLib {
 
         $z = new ZipArchive(); 
         $z->open($outZipPath, ZIPARCHIVE::CREATE); 
-        $z->addEmptyDir($dirName); 
-        self::folderToZip($sourcePath, $z, strlen("$parentPath/")); 
+        $z->addEmptyDir($dirName);
+
+        # 对目标文件夹进行zip打包
+        self::folderToZip($sourcePath, $z, strlen("$parentPath/"));
+
         $z->close(); 
     }
 }
