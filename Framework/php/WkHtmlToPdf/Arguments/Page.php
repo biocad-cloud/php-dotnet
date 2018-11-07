@@ -2,6 +2,8 @@
 
 namespace PHP\WkHtmlToPdf\Options {
 
+    Imports("System.Object");
+
     class handlers {
         public const abort  = "abort";
         public const ignore = "ignore";
@@ -11,7 +13,7 @@ namespace PHP\WkHtmlToPdf\Options {
     /**
      * Page Options
     */
-    class Page {
+    class Page extends \System\TObject {
 
         /** 
          * Allow the file or files from the specified folder to be loaded (repeatable)
@@ -27,5 +29,9 @@ namespace PHP\WkHtmlToPdf\Options {
          * @var boolean
         */
         public $nobackground;
+
+        public function ToString() {
+            return \Argv::CLIBuilder($this);
+        }
     }
 }
