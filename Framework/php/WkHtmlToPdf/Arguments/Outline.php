@@ -5,7 +5,7 @@ namespace PHP\WkHtmlToPdf\Options {
     Imports ("System.Object");
 
     class Outline extends \System\TObject {
-        
+
         /**
          * Dump the default TOC xsl style sheet to stdout
          * 
@@ -37,5 +37,9 @@ namespace PHP\WkHtmlToPdf\Options {
          * @argv --outline-depth as integer
         */
         public $outlinedepth;
+
+        public function ToString() {
+            return \Argv::CLIBuilder($this);
+        }
     }
 }

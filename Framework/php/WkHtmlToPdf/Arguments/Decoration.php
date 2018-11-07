@@ -94,7 +94,7 @@ namespace PHP\WkHtmlToPdf\Options {
          * Centered footer/header text
          * 
          * @var string
-         * @argv -center string
+         * @argv -center as string
         */
         public $center;
 
@@ -102,7 +102,7 @@ namespace PHP\WkHtmlToPdf\Options {
          * Set footer/header font name (default Arial)
          * 
          * @var string
-         * @argv -font-name string
+         * @argv -font-name as string
         */
         public $fontname;
 
@@ -111,7 +111,7 @@ namespace PHP\WkHtmlToPdf\Options {
          * 
          * @var double
          * 
-         * @argv -font-size double
+         * @argv -font-size as double
         */
         public $fontsize;
 
@@ -119,7 +119,7 @@ namespace PHP\WkHtmlToPdf\Options {
          * Adds a html footer/header
          * 
          * @var string
-         * @argv -html file
+         * @argv -html as file
         */
         public $html;
 
@@ -128,7 +128,7 @@ namespace PHP\WkHtmlToPdf\Options {
          * 
          * @var string
          * 
-         * @argv -left string
+         * @argv -left as string
         */
         public $left;
 
@@ -137,7 +137,7 @@ namespace PHP\WkHtmlToPdf\Options {
          * 
          * @var boolean
          * 
-         * @argv -line boolean
+         * @argv -line as boolean
         */
         public $line;
 
@@ -145,7 +145,7 @@ namespace PHP\WkHtmlToPdf\Options {
          * Right aligned footer/header text
          * 
          * @var string
-         * @argv -right string
+         * @argv -right as string
         */
         public $right;
 
@@ -153,8 +153,12 @@ namespace PHP\WkHtmlToPdf\Options {
          * Spacing between footer/header and content in mm (default 0)
          * 
          * @var double
-         * @argv -spacing double
+         * @argv -spacing as double
         */
         public $spacing;
+
+        public function ToString() {
+            return \Argv::CLIBuilder($this);
+        }
     }
 }
