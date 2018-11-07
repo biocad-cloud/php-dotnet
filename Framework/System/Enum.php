@@ -23,18 +23,19 @@ class Enum {
         $type      = $stack->GetFrame(2);
         $type      = $type->frame["class"];
         $reflector = new ReflectionClass($type);
-        
+        $key       = "T" . strval($value);        
+
         if (!array_key_exists($type, self::$enumTypes)) {
             $dataEnum = $reflector->getConstants();
             $toString = [];
 
-            foreach($dataEnum as $name => $value) {
-                $toString[strval($value)] = $name;
+            foreach($dataEnum as $name => $val) {
+                $toString["T" . strval($val)] = $name;
             }
 
             self::$enumTypes[$type] = $toString;
         }
 
-        return self::$enumTypes[$type][strval($value)];
+        return self::$enumTypes[$type][$key];
     }
 }
