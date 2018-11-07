@@ -17,3 +17,8 @@ $size = \PHP\WkHtmlToPdf\Options\QPrinter::A6;
 $str  = \PHP\WkHtmlToPdf\Options\QPrinter::ToString($size);
 
 echo var_dump($str);
+
+$val = "B9";  //= 23
+$size = \PHP\WkHtmlToPdf\Options\QPrinter::TryParse($val);
+
+echo var_dump($size);

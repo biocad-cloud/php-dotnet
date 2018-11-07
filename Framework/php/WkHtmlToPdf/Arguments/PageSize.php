@@ -21,7 +21,7 @@ namespace PHP\WkHtmlToPdf\Options {
      *
      * The defined sizes (With setFullPage(True)) are
     */
-    class QPrinter extends \Enum {
+    class QPrinter {
 
         public const A0        = 5;  // 841 x 1189 mm
         public const A1        = 6;  // 594 x 841 mm

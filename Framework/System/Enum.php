@@ -14,6 +14,11 @@ abstract class Enum {
     */
     private static $enumTypes = [];
     
+    /** 
+     * 从枚举名称之中解析出枚举值
+     * 
+     * @return integer 
+    */
     public static function TryParse($name) {
         $key    = strtolower($name);
         $parser = self::getEnumType()["TryParse"];
@@ -52,6 +57,8 @@ abstract class Enum {
      * 调用函数必须要定义在枚举类之中，否则会找不到正确的栈片段信息
      * 
      * @param integer $value 枚举值
+     * 
+     * @return string 枚举值的名称字符串
     */
     public static function ToString($value) {
         $key   = "T" . strval($value);
