@@ -2,7 +2,8 @@
 
 namespace PHP\WkHtmlToPdf\Options {
 
-    Imports ("System.Object");
+    Imports("System.Object");
+    Imports("System.Enum");
 
     /**
      * The default page size of the rendered document is A4, but using this
@@ -58,7 +59,7 @@ namespace PHP\WkHtmlToPdf\Options {
          * QPrinter to string
         */
         public static function ToString($value) {
-
+            return \Enum::ToString($value);
         }
     }
 

@@ -11,3 +11,9 @@ $page->nobackground = true;
 # echo var_dump($page);
 # echo var_dump(get_class($page));
 echo var_dump($page->ToString());
+
+# test enum
+$size = \PHP\WkHtmlToPdf\Options\QPrinter::A6;
+$str  = \PHP\WkHtmlToPdf\Options\QPrinter::ToString($size);
+
+echo var_dump($str);
