@@ -4,6 +4,8 @@ namespace System {
 
     Imports("System.Reflection.PropertyInfo");
 
+    use \System\Reflection\PropertyInfo as Property;
+
     /** 
      * 表示类型声明：类类型、接口类型、数组类型、值类型、枚举类型、类型参数、泛型类型定义，
      * 以及开放或封闭构造的泛型类型。
@@ -36,14 +38,15 @@ namespace System {
         }
 
         /**
-         * @return System\Reflection\PropertyInfo[]
+         * @return \System\Reflection\PropertyInfo[]
         */
         public function GetProperties() {
             $list = $this->reflector->getProperties();
             $out  = [];
+            $p    = null;
 
             foreach($list as $property) {
-                array_push($out, new System\Reflection\PropertyInfo($property));
+                array_push($out, new Property($property, $this));
             }
 
             return $out;

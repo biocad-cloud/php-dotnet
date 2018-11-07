@@ -58,6 +58,8 @@ class DocComment {
         }
     }
 
+    public const DESCRIPTION = "description";
+
     /**
      * @param string $tagName
      * 
@@ -69,7 +71,9 @@ class DocComment {
         if (empty($tagData)) {
             return $default;
         } else {
-            return Utils::ReadValue($tagData, "description", $default);
+            return Utils::ReadValue(
+                $tagData, self::DESCRIPTION, $default
+            );
         }
     }
 
@@ -357,7 +361,7 @@ class PropertyDoc extends DocComment {
     */
     public function __construct($title, $summary, $tags) {
         parent::__construct($title, $summary, $tags);
-        
+
         $this->var = $this->GetDescription("var", "mixed");
     }
 
