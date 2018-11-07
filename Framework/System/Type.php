@@ -2,6 +2,12 @@
 
 namespace System {
 
+    Imports("System.Reflection.PropertyInfo");
+
+    /** 
+     * 表示类型声明：类类型、接口类型、数组类型、值类型、枚举类型、类型参数、泛型类型定义，
+     * 以及开放或封闭构造的泛型类型。
+    */
     class Type extends TObject {
 
         /**
@@ -16,9 +22,32 @@ namespace System {
         public $Namespace;
 
         /**
-         * @var ReflectionClass
+         * @var \ReflectionClass
         */
         var $reflector;
+
+        /** 
+         * 搜索具有指定名称的公共方法。
+         * 
+         * @param string $methodName 包含要获取的公共方法的名称的字符串。
+        */
+        public function GetMethod(string $methodName) {
+            return $this->reflector->getMethod($methodName);
+        }
+
+        /**
+         * @return System\Reflection\PropertyInfo[]
+        */
+        public function GetProperties() {
+            $list = $this->reflector->getProperties();
+            $out  = [];
+
+            foreach($list as $property) {
+                array_push($out, new System\Reflection\PropertyInfo($property));
+            }
+
+            return $out;
+        }
 
         /** 
          * 返回``namespace\class``全名称
@@ -42,26 +71,11 @@ namespace System {
             $type = new Type();
             // 这里返回来的其实是full name
             // 需要做一下解析
-            $type->Name      = get_class($obj);
-            $type->reflector = new \ReflectionClass($type->Name);
-            $type->Namespace = self::split($type->Name);
-            $type->Name      = $type->Namespace["class"];
-            $type->Namespace = $type->Namespace["namespace"];
-
+            $type->reflector = new \ReflectionClass(get_class($obj));
+            $type->Namespace = $type->reflector->getNamespaceName();
+            $type->Name      = $type->reflector->getShortName();
+            
             return $type;
-        }
-
-        private static function split($fullName) {
-            # string(11) "Foo\Bar\Baz"
-            $tokens    = \Strings::Split($fullName, "\\");
-            $name      = end($tokens);
-            $namespace = \Enumerable::Take($tokens, count($tokens) - 1);
-            $namespace = \Strings::Join($namespace, "\\");
-
-            return [
-                "class"     => $name, 
-                "namespace" => $namespace
-            ];
         }
     }
 }
