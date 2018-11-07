@@ -24,9 +24,24 @@ namespace System {
         public $Namespace;
 
         /**
+         * 如果这个属性值为空值的话，说明当前的类型是诸如``string``, ``boolean``这类基础类型
+         * 
          * @var \ReflectionClass
         */
         var $reflector;
+
+        /** 
+         * 获取一个值，通过该值指示 ``System.Type`` 是否为基元类型之一。
+         * 
+         * @return boolean 如果 true 为基元类型之一，则为 ``System.Type``；否则为 false。
+        */
+        public function IsPrimitive() {
+            if (empty($this->reflector)) {
+                return true;
+            } else {
+                return false;
+            }
+        }
 
         /** 
          * 搜索具有指定名称的公共方法。
@@ -76,6 +91,12 @@ namespace System {
 
         /** 
          * 从所提供的className来获取类型信息
+         * 
+         * @param string $className 在这里可能会需要处理基础类型，否则会出现错误：
+         * 
+         * ```php
+         * # PHP Fatal error:  Uncaught ReflectionException: Class string does not exist
+         * ```
          * 
          * @return Type
         */

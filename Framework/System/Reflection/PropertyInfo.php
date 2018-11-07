@@ -2,6 +2,8 @@
 
 namespace System\Reflection {
 
+    Imports("php.DocComment");
+
     class PropertyInfo {
 
         /**
@@ -65,8 +67,7 @@ namespace System\Reflection {
         */
         public function GetCustomAttribute(string $type) {
             $tagData = \Utils::ReadValue($this->doc->tags, $type);
-echo var_dump($type);
-echo var_dump($tagData);
+
             if (empty($tagData)) {
                 return null;
             } else {

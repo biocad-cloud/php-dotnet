@@ -47,7 +47,7 @@ class DocComment {
         $this->tags    = $tags;
         $this->authors = $this->GetDescription("author");
         
-        if (!empty($this->authors) || !Strings::Empty($this->authors)) {
+        if (!empty($this->authors) || !\Strings::Empty($this->authors)) {
             $authors = explode(";", $this->authors);
 
             for($i = 0; $i < count($authors); $i++) {
@@ -66,12 +66,12 @@ class DocComment {
      * @return string The description property data in a given tag data
     */
     public function GetDescription($tagName, $default = null) {
-        $tagData = Utils::ReadValue($this->tags, $tagName);
+        $tagData = \Utils::ReadValue($this->tags, $tagName);
 
         if (empty($tagData)) {
             return $default;
         } else {
-            return Utils::ReadValue(
+            return \Utils::ReadValue(
                 $tagData, self::DESCRIPTION, $default
             );
         }
@@ -89,7 +89,7 @@ class DocComment {
      * @return array
     */
     public static function Parse($docComment) {
-        $docComment = StringHelpers::LineTokens($docComment);
+        $docComment = \StringHelpers::LineTokens($docComment);
         $docComment = self::Trim($docComment);
         
         $title   = "";
@@ -102,12 +102,12 @@ class DocComment {
         # 所有不是通过@符号起始的文本行都是描述性的文本段
 
         # 第一段文本被规定为函数的标题
-        list($i, $title)   = Utils::Tuple(self::blankSplit($docComment, $i));
+        list($i, $title)   = \Utils::Tuple(self::blankSplit($docComment, $i));
         # 如果存在第二段文本的话，假设这第二段文本为当前函数的摘要信息
-        list($i, $summary) = Utils::Tuple(self::blankSplit($docComment, $i));
+        list($i, $summary) = \Utils::Tuple(self::blankSplit($docComment, $i));
 
         while($i < count($docComment)) {
-            list($i, $table) = Utils::Tuple(self::tagParser($docComment, $i));
+            list($i, $table) = \Utils::Tuple(self::tagParser($docComment, $i));
             
             if (count($table) > 0) {
                 switch($table["name"]) {
@@ -210,7 +210,7 @@ class DocComment {
             $value = "";
         }
 
-        $tagName = Strings::Mid($tagName, 2);
+        $tagName = \Strings::Mid($tagName, 2);
         $tagData = [
             "name"        => $tagName, 
             "type"        => $type,
@@ -324,8 +324,8 @@ class ControllerDoc extends MethodDoc {
     public function __construct($title, $summary, $tags) {
         parent::__construct($title, $summary, $tags);
 
-        $this->access = Utils::ReadValue($tags, "access");
-        $this->access = Utils::ReadValue($this->access, "description");
+        $this->access = \Utils::ReadValue($tags, "access");
+        $this->access = \Utils::ReadValue($this->access, "description");
     }
 
     /** 
