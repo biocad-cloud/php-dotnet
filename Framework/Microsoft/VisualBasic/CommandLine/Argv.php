@@ -29,15 +29,21 @@ class Argv {
     /**
      * 这个参数所属的class的属性名称
      * 
-     * @var string
+     * @var \System\Reflection\PropertyInfo
     */
-    public $propertyName;
+    public $property;
 
     /** 
      * @param array $tagData 使用反射方法读取得到的标签数据
     */
-    public function __construct($tagData) {
-        echo var_dump($tagData);
+    public function __construct($property, $tagData) {
+        $this->argument = $tagData["value"];
+        $this->type     = trim($tagData["description"]);
+        $this->type     = explode(" ", $this->type);
+        $this->type     = end($this->type);
+        $this->property = $property;
+
+        echo var_dump($this);
     }
 
     /**
