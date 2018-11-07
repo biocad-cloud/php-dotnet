@@ -7,6 +7,8 @@ Imports("Microsoft.VisualBasic.Strings");
 /**
  * Represents a stack trace, which is an ordered collection of 
  * one or more stack frames.
+ * 
+ * 表示堆栈跟踪，这是一个或多个堆栈帧的有序的集合。
 */
 class StackTrace {
 
