@@ -2,7 +2,10 @@
 
 Imports("System.Diagnostics.StackTrace");
 
-class Enum {
+/** 
+ * 为枚举提供基类。
+*/
+abstract class Enum {
 
     /** 
      * 类型枚举缓存
@@ -10,6 +13,38 @@ class Enum {
      * @var array
     */
     private static $enumTypes = [];
+    
+    public static function TryParse($name) {
+        $key    = strtolower($name);
+        $parser = self::getEnumType()["TryParse"];
+        
+        return $parser[$key];
+    }
+
+    private static function getEnumType() {
+        $stack = StackTrace::GetCallStack();
+        $type  = $stack->GetFrame(3);
+        $type  = $type->frame["class"];
+
+        if (!array_key_exists($type, self::$enumTypes)) {
+            $reflector = new ReflectionClass($type);
+            $dataEnum  = $reflector->getConstants();
+            $toString  = [];
+            $tryParse = [];
+
+            foreach($dataEnum as $name => $val) {
+                $toString["T". strval($val)] = $name;
+                $tryParse[strtolower($name)] = $val;
+            }
+
+            self::$enumTypes[$type] = [
+                "ToString" => $toString,
+                "TryParse" => $tryParse
+            ];
+        }
+
+        return self::$enumTypes[$type];
+    }
 
     /**
      * 这个函数会自动根据栈信息来查找枚举类型
@@ -19,23 +54,9 @@ class Enum {
      * @param integer $value 枚举值
     */
     public static function ToString($value) {
-        $stack     = StackTrace::GetCallStack();
-        $type      = $stack->GetFrame(2);
-        $type      = $type->frame["class"];
-        $reflector = new ReflectionClass($type);
-        $key       = "T" . strval($value);        
+        $key   = "T" . strval($value);
+        $names = self::getEnumType()["ToString"]; 
 
-        if (!array_key_exists($type, self::$enumTypes)) {
-            $dataEnum = $reflector->getConstants();
-            $toString = [];
-
-            foreach($dataEnum as $name => $val) {
-                $toString["T" . strval($val)] = $name;
-            }
-
-            self::$enumTypes[$type] = $toString;
-        }
-
-        return self::$enumTypes[$type][$key];
+        return $names[$key];
     }
 }
