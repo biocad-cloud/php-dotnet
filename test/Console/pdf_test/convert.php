@@ -1,0 +1,11 @@
+<?php
+
+include "../../../package.php";
+
+Imports("php.WkHtmlToPdf");
+
+$page = new \PHP\WkHtmlToPdf\Options\Page();
+$page->allow = "test.js";
+$page->nobackground = true;
+
+echo var_dump($page->ToString());

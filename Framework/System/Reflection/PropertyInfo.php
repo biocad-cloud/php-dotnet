@@ -45,6 +45,10 @@ namespace System\Reflection {
             $this->PropertyType  = $this->GetCustomAttribute("var");
         }
 
+        public function GetValue(object $obj) {
+            return $obj->{$this->Name};
+        }
+
         /** 
          * 要搜索的属性的类型。仅返回可分配给此类型的属性。
          * 

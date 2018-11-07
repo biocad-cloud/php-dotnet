@@ -31,7 +31,7 @@ namespace PHP\WkHtmlToPdf\Options {
         public $nobackground;
 
         public function ToString() {
-            return \Argv::CLIBuilder($this);
+            return \argv::CLIBuilder($this);
         }
     }
 }
