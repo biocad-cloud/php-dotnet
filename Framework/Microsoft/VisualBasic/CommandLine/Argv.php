@@ -42,8 +42,6 @@ class Argv {
         $this->type     = explode(" ", $this->type);
         $this->type     = end($this->type);
         $this->property = $property;
-
-        echo var_dump($this);
     }
 
     /**

@@ -32,7 +32,7 @@ class StackTrace {
     // }
 
     /**
-     * @var array
+     * @var StackFrame[]
     */
     var $frames;
 
@@ -79,6 +79,11 @@ class StackTrace {
         $this->frames = $frames;
     }
 
+    /** 
+     * 获取得到某一个栈片段的信息
+     * 
+     * @return StackFrame
+    */
     public function GetFrame($index) {
         return $this->frames[$index];
     }

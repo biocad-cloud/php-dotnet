@@ -52,8 +52,11 @@ namespace System {
 #endregion
 #region "And finally two special types:"
             "resource" => null,
-            "NULL"     => null
+            "NULL"     => null,
 #endregion
+
+            // A very special primitive type
+            "mixed"    => null
         ];
 
         /** 
@@ -137,6 +140,11 @@ namespace System {
         */
         public static function GetClass(string $className) {
             $type = new Type();
+
+            if (\Strings::EndWith($className, "[]")) {
+                // is an array
+                $className = "array";
+            }
 
             if (array_key_exists($className, self::$primitiveTypes)) {
                 # 是基础类型
