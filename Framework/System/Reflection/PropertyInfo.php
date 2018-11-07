@@ -37,5 +37,12 @@ namespace System\Reflection {
             $this->base = $property;
             $this->Name = $property->name;
         }
+
+        /** 
+         * 要搜索的属性的类型。仅返回可分配给此类型的属性。
+        */
+        public function GetCustomAttribute(string $type) {
+
+        }
     }
 }
