@@ -365,6 +365,21 @@ class PropertyDoc extends DocComment {
         $this->var = $this->GetDescription("var", "mixed");
     }
 
+    /** 
+     * @param string $doc
+     * 
+     * @return PropertyDoc
+    */
+    public static function ParsePropertyDoc($doc) {
+        $doc = \PHP\DocComment::Parse($doc);
+
+        return new \PHP\PropertyDoc(
+            $doc["title"], 
+            $doc["summary"], 
+            $doc["tags"]
+        );
+    }
+
     /**
      * 获取此属性的值类型
      * 

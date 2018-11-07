@@ -42,6 +42,8 @@ namespace System\Reflection {
             $this->base          = $property;
             $this->Name          = $property->name;
             $this->ReflectedType = $declareOn;
+            $this->doc           = $property->getDocComment();
+            $this->doc           = \PHP\PropertyDoc::ParsePropertyDoc($this->doc);
             $this->PropertyType  = $this->GetCustomAttribute("var");
         }
 
@@ -63,7 +65,8 @@ namespace System\Reflection {
         */
         public function GetCustomAttribute(string $type) {
             $tagData = \Utils::ReadValue($this->doc->tags, $type);
-
+echo var_dump($type);
+echo var_dump($tagData);
             if (empty($tagData)) {
                 return null;
             } else {
