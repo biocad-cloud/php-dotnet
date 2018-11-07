@@ -68,10 +68,19 @@ namespace System {
          * @return Type
         */
         public static function TypeOf($obj) {
+            return self::GetClass(get_class($obj));
+        }
+
+        /** 
+         * 从所提供的className来获取类型信息
+         * 
+         * @return Type
+        */
+        public static function GetClass(string $className) {
             $type = new Type();
             // 这里返回来的其实是full name
             // 需要做一下解析
-            $type->reflector = new \ReflectionClass(get_class($obj));
+            $type->reflector = new \ReflectionClass($className);
             $type->Namespace = $type->reflector->getNamespaceName();
             $type->Name      = $type->reflector->getShortName();
             
