@@ -238,4 +238,32 @@ function using(\System\IDisposable $obj, callable $procedure) {
     return $result;
 }
 
+/** 
+ * 对浏览器之中的cookie进行删除操作
+ * 这个函数支持批量处理模式
+ * 
+ * @param string|array
+ * 
+ *  + 如果这个参数为string类型，则只会删除该名称的cookie
+ *  + 如果这个参数为数组，则可以有两种模式：
+ *      1. tuple类型的：    ``[cookie_name => domain]``
+ *      2. 批量cookie删除:  ``[cookie_name => domain][]``
+*/
+function deleteCookies($cookies) {
+    if (is_string($cookies)) {
+        # 只删除单个cookie
+        setcookie($cookies, "", time() - 3600); 
+    } else {
+        if (count($cookies) == 1) {
+            # 将[name => domain]转换为批量模式
+            $cookies = [$cookies];
+        }
+
+        # 执行批量删除
+        foreach($cookies as $cookie_name => $domain) {
+            setcookie($cookie_name, "", time() - 3600, "/", $domain); 
+        }
+    }
+}
+
 #endregion
