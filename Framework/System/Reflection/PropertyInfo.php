@@ -77,7 +77,7 @@ namespace System\Reflection {
                 return null;
             } else {
                 if ($type === "var") {
-                    $class = $tagData[\PHP\DocComment::DESCRIPTION];
+                    $class = $tagData["description"];
                     return \System\Type::GetClass($class);
                 } else {
                     # 在这里动态的创建自定义属性对象

@@ -58,8 +58,6 @@ class DocComment {
         }
     }
 
-    public const DESCRIPTION = "description";
-
     /**
      * @param string $tagName
      * 
@@ -72,7 +70,7 @@ class DocComment {
             return $default;
         } else {
             return \Utils::ReadValue(
-                $tagData, self::DESCRIPTION, $default
+                $tagData, "description", $default
             );
         }
     }
