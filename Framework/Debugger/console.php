@@ -92,6 +92,12 @@ class console {
 
     /**
      * 输出一般的调试信息，代码默认为零。表示无错误
+     * 
+     * + 如果是web服务器环境下，日志信息会被缓存然后统一输出到页面的调试器窗口之中
+     * + 如果是在命令行环境下，日志则会在自动添加了时间戳之后直接被打印出来
+     * 
+     * @param string $msg 日志消息文本
+     * @param integer $code 错误代码，默认是零，表示没有错误
     */
     public static function log($msg, $code = 0) {
         if ((!IS_CLI) && APP_DEBUG) {
