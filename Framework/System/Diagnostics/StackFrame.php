@@ -1,8 +1,13 @@
 <?php
 
+/** 
+ * 提供关于 ``System.Diagnostics.StackFrame``（表示当前线程的调用堆栈中的一个函数调用）的信息。
+*/
 class StackFrame {
 
     /**
+     * PHP之中得到的原始的栈片段信息
+     * 
      * @var array
     */
     var $frame;
@@ -26,6 +31,8 @@ class StackFrame {
     }
 
     /**
+     * 获取在其中执行帧的方法。
+     * 
      * @return string
     */
     public function GetMethod() {
@@ -38,16 +45,24 @@ class StackFrame {
         }
     }
 
+    /** 
+     * 获取离开所执行方法的 Microsoft 中间语言 (Microsoft Intermediate Language, MSIL) 代码开头的偏移量。
+     * 根据实时 (JIT) 编译器是否正在生成调试代码，此偏移量可能是近似量。
+     * 该调试信息的生成受 ``System.Diagnostics.DebuggableAttribute`` 控制。
+    */
     public function GetILOffset() {
         return self::OFFSET_UNKNOWN;
     }
 
+    /** 
+     * 获取包含所执行代码的文件名。
+     * 该信息通常从可执行文件的调试符号中提取。
+    */
     public function GetFileName() {
         $file = $this->frame["file"];
         
+        # 在非调试模式下，将服务器的文件系统信息隐藏掉
         if (!APP_DEBUG) {
-            # 在非调试模式下，将服务器的文件系统信息隐藏掉
-
             if (defined("PHP_DOTNET")) {
                 $file = Strings::Replace($file, PHP_DOTNET, "/usr~/->/docker.libX64/php.NET/src/");
             } 
@@ -68,10 +83,17 @@ class StackFrame {
         return $file;
     }
 
+    /** 
+     * 获取文件中包含所执行代码的行号。
+     * 该信息通常从可执行文件的调试符号中提取。
+    */
     public function GetFileLineNumber() {
         return $this->frame["line"];
     }
 
+    /** 
+     * 生成堆栈跟踪的可读表示形式。
+    */
     public function ToString() {
         $file     = $this->GetFileName();
         $line     = $this->GetFileLineNumber();

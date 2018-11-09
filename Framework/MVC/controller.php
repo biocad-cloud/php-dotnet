@@ -36,7 +36,7 @@ abstract class controller {
     /**
      * 编写在当前的这个控制器函数之上的注释文档的解析结果
      * 
-     * @var DocComment
+     * @var \PHP\ControllerDoc
     */
     protected $docComment;
 
@@ -62,7 +62,7 @@ abstract class controller {
      * Get php function document comment parsed object 
      * for current controller.
      * 
-     * @return DocComment
+     * @return \PHP\ControllerDoc
     */
     public function getDocComment() {
         return $this->docComment;
@@ -272,9 +272,9 @@ abstract class controller {
             $reflector = new ReflectionClass(get_class($app));
 
             $this->reflection = $reflector;
-            $this->app_logic  = $reflector->getMethod(Router::getApp());   
+            $this->app_logic  = $reflector->getMethod(Router::getApp());
             $this->docComment = $this->app_logic->getDocComment();   
-            $this->docComment = DocComment::Parse($this->docComment);
+            $this->docComment = \PHP\ControllerDoc::ParseControllerDoc($this->docComment);
         }
 
         return $this;

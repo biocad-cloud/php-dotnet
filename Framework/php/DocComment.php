@@ -1,5 +1,7 @@
 <?php
 
+namespace PHP;
+
 Imports("Microsoft.VisualBasic.Extensions.StringHelpers");
 Imports("Microsoft.VisualBasic.Strings");
 Imports("php.Utils");
@@ -27,23 +29,12 @@ class DocComment {
     public $authors;
 
     /**
-     * @var array
-    */
-    public $params;
-
-    /**
      * 除了params以及return以外的其他的通过@起始
      * 标记的标签对象数据的数组
      * 
      * @var array
     */
     public $tags;
-    public $return;
-
-    /**
-     * @var string
-    */
-    public $access;
 
     /**
      * @param string $title
@@ -53,12 +44,10 @@ class DocComment {
     function __construct($title, $summary, $tags) {
         $this->title   = $title;
         $this->summary = $summary;    
-        $this->tags    = $tags;    
-        $this->access  = Utils::ReadValue($tags, "access");
-        $this->access  = Utils::ReadValue($this->access, "description");
+        $this->tags    = $tags;
         $this->authors = $this->GetDescription("author");
         
-        if (!empty($this->authors) || !Strings::Empty($this->authors)) {
+        if (!empty($this->authors) || !\Strings::Empty($this->authors)) {
             $authors = explode(";", $this->authors);
 
             for($i = 0; $i < count($authors); $i++) {
@@ -69,18 +58,22 @@ class DocComment {
         }
     }
 
+    public const DESCRIPTION = "description";
+
     /**
      * @param string $tagName
      * 
      * @return string The description property data in a given tag data
     */
     public function GetDescription($tagName, $default = null) {
-        $tagData = Utils::ReadValue($this->tags, $tagName);
+        $tagData = \Utils::ReadValue($this->tags, $tagName);
 
         if (empty($tagData)) {
             return $default;
         } else {
-            return Utils::ReadValue($tagData, "description", $default);
+            return \Utils::ReadValue(
+                $tagData, self::DESCRIPTION, $default
+            );
         }
     }
 
@@ -89,12 +82,14 @@ class DocComment {
      * 
      * Parse doc comment into DocComment object
      * 
+     * > title, summary, tags
+     * 
      * @param string $docComment
      * 
-     * @return DocComment
+     * @return array
     */
     public static function Parse($docComment) {
-        $docComment = StringHelpers::LineTokens($docComment);
+        $docComment = \StringHelpers::LineTokens($docComment);
         $docComment = self::Trim($docComment);
         
         $title   = "";
@@ -107,12 +102,12 @@ class DocComment {
         # 所有不是通过@符号起始的文本行都是描述性的文本段
 
         # 第一段文本被规定为函数的标题
-        list($i, $title)   = Utils::Tuple(self::blankSplit($docComment, $i));
+        list($i, $title)   = \Utils::Tuple(self::blankSplit($docComment, $i));
         # 如果存在第二段文本的话，假设这第二段文本为当前函数的摘要信息
-        list($i, $summary) = Utils::Tuple(self::blankSplit($docComment, $i));
+        list($i, $summary) = \Utils::Tuple(self::blankSplit($docComment, $i));
 
         while($i < count($docComment)) {
-            list($i, $table) = Utils::Tuple(self::tagParser($docComment, $i));
+            list($i, $table) = \Utils::Tuple(self::tagParser($docComment, $i));
             
             if (count($table) > 0) {
                 switch($table["name"]) {
@@ -131,11 +126,16 @@ class DocComment {
             }
         }
 
-        $doc = new DocComment(trim($title), trim($summary), $tags);
-        $doc->params = $params;
-        $doc->return = $return;
-
-        return $doc;
+        $tags["param"]  = $params;
+        $tags["return"] = $return;
+        $title          = trim($title);
+        $summary        = trim($summary);
+        
+        return [
+            "title"   => $title, 
+            "summary" => $summary, 
+            "tags"    => $tags
+        ];
     }
 
     /**
@@ -210,7 +210,7 @@ class DocComment {
             $value = "";
         }
 
-        $tagName = Strings::Mid($tagName, 2);
+        $tagName = \Strings::Mid($tagName, 2);
         $tagData = [
             "name"        => $tagName, 
             "type"        => $type,
@@ -267,4 +267,125 @@ class DocComment {
     }
 }
 
-?>
+/** 
+ * 适用于函数的注释文档的解析器
+*/
+class MethodDoc extends DocComment {
+
+    /**
+     * @var array
+    */
+    public $params;
+    public $return;
+
+    /**
+     * @param string $title
+     * @param string $summary
+     * @param array $tags
+    */
+    public function __construct($title, $summary, $tags) {
+        parent::__construct($title, $summary, $tags);
+
+        $this->params = $tags["param"];
+        $this->return = $tags["return"];
+    }
+
+    /** 
+     * @param string $doc
+     * 
+     * @return MethodDoc
+    */
+    public static function ParseMethodDoc($doc) {
+        $doc = \PHP\DocComment::Parse($doc);
+
+        return new \PHP\MethodDoc(
+            $doc["title"], 
+            $doc["summary"], 
+            $doc["tags"]
+        );
+    }
+}
+
+/** 
+ * 这个类型是MVC框架的控制器专用的
+*/
+class ControllerDoc extends MethodDoc {
+
+    /**
+     * @var string
+    */
+    public $access;
+
+    /**
+     * @param string $title
+     * @param string $summary
+     * @param array $tags
+    */
+    public function __construct($title, $summary, $tags) {
+        parent::__construct($title, $summary, $tags);
+
+        $this->access = \Utils::ReadValue($tags, "access");
+        $this->access = \Utils::ReadValue($this->access, "description");
+    }
+
+    /** 
+     * @param string $doc
+     * 
+     * @return ControllerDoc
+    */
+    public static function ParseControllerDoc($doc) {
+        $doc = \PHP\DocComment::Parse($doc);
+
+        return new \PHP\ControllerDoc(
+            $doc["title"], 
+            $doc["summary"], 
+            $doc["tags"]
+        );
+    }
+}
+
+/**
+ * 适用于类型定义之中的属性的注释文档的解析器
+*/
+class PropertyDoc extends DocComment {
+
+    /** 
+     * 属性的值类型的标签定义
+    */
+    public $var;
+
+    /**
+     * @param string $title
+     * @param string $summary
+     * @param array $tags
+    */
+    public function __construct($title, $summary, $tags) {
+        parent::__construct($title, $summary, $tags);
+
+        $this->var = $this->GetDescription("var", "mixed");
+    }
+
+    /** 
+     * @param string $doc
+     * 
+     * @return PropertyDoc
+    */
+    public static function ParsePropertyDoc($doc) {
+        $doc = \PHP\DocComment::Parse($doc);
+
+        return new \PHP\PropertyDoc(
+            $doc["title"], 
+            $doc["summary"], 
+            $doc["tags"]
+        );
+    }
+
+    /**
+     * 获取此属性的值类型
+     * 
+     * @return \System\Type
+    */
+    public function PropertyType() {
+        return \System\Type::GetClass($this->var);
+    }
+}
