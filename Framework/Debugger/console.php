@@ -171,8 +171,11 @@ class console {
         return $result;
     }
 
+    /** 
+     * 打印出错误消息
+    */
     public static function error($msg, $code = 1) {
-        if (APP_DEBUG) {
+        if ((!IS_CLI) && APP_DEBUG) {
             $trace = self::backtrace();
             self::$logs[] = [
                 "code"  => $code, 
@@ -182,7 +185,10 @@ class console {
                 "color" => "red",
                 "time"  => Utils::Now(false)
             ];
-        }
+        } else if (IS_CLI && FRAMEWORK_DEBUG) {
+            $time = Utils::Now(false);
+            echo "[$time, error=$code] $msg\n";
+        } 
     }
 
     public static function printCode($code) {
