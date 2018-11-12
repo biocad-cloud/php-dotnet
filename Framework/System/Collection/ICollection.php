@@ -24,6 +24,13 @@ abstract class ICollection implements ArrayAccess {
         return \count($this->__data);
     }
 
+    /** 
+     * 返回序列之中的最后一个元素的值
+    */
+    public function Last() {
+        return end($this->__data);
+    }
+
     function __get($name) {
         if($name === 'Count')
             return $this->count($this->__data);

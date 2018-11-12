@@ -2,6 +2,8 @@
 
 namespace Microsoft\VisualBasic\Math\Quantile;
 
+Imports("System.Collection.ArrayList");
+
 class Point {
     var $quantile;
     var $error;
@@ -43,9 +45,9 @@ class QuantileEstimationGK {
     var $count = 0;
     var $compact_size;
     /** 
-     * @var X[]
+     * @var \ArrayList
     */
-    var $sample = [];
+    var $sample;
 
     /** 
      * @param double[] $data
@@ -53,6 +55,7 @@ class QuantileEstimationGK {
     public function __construct($epsilon, $compact_size, $data = null) {
         $this->epsilon      = $epsilon;
         $this->compact_size = $compact_size;
+        $this->sample       = new \ArrayList();
 
         if (!empty($data)) {
             foreach($data as $x) {
@@ -77,15 +80,15 @@ class QuantileEstimationGK {
             }
         }
 
-        if ($idx == 0 || $idx == count($this->sample)) {
+        if ($idx == 0 || $idx == $this->sample->count()) {
             $delta = 0;
         } else {
             $delta = (integer) \floor(2 * $this->epsilon * $this->count);
         }
 
-        array_push($this->sample, new X($x, 1, $delta));
+        $this->sample->Add(new X($x, 1, $delta));
 
-        if (count($this->sample) > $this->compact_size) {
+        if ($this->sample->count() > $this->compact_size) {
             $this->compress();
         }
 
@@ -96,7 +99,7 @@ class QuantileEstimationGK {
 
     private function compress() {
         $removed    = 0;
-        $sampleSize = count($this->sample);
+        $sampleSize = $this->sample->count();
         $bound      = \floor(2 * $this->epsilon * $this->count);
 
         for($i = 0; $i < $sampleSize - 1; $i++) {
@@ -109,11 +112,30 @@ class QuantileEstimationGK {
             
             if ($x->g + $x1->g + $x1->delta <= $bound) {
                 $x1->g += $x->g;
-
+                $this->sample->RemoveAt($i);
                 $removed++;
             }
         }
 
         return $removed;
+    }
+
+    public function query($quantile) {
+        $rankMin = 0;
+        $desired = (integer) \floor($quantile * $this->count);
+        $desired = $desired + (2 * $this->epsilon * $this->count);
+        $n       = $this->sample->count();
+
+        for($i = 1; $i < $n; $i++) {
+            $prev     = $this->sample[$i - 1];
+            $cur      = $this->sample[$i];
+            $rankMin += $prev->g;
+
+            if ($rankMin + $cur->g + $cur->delta > $desired) {
+                return $prev->value;
+            }
+        }
+
+        return $this->sample->Last()->value;
     }
 }
