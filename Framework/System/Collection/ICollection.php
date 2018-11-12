@@ -14,7 +14,16 @@ abstract class ICollection implements ArrayAccess {
      * @var array
     */
     protected $__data;
-	
+    
+    /** 
+     * 函数返回当前的这个序列对象之中的元素数量
+     * 
+     * @return integer 序列之中的元素的数量
+    */
+    public function count() {
+        return \count($this->__data);
+    }
+
     function __get($name) {
         if($name === 'Count')
             return $this->count($this->__data);
@@ -97,7 +106,7 @@ abstract class ICollection implements ArrayAccess {
      * @return array An ``System.Object`` array containing copies of the 
      *    elements of the ``System.Collections.ArrayList``.
     */
-    public function ToArray() {        
+    public function ToArray() {
         return (new ArrayObject($this->__data))->getArrayCopy();
     }
 }
