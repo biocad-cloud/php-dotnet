@@ -52,7 +52,7 @@ class QuantileEstimationGK {
     /** 
      * @param double[] $data
     */
-    public function __construct($epsilon, $compact_size, $data = null) {
+    public function __construct($data = null, $epsilon = 0.001, $compact_size = 1000) {
         $this->epsilon      = $epsilon;
         $this->compact_size = $compact_size;
         $this->sample       = new \ArrayList();
@@ -65,6 +65,8 @@ class QuantileEstimationGK {
     }
 
     /** 
+     * 插入目标值
+     * 
      * @param double $x 
      * @return QuantileEstimationGK
     */
@@ -120,9 +122,30 @@ class QuantileEstimationGK {
         return $removed;
     }
 
+    /** 
+     * 查询出百分比位置的值
+     * 
+     * quantile参数值必须是一个``[0, 1]``之间的小数
+     * 
+     * @param double $quantile 百分比位置，可以为一个数组，数组参数下会返回一一对应的多个值
+    */
     public function query($quantile) {
+        if (is_array($quantile)) {
+            $out = [];
+
+            foreach($quantile as $q) {
+                $out[] = $this->queryImpl($q);
+            }
+
+            return $out;
+        } else {
+            return $this->queryImpl($quantile);
+        }
+    }
+
+    private function queryImpl($quantile) {
         $rankMin = 0;
-        $desired = (integer) \floor($quantile * $this->count);
+        $desired = \floor($quantile * $this->count);
         $desired = $desired + (2 * $this->epsilon * $this->count);
         $n       = $this->sample->count();
 
