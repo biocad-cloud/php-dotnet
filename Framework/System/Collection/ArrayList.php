@@ -86,13 +86,26 @@ class ArrayList extends ICollection {
         return $x;
     }
 
+    /** 
+     * @param integer $index 需要插入新的数据的索引
+     * @param mixed $obj 所将要被插入的值
+     * 
+     * @return ArrayList 函数返回当前的列表对象以构成链式调用
+    */
     public function InsertAt(int $index, mixed $obj) {
         # 首先列表长度增加一个空元素
         # 然后前一个元素覆盖后一个元素的值
         # 直到index位置被空下来，之后填入obj值即可完成插入操作
 
         # 首先执行向后位移填充操作
-        
+        for($i = $this->count(); $i > $index; $i--) {
+            $previous = $this->__data[$i - 1];
+            $this->__data[$i] = $previous;
+        }
+
+        # 然后再index填入值即可
+        $this->__data[$index] = $obj;
+        return $this;
     }
 }
 
