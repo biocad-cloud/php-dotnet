@@ -172,11 +172,12 @@ class dotnet {
         }
 
         $initiator->end();
+
         debugView::LogEvent("App init in " . $initiator->getTime());
         debugView::AddItem("benchmark.init", $initiator->getTime(true));
     }
     
-    private static function setupLogs() {        
+    private static function setupLogs() {
         // Report all PHP errors (see changelog)
         error_reporting(E_ALL);
         set_error_handler(function($errno, $errstr, $errfile, $errline) {
@@ -194,8 +195,8 @@ class dotnet {
      * 
      * @return string 缓存文件夹的路径字符串
 	*/
-	public static function getMyTempDirectory() {		
-		$temp = sys_get_temp_dir();		
+	public static function getMyTempDirectory() {
+		$temp = sys_get_temp_dir();
 
 		if (strtolower($temp) == strtolower("C:\\Windows")) {
 			# 不可以写入Windows文件夹
@@ -259,6 +260,11 @@ class dotnet {
      * @return string 这个函数返回所导入的模块的完整的文件路径
     */
     public static function Imports($module) {
+        // 在这里需要添加加载记录
+        // 否则isloaded函数任然会判断目标模块没有被加载
+        bootstrapLoader::push($module, []);
+        // 进行模块引用的预处理
+        // 然后执行解析出来的php文件的加载操作
         return \PhpDotNet\bootstrap::LoadModule($module);
     }
 

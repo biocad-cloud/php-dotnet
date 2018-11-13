@@ -7,12 +7,21 @@
 # 可能会因为在本脚本的头部进行引用其他的脚本文件的时候，这个模块的脚本还
 # 没有被加载，所以会导致出现无法找到类Strings的错误
 # 在这里显式的引入一次这个文件即可解决问题
-include_once PHP_DOTNET . "/Microsoft/VisualBasic/Strings.php";
+bootstrapLoader::imports(".Microsoft.VisualBasic.Strings");
 
 /**
  * PHP WEB programming utils from php.NET framework
 */
 class Utils {
+
+    /**
+     * 获取得到序列之中的第一个元素
+    */
+    public static function First($array) {
+        foreach($array as $key => $value) {
+            return $value;
+        }
+    }
 
     #region "OSS工具"
 
@@ -161,18 +170,35 @@ class Utils {
             $renameAs = basename($filepath);
         }
 
+        $file_size = filesize($filepath); 
+
         header('Content-Description: File Transfer');
         header('Cache-control: private');
         header('Content-Type:'                  . $mime);
-        header('Content-Length:'                . filesize($filepath));
-        header('Content-Disposition: filename=' . $renameAs);
-    
-        flush();
+        header("Accept-Ranges: bytes");         
+        header("Accept-Length: $file_size");
+        header('Content-Disposition: attachment; filename=' . $renameAs);
+        // 告诉浏览器，这是二进制文件
+        header("Content-Transfer-Encoding: binary"); 
+
+        ob_end_clean();
 
         if ($rateLimit <= 0) {
 
             # 不限速
-            readfile($filepath);
+            $fp         = fopen($filepath, "r");
+            $file_count = 0; 
+            $buffer     = 1024; 
+
+            //向浏览器返回数据
+            while(!feof($fp) && $file_count < $file_size) { 
+                $file_con    = fread($fp, $buffer); 
+                $file_count += $buffer; 
+                
+                echo $file_con; 
+            } 
+
+            fclose($fp); 
 
         } else {
             Utils::flushFileWithRateLimits($filepath, $rateLimit);
@@ -539,5 +565,108 @@ class Utils {
         }
 
         return false;
+    }
+
+    /**
+     * 创建缩略图（需要gd插件的支持）
+     * 
+     * > http://webcheatsheet.com/php/create_thumbnail_images.php
+     * 
+     * @param string $pathToImages 图片的文件夹路径或者一个图片的文件路径
+     * @param string $pathToThumbs 缩略图的输出的文件夹路径
+     * @param integer $thumbWidth 所生成的缩略图的最大宽度
+     * 
+     * @return integer 成功的数目
+    */
+    public static function createThumbs($pathToImages, $pathToThumbs, $thumbWidth = 120) {
+        if (!file_exists($pathToImages)) {
+            return false;
+        }
+
+        if (is_file($pathToImages)) {
+            $pathToImages = [$pathToImages];
+        } else {
+            // is a directory
+            $tmp = [];
+            // open the directory
+            $dir = opendir( $pathToImages );
+
+            // loop through it, looking for any/all JPG files:
+            while (false !== ($fname = readdir( $dir ))) {
+                array_push($tmp, "{$pathToImages}/{$fname}");
+            }
+
+            $pathToImages = $tmp;
+
+            // close the directory
+            closedir( $dir );
+        }
+
+        if (!file_exists($pathToThumbs)) {
+            mkdir($pathToThumbs, 0777, true);
+        }
+
+        $n = 0;
+
+        foreach($pathToImages as $image) {
+            $fileName  = explode("/", $image);
+            $fileName  = end($fileName);
+            $thumbPath = "$pathToThumbs/$fileName";
+
+            if (self::ImageThumbs($image, $thumbPath, $thumbWidth)) {
+                $n++;
+            }
+        }
+
+        return $n;
+    }
+
+    public static function LoadImage($path) {
+        $info = pathinfo($path);
+        $ext  = strtolower($info['extension']);
+        
+        if (!file_exists($path)) {
+            return null;
+        }
+
+        if ($ext === 'jpg') {
+            return imagecreatefromjpeg($path);
+        } else if ($ext === "png") {
+            return imagecreatefrompng($path);
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * 生成原始图片的缩略图
+     * 
+     * @param string $rawImage 输入的文件路径
+     * @param string $thumbImage 输出的缩略图文件路径
+     * @param integer $thumbWidth
+    */
+    public static function ImageThumbs($rawImage, $thumbImage, $thumbWidth = 120) {
+        // load image and get image size
+        $img = self::LoadImage($rawImage);
+
+        if (!$img) {
+            return false;
+        }
+
+        $width  = imagesx($img);
+        $height = imagesy($img);
+        // calculate thumbnail size
+        $new_width  = $thumbWidth;
+        $new_height = floor( $height * ( $thumbWidth / $width ) );
+        // create a new temporary image
+        $tmp_img = imagecreatetruecolor( $new_width, $new_height );
+
+        // copy and resize old image into new image 
+        imagecopyresized( $tmp_img, $img, 0, 0, 0, 0, $new_width, $new_height, $width, $height );
+
+        // save thumbnail into a file
+        imagepng($tmp_img, $thumbImage);
+
+        return true;
     }
 }
