@@ -173,8 +173,11 @@ class FileSystem {
 	/**
 	 * Returns a read-only collection of strings representing the names of files within a directory.
 	 * 
-	 * @param directory Name and location of the directory.
-	 * @param suffix The file extension name. By default is get all files in target directory.
+	 * @param string $directory Name and location of the directory.
+	 * @param string $suffix The file extension name. By default is get all files in target directory.
+	 *               (*.ext或者ext这两种格式都允许，默认是*.*，即不做任何筛选)
+	 * 
+	 * @return string[] 文件的完整路径集合
 	 */
 	public static function GetFiles($directory, $suffix = "*") {
 		$list  = array_diff(scandir($directory), array('.', '..'));
