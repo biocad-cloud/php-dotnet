@@ -50,12 +50,19 @@ class View {
 		$wwwroot = str_replace("\\", "/", $wwwroot);
 		$path    = realpath("$wwwroot/$name.html");
 
-		if (file_exists($path)) {
-			$path = realpath($path);
+		if (empty($path) || $path == false) {
+			# 文件丢失？
+			# 或者当前的网站在文件夹下，而不是根文件夹
+			console::error("View file not found, please consider define a valid <code>SITE_PATH</code> constant before we load php.NET framework.");
 		} else {
-			$path = str_replace("//", "/", $path);
-		}		
+			if (file_exists($path)) {
+				$path = realpath($path);
+			} else {
+				$path = str_replace("//", "/", $path);
+			}
+		}
 
+		console::log("Current workspace: " . getcwd());
 		console::log("HTML document path is: $path");
 		console::log("View name='$name'");
 		console::log("View wwwroot='$wwwroot'");
