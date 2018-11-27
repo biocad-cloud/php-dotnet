@@ -70,4 +70,50 @@ class Math {
      * @var double 
     */
     public const LN10 = 2.302585092994046;
+
+    /** 
+     * The Math.trunc() function returns the integer part of a number by 
+     * removing any fractional digits.
+     * 
+     * @param double $x
+     * @return integer
+    */
+    public static function trunc($x) {
+        $text = \strval($x);
+        $text = \explode(".", $text);
+        $text = $text[0];
+
+        return \intval($text);
+    }
+
+    /** 
+     * The Math.sign() function returns the sign of a number, indicating whether 
+     * the number is positive, negative or zero.
+     * 
+     * @param double $x
+     * @return integer
+    */
+    public static function sign($x) {
+        if ($x > 0) {
+            return 1;
+        } else if ($x < 0) {
+            return -1;
+        } else {
+            return 0;
+        }
+    }
+
+    /** 
+     * The Math.log2() function returns the base 2 logarithm of a number
+    */
+    public static function log2($x) {
+        return \log($x, 2);
+    }
+
+    /** 
+     * The Math.cbrt() function returns the cube root of a number
+    */
+    public static function cbrt($x) {
+        return $x ** (1 / 3);
+    }
 }
