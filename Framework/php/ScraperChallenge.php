@@ -30,7 +30,7 @@ class ScraperChallenge {
         "Math.atan"   => ["atan"        => 1],
         "Math.atan2"  => ["atan2"       => 1],
         "Math.atanh"  => ["atanh"       => 1],
-        "Math.cbrt"   => ["Math::cbrt"  => 1],
+        "Math.cbrt"   => ["\System\Math::cbrt"  => 1],
         "Math.ceil"   => ["ceil"        => 1],
         # "Math.clz32"  => null,
         "Math.cos"    => ["cos"         => 1],
@@ -44,19 +44,19 @@ class ScraperChallenge {
         "Math.log"    => ["log"         => 2],
         "Math.log10"  => ["log10"       => 1],
         "Math.log1p"  => ["log1p"       => 1],
-        "Math.log2"   => ["Math::log2"  => 1],
+        "Math.log2"   => ["\System\Math::log2"  => 1],
         "Math.max"    => ["max"         => 2],
         "Math.min"    => ["min"         => 2],
         "Math.pow"    => ["pow"         => 2],
         # "Math.random" => null, // 因为随机数可能会导致不一样的验证结果，所以在这里不使用随机数
         "Math.round"  => ["round"       => 2],
-        "Math.sign"   => ["Math::sign"  => 1],
+        "Math.sign"   => ["\System\Math::sign"  => 1],
         "Math.sin"    => ["sin"         => 1],
         "Math.sinh"   => ["sinh"        => 1],
         "Math.sqrt"   => ["sqrt"        => 1],
         "Math.tan"    => ["tan"         => 1],
         "Math.tanh"   => ["tanh"        => 1],
-        "Math.trunc"  => ["Math::trunc" => 1]
+        "Math.trunc"  => ["\System\Math::trunc" => 1]
     ];
 
     private static $math_const = [
@@ -98,7 +98,7 @@ class ScraperChallenge {
     #endregion
 
     public function getRandomMath() {
-        $fi   = rand(0, count($this->mathNames));
+        $fi   = rand(0, count($this->mathNames) - 1);
         $js   = $this->mathNames[$fi];
         $argv = ["js" => [], "php" => []];
 
@@ -127,7 +127,7 @@ class ScraperChallenge {
 
     public function getRandomNumber() {
         if (self::flipCoin(3)) {
-            $ci  = rand(0, count($this->constNames));
+            $ci  = rand(0, count($this->constNames) - 1);
             $js  = $this->constNames[$ci];
             $php = self::$math_const[$js];
         } else if(self::flipCoin(6)) {
@@ -182,7 +182,7 @@ class ScraperChallenge {
 
         for ($i = 0; $i < $n; $i++) {
             # 操作符
-            $op = self::$math_op[rand(0, count(self::$math_op))];
+            $op = self::$math_op[rand(0, count(self::$math_op) - 1)];
 
             array_push($tokens["js"],  $op);
             array_push($tokens["php"], $op);
