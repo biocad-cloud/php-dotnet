@@ -1,5 +1,7 @@
 <?php
 
+session_start();
+
 include "../../package.php";
 
 Imports("php.ScraperChallenge");

@@ -98,8 +98,8 @@ class ScraperChallenge {
     #endregion
 
     public function getRandomMath() {
-        $fi   = rand(0, count($this->$mathNames));
-        $js   = $this->$mathNames[$fi];
+        $fi   = rand(0, count($this->mathNames));
+        $js   = $this->mathNames[$fi];
         $argv = ["js" => [], "php" => []];
 
         # 获取得到javascript对应的php函数
@@ -127,8 +127,8 @@ class ScraperChallenge {
 
     public function getRandomNumber() {
         if (self::flipCoin(3)) {
-            $ci  = rand(0, count($this->$constNames));
-            $js  = $this->$constNames[$ci];
+            $ci  = rand(0, count($this->constNames));
+            $js  = $this->constNames[$ci];
             $php = self::$math_const[$js];
         } else if(self::flipCoin(6)) {
             $js  = self::getRandom();
