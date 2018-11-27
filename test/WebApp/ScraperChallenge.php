@@ -17,7 +17,7 @@ $js = $math["js"];
 echo "<script> $js; console.log(ScraperChallenge) </script>";
 echo "<br />";
 echo "<br />";
-echo "<pre><code>" . $math["php"] . "</code></pre>";
+echo "<pre><code>" . htmlentities($math["php"]) . "</code></pre>";
 echo "<br />";
 echo "<br />";
 echo "<pre><code>" . $math["js"] . "</code></pre>";
