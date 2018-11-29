@@ -127,17 +127,18 @@ class console {
      * 经过格式化的``var_dump``或者``json``输出
      * 
      * @param mixed $obj 需要在终端上面输出浏览的任意php对象
+     * @param string $message 这个是为了在更好的让开发人员理解对象含义的帮助信息
     */
-    public static function dump($obj, $code =2) {
+    public static function dump($obj, $message = "PHP object value dump:", $code = 2) {
         if (IS_CLI) {
             $time = Utils::Now(false);
-            echo "[$time] \n";
+            echo "[$time] $message\n";
             echo var_dump($obj);
         } else if (APP_DEBUG) {
             $trace = self::backtrace();
             self::$logs[]  = [
                 "code"  => $code,
-                "msg"   => self::objDump($obj, false),
+                "msg"   => $message . "<br />" . self::objDump($obj, false),
                 "file"  => $trace["file"],
                 "line"  => $trace["line"], 
                 "color" => "black",
