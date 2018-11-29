@@ -212,6 +212,20 @@ class Strings {
 		}
 	}
 
+	/** 
+	 * 判断目标字符串是否为空
+	 * 
+	 * > 根据``$stringAsFactor``的配置，如果``$stringAsFactor = true``，则下列的字符串都会被当作为空值：
+	 * > + ``null``
+	 * > + ``NULL``
+	 * > + ``NA``
+	 * > + ``NaN``
+	 * > + ``undefined``, ``undefine``
+	 * 
+	 * @param string $str 被判断的目标字符串
+	 * @param boolean $stringAsFactor 是否将一些含有空值意义的字符串也作为空值来处理？
+	 *    如果这个参数为``true``，则字符串的值为null或者NA的时候也会被当作为空值来对待
+	*/
 	public static function Empty($str, $stringAsFactor = false) {
 		# 2018-7-19
 		# 在php之中会将字符串0也作为空值，这是一个bug？？
@@ -228,7 +242,9 @@ class Strings {
 			return $str == "null"      || 
 				   $str == "NULL"      || 
 				   $str == "undefined" || 
-				   $str == "undefine";
+				   $str == "undefine"  || 
+				   $str == "NA"        || 
+				   $str == "NaN";
 		} else {
 			return false;
 		}
