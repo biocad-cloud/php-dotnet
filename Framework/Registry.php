@@ -89,7 +89,13 @@ class DotNetRegistry {
         return [];
     }
 
-    public static function DisableErrorHandler() {    
+    /** 
+     * 函数返回TRUE，表示禁用框架的错误报告系统，直接将所有的错误消息输出到页面或者终端上
+     * 返回FALSE，表示不禁用当前框架的错误报告系统，错误消息将会被输出到调控终端上面
+     * 
+     * @return boolean 
+    */
+    public static function DisableErrorHandler() {
 
         # 当没有定义配置参数的时候，会根据是否处于调试模式来返回flag状态
         # 如果没有定义配置参数，则在调试模式下永远禁用，即将在调试模式下所有的错误都显示在页面上
@@ -106,8 +112,8 @@ class DotNetRegistry {
         }        
     }
 
-    public static function LogFile() {      
-        return self::Read(ERR_HANDLER, "./data/php_errors.log");         
+    public static function LogFile() {
+        return self::Read(ERR_HANDLER, "./data/php_errors.log");
     }
 
     /**
