@@ -635,10 +635,10 @@ class Table {
     }
 	
 	/**
-	 * 这个函数通过一个数组返回目标列的所有数据
+	 * 这个函数通过一个数组返回目标列的所有数据，返回来的列数据一般是一个字符串数组
 	 * 
 	 * @param string $fieldName 数据表之中的列名称
-	 * @return array 返回来的列的数据
+	 * @return string[] 返回来的列的数据
 	*/
 	public function project($fieldName) {
 		$data  = $this->select([$fieldName]);

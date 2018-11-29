@@ -46,6 +46,24 @@ class Strings {
 		}		
 	}
 	
+	/** 
+	 * 进行批量的字符串连接
+	 * 
+	 * @param string[] $strings
+	 * @param string $right
+	 * 
+	 * @return string[]
+	*/
+	public static function StrCat($strings, $right) {
+		$out = [];
+
+		foreach($strings as $str) {
+			array_push($out, $str . $right);
+		}
+
+		return $out;
+	}
+
 	/**
 	 * 字符串数组去重
 	*/
