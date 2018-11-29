@@ -74,11 +74,32 @@ if (!defined("FRAMEWORK_DEBUG")) {
 define("IS_CLI", php_sapi_name() === 'cli');
 
 if (IS_CLI && FRAMEWORK_DEBUG) {
+
     # 2018-10-12 很奇怪，在终端中调试输出的第一行肯定会有一个空格
     # 这个多于的空格会影响输出的格式
     # 在这里跳过第一行
+    $time = date('Y-m-d H:i:s', time());
+
     echo "\n";
-    echo " ------------============ PHP.NET ============-------------\n\n";
+    echo " [$time]\n";
+    echo " ............................................................\n";
+    echo " ............................................................\n";
+    echo " ..............TT.................TNT....TT..TNNNNTTNNNNNNT..\n";
+    echo " ..............E..................hNh....h...h........E......\n";
+    echo " ..............E..................hhE....h...h........E......\n";
+    echo " .....TTTNNT..TTTNNT..TTTNNT.....TT.NT..TT..TT.......TT......\n";
+    echo " .....EN...E..EN..Th..EN...E.....h..Eh..h...hNNNE....h.......\n";
+    echo " .....E....E..E...TT..E....E.....h..TE..h...h........h.......\n";
+    echo " ....TT....h.TT...E..TT....h....TT...N.TT..TT.......TT.......\n";
+    echo " ....E....h..h....h..E....h.....h....Ehh...h........h........\n";
+    echo " ....NT..hT..h...TT..NT..hT.Th..h....TNh...h........h........\n";
+    echo " ...TThNNT..TT...h..TThNNT..ET.TT.....NT..TNNNNT...TT........\n";
+    echo " ...h...............h........................................\n";
+    echo " ...h...............h........................................\n";
+    echo " ..TT..............TT........................................\n";
+    echo " ............................................................\n";
+    echo "\n";
+    echo " -------------============ PHP.NET ============--------------\n\n";
     echo " Repository: https://github.com/GCModeller-Cloud/php-dotnet\n";
     echo " Author:     xieguigang <xie.guigang@gcmodeller.org>\n";
     echo "\n\n";
