@@ -124,11 +124,16 @@ class console {
     }
 
     /**
-     * 经过格式化的var_dump输出
+     * 经过格式化的``var_dump``或者``json``输出
      * 
-     */
+     * @param mixed $obj 需要在终端上面输出浏览的任意php对象
+    */
     public static function dump($obj, $code =2) {
-        if (APP_DEBUG) {
+        if (IS_CLI) {
+            $time = Utils::Now(false);
+            echo "[$time] \n";
+            echo var_dump($obj);
+        } else if (APP_DEBUG) {
             $trace = self::backtrace();
             self::$logs[]  = [
                 "code"  => $code,
@@ -144,7 +149,7 @@ class console {
     /**
      * @param boolean $var_dump 是进行var_dump输出还是普通的字符串输出？
     */
-    public static function objDump($obj, $var_dump = true) {        
+    public static function objDump($obj, $var_dump = true) {
         if (is_array($obj) || is_object($obj)) {
             $id   = "json" . Utils::RandomASCIIString(6);
             $json = json_encode($obj);
