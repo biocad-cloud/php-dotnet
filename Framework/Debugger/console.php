@@ -15,14 +15,20 @@ class console {
      * 在这个函数之中显示以及处理php的警告消息
     */
     public static function error_handler($errno, $errstr, $errfile, $errline) {
-        self::$logs[] = [
-            "code"  => $errno, 
-            "msg"   => Strings::Len($errstr) > 128 ? substr($errstr, 0, 128) . "..." : $errstr, 
-            "file"  => self::shrinkPath($errfile), 
-            "line"  => $errline, 
-            "color" => "red",
-            "time"  => Utils::Now(false)
-        ];
+        if (IS_CLI) {
+            $time = Utils::Now(false);
+            echo "[$time, ERROR::$errno] $errstr\n";
+            echo "    at $errfile line $errline\n";
+        } else {
+            self::$logs[] = [
+                "code"  => $errno, 
+                "msg"   => Strings::Len($errstr) > 128 ? substr($errstr, 0, 128) . "..." : $errstr, 
+                "file"  => self::shrinkPath($errfile), 
+                "line"  => $errline, 
+                "color" => "red",
+                "time"  => Utils::Now(false)
+            ];
+        }
     }
 
     /**
@@ -144,7 +150,7 @@ class console {
             $json = json_encode($obj);
             
             return "<div class='jsonview-container' id='$id'></div>
-                    <script type='text/javascript'>                                
+                    <script type='text/javascript'>
                         $(function() {
                             $('#$id').JSONView($json, { collapsed: true });
                         });
@@ -174,7 +180,7 @@ class console {
     /** 
      * 打印出错误消息
     */
-    public static function error($msg, $code = 1) {
+    public static function error($msg, $code = 1) {  
         if ((!IS_CLI) && APP_DEBUG) {
             $trace = self::backtrace();
             self::$logs[] = [
@@ -186,8 +192,11 @@ class console {
                 "time"  => Utils::Now(false)
             ];
         } else if (IS_CLI && FRAMEWORK_DEBUG) {
-            $time = Utils::Now(false);
-            echo "[$time, error=$code] $msg\n";
+            $time  = Utils::Now(false);
+            $trace = StackTrace::GetCallStack();
+
+            echo "[$time, ERROR::$code] $msg\n";
+            echo $trace->ToString($html = false) . "\n";
         } 
     }
 
