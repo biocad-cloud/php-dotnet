@@ -98,7 +98,7 @@ class DotNetRegistry {
         if (self::hasValue(ERR_HANDLER_DISABLE)) {
             return Conversion::CBool(self::$config[ERR_HANDLER_DISABLE]); 
         } else {
-            if (APP_DEBUG) {
+            if (APP_DEBUG || FRAMEWORK_DEBUG) {
                 return false;
             } else {
                 return true;
