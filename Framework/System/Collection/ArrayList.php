@@ -29,7 +29,7 @@ class ArrayList extends ICollection {
      * the value has been added.
     */
     public function Add($obj) {
-        array_push($this->__data, $obj);
+        $this->__data[count($this->__data)] = $obj;
         return count($this->__data) - 1;
     }
 
@@ -106,5 +106,14 @@ class ArrayList extends ICollection {
         # 然后再index填入值即可
         $this->__data[$index] = $obj;
         return $this;
+    }
+
+    /** 
+     * 从一个序列之中创建一个可变的列表对象
+     * 
+     * @return ArrayList
+    */
+    public static function From(...$list) {
+        return new ArrayList($list);
     }
 }
