@@ -7,6 +7,13 @@ Imports("System.Text.StringBuilder");
 */
 class ScriptBuilder extends StringBuilder implements ArrayAccess {
 
+    /** 
+     * ``[key => value]``字典
+     * 
+     * @var array
+    */
+    var $vars = [];
+
     /**
      * @param string $string The initialize string buffer
     */
@@ -14,7 +21,32 @@ class ScriptBuilder extends StringBuilder implements ArrayAccess {
         parent::__construct($string, $newLine);
     }
 
+    /**
+     * Converts the value of a ``ScriptBuilder`` to a String.
+     * 
+     * 将当前的这个``StringBuilder``对象之中的字符串缓冲字符串输出
+     * 
+     * @return string 最终所拼接出来的文本字符串数据
+    */
+    public function ToString() {
+        $buffer = $this->buffer;
+
+        foreach($this->vars as $offset => $replaceValue) {
+            if ($offset[0] !== "@") {
+                $symbol = "@" . $offset; 
+            } else {
+                $symbol = $offset;
+            }
+
+            $buffer = str_replace($symbol, $replaceValue, $buffer);
+        }
+
+        return $buffer;
+    }
+
     #region "implements ArrayAccess: charAt index function/symbol replacement"
+
+    # 在这里实际上就是将offset和对应的value添加进入vars字典之中
 
     /**
      * Symbol expression: @symbol
@@ -24,14 +56,8 @@ class ScriptBuilder extends StringBuilder implements ArrayAccess {
     */
     public function offsetSet($offset, $value) {
         if (is_string($offset)) {
-            # symbol replacement
-            if ($offset[0] !== "@") {
-                $symbol = "@" . $offset; 
-            } else {
-                $symbol = $offset;
-            }
-
-            parent::Replace($symbol, $value);
+            # push variables
+            $this->vars[$offset] = $value;
         } else {
             parent::offsetSet($offset, $value);
         }
@@ -48,13 +74,7 @@ class ScriptBuilder extends StringBuilder implements ArrayAccess {
         if (!is_string($offset)) {
             return parent::offsetExists($offset);
         } else {
-            $pos = strpos($this->buffer, $offset);
-
-            if (!empty($pos) && $pos >= 0) {
-                return true;
-            } else {
-                return false;
-            }
+            return array_key_exists($offset, $this->vars);
         }
     }
 
@@ -66,9 +86,8 @@ class ScriptBuilder extends StringBuilder implements ArrayAccess {
     public function offsetUnset($offset) {
         if (is_integer($offset)) {
             parent::offsetUnset($offset);
-        } else {
-            # string replace as empty string
-            $this->buffer = str_replace($offset, "", $this->buffer);
+        } else {            
+            unset($this->vars[$offset]);
         }
     }
 
@@ -82,7 +101,7 @@ class ScriptBuilder extends StringBuilder implements ArrayAccess {
         if (is_integer($offset)) {
             return $this->buffer{$offset};
         } else {
-            return strpos($this->buffer, $offset);
+            return Utils::ReadValue($this->vars, $offset);
         }
     }
 
