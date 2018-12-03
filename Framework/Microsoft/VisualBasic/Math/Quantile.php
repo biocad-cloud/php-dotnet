@@ -61,6 +61,12 @@ class QuantileEstimationGK {
             foreach($data as $x) {
                 $this->insert($x);
             }
+
+            \console::log("Quantile samples data:");
+
+            foreach($this->sample->ToArray() as $x) {
+                \console::log(json_encode($x));
+            }
         }
     }
 

@@ -117,7 +117,7 @@ class console {
                 "color" => "black",
                 "time"  => Utils::Now(false)
             ];
-        } else if (IS_CLI && FRAMEWORK_DEBUG) {
+        } else if (IS_CLI) {
             $time = Utils::Now(false);
             echo "[$time] $msg\n";
         }
