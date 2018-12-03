@@ -62,11 +62,13 @@ class QuantileEstimationGK {
                 $this->insert($x);
             }
 
+            /*
             \console::log("Quantile samples data:");
 
-            foreach($this->sample->ToArray() as $x) {
+            foreach($this->sample->GetEnumerator() as $x) {
                 \console::log(json_encode($x));
             }
+            */
         }
     }
 
@@ -80,7 +82,11 @@ class QuantileEstimationGK {
         $idx   = 0;
         $delta = 0;
 
-        foreach($this->sample as $i) {
+        # \console::log("#Begin insert: $x");
+
+        foreach($this->sample->GetEnumerator() as $i) {
+            # \console::log("{$i->value} > $x");
+
             if ($i->value > $x) {
                 break;
             } else {
@@ -88,13 +94,17 @@ class QuantileEstimationGK {
             }
         }
 
+        # \console::log("idx=$idx");
+        # \console::log("sample_size=" . $this->sample->count());
+        # \console::log("#End Insert\n");
+
         if ($idx == 0 || $idx == $this->sample->count()) {
             $delta = 0;
         } else {
             $delta = (integer) \floor(2 * $this->epsilon * $this->count);
         }
 
-        $this->sample->Add(new X($x, 1, $delta));
+        $this->sample->InsertAt($idx, new X($x, 1, $delta));
 
         if ($this->sample->count() > $this->compact_size) {
             $this->compress();
