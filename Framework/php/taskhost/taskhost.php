@@ -1,5 +1,7 @@
 <?php
 
+Imports("Microsoft.VisualBasic.Language.Value.Uid");
+
 /**
  * 定时任务的宿主进程
 */
@@ -46,6 +48,26 @@ class taskhost {
                 sleep($this->interval);
             }
         }
+    }
+
+    /** 
+     * @var Uid
+    */
+    static $uid;
+
+    /** 
+     * @return string
+    */
+    public static function getNextTempName() {
+        if (empty(self::$uid)) {
+            self::$uid = new Uid();
+        }
+
+        $id = self::$uid->Add()->ToString();
+        $id = str_pad($id, 7, "0", STR_PAD_LEFT);
+        $id = "TEMP$id";
+
+        return $id;
     }
 
     /**
@@ -146,4 +168,3 @@ class taskhost {
         chdir($current);
     }
 }
-?>

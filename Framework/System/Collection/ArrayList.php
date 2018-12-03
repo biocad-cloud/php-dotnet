@@ -108,5 +108,3 @@ class ArrayList extends ICollection {
         return $this;
     }
 }
-
-?>

@@ -5,7 +5,7 @@ Imports("System.Collection.ArrayList");
 /** 
  * The unique id generator.
 */
-Class Uid {
+class Uid {
 	
 	/** 
 	 * @var ArrayList
@@ -85,6 +85,11 @@ Class Uid {
 		return $move;
 	}
 
+	/** 
+	 * Convert the ``integer`` uid to string value.
+	 * 
+	 * @return string
+	*/
 	public function ToString() {
 		$chars = [];
 
@@ -95,5 +100,3 @@ Class Uid {
 		return implode("", $chars);
 	}
 }
-
-?>
