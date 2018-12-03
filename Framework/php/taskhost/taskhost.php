@@ -110,7 +110,7 @@ class taskhost {
         $s = end($s);
 
         // 得到秒的最后一个数字
-        $s = intval(substr($s, -1));      
+        $s = intval(substr($s, -1));
         
         foreach($ticks as $t) {
             if ($t == $s) {
@@ -143,7 +143,11 @@ class taskhost {
         }
 
         if (strpos($R, "\n") > -1 || !file_exists($R)) {
-            $path = "$workspace/Rscript.R";
+            $tempName = taskhost::getNextTempName();
+            $path     = "$workspace/Rscript/$tempName.R";
+            
+            # write script file and using its file path
+            # as reference
             file_put_contents($path, $R);
             $R = $path;
         }
