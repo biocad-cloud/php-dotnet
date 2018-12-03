@@ -7,9 +7,17 @@ Imports("Microsoft.VisualBasic.Language.Value.Uid");
 */
 class taskhost {
 
-    // 任务的时间间隔
+    /**
+     * 任务的时间间隔
+     * 
+     * @var integer 
+    */ 
     private $interval;
-    // 退出工作线程的信号文件的文件路径
+    /** 
+     * 退出工作线程的信号文件的文件路径
+     * 
+     * @var string 
+    */ 
     private $signal;
 
     const ref = __FILE__;
