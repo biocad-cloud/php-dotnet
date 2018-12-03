@@ -6,7 +6,7 @@ Imports("Microsoft.VisualBasic.Data.csv.Extensions");
  * Defines size, enumerators, and synchronization methods for all nongeneric collections.
  * 对集合类型的基本抽象
 */
-abstract class ICollection implements ArrayAccess {
+abstract class ICollection implements ArrayAccess, Countable {
 
     /**
      * 数组是序列对象的最基本数据存储结构对象

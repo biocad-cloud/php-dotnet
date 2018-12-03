@@ -92,7 +92,7 @@ class ArrayList extends ICollection {
      * 
      * @return ArrayList 函数返回当前的列表对象以构成链式调用
     */
-    public function InsertAt(int $index, mixed $obj) {
+    public function InsertAt(int $index, $obj) {
         # 首先列表长度增加一个空元素
         # 然后前一个元素覆盖后一个元素的值
         # 直到index位置被空下来，之后填入obj值即可完成插入操作

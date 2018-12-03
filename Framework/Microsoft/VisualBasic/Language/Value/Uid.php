@@ -40,7 +40,8 @@ class Uid {
 		$this->charArray = str_split($this->charArray);
 		$this->upbounds  = count($this->charArray) - 1;
 		$this->chars     = new ArrayList();
-		
+		$this->chars->Add(0);
+
 		if ($n > 0) {
 			$this->Add($n);
 		}
