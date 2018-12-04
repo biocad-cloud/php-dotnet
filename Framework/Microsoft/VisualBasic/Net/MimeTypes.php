@@ -35,11 +35,11 @@
 class Mimetypes {
 
     /**
-     * Returns an associative array with extension => mimetype mappings.
+     * Returns an associative array with ``extension => mimetype`` mappings.
      *
      * Generated from source on 26 Sep 2016, 10:26am UTC.
      *
-     * @return array An associative array with extension => mimetype mappings.
+     * @return array An associative array with ``extension => mimetype`` mappings.
     */
     const getMimeTypes = [
 
