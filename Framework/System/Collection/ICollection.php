@@ -5,7 +5,6 @@ Imports("Microsoft.VisualBasic.Data.csv.Extensions");
 /**
  * Defines size, enumerators, and synchronization methods for all nongeneric collections.
  * 对集合类型的基本抽象
- * 
 */
 abstract class ICollection implements ArrayAccess, Countable {
 
@@ -120,6 +119,12 @@ abstract class ICollection implements ArrayAccess, Countable {
 
     /** 
      * 遍历所有元素
+     * 
+     * 这个函数和``ToArray``函数相比，这个函数的性能损耗较轻，
+     * ``ToArray``函数由于涉及到数组的复制操作，性能上会有较多损失。
+     * 
+     * 但是这个函数的返回值是一个迭代器，不能够直接以数组的方式访问
+     * 只能够使用``foreach``语句进行访问
     */
     public function GetEnumerator() {
         foreach($this->__data as $x) {

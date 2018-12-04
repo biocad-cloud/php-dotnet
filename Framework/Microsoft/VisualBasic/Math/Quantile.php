@@ -44,7 +44,10 @@ class QuantileEstimationGK {
     var $epsilon;
     var $count = 0;
     var $compact_size;
+
     /** 
+     * 按照样本值从小到大进行排序的样本列表
+     * 
      * @var \ArrayList
     */
     var $sample;
@@ -75,8 +78,10 @@ class QuantileEstimationGK {
     /** 
      * 插入目标值
      * 
-     * @param double $x 
-     * @return QuantileEstimationGK
+     * 这个函数其实就是一个按照值进行排序插入的操作
+     * 
+     * @param double $x 所进行插入的样本值
+     * @return QuantileEstimationGK 返回当前的统计实例对象
     */
     public function insert($x) {
         $idx   = 0;
@@ -85,8 +90,7 @@ class QuantileEstimationGK {
         # \console::log("#Begin insert: $x");
 
         foreach($this->sample->GetEnumerator() as $i) {
-            # \console::log("{$i->value} > $x");
-
+            # 得到所需要进行插入的位置
             if ($i->value > $x) {
                 break;
             } else {
@@ -104,6 +108,7 @@ class QuantileEstimationGK {
             $delta = (integer) \floor(2 * $this->epsilon * $this->count);
         }
 
+        # 执行样本数据的插入操作
         $this->sample->InsertAt($idx, new X($x, 1, $delta));
 
         if ($this->sample->count() > $this->compact_size) {
@@ -159,6 +164,12 @@ class QuantileEstimationGK {
         }
     }
 
+    /** 
+     * 进行quantile计算，得到对应位置的样本值
+     * 
+     * @param double $quantile 所需要进行查询的分位数百分比位置
+     * @return double 分位数所对应的样本值
+    */
     private function queryImpl($quantile) {
         $rankMin = 0;
         $desired = \floor($quantile * $this->count);
@@ -175,6 +186,8 @@ class QuantileEstimationGK {
             }
         }
 
+        # 所有的样本值都没有大于预期目标，则当前的这个肯定是所有样本之中的最大值
+        # 返回序列的最后一个元素
         return $this->sample->Last()->value;
     }
 }
