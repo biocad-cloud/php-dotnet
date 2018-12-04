@@ -1,5 +1,6 @@
 <?php
 
+Imports("Microsoft.VisualBasic.FileIO.FileSystem");
 Imports("Microsoft.VisualBasic.Language.Value.Uid");
 
 /**
@@ -156,7 +157,7 @@ class taskhost {
             
             # write script file and using its file path
             # as reference
-            file_put_contents($path, $R);
+            FileSystem::WriteAllText($path, $R);
             $R = $path;
         }
 
