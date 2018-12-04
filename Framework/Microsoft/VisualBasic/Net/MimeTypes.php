@@ -1071,7 +1071,7 @@ class Mimetypes {
      * @return string|null
      *
     */
-    public function fromExtension($extension) {
+    public static function fromExtension($extension) {
         $mimetypes = self::getMimeTypes;
         return isset($mimetypes[$extension]) ? $mimetypes[$extension] : null;
     }
@@ -1083,7 +1083,7 @@ class Mimetypes {
      *
      * @return string|null
     */
-    public function fromFilename($filename) {
+    public static function fromFilename($filename) {
         return self::fromExtension(pathinfo($filename, PATHINFO_EXTENSION));
     }
 }
