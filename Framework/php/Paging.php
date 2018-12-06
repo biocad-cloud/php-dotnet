@@ -7,15 +7,13 @@ Imports("php.Utils");
 */
 class DbPaging {
 
-    /*
-    
+    /**
         page = {
-            page: data [],
-            total_page: number,
-            current_page: number,
-            endOfPage: logical 
+            page: data [],        # 当前分页内的数据列表
+            total_page: number,   # 总的分页数
+            current_page: number, # 当前的分页数
+            endOfPage: logical    # 是否已经到达了分页的尾部？
         }
-
     */
 
     /**
@@ -26,8 +24,9 @@ class DbPaging {
      *                          如果$id是一个数字的话，则默认数据表的id列的名称为`id`，则这个$id参数表示start的id编号
      *                          如果$id参数是一个数组的话，则需要传入的形式为：["idName" => start]
      * @param integer $limits 每一页显示的数量
+     * @param array|string $condition 这个条件表达式会和id比较之间构成AND关系
     */
-    public static function RetrivePage($tableName, $id, $limits = 100) {
+    public static function RetrivePage($tableName, $id, $condition = null, $limits = 100) {
         $guid  = "";
         $start = -1;
         
@@ -39,7 +38,7 @@ class DbPaging {
         }
         
         $table   = new Table($tableName);
-        $maxid   = $table->ExecuteScalar("max(`$guid`)");
+        $maxid   = $table->where($condition)->ExecuteScalar("max(`$guid`)");
         $current = ceil( ($start) / $limits );
         // $pages   = ($maxid - $start) / $limits;
         $pages   = ceil( ($maxid) / $limits );
@@ -54,14 +53,27 @@ class DbPaging {
             ];
         } else {
 
-            $page = $table->where([
-                $guid => gt_eq($start)
-            ])->limit($limits) 
+            if (empty($condition)) {
+                $condition = [
+                    $guid => gt_eq($start)
+                ];
+            } else {
+                if (is_string($condition)) {
+                    $condition = "($condition) AND `$guid` >= '$start'";
+                } else {
+                    $condition[$guid] = gt_eq($start);
+                }
+            }
+
+            $page = $table->where($condition)
+              ->limit($limits) 
               ->order_by([$guid])
               ->select();
 
             # echo $table->getLastMySql();
 
+            # 将最后一条记录的id和最大的id比较看看当前数据分页
+            # 是否已经到达最后一页了
             $endOfPage = Enumerable::Last($page)[$guid] == $maxid;
             
             return [
