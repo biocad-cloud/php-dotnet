@@ -49,7 +49,8 @@ class DbPaging {
                 "page"         => [], 
                 "total_page"   => $pages, 
                 "current_page" => $current, 
-                "endOfPage"    => true
+                "endOfPage"    => true,
+                "debug"        => $condition
             ];
         } else {
 
@@ -80,7 +81,8 @@ class DbPaging {
                 "page"         => $page, 
                 "total_page"   => $pages, 
                 "current_page" => $current, 
-                "endOfPage"    => $endOfPage
+                "endOfPage"    => $endOfPage,
+                "debug"        => $table->getLastMySql()
             ];
         }
     }
