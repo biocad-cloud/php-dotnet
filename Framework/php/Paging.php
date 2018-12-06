@@ -37,12 +37,13 @@ class DbPaging {
         } else {
             list($guid, $start) = Utils::Tuple($id);
         }
-
+        
         $table   = new Table($tableName);
         $maxid   = $table->ExecuteScalar("max(`$guid`)");
-        $current = ($start) / $limits;
-        $pages   = ($maxid - $start) / $limits;
-
+        $current = ceil( ($start) / $limits );
+        // $pages   = ($maxid - $start) / $limits;
+        $pages   = ceil( ($maxid) / $limits );
+        
         if ($maxid < $start) {
             # 起始的编号已经超过了最大编号，则肯定没有数据了
             return [
