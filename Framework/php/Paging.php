@@ -39,9 +39,11 @@ class DbPaging {
         
         $table   = new Table($tableName);
         $maxid   = $table->where($condition)->ExecuteScalar("max(`$guid`)");
+        $count   = $table->where($condition)->count();
+
         $current = ceil( ($start) / $limits );
         // $pages   = ($maxid - $start) / $limits;
-        $pages   = ceil( ($maxid) / $limits );
+        $pages   = ceil( ($count) / $limits );
         
         if ($maxid < $start) {
             # 起始的编号已经超过了最大编号，则肯定没有数据了
@@ -75,14 +77,17 @@ class DbPaging {
 
             # 将最后一条记录的id和最大的id比较看看当前数据分页
             # 是否已经到达最后一页了
-            $endOfPage = Enumerable::Last($page)[$guid] == $maxid;
+            # $endOfPage = Enumerable::Last($page)[$guid] == $maxid;
+            $endOfPage = ($current >= $pages);
             
             return [
                 "page"         => $page, 
                 "total_page"   => $pages, 
                 "current_page" => $current, 
                 "endOfPage"    => $endOfPage,
-                "debug"        => $table->getLastMySql()
+                "debug"        => $table->getLastMySql(),
+                "maxid"        => $maxid,
+                "count"        => $count
             ];
         }
     }
