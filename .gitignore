@@ -252,3 +252,5 @@ paket-files/
 *.sln.iml
 
 php_errors.html
+/MySqli/Apps
+/Utils/Apps

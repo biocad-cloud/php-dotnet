@@ -1,0 +1,6 @@
+[submodule "Utils/runtime/sciBASIC#"]
+	path = "Utils/runtime/sciBASIC#"
+	url = https://github.com/xieguigang/sciBASIC.git
+[submodule "Utils/runtime/mysqli.vb"]
+	path = Utils/runtime/mysqli.vb
+	url = https://github.com/xieguigang/mysqli.vb.git

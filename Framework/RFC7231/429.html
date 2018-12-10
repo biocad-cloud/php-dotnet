@@ -1,0 +1,25 @@
+<!DOCTYPE HTML>
+
+<html>
+
+<head>
+    <title>Too Many Requests!</title>
+    ${includes/styles.html}
+</head>
+
+<body>
+    <h1>429 Too Many Requests!</h1>
+
+    <blockquote>
+        <span style="color:gray;">{$url}</span>
+    </blockquote>
+
+    <p>You has sent too many requests in a given amount of time.</p>
+    <p>
+        {$message}
+    </p>
+
+    ${includes/footer.html}
+</body>
+
+</html>
