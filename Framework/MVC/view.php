@@ -50,12 +50,19 @@ class View {
 		$wwwroot = str_replace("\\", "/", $wwwroot);
 		$path    = realpath("$wwwroot/$name.html");
 
-		if (file_exists($path)) {
-			$path = realpath($path);
+		if (empty($path) || $path == false) {
+			# 文件丢失？
+			# 或者当前的网站在文件夹下，而不是根文件夹
+			console::error("View file not found, please consider define a valid <code>SITE_PATH</code> constant before we load php.NET framework.");
 		} else {
-			$path = str_replace("//", "/", $path);
-		}		
+			if (file_exists($path)) {
+				$path = realpath($path);
+			} else {
+				$path = str_replace("//", "/", $path);
+			}
+		}
 
+		console::log("Current workspace: " . getcwd());
 		console::log("HTML document path is: $path");
 		console::log("View name='$name'");
 		console::log("View wwwroot='$wwwroot'");
@@ -117,6 +124,11 @@ class View {
 	/**
 	 * 加载指定路径的html文档并对其中的占位符利用vars字典进行填充
 	 * 这个函数还会额外的处理includes关系
+	 * 
+	 * @param string $path 视图模板的HTML文本文件的路径
+	 * @param array $vars 需要进行填充的变量列表
+	 * @param string $lang 语言
+	 * @param boolean $suppressDebug 是否禁用调试器输出
 	*/
 	public static function Load($path, $vars = NULL, $lang = null, $suppressDebug = false) {
 		global $_DOC;

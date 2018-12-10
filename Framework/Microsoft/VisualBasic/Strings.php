@@ -46,6 +46,24 @@ class Strings {
 		}		
 	}
 	
+	/** 
+	 * 进行批量的字符串连接
+	 * 
+	 * @param string[] $strings
+	 * @param string $right
+	 * 
+	 * @return string[]
+	*/
+	public static function StrCat($strings, $right) {
+		$out = [];
+
+		foreach($strings as $str) {
+			array_push($out, $str . $right);
+		}
+
+		return $out;
+	}
+
 	/**
 	 * 字符串数组去重
 	*/
@@ -212,13 +230,20 @@ class Strings {
 		}
 	}
 
-	# 2018-08-08
-	# 有些系统里面假若php的设置不区分大小写的话，这个Empty函数会造成与php自身的empty函数之间产生冲突
-	# 出现语法错误的bug问题...
-	# Parse error: syntax error, unexpected 'Empty' (T_EMPTY), expecting identifier (T_STRING) in 
-	# /var/www/html/MetaCardio/modules/dotnet/Microsoft/VisualBasic/Strings.php on line 196
-	
-	/*
+	/** 
+	 * 判断目标字符串是否为空
+	 * 
+	 * > 根据``$stringAsFactor``的配置，如果``$stringAsFactor = true``，则下列的字符串都会被当作为空值：
+	 * > + ``null``
+	 * > + ``NULL``
+	 * > + ``NA``
+	 * > + ``NaN``
+	 * > + ``undefined``, ``undefine``
+	 * 
+	 * @param string $str 被判断的目标字符串
+	 * @param boolean $stringAsFactor 是否将一些含有空值意义的字符串也作为空值来处理？
+	 *    如果这个参数为``true``，则字符串的值为null或者NA的时候也会被当作为空值来对待
+	*/
 	public static function Empty($str, $stringAsFactor = false) {
 		# 2018-7-19
 		# 在php之中会将字符串0也作为空值，这是一个bug？？
@@ -235,12 +260,13 @@ class Strings {
 			return $str == "null"      || 
 				   $str == "NULL"      || 
 				   $str == "undefined" || 
-				   $str == "undefine";
+				   $str == "undefine"  || 
+				   $str == "NA"        || 
+				   $str == "NaN";
 		} else {
 			return false;
 		}
 	}
-*/
 
 	/**
 	 * 将字符串转换为大写形式 

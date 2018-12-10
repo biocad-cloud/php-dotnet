@@ -74,10 +74,32 @@ if (!defined("FRAMEWORK_DEBUG")) {
 define("IS_CLI", php_sapi_name() === 'cli');
 
 if (IS_CLI && FRAMEWORK_DEBUG) {
+
     # 2018-10-12 很奇怪，在终端中调试输出的第一行肯定会有一个空格
     # 这个多于的空格会影响输出的格式
     # 在这里跳过第一行
-    echo " ------------============ PHP.NET ============-------------\n\n";
+    $time = date('Y-m-d H:i:s', time());
+
+    echo "\n";
+    echo " [$time]\n";
+    echo " ............................................................\n";
+    echo " ............................................................\n";
+    echo " ..............TT.................TNT....TT..TNNNNTTNNNNNNT..\n";
+    echo " ..............E..................hNh....h...h........E......\n";
+    echo " ..............E..................hhE....h...h........E......\n";
+    echo " .....TTTNNT..TTTNNT..TTTNNT.....TT.NT..TT..TT.......TT......\n";
+    echo " .....EN...E..EN..Th..EN...E.....h..Eh..h...hNNNE....h.......\n";
+    echo " .....E....E..E...TT..E....E.....h..TE..h...h........h.......\n";
+    echo " ....TT....h.TT...E..TT....h....TT...N.TT..TT.......TT.......\n";
+    echo " ....E....h..h....h..E....h.....h....Ehh...h........h........\n";
+    echo " ....NT..hT..h...TT..NT..hT.Th..h....TNh...h........h........\n";
+    echo " ...TThNNT..TT...h..TThNNT..ET.TT.....NT..TNNNNT...TT........\n";
+    echo " ...h...............h........................................\n";
+    echo " ...h...............h........................................\n";
+    echo " ..TT..............TT........................................\n";
+    echo " ............................................................\n";
+    echo "\n";
+    echo " -------------============ PHP.NET ============--------------\n\n";
     echo " Repository: https://github.com/GCModeller-Cloud/php-dotnet\n";
     echo " Author:     xieguigang <xie.guigang@gcmodeller.org>\n";
     echo "\n\n";
@@ -236,6 +258,34 @@ function using(\System\IDisposable $obj, callable $procedure) {
     $result = $procedure($obj);
     $obj->Dispose();
     return $result;
+}
+
+/** 
+ * 对浏览器之中的cookie进行删除操作
+ * 这个函数支持批量处理模式
+ * 
+ * @param string|array
+ * 
+ *  + 如果这个参数为string类型，则只会删除该名称的cookie
+ *  + 如果这个参数为数组，则可以有两种模式：
+ *      1. tuple类型的：    ``[cookie_name => domain]``
+ *      2. 批量cookie删除:  ``[cookie_name => domain][]``
+*/
+function deleteCookies($cookies) {
+    if (is_string($cookies)) {
+        # 只删除单个cookie
+        setcookie($cookies, "", time() - 3600); 
+    } else {
+        if (count($cookies) == 1) {
+            # 将[name => domain]转换为批量模式
+            $cookies = [$cookies];
+        }
+
+        # 执行批量删除
+        foreach($cookies as $cookie_name => $domain) {
+            setcookie($cookie_name, "", time() - 3600, "/", $domain); 
+        }
+    }
 }
 
 #endregion

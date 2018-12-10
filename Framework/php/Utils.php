@@ -170,18 +170,35 @@ class Utils {
             $renameAs = basename($filepath);
         }
 
+        $file_size = filesize($filepath); 
+
         header('Content-Description: File Transfer');
         header('Cache-control: private');
         header('Content-Type:'                  . $mime);
-        header('Content-Length:'                . filesize($filepath));
-        header('Content-Disposition: filename=' . $renameAs);
-    
-        flush();
+        header("Accept-Ranges: bytes");         
+        header("Accept-Length: $file_size");
+        header('Content-Disposition: attachment; filename=' . $renameAs);
+        // 告诉浏览器，这是二进制文件
+        header("Content-Transfer-Encoding: binary"); 
+
+        ob_end_clean();
 
         if ($rateLimit <= 0) {
 
             # 不限速
-            readfile($filepath);
+            $fp         = fopen($filepath, "r");
+            $file_count = 0; 
+            $buffer     = 1024; 
+
+            //向浏览器返回数据
+            while(!feof($fp) && $file_count < $file_size) { 
+                $file_con    = fread($fp, $buffer); 
+                $file_count += $buffer; 
+                
+                echo $file_con; 
+            } 
+
+            fclose($fp); 
 
         } else {
             Utils::flushFileWithRateLimits($filepath, $rateLimit);
