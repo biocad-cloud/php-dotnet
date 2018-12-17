@@ -6,7 +6,7 @@ Imports("Microsoft.VisualBasic.Data.csv.Extensions");
  * Defines size, enumerators, and synchronization methods for all nongeneric collections.
  * 对集合类型的基本抽象
 */
-abstract class ICollection implements ArrayAccess {
+abstract class ICollection implements ArrayAccess, Countable {
 
     /**
      * 数组是序列对象的最基本数据存储结构对象
@@ -14,7 +14,23 @@ abstract class ICollection implements ArrayAccess {
      * @var array
     */
     protected $__data;
-	
+    
+    /** 
+     * 函数返回当前的这个序列对象之中的元素数量
+     * 
+     * @return integer 序列之中的元素的数量
+    */
+    public function count() {
+        return \count($this->__data);
+    }
+
+    /** 
+     * 返回序列之中的最后一个元素的值
+    */
+    public function Last() {
+        return end($this->__data);
+    }
+
     function __get($name) {
         if($name === 'Count')
             return $this->count($this->__data);
@@ -97,8 +113,23 @@ abstract class ICollection implements ArrayAccess {
      * @return array An ``System.Object`` array containing copies of the 
      *    elements of the ``System.Collections.ArrayList``.
     */
-    public function ToArray() {        
+    public function ToArray() {
         return (new ArrayObject($this->__data))->getArrayCopy();
+    }
+
+    /** 
+     * 遍历所有元素
+     * 
+     * 这个函数和``ToArray``函数相比，这个函数的性能损耗较轻，
+     * ``ToArray``函数由于涉及到数组的复制操作，性能上会有较多损失。
+     * 
+     * 但是这个函数的返回值是一个迭代器，不能够直接以数组的方式访问
+     * 只能够使用``foreach``语句进行访问
+    */
+    public function GetEnumerator() {
+        foreach($this->__data as $x) {
+            yield $x;
+        }
     }
 }
 

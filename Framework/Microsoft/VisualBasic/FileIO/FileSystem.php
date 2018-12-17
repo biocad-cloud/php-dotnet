@@ -10,7 +10,9 @@ dotnet::Imports("System.Text.RegularExpressions.Regex");
 class FileSystem {
 	
 	/** 
-	 * Get file name from a given without extensions.
+	 * Get file name from a given file path and without extensions.
+	 * 
+	 * @param string $path The given file path string value.
 	*/
 	public static function BaseName($path) {
 		$path = explode("/", $path);
@@ -29,9 +31,11 @@ class FileSystem {
 	}
 
 	/**
+	 * 将所给定的文件路径之中的多于重复的分隔符给消除掉，可能会解决一些对路径格式
+	 * 要求比较严格的程序的BUG有帮助
 	 * 
-	 * @param windowsStyle: If true, then all of the ``/`` will be replaced as ``\`` 
-	 * 
+	 * @param boolean $windowsStyle If true, then all of the ``/`` will be replaced as ``\`` 
+	 * @param string $path
 	*/
 	public static function NormalizePath($path, $windowsStyle = false) {
 		$path = Strings::Replace($path, '\\', "/");
@@ -76,7 +80,7 @@ class FileSystem {
 	 * @param boolean $append 是否在原有的文件基础之上进行数据的追加？默认不是，会覆盖掉源文件
 	 * 
 	 * @return void This function returns nothing.
-	 */
+	*/
 	public static function WriteAllText($file, $text, $append = FALSE) {
 		if (!file_exists($file)) {
 			$dir = dirname($file);
@@ -101,7 +105,7 @@ class FileSystem {
 	 * @param string $file Name and path of the file to read.
 	 * 
 	 * @return string 
-	 */
+	*/
 	public static function ReadAllText($file, $default = null) {
 		if (!file_exists($file)) {
 			return $default;
@@ -131,18 +135,19 @@ class FileSystem {
 	/**
 	 * Renames a file.
 	 *
-	 * @param file:    File to be renamed.
-	 * @param newName: New name of file.
+	 * @param string $file:    File to be renamed.
+	 * @param string $newName: New name of file.
 	 *
-	 */
+	*/
 	public static function RenameFile($file, $newName) {
 		rename($file, $newName);
 	}
 		
-	/*
+	/**
 	 * Returns a collection of strings representing the path names of subdirectories within a directory.
      *
-	 */
+	 * @param string $directory 目标文件夹的文件路径
+	*/
 	public static function GetDirectories($directory) {
 		return glob($directory . '/*', GLOB_ONLYDIR);
 	}
@@ -152,15 +157,12 @@ class FileSystem {
 	}
 
 	/**
-	 * Creates a directory.
+	 * Creates a directory. 
+	 * (使用这个函数会自动判断文件夹是否存在，主要是为了不出现php的warning而编写的)
 	 *
-	 * @param directory Name and location of the directory.
-	 * 
-	 */
+	 * @param string $directory Name and location of the directory.
+	*/
 	public static function CreateDirectory($directory) {
-		# echo realpath($directory) . "\n";
-		# echo file_exists(realpath($directory)) . "\n";
-
 		if (!file_exists($directory)) {
 			return mkdir($directory, 0755, true);
 		} else {
@@ -178,7 +180,7 @@ class FileSystem {
 	 *               (*.ext或者ext这两种格式都允许，默认是*.*，即不做任何筛选)
 	 * 
 	 * @return string[] 文件的完整路径集合
-	 */
+	*/
 	public static function GetFiles($directory, $suffix = "*") {
 		$list  = array_diff(scandir($directory), array('.', '..'));
 		$files = array();
@@ -203,7 +205,7 @@ class FileSystem {
 				} else {
 					# 不需要做筛选，直接添加
 					array_push($files, realpath("$directory/$entry"));
-				}				
+				}
 			}
 		}
 		
@@ -212,6 +214,8 @@ class FileSystem {
 		
 	/**
 	 * Copy a file, or recursively copy a folder and its contents
+	 * （使用这个函数会递归的将文件夹之中的所有文件都从source文件夹拷贝到dest文件夹） 
+	 * 
 	 * @author      Aidan Lister <aidan@php.net>
 	 * @version     1.0.1
 	 * @link        http://aidanlister.com/2004/04/recursively-copying-directories-in-php/
@@ -250,7 +254,7 @@ class FileSystem {
 			// Deep copy directories
 			$a = "$source/$entry";
 			$b = "$dest/$entry";
-			FileSystem::xcopy($a, $b, $permissions);
+			FileSystem::XCopy($a, $b, $permissions);
 		}
 
 		// Clean up

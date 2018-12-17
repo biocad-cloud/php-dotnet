@@ -7,6 +7,8 @@ Imports("Microsoft.VisualBasic.Strings");
 /**
  * Represents a stack trace, which is an ordered collection of 
  * one or more stack frames.
+ * 
+ * 表示堆栈跟踪，这是一个或多个堆栈帧的有序的集合。
 */
 class StackTrace {
 
@@ -32,7 +34,7 @@ class StackTrace {
     // }
 
     /**
-     * @var array
+     * @var StackFrame[]
     */
     var $frames;
 
@@ -79,6 +81,11 @@ class StackTrace {
         $this->frames = $frames;
     }
 
+    /** 
+     * 获取得到某一个栈片段的信息
+     * 
+     * @return StackFrame
+    */
     public function GetFrame($index) {
         return $this->frames[$index];
     }

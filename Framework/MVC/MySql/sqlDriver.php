@@ -77,7 +77,7 @@ namespace MVC\MySql {
 			$link = $this->__init_MySql(false);   
 			
 			\mysqli_select_db($link, $db); 
-			\mysqli_query($link, "SET names 'utf8'");			      
+			\mysqli_query($link, "SET names 'utf8'");
 
 			$schema = \mysqli_query($link, $SQL);
 
@@ -104,7 +104,7 @@ namespace MVC\MySql {
 			# \mysqli_close($link);
 
 			return $schema;
-		}		
+		}
 		
 		/**
 		 * 使用这个函数来打开和mysql数据库的链接

@@ -1,13 +1,24 @@
 <?php
 
+Imports("Microsoft.VisualBasic.FileIO.FileSystem");
+Imports("Microsoft.VisualBasic.Language.Value.Uid");
+
 /**
  * 定时任务的宿主进程
 */
 class taskhost {
 
-    // 任务的时间间隔
+    /**
+     * 任务的时间间隔
+     * 
+     * @var integer 
+    */ 
     private $interval;
-    // 退出工作线程的信号文件的文件路径
+    /** 
+     * 退出工作线程的信号文件的文件路径
+     * 
+     * @var string 
+    */ 
     private $signal;
 
     const ref = __FILE__;
@@ -46,6 +57,26 @@ class taskhost {
                 sleep($this->interval);
             }
         }
+    }
+
+    /** 
+     * @var Uid
+    */
+    static $uid;
+
+    /** 
+     * @return string
+    */
+    public static function getNextTempName() {
+        if (empty(self::$uid)) {
+            self::$uid = new Uid();
+        }
+
+        $id = self::$uid->Add()->ToString();
+        $id = str_pad($id, 7, "0", STR_PAD_LEFT);
+        $id = "TEMP$id";
+
+        return $id;
     }
 
     /**
@@ -88,7 +119,7 @@ class taskhost {
         $s = end($s);
 
         // 得到秒的最后一个数字
-        $s = intval(substr($s, -1));      
+        $s = intval(substr($s, -1));
         
         foreach($ticks as $t) {
             if ($t == $s) {
@@ -121,8 +152,12 @@ class taskhost {
         }
 
         if (strpos($R, "\n") > -1 || !file_exists($R)) {
-            $path = "$workspace/Rscript.R";
-            file_put_contents($path, $R);
+            $tempName = taskhost::getNextTempName();
+            $path     = "$workspace/Rscript/$tempName.R";
+            
+            # write script file and using its file path
+            # as reference
+            FileSystem::WriteAllText($path, $R);
             $R = $path;
         }
 
@@ -146,4 +181,3 @@ class taskhost {
         chdir($current);
     }
 }
-?>
