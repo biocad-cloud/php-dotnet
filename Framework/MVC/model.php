@@ -607,13 +607,15 @@ class Table {
             $SQL = "SELECT $fields FROM $ref $join WHERE $assert";
         } else {
             $SQL = "SELECT $fields FROM $ref $join";
-        }	
+		}	
+		if ($groupBy) {
+			# 2018-12-20 如果同时出现了groupby 和 order by选项的话
+			# group by应该出现在最前面，否则会出现语法错误
+			$SQL = "$SQL $groupBy";
+		}
 		if ($orderBy) {
 			$SQL = "$SQL $orderBy";
 		}	
-		if ($groupBy) {
-			$SQL = "$SQL $groupBy";
-		}
 		if ($limit) {
 			$SQL = "$SQL $limit";
 		}
