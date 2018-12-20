@@ -114,6 +114,12 @@ class FileSystem {
 		}
 	}
 
+	public static function ReadFirstLine($path) {
+		foreach(self::IteratesAllLines($path) as $line) {
+			return $line;
+		}
+	}
+
 	/**
 	 * 这是一个迭代器函数，只能够配合foreach一起使用
 	*/
