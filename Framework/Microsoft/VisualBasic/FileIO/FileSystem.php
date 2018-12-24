@@ -167,7 +167,7 @@ class FileSystem {
 			$DIR = dir($directory);
 
 			if ($DIR === false || empty($DIR)) {
-				throw "$directory have no permission to read!";
+				throw new dotnetException("$directory have no permission to read!");
 			}
 
 			while (false !== ($entry = $DIR->read())) {
