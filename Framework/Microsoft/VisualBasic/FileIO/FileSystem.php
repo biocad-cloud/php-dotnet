@@ -161,7 +161,32 @@ class FileSystem {
 		if (file_exists($directory)) {
 			$directory = realpath($directory);
 			$directory = rtrim($directory, "/");
-			return glob($directory . '/*', GLOB_ONLYDIR);
+			$list      = [];
+
+			// Loop through the folder
+			$DIR = dir($directory);
+
+			if ($DIR === false || empty($DIR)) {
+				throw "$directory have no permission to read!";
+			}
+
+			while (false !== ($entry = $DIR->read())) {
+				// Skip pointers
+				if ($entry == '.' || $entry == '..') {
+					continue;
+				} else {
+					$file = "$directory/$entry";
+
+					if (is_dir($file)) {
+						array_push($list, $file);
+					}
+				}
+			}
+
+			$DIR->close();
+
+			return $list;
+
 		} else {
 			console::warn("Directory '$directory' is not exists on the filesystem!");
 			return [];
