@@ -161,6 +161,7 @@ class dotnet {
                 DotNetRegistry::$config = $config;
             } else {
                 # 无效的配置参数信息，使用默认的配置并且给出警告信息
+                console::warn("A config data was given, but data type is mismatched, require a php file path or config data array.");
                 DotNetRegistry::$config = DotNetRegistry::DefaultConfig();
             }
         } else {
