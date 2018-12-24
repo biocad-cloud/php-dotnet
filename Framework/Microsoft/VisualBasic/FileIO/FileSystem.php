@@ -150,12 +150,22 @@ class FileSystem {
 	}
 		
 	/**
-	 * Returns a collection of strings representing the path names of subdirectories within a directory.
+	 * Returns a collection of strings representing the path names of subdirectories 
+	 * within a directory.
      *
 	 * @param string $directory 目标文件夹的文件路径
+	 * 
+	 * @return string[]
 	*/
 	public static function GetDirectories($directory) {
-		return glob($directory . '/*', GLOB_ONLYDIR);
+		if (file_exists($directory)) {
+			$directory = realpath($directory);
+			$directory = rtrim($directory, "/");
+			return glob($directory . '/*', GLOB_ONLYDIR);
+		} else {
+			console::warn("Directory '$directory' is not exists on the filesystem!");
+			return [];
+		}
 	}
 		
 	public static function GetParentPath($path) {
