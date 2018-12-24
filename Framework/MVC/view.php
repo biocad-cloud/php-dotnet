@@ -11,6 +11,8 @@ Imports("Debugger.Ubench.Ubench");
 /**
  * html user interface view handler
  * 
+ * 如果需要显示调试器输出窗口内容，则还需要你的WebApp继承实现``MVC.controller``模块
+ * 
  * @author xieguigang
 */
 class View {

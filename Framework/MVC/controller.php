@@ -12,6 +12,11 @@ Imports("php.DocComment");
 
 /**
  * php.NET Access controller model
+ * 
+ * 需要重写下面的几个方法才可以正常工作
+ * 
+ * + ``abstract public function accessControl();``
+ * + ``public function Redirect($code) {}``
 */
 abstract class controller {
 
