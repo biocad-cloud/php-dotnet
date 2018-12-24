@@ -148,7 +148,61 @@ class FileSystem {
 	public static function RenameFile($file, $newName) {
 		rename($file, $newName);
 	}
-		
+	
+	private static function DisplayFilePermissions($Mode) {
+
+		# Determine Type
+		if ($Mode & 0x1000) {			
+			$Type = 'p'; // FIFO pipe
+		} else if ($Mode & 0x2000) {
+			$Type = 'c'; // Character special
+		} else if ($Mode & 0x4000) {
+			$Type = 'd'; // Directory
+		} else if ($Mode & 0x6000) {
+			$Type = 'b'; // Block special
+		} else if ($Mode & 0x8000) { 
+			$Type = '-'; // Regular 
+		} else if ($Mode & 0xA000) {
+			$Type = 'l'; // Symbolic Link 
+		} else if ($Mode & 0xC000) {
+			$Type = 's'; // Socket
+		} else {
+			$Type = 'u';// UNKNOWN
+		}
+		 
+		# Determine permissions		 
+		$Owner['read']    = ($Mode & 00400) ? 'r' : '-';     		 
+		$Owner['write']   = ($Mode & 00200) ? 'w' : '-';     		 
+		$Owner['execute'] = ($Mode & 00100) ? 'x' : '-';     		 
+		$Group['read']    = ($Mode & 00040) ? 'r' : '-';     		 
+		$Group['write']   = ($Mode & 00020) ? 'w' : '-';     		 
+		$Group['execute'] = ($Mode & 00010) ? 'x' : '-';     		 
+		$World['read']    = ($Mode & 00004) ? 'r' : '-';     		 
+		$World['write']   = ($Mode & 00002) ? 'w' : '-';     		 
+		$World['execute'] = ($Mode & 00001) ? 'x' : '-';      
+		 
+		# Adjust for SUID, SGID and sticky bit     		 
+		if ($Mode & 0x800) $Owner['execute'] = ($Owner['execute'] == 'x') ? 's' : 'S';   
+		if ($Mode & 0x400) $Group['execute'] = ($Group['execute'] == 'x') ? 's' : 'S';   
+		if ($Mode & 0x200) $World['execute'] = ($World['execute'] == 'x') ? 't' : 'T'; 
+		 
+		return $Type . $Owner['read'] . $Owner['write'] . $Owner['execute'] 
+					 . $Group['read'] . $Group['write'] . $Group['execute'] 
+					 . $World['read'] . $World['write'] . $World['execute']; 
+		 
+	}  
+
+	/** 
+	 * @return boolean|null 文件不存在的时候返回空值
+	*/
+	public static function ViewPermission($path) {
+		if (file_exists($path)) {
+			return self::DisplayFilePermissions(fileperms($path));
+		} else {
+			return null;
+		}
+	}
+
 	/**
 	 * Returns a collection of strings representing the path names of subdirectories 
 	 * within a directory.
@@ -164,10 +218,13 @@ class FileSystem {
 			$list      = [];
 
 			// Loop through the folder
-			$DIR = dir($directory);
+			$DIR = dir($directory . "/");
 
 			if ($DIR === false || empty($DIR)) {
-				throw new dotnetException("$directory have no permission to read!");
+				$permission = self::ViewPermission($directory . "/");
+				$msg = "$directory have no permission to read! Permission for current user: $permission";
+
+				throw new dotnetException($msg);
 			}
 
 			while (false !== ($entry = $DIR->read())) {
