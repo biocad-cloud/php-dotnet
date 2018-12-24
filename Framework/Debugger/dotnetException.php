@@ -45,9 +45,13 @@ class dotnetException extends Exception {
 	}
 	
 	public function __toString() {
-		return self::FormatOutput(
-			$this->message, 
-			$this->stackTrace
-		);
+		if (empty($this->stackTrace)) {
+			return $this->message;
+		} else {
+			return self::FormatOutput(
+				$this->message, 
+				$this->stackTrace
+			);
+		}
 	}
 }
