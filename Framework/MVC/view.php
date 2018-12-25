@@ -207,7 +207,6 @@ class View {
 	*/
 	private static function loadTemplate($path, $language) {
 		$usingCache = DotNetRegistry::Read("CACHE", false);
-		$html       = file_get_contents($path);
 
 		if ($usingCache && !Strings::Empty($path)) {			
 			# 在配置文件之中开启了缓存选项
@@ -221,6 +220,7 @@ class View {
 				
 				# 将html片段合并为一个完整的html文档
 				# 得到了完整的html模板
+				$html      = file_get_contents($path);
 				$cachePage = View::interpolate_includes($html, $path);
 				$cachePage = View::valueAssign($cachePage, $language);
 				$cacheDir  = dirname($cache);
@@ -242,6 +242,7 @@ class View {
 		} else {
 			$cache = 'disabled';
 			# 不使用缓存，需要进行页面模板的拼接渲染
+			$html  = file_get_contents($path);
 			$html  = View::interpolate_includes($html, $path);
 			$html  = View::valueAssign($html, $language);
 
