@@ -204,6 +204,22 @@ class Table {
 	}
 
 	/**
+	 * mysqli::real_escape_string -- mysqli::escape_string -- mysqli_real_escape_string — 
+	 * Escapes special characters in a string for use in an SQL statement, taking into 
+	 * account the current charset of the connection
+	 * 
+	 * This function is used to create a legal SQL string that you can use in an SQL statement. 
+	 * The given string is encoded to an escaped SQL string, taking into account the current 
+	 * character set of the connection.
+	 * 
+	 * @param string $value The mysql cell value string text.
+	 * @return string
+	*/
+	public function EscapeString($value) {
+		return $this->mysqli()->escape_string($value);
+	}
+
+	/**
 	 * 对查询的结果的数量进行限制，当只有参数m的时候，表示查询结果限制为前m条，
 	 * 当参数n被赋值的时候，表示偏移m条之后返回n条结果
 	 * 
