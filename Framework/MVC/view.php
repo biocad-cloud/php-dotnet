@@ -11,6 +11,8 @@ Imports("Debugger.Ubench.Ubench");
 /**
  * html user interface view handler
  * 
+ * 如果需要显示调试器输出窗口内容，则还需要你的WebApp继承实现``MVC.controller``模块
+ * 
  * @author xieguigang
 */
 class View {
@@ -53,7 +55,9 @@ class View {
 		if (empty($path) || $path == false) {
 			# 文件丢失？
 			# 或者当前的网站在文件夹下，而不是根文件夹
-			console::error("View file not found, please consider define a valid <code>SITE_PATH</code> constant before we load php.NET framework.");
+			$msg = "View file not found, please consider define a valid <code>SITE_PATH</code> constant before we load php.NET framework.";
+			echo $msg;
+			exit(404);
 		} else {
 			if (file_exists($path)) {
 				$path = realpath($path);
@@ -203,7 +207,6 @@ class View {
 	*/
 	private static function loadTemplate($path, $language) {
 		$usingCache = DotNetRegistry::Read("CACHE", false);
-		$html       = file_get_contents($path);
 
 		if ($usingCache && !Strings::Empty($path)) {			
 			# 在配置文件之中开启了缓存选项
@@ -217,6 +220,7 @@ class View {
 				
 				# 将html片段合并为一个完整的html文档
 				# 得到了完整的html模板
+				$html      = file_get_contents($path);
 				$cachePage = View::interpolate_includes($html, $path);
 				$cachePage = View::valueAssign($cachePage, $language);
 				$cacheDir  = dirname($cache);
@@ -238,6 +242,7 @@ class View {
 		} else {
 			$cache = 'disabled';
 			# 不使用缓存，需要进行页面模板的拼接渲染
+			$html  = file_get_contents($path);
 			$html  = View::interpolate_includes($html, $path);
 			$html  = View::valueAssign($html, $language);
 
@@ -326,8 +331,8 @@ class View {
 		# 没有需要进行设置的变量字符串，则直接在这里返回html文件
 		if (!$vars && !self::$join) {
 			# 假设在html文档里面总是会存在url简写的，
-			# 则在这里需要进行替换处理
-			return Router::AssignController($html);		
+			# 则在这里需要进行替换处理		
+			return Router::AssignController($html);
 		} else {
 			if (!$vars) {
 				$vars = self::$join;

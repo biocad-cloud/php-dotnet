@@ -206,6 +206,26 @@ class console {
         } 
     }
 
+    public static function warn($msg, $code = 1) {
+        if ((!IS_CLI) && APP_DEBUG) {
+            $trace = self::backtrace();
+            self::$logs[] = [
+                "code"  => $code, 
+                "msg"   => "<span style='color:#cc9900'>$msg</span>", 
+                "file"  => $trace["file"], 
+                "line"  => $trace["line"], 
+                "color" => "#cc9900",
+                "time"  => Utils::Now(false)
+            ];
+        } else if (IS_CLI && FRAMEWORK_DEBUG) {
+            $time  = Utils::Now(false);
+            $trace = StackTrace::GetCallStack();
+
+            echo "[$time, WARN::$code] $msg\n";
+            echo $trace->ToString($html = false) . "\n";
+        } 
+    }
+
     public static function printCode($code) {
         if (APP_DEBUG) {
             $trace = self::backtrace();
