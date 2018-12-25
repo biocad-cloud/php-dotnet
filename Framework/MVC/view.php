@@ -55,7 +55,9 @@ class View {
 		if (empty($path) || $path == false) {
 			# 文件丢失？
 			# 或者当前的网站在文件夹下，而不是根文件夹
-			console::error("View file not found, please consider define a valid <code>SITE_PATH</code> constant before we load php.NET framework.");
+			$msg = "View file not found, please consider define a valid <code>SITE_PATH</code> constant before we load php.NET framework.";
+			echo $msg;
+			exit(404);
 		} else {
 			if (file_exists($path)) {
 				$path = realpath($path);
@@ -328,8 +330,8 @@ class View {
 		# 没有需要进行设置的变量字符串，则直接在这里返回html文件
 		if (!$vars && !self::$join) {
 			# 假设在html文档里面总是会存在url简写的，
-			# 则在这里需要进行替换处理
-			return Router::AssignController($html);		
+			# 则在这里需要进行替换处理		
+			return Router::AssignController($html);
 		} else {
 			if (!$vars) {
 				$vars = self::$join;
