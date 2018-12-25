@@ -159,11 +159,40 @@ if (!defined("IS_GET") && !defined("IS_POST")) {
 	define("IS_GET", false);
 }
 
-if (IS_POST) {
-    
+if (IS_POST && (count($_POST) === 0)) {
+
     # 2018-12-25 fix $_POST array empty bugs when recieved json object in server
+    #
+    # PHP does not process JSON requests automatically like it does with form-encoded 
+    # or multipart requests. If you want to use JSON to send requests to PHP, you're 
+    # basically doing it correctly with file_get_contents(). If you want to merge those 
+    # variables into your global $_POST object you can, though I would not recommend 
+    # doing this as it might be confusing to other developers.
+    #
+    # it's safe to overwrite the $_POST if the content-type is application/json
+    # because the $_POST var will be empty
+    #
+    # $headers = getallheaders();
+    # if ($headers["Content-Type"] == "application/json")
+    #    $_POST = json_decode(file_get_contents("php://input"), true) ?: [];
+    #
+    # https://stackoverflow.com/questions/9516019/send-json-data-to-php-using-xmlhttprequest-w-o-jquery 
+    #
     $headers     = getallheaders();
-    $contentType = strtolower($headers["Content-Type"]);
+    $contentType = "Content-Type";
+
+    if (array_key_exists($contentType, $headers)) {
+        $contentType = strtolower($headers[$contentType]);
+    } else {
+        $contentType = "";
+
+        foreach(array_keys($headers) as $key) {
+            if (strtolower($key) == "content-type") {
+                $contentType = $headers[$key];
+                break;
+            }
+        }
+    }   
 
     if ($contentType == "application/json" || $contentType == "text/json") {
         $json = file_get_contents("php://input");
@@ -174,7 +203,7 @@ if (IS_POST) {
             $json = json_decode($json, true);
         }
 
-        $_POST = array_merge($_POST, $json);
+        $_POST = $json;
     }
 }
 
