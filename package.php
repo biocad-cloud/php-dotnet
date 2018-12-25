@@ -159,6 +159,25 @@ if (!defined("IS_GET") && !defined("IS_POST")) {
 	define("IS_GET", false);
 }
 
+if (IS_POST) {
+    
+    # 2018-12-25 fix $_POST array empty bugs when recieved json object in server
+    $headers     = getallheaders();
+    $contentType = strtolower($headers["Content-Type"]);
+
+    if ($contentType == "application/json" || $contentType == "text/json") {
+        $json = file_get_contents("php://input");
+
+        if (empty($json) || $json == "null" || $json == "NULL") {
+            $json = [];
+        } else {
+            $json = json_decode($json, true);
+        }
+
+        $_POST = array_merge($_POST, $json);
+    }
+}
+
 #endregion
 
 #region "file_loads"
