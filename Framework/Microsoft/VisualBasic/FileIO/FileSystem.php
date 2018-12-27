@@ -211,10 +211,13 @@ class FileSystem {
 	 * 
 	 * @return string[]
 	*/
-	public static function GetDirectories($directory) {
+	public static function GetDirectories($directory, $returnRealpath = false) {
 		if (file_exists($directory)) {
 			
-			$directory = realpath($directory);
+			if ($returnRealpath) {
+				$directory = realpath($directory);
+			}
+			
 			$directory = rtrim($directory, "/");
 			$list      = [];
 			
