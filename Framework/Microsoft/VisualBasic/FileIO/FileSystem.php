@@ -203,6 +203,14 @@ class FileSystem {
 		}
 	}
 
+	# 2018-12-28 如果查看权限发现没有问题，但是任然无法读取文件夹或者文件，则很有可能是SELinux在阻止php对文件的访问
+	# 这个时候会需要在SELinux里面设置额外的访问权限规则或者将SELinux的等级从Enforcing调整至Permissive
+	# 
+	# 获取SELinux的状态getenforce
+	# 设置SELinux的状态setenforce 0或者1
+	#
+	# https://blog.lysender.com/2015/07/centos-7-selinux-php-apache-cannot-writeaccess-file-no-matter-what/
+
 	/**
 	 * Returns a collection of strings representing the path names of subdirectories 
 	 * within a directory.
@@ -227,6 +235,12 @@ class FileSystem {
 			if ($DIR === false || empty($DIR)) {
 				$permission = self::ViewPermission($directory . "/");
 				$msg = "[$permission $directory/] have no permission to read!";
+				$msg = $msg . " If SELinux has enable, please add access rule for php server or set SELinux to [Permissive].";
+
+				if (!posix_access($directory, POSIX_R_OK)) {
+					$error = posix_get_last_error();				
+					$msg   = $msg . " Error $error: " . posix_strerror($error);
+				}
 
 				throw new dotnetException($msg);
 			}
