@@ -226,7 +226,7 @@ class FileSystem {
 
 			if ($DIR === false || empty($DIR)) {
 				$permission = self::ViewPermission($directory . "/");
-				$msg = "$directory have no permission to read! Permission for current user: $permission";
+				$msg = "[$permission $directory/] have no permission to read!";
 
 				throw new dotnetException($msg);
 			}
