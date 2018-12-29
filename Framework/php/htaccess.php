@@ -72,17 +72,14 @@ class htaccess {
             # skip the empty and comment line
             if (\Strings::Empty($line = trim($line))) continue;
             if (\Strings::CharAt($line, 0) == "#") continue;
-echo var_dump($line);
-            list($name, $value) = \StringHelpers::GetTagValue($line);
-echo var_dump(\StringHelpers::GetTagValue($line));
-            echo var_dump($name);
-            echo var_dump($value);
+
+            list($name, $value) = \StringHelpers::GetTagValue($line, " ", $tuple = true);
 
             switch ($name) {
                 case "RewriteEngine":
                     $htaccess->RewriteEngine = $value;
                 case "RewriteRule":
-                    list($in, $out) = \StringHelpers::GetTagValue($value);
+                    list($in, $out) = \StringHelpers::GetTagValue($value, " ", $tuple = true);
                     array_push($RewriteRules, new RewriteRule($in, $out));
                 default:
                     # do nothing
