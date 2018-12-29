@@ -122,8 +122,10 @@ class RewriteRule {
     /** 
      * 判断所给定的URL是否符合当前的重写规则
      * 
-     * @param array $url 为了不牺牲程序的性能，这个url函数参数必须是已经
-     *    经过``\URL::mb_parse_url($url, true);``解析的数组结果
+     * 在这里进行匹配比较，只比较文件路径，以及查询参数名称，参数值不进行比较
+     * 
+     * @param \URL $url 为了不牺牲程序的性能，这个url函数参数必须是已经
+     *    经过``\URL::mb_parse_url($url, true, true);``解析的数组结果
      * @return boolean 目前只支持比较php.NET当前框架的url拼写规则
     */
     public function MatchRule($url) {

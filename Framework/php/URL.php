@@ -35,6 +35,46 @@ class URL {
         }
     }
 
+    /** 
+     * 比较两个url对象之间的模式是否是一样的
+     * 
+     * @param URL $url
+     * 
+     * @return boolean 这个比较函数不会比较查询参数的值
+    */
+    public function PatternEquals($url, $strict = true) {
+        if ($url->path !== $this->$path) {
+            return false;
+        }
+
+        $c1 = count($this->query);
+        $c2 = count($url->query);
+
+        if ($c1 > 0 && $c2 > 0) {
+            if ($strict && ($c1 !== $c2)) {
+                return false;
+            } 
+
+            # 非严格模式下，只需要url里面具有当前url中的查询参数集合
+            // 判断对应的参数名是否都存在
+            foreach($this->query as $name => $any) {
+                if (!array_key_exists($name, $url->query)) {
+                    return false;
+                }
+            }
+
+            return true;
+        } else if ($c1 == 0 && $c2 == 0) {
+            return true;
+        } else {
+            if ($strict) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+    }
+
     public function __toString() {
         $url = $this->path;
 
