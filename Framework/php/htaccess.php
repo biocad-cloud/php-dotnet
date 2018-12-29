@@ -5,6 +5,7 @@ namespace PHP;
 Imports("System.Text.RegularExpressions.Regex");
 Imports("Microsoft.VisualBasic.FileIO.FileSystem");
 Imports("Microsoft.VisualBasic.Strings");
+Imports("php.URL");
 
 /** 
  * 主要用于路由器的url重写规则的自动设置
@@ -128,10 +129,51 @@ class RewriteRule {
      *          重写为用户url``home?q=12345``
     */
     public function RouterRewrite($url) {
-        $template     = $this->urlIn;
-        $placeHolders = \Regex::Matches($url, "\(.+?\)"); 
+        $template     = "/" . trim($this->urlIn, "^$");
+        $placeHolders = \Regex::Matches($template, "\(.+?\)");
+        $placeHolders = \Enumerable::ToDictionary(
+            $placeHolders, function($r, $i) {
+                return '$' . ($i + 1);
+            }); 
+        $model = \URL::mb_parse_url($this->urlRewrite, true);
+        $data  = \URL::mb_parse_url($url, true);
 
-        echo var_dump($placeHolders);
+        # 从model和data之中取出，构成一个用于填充模板的数组，例如
+        # ["$1" => xxxx, "$2" => yyyyy];
+        # 按照键名之中的数值大小升序排序了的
+        $modelQuery = $model["query"];
+        $additional = [];
+        $replaceMap = [];
+
+        foreach($data["query"] as $key => $val) {
+            if (array_key_exists($key, $modelQuery)) {
+                $modelVal = $modelQuery[$key];
+
+                if (\StringHelpers::IsPattern($modelVal, "[$]\d+")) {
+                    $replaceMap[$modelVal] = $val;
+                } else {
+                    $additional[$key] = $val;
+                }
+            }
+        }
+
+        $limit1  = 1;
+        $mapKeys = \Enumerable::OrderBy(
+            array_keys($replaceMap), function($x) {
+                return $x;
+            });
+
+        foreach($mapKeys as $order) {
+            $value    = $replaceMap[$order];
+            $holder   = $placeHolders[$order]; 
+            $template = str_replace($holder, $value, $template, $limit1);
+        }
+
+        $additional = \Enumerable::Select(
+            array_keys($additional), function($name) use ($additional) {
+                return $name . "=" . urlencode($additional[$name]);
+            });
+        $template = $template . "&" . \implode("&", $additional);
 
         return $template;
     }

@@ -112,13 +112,13 @@ class Enumerable {
 	 * Projects each element of a sequence into a new form. 
 	 * 
 	 * @param array $table A sequence of values to invoke a transform function on.
-	 * @param string|function $selector A transform function to apply to each element.
+	 * @param string|callable $selector A transform function to apply to each element.
 	 * 
-	 * @return array An System.Collections.Generic.IEnumerable<T> whose elements 
+	 * @return array An ``System.Collections.Generic.IEnumerable<T>`` whose elements 
 	 *               are the result of invoking the transform function on each 
 	 *               element of source.
 	 */
-	public static function Select($table, $selector) {	
+	public static function Select($table, $selector) {
 		$out = [];
 
 		if (is_string($selector)) {
@@ -127,9 +127,10 @@ class Enumerable {
 			}
 		} else {
 			$project = & $selector;
+			$i       = 0;
 
 			foreach($table as $row) {
-				array_push($out, $project($row));
+				array_push($out, @$project($row, $i++));
 			}
 		}
 
@@ -191,7 +192,7 @@ class Enumerable {
 	 *               values of type TElement selected from the input sequence.
 	 */
 	public static function ToDictionary($source, $key, $element = NULL) {
-		$table           = array();
+		$table           = [];
 		$elementSelector = $element;
 		$keySelector     = $key;
 
@@ -208,13 +209,15 @@ class Enumerable {
 		if (!$key) {
 			throw new exception("The key selector can not be NULL!");
 		} else if (is_string($key)) {
-			$key = function($obj) use ($keySelector) {
+			$key = function($obj, $i) use ($keySelector) {
 				return $obj[$keySelector];
 			};
 		}
 
+		$i = 0;
+
 		foreach ($source as $obj) {
-			$table[$key($obj)] = $element($obj);
+			$table[$key($obj, $i++)] = $element($obj);
 		}
 
 		return $table;
@@ -248,4 +251,27 @@ class Enumerable {
 	}
 }
 
-?>
+class Projector {
+
+	/** 
+	 * @var callable 一个对象投影函数
+	*/
+	var $projectCall;
+
+	/** 
+	 * @param string|callable 属性名称字符串或者一个函数用来进行投影操作
+	*/
+	public function __construct($project) {
+		if (is_string($project)) {
+			$this->projectCall = function($obj, $i) use ($project) {
+				return $obj[$project];
+			};
+		} else {
+			$this->projectCall = $project;
+		}
+	}
+
+	public function Project($obj, $i) {
+		return $this->projectCall($obj, $i);
+	}
+}

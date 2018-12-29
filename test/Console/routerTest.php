@@ -19,5 +19,5 @@ echo "\n\n\n\n\n\n\n\n\n\n\n";
 console::log("====================================================================");
 
 
-
-console::dump($rule->RouterRewrite($url));
+console::dump($url, "The input url is:");
+console::dump($rule->RouterRewrite($url), "The output url is:");
