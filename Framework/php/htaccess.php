@@ -78,9 +78,11 @@ class htaccess {
             switch ($name) {
                 case "RewriteEngine":
                     $htaccess->RewriteEngine = $value;
+                    break;
                 case "RewriteRule":
                     list($in, $out) = \StringHelpers::GetTagValue($value, " ", $tuple = true);
                     array_push($RewriteRules, new RewriteRule($in, $out));
+                    break;
                 default:
                     # do nothing
             }
