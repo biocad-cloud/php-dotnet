@@ -89,15 +89,7 @@ class RewriteRule {
      * @return boolean
     */
     public function MatchRule($url) {
-        $s = \Regex::Match($url, $this->urlIn);
-        return (!empty($s) && strlen($s) > 0);
-    }
-
-    /** 
-     * 如果符合重写规则的话，则将目标url进行重写
-    */
-    public function Rewrite($url) {
-
+        
     }
 
     /** 
@@ -111,6 +103,9 @@ class RewriteRule {
      *          重写为用户url``home?q=12345``
     */
     public function RouterRewrite($url) {
+        $template     = $this->urlIn;
+        $placeHolders = \Regex::Matches($url, "\(.+?\)"); 
 
+        return $template;
     }
 }

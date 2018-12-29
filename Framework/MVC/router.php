@@ -130,10 +130,11 @@ class Router {
 	}
 
 	/**
-     * UTF-8 aware parse_url() replacement.
+     * UTF-8 aware ``parse_url()`` replacement.
      * 
+	 * @param string $url
      * @return array
-     */
+    */
     public static function mb_parse_url($url) {
         $enc_url = preg_replace_callback(
             '%[^:/@?&=#]+%usD',
@@ -156,4 +157,3 @@ class Router {
         return $parts;
     }
 }
-?>
