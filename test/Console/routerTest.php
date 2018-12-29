@@ -21,3 +21,8 @@ console::log("==================================================================
 
 console::dump($url, "The input url is:");
 console::dump($rule->RouterRewrite($url), "The output url is:");
+
+
+$htaccess = \PHP\htaccess::LoadFile(__DIR__ . "/htaccess.txt");
+
+console::dump($htaccess);

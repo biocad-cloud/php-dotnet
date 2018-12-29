@@ -71,9 +71,12 @@ class htaccess {
         foreach(\FileSystem::IteratesAllLines($path) as $line) {
             # skip the empty and comment line
             if (\Strings::Empty($line = trim($line))) continue;
-            if (\Strings::CharAt(trim($line), 0) == "#") continue;
-
+            if (\Strings::CharAt($line, 0) == "#") continue;
+echo var_dump($line);
             list($name, $value) = \StringHelpers::GetTagValue($line);
+echo var_dump(\StringHelpers::GetTagValue($line));
+            echo var_dump($name);
+            echo var_dump($value);
 
             switch ($name) {
                 case "RewriteEngine":

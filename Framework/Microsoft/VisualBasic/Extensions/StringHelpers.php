@@ -103,21 +103,33 @@ class StringHelpers {
      * 
      * @return array ``[key => value]``
     */
-    public static function GetTagValue($str, $delimiter = " ") {
+    public static function GetTagValue($str, $delimiter = " ", $tuple = false) {
         if (empty($str)) {
-            return [];
+            if ($tuple) {
+                return ["", ""];
+            } else {
+                return [];
+            }
         }
 
         $p = Strings::InStr($str, $delimiter);
 
         if ($p === 0) {
-            return [$str => ""];
+            if ($tuple) {
+                return [$str, ""];
+            } else {
+                return [$str => ""];
+            }
         }
 
         $key   = Strings::Mid($str, 1, $p - 1);
         $value = Strings::Mid($str, $p + Strings::Len($delimiter));
 
-        return [$key => $value];
+        if ($tuple) {
+            return [$key, $value];
+        } else {
+            return [$key => $value];
+        }
     }
 
     /**

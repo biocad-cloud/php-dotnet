@@ -1,0 +1,7 @@
+RewriteEngine On
+
+RewriteRule ^biodeepDB$ /biodeepDB.php?app=index
+RewriteRule ^entry/BioDeep_(\d+)$ /biodeepDB.php?app=view&id=BioDeep_$1
+RewriteRule ^browse$ /biodeepDB.php?app=db_browser&page=1
+RewriteRule ^browse?page=(\d+)$ /biodeepDB.php?app=db_browser&page=$1
+
