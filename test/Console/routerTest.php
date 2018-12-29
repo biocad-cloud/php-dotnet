@@ -26,3 +26,15 @@ console::dump($rule->RouterRewrite($url), "The output url is:");
 $htaccess = \PHP\htaccess::LoadFile(__DIR__ . "/htaccess.txt");
 
 console::dump($htaccess);
+
+echo "\n\n\n\n\n\n\n\n\n\n\n";
+
+console::log("====================================================================");
+
+console::log("URL pattern match test:");
+
+$test1 = URL::mb_parse_url("/dict.php?app=search&q=browse&FORM=BDVSP6&mkt=zh-cn", true, true);
+$test2 = URL::mb_parse_url("/dict.php?app=searchTool&q=browse&FORM=BDVSP6&mkt=zh-cn", true, true);
+
+console::log($rule->MatchRule($test1));
+console::log($rule->MatchRule($test2));

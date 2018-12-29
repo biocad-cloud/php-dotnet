@@ -19,6 +19,13 @@ class URL {
     var $query;
 
     /** 
+     * php.NET框架之中的url模式之中的专有控制器函数名称
+     * 
+     * @var string
+    */
+    var $app;
+
+    /** 
      * @param array $url 必须要有path字段，query字段为可选值
     */
     public function __construct($url) {
@@ -26,6 +33,7 @@ class URL {
         
         if (array_key_exists("query", $url)) {
             $this->query = $url["query"];
+            $this->app   = Utils::ReadValue($this->query, "app", "index");
         } else {
             $this->query = [];
         }
@@ -43,7 +51,7 @@ class URL {
      * @return boolean 这个比较函数不会比较查询参数的值
     */
     public function PatternEquals($url, $strict = true) {
-        if ($url->path !== $this->$path) {
+        if ($url->path !== $this->path) {
             return false;
         }
 

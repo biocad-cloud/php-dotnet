@@ -129,7 +129,16 @@ class RewriteRule {
      * @return boolean 目前只支持比较php.NET当前框架的url拼写规则
     */
     public function MatchRule($url) {
+        $patternTest = $this->rewriteModel->PatternEquals($url, false);
+
+        if (\StringHelpers::IsPattern($this->rewriteModel->app, "[$]\d+")) {
+            # 当前URL的app为通配符，则模式一样
+            $appNameTest = true;
+        } else {
+            $appNameTest = ($this->rewriteModel->app === $url->app);
+        }
         
+        return $patternTest && $appNameTest;
     }
 
     /** 
