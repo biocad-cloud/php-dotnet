@@ -8,6 +8,31 @@ Imports("Microsoft.VisualBasic.Strings");
 
 /** 
  * 主要用于路由器的url重写规则的自动设置
+ * 
+ * 如果希望能够自动使用URL重写规则，除了序列编写``.htaccess``文件以外，还需要在模板之中使用``[...]``进行标记，
+ * 例如：
+ * 
+ * ```
+ * {api/login}&name=hahaha&hash=555555
+ * ```
+ * 
+ * 将会在路由器之中转换为
+ * 
+ * ```
+ * api.php?app=login&name=hahaha&hash=555555
+ * ```
+ * 
+ * 如果在``.htaccess``文件之中定义了如下的重写规则
+ * 
+ * ```
+ * RewriteRule ^login?&name=(.+)&hash=(\d+) api.php?app=login&name=$1&hash=$2
+ * ```
+ * 
+ * 则下面的html模板之中的url会被路由器重写为
+ * 
+ * ```
+ * [{api/login}&name=hahaha&hash=555555] => /login?name=hahaha&hash=555555
+ * ```
 */
 class htaccess {
 
@@ -105,6 +130,8 @@ class RewriteRule {
     public function RouterRewrite($url) {
         $template     = $this->urlIn;
         $placeHolders = \Regex::Matches($url, "\(.+?\)"); 
+
+        echo var_dump($placeHolders);
 
         return $template;
     }
