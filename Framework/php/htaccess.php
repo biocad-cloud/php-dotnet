@@ -78,7 +78,8 @@ class RewriteRule {
      * 需要在这里解析为url路由器规则
     */
     public function __construct($in, $out) {
-
+        $this->urlIn = $in;
+        $this->urlRewrite = $out;
     }
 
     /** 
@@ -90,5 +91,26 @@ class RewriteRule {
     public function MatchRule($url) {
         $s = \Regex::Match($url, $this->urlIn);
         return (!empty($s) && strlen($s) > 0);
+    }
+
+    /** 
+     * 如果符合重写规则的话，则将目标url进行重写
+    */
+    public function Rewrite($url) {
+
+    }
+
+    /** 
+     * 使用这个函数将router格式的url重写为用户的url
+     * 
+     * @param string $url 这个是router的url格式，为真实的url，例如router格式
+     *          的url``{index/home}&q=12345``将会被转换为真实
+     *          的url``index.php?app=home&q=12345``
+     * 
+     * @return string 在这里输出用户url，即将``{index/home}&q=12345``
+     *          重写为用户url``home?q=12345``
+    */
+    public function RouterRewrite($url) {
+
     }
 }
