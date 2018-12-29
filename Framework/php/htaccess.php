@@ -46,6 +46,9 @@ class htaccess {
     /** 
      * URL重写规则集合，如果允许重写的话，则这个集合会影响路由器的工作行为
      * 
+     * > 请注意：重写规则之间是有先后顺序的，所以对于一些比较重要的规则，应该尽量写在头部
+     * 否则如果该规则在尾部的话，会被其他的相似的靠近头部的规则给覆盖掉
+     * 
      * @var RewriteRule[]
     */
     var $RewriteRules;
@@ -55,6 +58,27 @@ class htaccess {
     */
     public function AllowRewrite() {
         return $this->RewriteEngine == "On";
+    }
+
+    /** 
+     * 尝试将HTML模板之中所解析出来的url按照.htaccess规则进行重写
+     * 
+     * @param string|\URL url字符串或者一个URL对象
+    */
+    public function TryRewrite($url) {
+        if (is_string($url)) {
+            $url = \URL::mb_parse_url($url, true, true);
+        }
+
+        foreach($this->RewriteRules as $rule) {
+            if ($rule->MatchRule($url)) {
+                return $rule->RouterRewrite($url);
+            }
+        }
+
+        # 没有匹配上任何规则
+        # 则返回false
+        return false;
     }
 
     /**
@@ -137,14 +161,14 @@ class RewriteRule {
         } else {
             $appNameTest = ($this->rewriteModel->app === $url->app);
         }
-        
+
         return $patternTest && $appNameTest;
     }
 
     /** 
      * 使用这个函数将router格式的url重写为用户的url
      * 
-     * @param string $url 这个是router的url格式，为真实的url，例如router格式
+     * @param string|\URL $url 这个是router的url格式，为真实的url，例如router格式
      *          的url``{index/home}&q=12345``将会被转换为真实
      *          的url``index.php?app=home&q=12345``
      * 
@@ -153,13 +177,18 @@ class RewriteRule {
     */
     public function RouterRewrite($url) {
         $template     = "/" . trim($this->urlIn, "^$");
+        $model        = $this->rewriteModel;
         $placeHolders = \Regex::Matches($template, "\(.+?\)");
         $placeHolders = \Enumerable::ToDictionary(
             $placeHolders, function($r, $i) {
                 return '$' . ($i + 1);
             }); 
-        $model = \URL::mb_parse_url($this->urlRewrite, true);
-        $data  = \URL::mb_parse_url($url, true);
+
+        if (is_string($url)) {
+            $data = \URL::mb_parse_url($url, true);
+        } else {
+            $data = $url;
+        }
 
         # 从model和data之中取出，构成一个用于填充模板的数组，例如
         # ["$1" => xxxx, "$2" => yyyyy];
