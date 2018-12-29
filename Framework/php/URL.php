@@ -5,6 +5,46 @@
 */
 class URL {
 
+    /** 
+     * 在URL之中的文件路径部分
+     * 
+     * @var string
+    */
+    var $path;
+    /** 
+     * 在URL之中的参数查询部分
+     * 
+     * @var array
+    */
+    var $query;
+
+    /** 
+     * @param array $url 必须要有path字段，query字段为可选值
+    */
+    public function __construct($url) {
+        $this->path = $url["path"];
+        
+        if (array_key_exists("query", $url)) {
+            $this->query = $url["query"];
+        } else {
+            $this->query = [];
+        }
+
+        if (empty($this->path)) {
+            throw new dotnetException("FileInfo empty!");
+        }
+    }
+
+    public function __toString() {
+        $url = $this->path;
+
+        if (count($this->query) > 0) {
+            $url = $url . "?" . self::GetUrlQuery($this->query);
+        }
+
+        return $url;
+    }
+
     /**
      * 将字符串参数变为数组
      * 
@@ -56,7 +96,7 @@ class URL {
      * @param boolean $parseURLQuery 是否同时也将query部分解析为数组？默认是不解析，即保持为字符串
      * @return array
     */
-    public static function mb_parse_url($url, $parseURLQuery = false) {
+    public static function mb_parse_url($url, $parseURLQuery = false, $stdClass = false) {
         $enc_url = preg_replace_callback(
             '%[^:/@?&=#]+%usD',
             function ($matches) {
@@ -79,6 +119,10 @@ class URL {
             $parts["query"] = self::ConvertUrlQuery($parts["query"]);
         }
 
-        return $parts;
+        if ($stdClass) {
+            return new URL($parts);
+        } else {
+            return $parts;
+        }
     }
 }

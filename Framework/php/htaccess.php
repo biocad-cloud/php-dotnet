@@ -101,6 +101,10 @@ class RewriteRule {
 
     var $urlIn;
     var $urlRewrite;
+    /** 
+     * @var array
+    */
+    var $rewriteModel;
 
     /** 
      * 需要在这里解析为url路由器规则
@@ -110,11 +114,16 @@ class RewriteRule {
         $this->urlRewrite = $out;
     }
 
+    public function __toString() {
+        return "{$this->urlIn} => {$this->urlRewrite}";
+    }
+
     /** 
      * 判断所给定的URL是否符合当前的重写规则
      * 
-     * @param string $url
-     * @return boolean
+     * @param array $url 为了不牺牲程序的性能，这个url函数参数必须是已经
+     *    经过``\URL::mb_parse_url($url, true);``解析的数组结果
+     * @return boolean 目前只支持比较php.NET当前框架的url拼写规则
     */
     public function MatchRule($url) {
         
