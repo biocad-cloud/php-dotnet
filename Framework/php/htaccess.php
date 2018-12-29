@@ -156,8 +156,7 @@ class RewriteRule {
                 }
             }
         }
-
-        $limit1  = 1;
+        
         $mapKeys = \Enumerable::OrderBy(
             array_keys($replaceMap), function($x) {
                 return $x;
@@ -166,7 +165,7 @@ class RewriteRule {
         foreach($mapKeys as $order) {
             $value    = $replaceMap[$order];
             $holder   = $placeHolders[$order]; 
-            $template = str_replace($holder, $value, $template, $limit1);
+            $template = \StringHelpers::str_replace_once($holder, $value, $template);
         }
 
         $additional = \Enumerable::Select(
