@@ -154,6 +154,8 @@ class RewriteRule {
                 } else {
                     $additional[$key] = $val;
                 }
+            } else {
+                $additional[$key] = $val;
             }
         }
         
@@ -168,11 +170,13 @@ class RewriteRule {
             $template = \StringHelpers::str_replace_once($holder, $value, $template);
         }
 
-        $additional = \Enumerable::Select(
-            array_keys($additional), function($name) use ($additional) {
-                return $name . "=" . urlencode($additional[$name]);
-            });
-        $template = $template . "&" . \implode("&", $additional);
+        if (count($additional) > 0) {
+            $additional = \Enumerable::Select(
+                array_keys($additional), function($name) use ($additional) {
+                    return $name . "=" . urlencode($additional[$name]);
+                });
+            $template = $template . "&" . \implode("&", $additional);
+        }
 
         return $template;
     }

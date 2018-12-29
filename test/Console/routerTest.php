@@ -10,7 +10,7 @@ $url = "/dict.php?app=search&q=browse&FORM=BDVSP6&mkt=zh-cn";
 
 console::dump(URL::mb_parse_url($url, true));
 
-$rule = new \PHP\RewriteRule("^dict/search?q=(.+)&FORM=(.+)", "/dict.php?app=search&q=$1&FORM=$2");
+$rule = new \PHP\RewriteRule("^dict/(\S+)?q=(.+)&FORM=(.+)", "/dict.php?app=$1&q=$2&FORM=$3");
 
 console::dump($rule);
 
