@@ -102,7 +102,7 @@ class RewriteRule {
     var $urlIn;
     var $urlRewrite;
     /** 
-     * @var array
+     * @var \URL
     */
     var $rewriteModel;
 
@@ -112,6 +112,7 @@ class RewriteRule {
     public function __construct($in, $out) {
         $this->urlIn = $in;
         $this->urlRewrite = $out;
+        $this->rewriteModel = \URL::mb_parse_url($out, true, true);
     }
 
     public function __toString() {
@@ -182,11 +183,7 @@ class RewriteRule {
         }
 
         if (count($additional) > 0) {
-            $additional = \Enumerable::Select(
-                array_keys($additional), function($name) use ($additional) {
-                    return $name . "=" . urlencode($additional[$name]);
-                });
-            $template = $template . "&" . \implode("&", $additional);
+            $template = $template . "&" . \URL::GetUrlQuery($additional);
         }
 
         return $template;
