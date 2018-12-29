@@ -2,6 +2,7 @@
 
 namespace PHP;
 
+Imports("System.Text.RegularExpressions.Regex");
 Imports("Microsoft.VisualBasic.FileIO.FileSystem");
 Imports("Microsoft.VisualBasic.Strings");
 
@@ -87,6 +88,7 @@ class RewriteRule {
      * @return boolean
     */
     public function MatchRule($url) {
-        return 
+        $s = \Regex::Match($url, $this->urlIn);
+        return (!empty($s) && strlen($s) > 0);
     }
 }
