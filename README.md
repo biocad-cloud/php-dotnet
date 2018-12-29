@@ -1,7 +1,12 @@
+# php.NET
+dotnet class simulation in php language
+
 > [WARNING] This project is a work in progress and is not recommended for production use.
 
-# php-dotnet
-dotnet class simulation in php language
+It contains:
+
++ A MVC framework for Web App
++ A CLI framework for terminal scripting.
 
 ## How to use?
 
