@@ -1,1 +1,3 @@
-﻿console.log('Hello world');
+﻿/// <reference path="tabUI.ts" />
+
+php_debugger.initTabUI();
