@@ -39,6 +39,9 @@
     <TypeScriptCompile Include="helper.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
+    <TypeScriptCompile Include="serviceWorker.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="tabUI.ts" />

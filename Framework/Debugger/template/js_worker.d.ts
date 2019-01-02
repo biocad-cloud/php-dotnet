@@ -10,3 +10,5 @@ declare module php_debugger {
     */
     function initTabUI(): void;
 }
+declare module php_debugger.serviceWorker {
+}
