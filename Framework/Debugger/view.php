@@ -45,7 +45,7 @@ class debugView {
     /**
      * 在这里主要是将变量组织之后传递给视图引擎进行调试器视图的渲染
     */
-    public static function Display() {      
+    public static function Display() {
         $template = debugView::Template();  
         $vars     = debugView::union();
 
@@ -135,10 +135,15 @@ class debugView {
 
     /**
      * json组件需要jquery才能够正常工作
+     * 
+     * 因为调试环境下，服务器压力不是很大，所以在这里
+     * 从文件读取之后进行模板的序列化填充不会产生很大的性能问题
     */
     private static function Summary() {
         $js   = dirname(self::Template()) . "/jquery.jsonview.min.js";        
         $js   = base64_encode(file_get_contents($js));
+        $uiJs = dirname(self::Template()) . "/tabUI.js";
+        $uiJs = base64_encode(file_get_contents($uiJs));
         $css  = dirname(self::Template()) . "/jquery.jsonview.min.css";
         $css  = file_get_contents($css);        
         $vars = array_merge([
@@ -146,7 +151,8 @@ class debugView {
             "memory_size"     => FileSystem::Lanudry(memory_get_usage()),            
             "json_viewer_js"  => $js,
             "json_viewer_css" => $css,
-            "git"             => GIT_COMMIT
+            "git"             => GIT_COMMIT,
+            "tabUI_js"        => $uiJs
         ], self::$summary);
 
         return self::benchmark($vars);
