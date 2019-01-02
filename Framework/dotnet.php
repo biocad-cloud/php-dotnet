@@ -291,7 +291,7 @@ class dotnet {
      * @param string $message The error message to display.
     */
     public static function PageNotFound($message) {
-        $trace = StackTrace::GetCallStack()->ToString();
+        $trace = StackTrace::GetCallStack();
 		$exc   = dotnetException::FormatOutput($message, $trace);
 				
 		RFC7231Error::err404($exc);
@@ -304,7 +304,7 @@ class dotnet {
      * @param string $message The error message to display.
     */
     public static function AccessDenied($message) {
-        $trace = StackTrace::GetCallStack()->ToString();
+        $trace = StackTrace::GetCallStack();
 		$exc   = dotnetException::FormatOutput($message, $trace);
 				
 		RFC7231Error::err403($exc);
@@ -315,7 +315,7 @@ class dotnet {
      * 429 请求次数过多
     */
     public static function TooManyRequests($message) {
-        $trace = StackTrace::GetCallStack()->ToString();
+        $trace = StackTrace::GetCallStack();
 		$exc   = dotnetException::FormatOutput($message, $trace);
 				
 		RFC7231Error::err429($exc);
