@@ -142,7 +142,7 @@ class debugView {
     private static function Summary() {
         $js   = dirname(self::Template()) . "/jquery.jsonview.min.js";        
         $js   = base64_encode(file_get_contents($js));
-        $uiJs = dirname(self::Template()) . "/tabUI.js";
+        $uiJs = dirname(self::Template()) . "/js_worker.js";
         $uiJs = base64_encode(file_get_contents($uiJs));
         $css  = dirname(self::Template()) . "/jquery.jsonview.min.css";
         $css  = file_get_contents($css);        
