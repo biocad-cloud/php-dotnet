@@ -145,7 +145,8 @@ class debugView {
             "files"           => count(get_included_files()),
             "memory_size"     => FileSystem::Lanudry(memory_get_usage()),            
             "json_viewer_js"  => $js,
-            "json_viewer_css" => $css
+            "json_viewer_css" => $css,
+            "git"             => GIT_COMMIT
         ], self::$summary);
 
         return self::benchmark($vars);

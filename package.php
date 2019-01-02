@@ -216,6 +216,10 @@ if (IS_POST && (count($_POST) === 0)) {
  * 获取得到package.php这个文件的所处的文件夹的位置
 */
 define("PHP_DOTNET", dirname(__FILE__) . "/Framework");
+/**
+ * 当前的源代码版本编号
+*/
+define("GIT_COMMIT", "c30e246ba5ac12eb9d276c97f3ac44b6c2072830");
 
 bootstrapLoader::imports("Debugger.Ubench.Ubench");
 
