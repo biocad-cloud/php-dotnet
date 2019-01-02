@@ -72,6 +72,10 @@ if (!defined("FRAMEWORK_DEBUG")) {
  * Php script running in a cli environment?
 */
 define("IS_CLI", php_sapi_name() === 'cli');
+/**
+ * 当前的源代码版本编号
+*/
+define("GIT_COMMIT", "c30e246ba5ac12eb9d276c97f3ac44b6c2072830");
 
 if (IS_CLI && FRAMEWORK_DEBUG) {
 
@@ -101,6 +105,7 @@ if (IS_CLI && FRAMEWORK_DEBUG) {
     echo "\n";
     echo " -------------============ PHP.NET ============--------------\n\n";
     echo " Repository: https://github.com/GCModeller-Cloud/php-dotnet\n";
+    echo " Version: " . GIT_COMMIT . "\n";
     echo " Author:     xieguigang <xie.guigang@gcmodeller.org>\n";
     echo "\n\n";
 }
@@ -216,10 +221,6 @@ if (IS_POST && (count($_POST) === 0)) {
  * 获取得到package.php这个文件的所处的文件夹的位置
 */
 define("PHP_DOTNET", dirname(__FILE__) . "/Framework");
-/**
- * 当前的源代码版本编号
-*/
-define("GIT_COMMIT", "c30e246ba5ac12eb9d276c97f3ac44b6c2072830");
 
 bootstrapLoader::imports("Debugger.Ubench.Ubench");
 
