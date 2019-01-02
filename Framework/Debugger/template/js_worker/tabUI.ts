@@ -1,9 +1,9 @@
-/// <reference path="helper.ts" />
+ï»¿/// <reference path="helper.ts" />
 
 module php_debugger {
 
     /**
-     * ³õÊ¼»¯Ò³Ãæ×îÏÂ·½µÄµ÷ÊÔÆ÷±êÇ©Ò³
+     * åˆå§‹åŒ–é¡µé¢æœ€ä¸‹æ–¹çš„è°ƒè¯•å™¨æ ‡ç­¾é¡µ
     */
     export function initTabUI() {
         var open = $pick('#think_page_trace_open');
@@ -54,7 +54,7 @@ module php_debugger {
             })(i);
         }
 
-        // ÏÔÊ¾µÚÒ»Ò³±êÇ©Ò³£ºµ÷ÊÔÆ÷²ÎÊı¸ÅÀÀ
+        // æ˜¾ç¤ºç¬¬ä¸€é¡µæ ‡ç­¾é¡µï¼šè°ƒè¯•å™¨å‚æ•°æ¦‚è§ˆ
         tab_tit[0].click();
     }
 }

@@ -12,7 +12,7 @@ var php_debugger;
 var php_debugger;
 (function (php_debugger) {
     /**
-     * ��ʼ��ҳ�����·��ĵ�������ǩҳ
+     * 初始化页面最下方的调试器标签页
     */
     function initTabUI() {
         var open = php_debugger.$pick('#think_page_trace_open');
@@ -57,10 +57,32 @@ var php_debugger;
                 };
             })(i);
         }
-        // ��ʾ��һҳ��ǩҳ����������������
+        // 显示第一页标签页：调试器参数概览
         tab_tit[0].click();
     }
 })(php_debugger || (php_debugger = {}));
 /// <reference path="tabUI.ts" />
 php_debugger.initTabUI();
+php_debugger.serviceWorker.doInit();
+var php_debugger;
+(function (php_debugger) {
+    var serviceWorker;
+    (function (serviceWorker) {
+        serviceWorker.debuggerGuid = php_debugger.$pick("#debugger_guid").innerText;
+        /**
+         * 每一秒钟执行一次服务器查询
+        */
+        function doInit() {
+            setInterval(fetch, 1000);
+        }
+        serviceWorker.doInit = doInit;
+        /**
+         * 对服务器进行调试器输出结果请求
+         *
+         * 假设服务器上一定会存在一个``index.php``文件？
+        */
+        function fetch() {
+        }
+    })(serviceWorker = php_debugger.serviceWorker || (php_debugger.serviceWorker = {}));
+})(php_debugger || (php_debugger = {}));
 //# sourceMappingURL=js_worker.js.map
