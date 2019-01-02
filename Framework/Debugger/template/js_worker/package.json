@@ -1,0 +1,13 @@
+{
+  "name": "js_worker",
+  "version": "0.0.0",
+  "description": "js_worker",
+  "main": "app.js",
+  "author": {
+    "name": ""
+  },
+  "devDependencies": {
+    "@types/jquery": "^3.3.29",
+    "@types/node": "^8.0.14"
+  }
+}
