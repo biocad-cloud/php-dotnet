@@ -69,10 +69,19 @@ var php_debugger;
     var serviceWorker;
     (function (serviceWorker) {
         serviceWorker.debuggerGuid = php_debugger.$pick("#debugger_guid").innerText;
+        serviceWorker.debuggerApi = "/index.php?api=debugger";
+        /**
+         * 服务器返回来的是大于这个checkpoint数值的所有的后续新增记录
+        */
+        var checkpoints = {};
         /**
          * 每一秒钟执行一次服务器查询
         */
         function doInit() {
+            // 初始化所有的checkpoint
+            Object.keys({
+                SQL: null
+            }).forEach(function (itemName) { return checkpoints[itemName] = 0; });
             setInterval(fetch, 1000);
         }
         serviceWorker.doInit = doInit;
@@ -82,6 +91,16 @@ var php_debugger;
          * 假设服务器上一定会存在一个``index.php``文件？
         */
         function fetch() {
+            $.post(serviceWorker.debuggerApi + "&guid=" + serviceWorker.debuggerGuid, checkpoints, function (info) {
+                if (checkpoints["SQL"] != info.SQL.lastCheckPoint) {
+                    checkpoints["SQL"] = info.SQL.lastCheckPoint;
+                    appendSQL(info.SQL.data);
+                }
+            });
+        }
+        function appendSQL(SQLlogs) {
+            SQLlogs.forEach(function (log) {
+            });
         }
     })(serviceWorker = php_debugger.serviceWorker || (php_debugger.serviceWorker = {}));
 })(php_debugger || (php_debugger = {}));

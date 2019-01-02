@@ -12,6 +12,7 @@ declare module php_debugger {
 }
 declare module php_debugger.serviceWorker {
     const debuggerGuid: string;
+    const debuggerApi: string;
     /**
      * 每一秒钟执行一次服务器查询
     */
