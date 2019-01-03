@@ -263,6 +263,9 @@ abstract class controller {
             if (APP_DEBUG && dotnetDebugger::IsDebuggerApiCalls()) {
                 # 处理调试器调用请求
                 dotnetDebugger::handleApiCalls();
+                // 在这里需要提前结束脚本的执行
+                // 否则下面的反射调用代码会出错
+                exit(0);
             } else {
                 # 其他的情况目前都被判定为404错误
                 # 不存在，则抛出404
@@ -280,10 +283,11 @@ abstract class controller {
             throw new Error("App should be a class object!");
         } else {
             $reflector = new ReflectionClass(get_class($app));
+            $appName   = Router::getApp();
 
             $this->reflection = $reflector;
-            $this->app_logic  = $reflector->getMethod(Router::getApp());
-            $this->docComment = $this->app_logic->getDocComment();   
+            $this->app_logic  = $reflector->getMethod($appName);
+            $this->docComment = $this->app_logic->getDocComment();
             $this->docComment = \PHP\ControllerDoc::ParseControllerDoc($this->docComment);
         }
 
@@ -353,6 +357,10 @@ abstract class controller {
 
     /**
      * 处理所请求的资源找不到的错误，默认为抛出404错误页面
+     * 
+     * > ##### 2019-1-3 
+     * > 请注意，如果需要重写这个函数的话，会需要在处理完之后调用exit结束脚本的执行
+     * > 否则控制器模块没有被提前结束的话，后续的反射调用函数会报错
     */
     public function handleNotFound() {
         $app = Router::getApp();
