@@ -104,9 +104,9 @@ class dotnetDebugger {
 			];
 		}
 
-		$sessionVal = $_SESSION[DEBUG_SESSION][$guid];
-		$sessionVal[$checkpoint]["SQL"] = $sql;
-		$_SESSION[DEBUG_SESSION][$guid] = $sessionVal;
+		$sessionVal = $_SESSION[DEBUG_SESSION][$guid]["logs"];
+		$sessionVal[$checkpoint]["SQL"]         = $sql;
+		$_SESSION[DEBUG_SESSION][$guid]["logs"] = $sessionVal;
 	}
 
 	public static function GetLoadedFiles() {
@@ -186,13 +186,17 @@ class dotnetDebugger {
 		$times          = array_keys($data);
 		$lastCheckPoint = -999999;
 		$logs           = [];
+		$checkpoint     = intval($checkpoint);
 
 		foreach($times as $t) {
+			$t = intval($t);
+
 			if ($t > $checkpoint) {
 				if ($t > $lastCheckPoint) {
 					$lastCheckPoint = $t;
 				}
 
+				$t              = strval($t);
 				$checkpointData = $data[$t][$key];
 
 				foreach($checkpointData as $log) {

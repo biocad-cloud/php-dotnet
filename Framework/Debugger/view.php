@@ -56,7 +56,10 @@ class debugView {
         # 写入当前页面的调试器guid
         # 每一个html页面都是一个新的调试器会话，所以在这里总是对session写入新的数组的
         $guid = DEBUG_GUID;
-        $_SESSION[DEBUG_SESSION][$guid] = [];
+        $_SESSION[DEBUG_SESSION][$guid] = [
+            "url"  => Utils::URL(),
+            "logs" => []
+        ];
         $vars["debugger_guid"] = $guid;
 
         View::Show($template, $vars, null, true);
