@@ -20,11 +20,17 @@ class dotnetDebugger {
 
 	// Mysql query in current session has errors?
 	private $setError;
+	/** 
+	 * 是否已经写入了调试器的session信息？
+	 * @var boolean
+	*/
+	private $debugWrite;
 
 	function __construct() {
 		$this->mysql_history  = array();
 		$this->script_loading = array();
 		$this->setError       = FALSE;
+		$this->debugWrite     = FALSE;
 	}
 	
 	public function hasMySqlLogs() {
@@ -84,6 +90,12 @@ class dotnetDebugger {
 	*/
 	public function WriteDebugSession() {
 		$guid = $_COOKIE[DEBUG_SESSION];
+		
+		if ($this->debugWrite) {
+			return;
+		} else {
+			$this->debugWrite = true;
+		}
 
 		# 生成sql的调试会话信息
 		$sql = [];

@@ -407,6 +407,11 @@ abstract class controller {
         header("Content-Type: application/json");
 
         echo dotnet::successMsg($message);
+
+        if (APP_DEBUG) {
+            dotnet::$debugger->WriteDebugSession();
+        }
+
         exit(0);
     }
 
@@ -427,6 +432,11 @@ abstract class controller {
         header("Content-Type: application/json");
 
         echo dotnet::errorMsg($message, $errCode);
+
+        if (APP_DEBUG) {
+            dotnet::$debugger->WriteDebugSession();
+        }
+
         exit($errCode);
     }
 }
