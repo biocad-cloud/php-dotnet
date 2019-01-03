@@ -23,6 +23,10 @@ class FileSystem {
 		$fileName = explode(".", $fileName);
 		$tokens   = [];
 
+		if (count($fileName) == 1) {
+			return $fileName;
+		}
+
 		for($i = 0; $i < count($fileName) - 1; $i++) {
 			array_push($tokens, $fileName[$i]);
 		}

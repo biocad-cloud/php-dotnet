@@ -68,5 +68,25 @@ class dotnetDebugger {
 	public static function GetLoadedFiles() {
 		return get_included_files();
 	}
+
+	/** 
+	 * 判断当前的调用是否为调试器api调用，假设api调试器调用仅发生在index.php
+	 * 
+	 * ```
+	 * index.php?api=debugger
+	 * ```
+	*/
+	public static function IsDebuggerApiCalls() {
+		$calls = URL::mb_parse_url(null, true, true);
+
+		if (basename($calls->path) != "index.php") {
+			return false;
+		}
+
+		if (Utils::ReadValue($calls->query, "api") != "debugger") {
+			return false;
+		}
+
+		return true;
+	}
 }
-?>

@@ -18,7 +18,7 @@ module php_debugger {
 
         open.onclick = function () {
             trace.style.display = 'block';
-            this.style.display = 'none';
+            open.style.display = 'none';
             container.style.display = 'block';
         }
         close.onclick = closeDebuggerTab;

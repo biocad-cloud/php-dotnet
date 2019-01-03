@@ -12,7 +12,7 @@ class URL {
     */
     var $path;
     /** 
-     * 在URL之中的参数查询部分
+     * 在URL之中的参数查询部分，是一个键值对数组
      * 
      * @var array
     */
@@ -24,6 +24,10 @@ class URL {
      * @var string
     */
     var $app;
+
+    public function getScriptName() {
+
+    }
 
     /** 
      * @param array $url 必须要有path字段，query字段为可选值
@@ -140,11 +144,14 @@ class URL {
     /**
      * UTF-8 aware ``parse_url()`` replacement.
      * 
-	 * @param string $url
+	 * @param string $url 默认为当前的URL
      * @param boolean $parseURLQuery 是否同时也将query部分解析为数组？默认是不解析，即保持为字符串
-     * @return array
+     * @return URL 如果$stdClass参数为true的话，则会返回一个对象而不是一个数组。这个函数默认返回一个数组
     */
-    public static function mb_parse_url($url, $parseURLQuery = false, $stdClass = false) {
+    public static function mb_parse_url($url = null, $parseURLQuery = false, $stdClass = false) {
+        if (Strings::Empty($url)) {
+            $url = Utils::URL(false);
+        }
         $enc_url = preg_replace_callback(
             '%[^:/@?&=#]+%usD',
             function ($matches) {
