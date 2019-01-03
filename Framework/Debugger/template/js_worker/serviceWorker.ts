@@ -54,7 +54,7 @@
     */
     export function fetch() {
         $.post(`${debuggerApi}&guid=${debuggerGuid}`, checkpoints, function (info: debuggerInfo) {
-            if (checkpoints["SQL"] != info.SQL.lastCheckPoint) {
+            if (info.SQL.lastCheckPoint > 0 && checkpoints["SQL"] != info.SQL.lastCheckPoint) {
                 checkpoints["SQL"] = info.SQL.lastCheckPoint;
                 appendSQL(info.SQL.data);
             }

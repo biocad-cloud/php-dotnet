@@ -167,7 +167,7 @@ class dotnetDebugger {
 		$debuggerOut = $debuggerOut[$guid];
 		// 然后根据checkpoint，读取得到对应的调试器结果数据
 		$out = [
-			"SQL" => self::getCheckpointValue($debuggerOut, "SQL", $checkpoints["SQL"])
+			"SQL" => self::getCheckpointValue($debuggerOut["logs"], "SQL", $checkpoints["SQL"])
 		];
 	
 		// 最后生成数组，以json返回

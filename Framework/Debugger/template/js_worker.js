@@ -129,7 +129,7 @@ var php_debugger;
         */
         function fetch() {
             $.post(serviceWorker.debuggerApi + "&guid=" + serviceWorker.debuggerGuid, checkpoints, function (info) {
-                if (checkpoints["SQL"] != info.SQL.lastCheckPoint) {
+                if (info.SQL.lastCheckPoint > 0 && checkpoints["SQL"] != info.SQL.lastCheckPoint) {
                     checkpoints["SQL"] = info.SQL.lastCheckPoint;
                     appendSQL(info.SQL.data);
                 }
