@@ -35,9 +35,14 @@
     }
 
     function appendSQL(SQLlogs: SQLlog[]) {
-        SQLlogs.forEach(log => {
+        var mysqlLogs = $pick("mysql-logs");
 
-        });
+        SQLlogs.forEach(log => mysqlLogs.appendChild($new(
+            "li", {
+                style: "border-bottom:1px solid #EEE;font-size:14px;padding:0 12px"
+            },
+            `${log.SQL} [ RunTime:${log.runtime} ]`))
+        );
     }
 
     interface SQLlog {

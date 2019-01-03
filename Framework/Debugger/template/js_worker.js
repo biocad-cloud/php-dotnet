@@ -7,6 +7,18 @@ var php_debugger;
         return document.getElementById(id.substr(1));
     }
     php_debugger.$pick = $pick;
+    function $new(tagName, attrs, html) {
+        if (html === void 0) { html = null; }
+        var node = document.createElement(tagName);
+        if (attrs) {
+            Object.keys(attrs).forEach(function (name) { return node.setAttribute(name, attrs[name]); });
+        }
+        if (html) {
+            node.innerHTML = html;
+        }
+        return node;
+    }
+    php_debugger.$new = $new;
 })(php_debugger || (php_debugger = {}));
 /// <reference path="helper.ts" />
 var php_debugger;
@@ -26,7 +38,7 @@ var php_debugger;
         };
         open.onclick = function () {
             trace.style.display = 'block';
-            this.style.display = 'none';
+            open.style.display = 'none';
             container.style.display = 'block';
         };
         close.onclick = closeDebuggerTab;
@@ -61,9 +73,6 @@ var php_debugger;
         tab_tit[0].click();
     }
 })(php_debugger || (php_debugger = {}));
-/// <reference path="tabUI.ts" />
-php_debugger.initTabUI();
-php_debugger.serviceWorker.doInit();
 var php_debugger;
 (function (php_debugger) {
     var serviceWorker;
@@ -99,9 +108,15 @@ var php_debugger;
             });
         }
         function appendSQL(SQLlogs) {
-            SQLlogs.forEach(function (log) {
-            });
+            var mysqlLogs = php_debugger.$pick("mysql-logs");
+            SQLlogs.forEach(function (log) { return mysqlLogs.appendChild(php_debugger.$new("li", {
+                style: "border-bottom:1px solid #EEE;font-size:14px;padding:0 12px"
+            }, log.SQL + " [ RunTime:" + log.runtime + " ]")); });
         }
     })(serviceWorker = php_debugger.serviceWorker || (php_debugger.serviceWorker = {}));
 })(php_debugger || (php_debugger = {}));
+/// <reference path="tabUI.ts" />
+/// <reference path="serviceWorker.ts" />
+php_debugger.initTabUI();
+php_debugger.serviceWorker.doInit();
 //# sourceMappingURL=js_worker.js.map

@@ -102,7 +102,9 @@ class dotnetDebugger {
 			];
 		}
 
-		$_SESSION[DEBUG_SESSION][$guid][$checkpoint]["SQL"] = $sql;
+		$sessionVal = $_SESSION[DEBUG_SESSION][$guid];
+		$sessionVal[$checkpoint]["SQL"] = $sql;
+		$_SESSION[DEBUG_SESSION][$guid] = $sessionVal;
 	}
 
 	public static function GetLoadedFiles() {

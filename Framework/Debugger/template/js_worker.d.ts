@@ -3,6 +3,9 @@ declare module php_debugger {
      * 按照id来获取得到HTML节点元素
     */
     function $pick(id: string): HTMLElement;
+    function $new(tagName: string, attrs?: {
+        style?: string;
+    }, html?: string): HTMLElement;
 }
 declare module php_debugger {
     /**
