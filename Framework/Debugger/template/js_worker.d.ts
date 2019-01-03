@@ -17,6 +17,10 @@ declare module php_debugger.serviceWorker {
     const debuggerGuid: string;
     const debuggerApi: string;
     /**
+     * 更新的时间间隔过短，可能会影响调试
+    */
+    const workerInterval = 5000;
+    /**
      * 每一秒钟执行一次服务器查询
     */
     function doInit(): void;

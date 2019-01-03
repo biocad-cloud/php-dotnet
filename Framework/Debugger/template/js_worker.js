@@ -90,6 +90,10 @@ var php_debugger;
         */
         var timer;
         /**
+         * 更新的时间间隔过短，可能会影响调试
+        */
+        serviceWorker.workerInterval = 5000;
+        /**
          * 每一秒钟执行一次服务器查询
         */
         function doInit() {
@@ -111,7 +115,7 @@ var php_debugger;
                 // do nothing
                 // just ignore the error
             }
-            timer = setInterval(fetch, 1000);
+            timer = setInterval(fetch, serviceWorker.workerInterval);
         }
         serviceWorker.StartWorker = StartWorker;
         function StopWorker() {

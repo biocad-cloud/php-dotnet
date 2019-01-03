@@ -260,6 +260,14 @@ $load->run(function() {
 
 #endregion
 
+if (APP_DEBUG) {
+
+    /** 
+     * 当前SESSION之中的调试器会话的编号
+    */
+    define("DEBUG_GUID", dotnetDebugger::getCurrentDebuggerGuid());
+}
+
 debugView::LogEvent("--- App start ---");
 debugView::LogEvent("Load required modules in " . $load->getTime());
 

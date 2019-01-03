@@ -301,10 +301,17 @@ abstract class controller {
     */
     public function handleRequest() {
         $origin = $this->getAccessAllowOrigin();
+        $isView = strtolower($this->getUsage()) === "view";
 
         if (!Strings::Empty($origin)) {
             header("Access-Control-Allow-Origin: $origin");
         }
+        if (APP_DEBUG && $isView) {
+            # 2019-1-3 因为http头部必须要在content之前输出才有效
+            # 所以对于当前的session的调试器信息输出必须要
+            # 发生在处理用户请求之前来完成
+            setcookie(DEBUG_SESSION, DEBUG_GUID);
+        }        
 
         # 在这里执行用户的控制器函数
         $bench = new \Ubench();
@@ -318,7 +325,7 @@ abstract class controller {
         # 在末尾输出调试信息？
         # 只对view类型api调用的有效
         
-		if (APP_DEBUG && strtolower($this->getUsage()) == "view") {
+		if (APP_DEBUG && $isView) {
             # 在这里自动添加结束标记
             debugView::LogEvent("--- App Exit ---");
 			debugView::Display();

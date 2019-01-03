@@ -81,7 +81,7 @@ class View {
 	 * @param array $vars 需要进行填充的变量列表
 	 * @param string $lang 语言配置值，一般不需要指定，框架会根据url参数配置自动加载
 	*/
-	public static function Show($path, $vars = NULL, $lang = null, $suppressDebug = false) {		
+	public static function Show($path, $vars = NULL, $lang = null, $suppressDebug = false) {
 		debugView::LogEvent("[Begin] Render html view");
 
 		$bench = new \Ubench();
