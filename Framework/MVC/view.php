@@ -55,9 +55,21 @@ class View {
 		if (empty($path) || $path == false) {
 			# 文件丢失？
 			# 或者当前的网站在文件夹下，而不是根文件夹
-			$msg = "View file not found, please consider define a valid <code>SITE_PATH</code> constant before we load php.NET framework.";
-			echo $msg;
-			exit(404);
+			$msg = "The view template file not found, please consider defined: 
+			<ul>
+			<li>a valid <code>SITE_PATH</code> constant or </li>
+			<li>a valid <code>MVC_VIEW_ROOT</code> configuration</li>
+			</ul>
+			before we load php.NET framework.
+			<br />
+			<br />
+			Current value:
+			<ul>
+			<li>SITE_PATH = " . SITE_PATH . "</li>
+			<li>wwwroot = $wwwroot</li>
+			</ul>";
+			
+			dotnet::PageNotFound($msg);
 		} else {
 			if (file_exists($path)) {
 				$path = realpath($path);
