@@ -313,10 +313,17 @@ abstract class controller {
 
         # 在末尾输出调试信息？
         # 只对view类型api调用的有效
+        
 		if (APP_DEBUG && strtolower($this->getUsage()) == "view") {
             # 在这里自动添加结束标记
             debugView::LogEvent("--- App Exit ---");
 			debugView::Display();
+        } else {
+            // 假设不是view类型的控制器的话，则在这里可能是api类型的调用
+            // 需要在这里写入调试器session信息
+            if (APP_DEBUG) {
+                dotnet::$debugger->WriteDebugSession();
+            }
         }
         
         exit(0);
