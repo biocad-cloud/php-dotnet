@@ -35,11 +35,13 @@ var php_debugger;
             trace.style.display = 'none';
             container.style.display = 'none';
             open.style.display = 'block';
+            php_debugger.serviceWorker.StopWorker();
         };
         open.onclick = function () {
             trace.style.display = 'block';
             open.style.display = 'none';
             container.style.display = 'block';
+            php_debugger.serviceWorker.StartWorker();
         };
         close.onclick = closeDebuggerTab;
         attachTabSwitch();
@@ -84,6 +86,10 @@ var php_debugger;
         */
         var checkpoints = {};
         /**
+         * 当前的这个后台轮询线程的句柄值
+        */
+        var timer;
+        /**
          * 每一秒钟执行一次服务器查询
         */
         function doInit() {
@@ -91,9 +97,24 @@ var php_debugger;
             Object.keys({
                 SQL: null
             }).forEach(function (itemName) { return checkpoints[itemName] = 0; });
-            setInterval(fetch, 1000);
+            serviceWorker.StartWorker();
         }
         serviceWorker.doInit = doInit;
+        function StartWorker() {
+            try {
+                serviceWorker.StopWorker();
+            }
+            catch (ex) {
+                // do nothing
+                // just ignore the error
+            }
+            timer = setInterval(fetch, 1000);
+        }
+        serviceWorker.StartWorker = StartWorker;
+        function StopWorker() {
+            clearInterval(timer);
+        }
+        serviceWorker.StopWorker = StopWorker;
         /**
          * 对服务器进行调试器输出结果请求
          *
@@ -107,6 +128,7 @@ var php_debugger;
                 }
             });
         }
+        serviceWorker.fetch = fetch;
         function appendSQL(SQLlogs) {
             var mysqlLogs = php_debugger.$pick("mysql-logs");
             SQLlogs.forEach(function (log) { return mysqlLogs.appendChild(php_debugger.$new("li", {

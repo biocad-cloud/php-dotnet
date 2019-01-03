@@ -20,4 +20,24 @@ declare module php_debugger.serviceWorker {
      * 每一秒钟执行一次服务器查询
     */
     function doInit(): void;
+    function StartWorker(): void;
+    function StopWorker(): void;
+    /**
+     * 对服务器进行调试器输出结果请求
+     *
+     * 假设服务器上一定会存在一个``index.php``文件？
+    */
+    function fetch(): void;
+    interface SQLlog {
+        time: string;
+        SQL: string;
+        runtime: string;
+    }
+    interface debuggerInfo {
+        SQL: checkPointValue<SQLlog>;
+    }
+    interface checkPointValue<T> {
+        lastCheckPoint: number;
+        data: T[];
+    }
 }

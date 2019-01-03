@@ -14,12 +14,16 @@ module php_debugger {
             trace.style.display = 'none';
             container.style.display = 'none';
             open.style.display = 'block';
+
+            serviceWorker.StopWorker();
         };
 
         open.onclick = function () {
             trace.style.display = 'block';
             open.style.display = 'none';
             container.style.display = 'block';
+
+            serviceWorker.StartWorker();
         }
         close.onclick = closeDebuggerTab;
 

@@ -7,6 +7,10 @@
      * 服务器返回来的是大于这个checkpoint数值的所有的后续新增记录
     */
     var checkpoints = {};
+    /**
+     * 当前的这个后台轮询线程的句柄值
+    */
+    var timer;
 
     /**
      * 每一秒钟执行一次服务器查询
@@ -17,7 +21,22 @@
             SQL: null
         }).forEach(itemName => checkpoints[itemName] = 0);
 
-        setInterval(fetch, 1000);
+        serviceWorker.StartWorker();
+    }
+
+    export function StartWorker() {
+        try {
+            serviceWorker.StopWorker();
+        } catch (ex) {
+            // do nothing
+            // just ignore the error
+        }
+
+        timer = setInterval(fetch, 1000);
+    }
+
+    export function StopWorker() {
+        clearInterval(timer);
     }
 
     /**
@@ -25,7 +44,7 @@
      * 
      * 假设服务器上一定会存在一个``index.php``文件？
     */
-    function fetch() {
+    export function fetch() {
         $.post(`${debuggerApi}&guid=${debuggerGuid}`, checkpoints, function (info: debuggerInfo) {
             if (checkpoints["SQL"] != info.SQL.lastCheckPoint) {
                 checkpoints["SQL"] = info.SQL.lastCheckPoint;
@@ -45,17 +64,17 @@
         );
     }
 
-    interface SQLlog {
+    export interface SQLlog {
         time: string;
         SQL: string;
         runtime: string;
     }
 
-    interface debuggerInfo {
+    export interface debuggerInfo {
         SQL: checkPointValue<SQLlog>;
     }
 
-    interface checkPointValue<T> {
+    export interface checkPointValue<T> {
         lastCheckPoint: number;
         data: T[];
     }
