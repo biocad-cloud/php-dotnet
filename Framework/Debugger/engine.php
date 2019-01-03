@@ -8,6 +8,12 @@ define("DEBUG_SESSION", "debugger(Of php.NET)");
 class dotnetDebugger {
 
 	public $script_loading;
+
+	/** 
+	 * ``[sql, time, type, err, tag]``
+	 * 
+	 * @var array
+	*/
 	public $mysql_history;
 
 	// Mysql query in current session has errors?
@@ -36,7 +42,8 @@ class dotnetDebugger {
 		$this->mysql_history[] = [
 			"sql"  => $SQL, 
 			"time" => $elapsed,
-			"type" => $type
+			"type" => $type,
+			"tag"  => Utils::UnixTimeStamp()
 		];
 	}
 
@@ -68,6 +75,34 @@ class dotnetDebugger {
 
 		$this->setError              = TRUE;
 		$this->mysql_history[$lasti] = $last; 
+	}
+
+	/** 
+	 * 这个是rest api请求所产生的
+	*/
+	public function WriteDebugSession() {
+		$guid = $_COOKIE[DEBUG_SESSION];
+
+		# 生成sql的调试会话信息
+		$sql = [];
+		$checkpoint = Utils::UnixTimeStamp();
+
+		foreach($this->mysql_history as $log) {
+			/*
+				interface SQLlog {
+					time: string;
+					SQL: string;
+					runtime: string;
+				}
+			*/
+			$sql[] = [
+				"time"    => $checkpoint,
+				"SQL"     => $log["sql"],
+				"runtime" => $log["time"]
+			];
+		}
+
+		$_SESSION[DEBUG_SESSION][$guid][$checkpoint]["SQL"] = $sql;
 	}
 
 	public static function GetLoadedFiles() {
@@ -149,7 +184,9 @@ class dotnetDebugger {
 					$lastCheckPoint = $t;
 				}
 
-				$logs[] = $data[$t];
+				foreach($data[$t] as $log) {
+					$logs[] = $log;
+				}
 			}
 		}
 

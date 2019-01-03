@@ -49,6 +49,18 @@ class debugView {
         $template = debugView::Template();  
         $vars     = debugView::union();
 
+        if (!array_key_exists(DEBUG_SESSION, $_SESSION)) {
+            $_SESSION[DEBUG_SESSION] = [];
+        }
+
+        # 写入当前页面的调试器guid
+        # 每一个html页面都是一个新的调试器会话，所以在这里总是对session写入新的数组的
+        $guid = dotnetDebugger::getCurrentDebuggerGuid();
+        $_SESSION[DEBUG_SESSION][$guid] = [];
+        $vars["debugger_guid"] = $guid;
+
+        setcookie(DEBUG_SESSION, $guid);
+
         View::Show($template, $vars, null, true);
     }
 
@@ -148,7 +160,7 @@ class debugView {
         $css  = file_get_contents($css);        
         $vars = array_merge([
             "files"           => count(get_included_files()),
-            "memory_size"     => FileSystem::Lanudry(memory_get_usage()),            
+            "memory_size"     => FileSystem::Lanudry(memory_get_usage()),
             "json_viewer_js"  => $js,
             "json_viewer_css" => $css,
             "git"             => GIT_COMMIT,
