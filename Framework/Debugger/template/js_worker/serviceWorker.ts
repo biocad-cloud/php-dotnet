@@ -1,7 +1,7 @@
 ﻿module php_debugger.serviceWorker {
 
     export const debuggerGuid: string = $pick("#debugger_guid").innerText;
-    export const debuggerApi: string = "/index.php?api=debugger";
+    export const debuggerApi: string = "/index.php?app=php.NET&api=debugger";
 
     /**
      * 服务器返回来的是大于这个checkpoint数值的所有的后续新增记录

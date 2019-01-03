@@ -78,7 +78,7 @@ var php_debugger;
     var serviceWorker;
     (function (serviceWorker) {
         serviceWorker.debuggerGuid = php_debugger.$pick("#debugger_guid").innerText;
-        serviceWorker.debuggerApi = "/index.php?api=debugger";
+        serviceWorker.debuggerApi = "/index.php?app=php.NET&api=debugger";
         /**
          * 服务器返回来的是大于这个checkpoint数值的所有的后续新增记录
         */
