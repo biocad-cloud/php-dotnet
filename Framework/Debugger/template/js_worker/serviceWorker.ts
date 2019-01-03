@@ -21,7 +21,10 @@
             SQL: null
         }).forEach(itemName => checkpoints[itemName] = 0);
 
-        serviceWorker.StartWorker();
+        // doinit函数是在脚本起始运行的时候被调用的
+        // 但是最开始的时候调试器的标签页还没有打开
+        // 所以没有必要一开始就启动后台线程
+        // serviceWorker.StartWorker();
     }
 
     export function StartWorker() {

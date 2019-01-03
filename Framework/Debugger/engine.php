@@ -142,7 +142,9 @@ class dotnetDebugger {
 	 * Sesion id + unix timestamp
 	*/
 	public static function getCurrentDebuggerGuid() {
-		return session_id() . "-" . Utils::UnixTimeStamp();
+		# 因为一个页面所发出来的rest api请求肯定是在同一个session之中的
+		# 所以没有必要添加session_id前缀了
+		return Utils::UnixTimeStamp();
 	}
 
 	/** 
