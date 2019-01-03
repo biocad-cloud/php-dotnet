@@ -137,7 +137,7 @@ var php_debugger;
         }
         serviceWorker.fetch = fetch;
         function appendSQL(SQLlogs) {
-            var mysqlLogs = php_debugger.$pick("mysql-logs");
+            var mysqlLogs = php_debugger.$pick("#mysql-logs");
             SQLlogs.forEach(function (log) { return mysqlLogs.appendChild(php_debugger.$new("li", {
                 style: "border-bottom:1px solid #EEE;font-size:14px;padding:0 12px"
             }, log.SQL + " [ RunTime:" + log.runtime + " ]")); });

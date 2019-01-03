@@ -62,7 +62,7 @@
     }
 
     function appendSQL(SQLlogs: SQLlog[]) {
-        var mysqlLogs = $pick("mysql-logs");
+        var mysqlLogs = $pick("#mysql-logs");
 
         SQLlogs.forEach(log => mysqlLogs.appendChild($new(
             "li", {
