@@ -75,9 +75,15 @@ class dotnetDebugger {
 	 * ```
 	 * index.php?api=debugger
 	 * ```
+	 * 
+	 * 并且为POST提交方式进行请求
 	*/
 	public static function IsDebuggerApiCalls() {
 		$calls = URL::mb_parse_url(null, true, true);
+
+		if (!IS_POST) {
+			return false;
+		}
 
 		if (basename($calls->path) != "index.php") {
 			return false;
@@ -88,5 +94,9 @@ class dotnetDebugger {
 		}
 
 		return true;
+	}
+
+	public static function handleApiCalls() {
+
 	}
 }

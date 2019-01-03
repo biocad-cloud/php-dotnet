@@ -31,6 +31,10 @@ class Router {
 	/**
 	 * 获取当前所访问的应用程序的名称
 	 * 
+	 * ```
+	 * XXXX.php?app=xxxxx
+	 * ```
+	 * 
 	 * @return string Web app name.
 	*/
 	public static function getApp() {

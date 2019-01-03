@@ -259,10 +259,15 @@ abstract class controller {
 
         // 先检查目标方法是否存在于逻辑层之中
         if (!method_exists($app, $page = Router::getApp())) {
-            # 不存在，则抛出404
-            $this->handleNotFound();
-            $msg = "Web app `<strong>$page</strong>` is not available in this controller!";
-			dotnet::PageNotFound($message);
+            # 如果是调试模式下，则可能是调试器调用
+            if (APP_DEBUG && dotnetDebugger::IsDebuggerApiCalls()) {
+                # 处理调试器调用请求
+                dotnetDebugger::handleApiCalls();
+            } else {
+                # 其他的情况目前都被判定为404错误
+                # 不存在，则抛出404
+                $this->handleNotFound();
+            }
         } else {
             $this->ref = DotNetRegistry::GetInitialScriptName();
             $this->ref = "{$this->ref}/$page";
@@ -340,10 +345,13 @@ abstract class controller {
     }
 
     /**
-     * 处理所请求的资源找不到的错误
+     * 处理所请求的资源找不到的错误，默认为抛出404错误页面
     */
     public function handleNotFound() {
-        // do nothing
+        $app = Router::getApp();
+        $msg = "Web app `<strong>$app</strong>` is not available in this controller!";
+
+        dotnet::PageNotFound($msg);
     }
 
     /**
