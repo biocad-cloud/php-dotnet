@@ -303,15 +303,17 @@ abstract class controller {
         $origin = $this->getAccessAllowOrigin();
         $isView = strtolower($this->getUsage()) === "view";
 
-        if (!Strings::Empty($origin)) {
-            header("Access-Control-Allow-Origin: $origin");
-        }
         if (APP_DEBUG && $isView) {
             # 2019-1-3 因为http头部必须要在content之前输出才有效
             # 所以对于当前的session的调试器信息输出必须要
             # 发生在处理用户请求之前来完成
-            setcookie(DEBUG_SESSION, DEBUG_GUID);
-        }        
+            $name = DEBUG_SESSION;
+            $guid = DEBUG_GUID;
+            header("Set-Cookie: $name=$guid");
+        }
+        if (!Strings::Empty($origin)) {
+            header("Access-Control-Allow-Origin: $origin");
+        }
 
         # 在这里执行用户的控制器函数
         $bench = new \Ubench();

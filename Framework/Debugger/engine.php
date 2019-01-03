@@ -5,7 +5,7 @@ Imports("php.URL");
 /**
  * 调试器的后续rest api的信息输出在当前的session之中的存放键名 
 */
-define("DEBUG_SESSION", "debugger(Of php.NET)");
+define("DEBUG_SESSION", "PHP_debugger");
 
 class dotnetDebugger {
 
@@ -155,6 +155,9 @@ class dotnetDebugger {
 	 * 2. 获取信息只能够从session来完成
 	*/
 	public static function handleApiCalls() {
+		header("HTTP/1.1 200 OK");
+		header("Content-Type: application/json");
+		
 		$checkpoints = $_POST;
 		$guid        = $_GET["guid"];
 
@@ -164,7 +167,7 @@ class dotnetDebugger {
 		$debuggerOut = $debuggerOut[$guid];
 		// 然后根据checkpoint，读取得到对应的调试器结果数据
 		$out = [
-			"SQL" => self::getCheckpointValue($debuggerOut["SQL"], $checkpoints["SQL"])
+			"SQL" => self::getCheckpointValue($debuggerOut, "SQL", $checkpoints["SQL"])
 		];
 	
 		// 最后生成数组，以json返回
@@ -179,7 +182,7 @@ class dotnetDebugger {
      * }
 	 * ```
 	*/
-	private static function getCheckpointValue($data, $checkpoint) {
+	private static function getCheckpointValue($data, $key, $checkpoint) {
 		$times          = array_keys($data);
 		$lastCheckPoint = -999999;
 		$logs           = [];
@@ -190,7 +193,9 @@ class dotnetDebugger {
 					$lastCheckPoint = $t;
 				}
 
-				foreach($data[$t] as $log) {
+				$checkpointData = $data[$t][$key];
+
+				foreach($checkpointData as $log) {
 					$logs[] = $log;
 				}
 			}
