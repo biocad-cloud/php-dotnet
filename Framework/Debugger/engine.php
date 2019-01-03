@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * 调试器的后续rest api的信息输出在当前的session之中的存放键名 
+*/
+define("DEBUG_SESSION", "debugger(Of php.NET)");
+
 class dotnetDebugger {
 
 	public $script_loading;
@@ -96,7 +101,61 @@ class dotnetDebugger {
 		return true;
 	}
 
-	public static function handleApiCalls() {
+	/** 
+	 * Sesion id + unix timestamp
+	*/
+	public static function getCurrentDebuggerGuid() {
+		return session_id() . "-" . Utils::UnixTimeStamp();
+	}
 
+	/** 
+	 * 1. 因为当前的数据请求是和其他的数据请求分开的
+	 *    所以在获取SQL的调试信息的时候不能够直接读取当前对象的数组数据
+	 * 2. 获取信息只能够从session来完成
+	*/
+	public static function handleApiCalls() {
+		$checkpoints = $_POST;
+		$guid        = $_GET["guid"];
+
+		// 调试器的数据是保存在当前的session之中的
+		$debuggerOut = $_SESSION[DEBUG_SESSION];
+		// 然后通过guid读取当前页面的关联的调试信息
+		$debuggerOut = $debuggerOut[$guid];
+		// 然后根据checkpoint，读取得到对应的调试器结果数据
+		$out = [
+			"SQL" => self::getCheckpointValue($debuggerOut["SQL"], $checkpoints["SQL"])
+		];
+	
+		// 最后生成数组，以json返回
+		echo json_encode($out);
+	}
+
+	/**
+	 * ```ts 
+	 * interface checkPointValue<T> {
+     *     lastCheckPoint: number;
+     *     data: T[];
+     * }
+	 * ```
+	*/
+	private static function getCheckpointValue($data, $checkpoint) {
+		$times          = array_keys($data);
+		$lastCheckPoint = -999999;
+		$logs           = [];
+
+		foreach($times as $t) {
+			if ($t > $checkpoint) {
+				if ($t > $lastCheckPoint) {
+					$lastCheckPoint = $t;
+				}
+
+				$logs[] = $data[$t];
+			}
+		}
+
+		return [
+			"lastCheckPoint" => $lastCheckPoint,
+			"data"           => $logs
+		];
 	}
 }
