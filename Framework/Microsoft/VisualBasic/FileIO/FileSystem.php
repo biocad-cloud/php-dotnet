@@ -301,9 +301,9 @@ class FileSystem {
 	 * 
 	 * @return string[] 文件的完整路径集合
 	*/
-	public static function GetFiles($directory, $suffix = "*") {
+	public static function GetFiles($directory, $suffix = "*", $realpath = true) {
 		$list  = array_diff(scandir($directory), array('.', '..'));
-		$files = array();
+		$files = [];
 		$requireFilter = !$suffix || $suffix == "*" || $suffix == "*.*";
 		$requireFilter = !$requireFilter;
 		
@@ -320,11 +320,13 @@ class FileSystem {
 					
 					if (Strings::LCase($ext) == $suffix) {
 						# hit
-						array_push($files, realpath("$directory/$entry"));
+						$file = $realpath ? realpath("$directory/$entry") : $entry;
+						array_push($files, $file);
 					}
 				} else {
 					# 不需要做筛选，直接添加
-					array_push($files, realpath("$directory/$entry"));
+					$file = $realpath ? realpath("$directory/$entry") : $entry;
+					array_push($files, $file);
 				}
 			}
 		}
