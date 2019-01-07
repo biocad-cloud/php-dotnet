@@ -18,14 +18,14 @@ class FileSystem {
 		# 因为为了兼容文件夹路径，所以path字符串在最开始需要trim操作
 		$path = str_replace("\\", "/", trim($path, "/"));
 		$path = explode("/", $path);
-
 		$fileName = $path[count($path) - 1];
 		$fileName = explode(".", $fileName);
 		$tokens   = [];
 
 		if (count($fileName) == 1) {
 			// 没有拓展名，则返回自身的文件名
-			return $fileName;
+			// fileName是一个数组，取出第一个元素即可
+			return $fileName[0];
 		}
 
 		for($i = 0; $i < count($fileName) - 1; $i++) {
