@@ -45,11 +45,19 @@ class dotnet {
      *                          the http client.
      * 
     */ 
-	public static function errorMsg($msg, $errorCode = 1) {
-		return json_encode([
-			'code' => $errorCode,
-            'info' => $msg
-        ]);
+	public static function errorMsg($msg, $errorCode = 1, $debug = null) {
+        if (empty($debug)) {
+            return json_encode([
+                'code' => $errorCode,
+                'info' => $msg
+            ]);
+        } else {
+            return json_encode([
+                'code'  => $errorCode,
+                'info'  => $msg,
+                "debug" => $debug
+            ]);
+        }
 	}
 
     /**
