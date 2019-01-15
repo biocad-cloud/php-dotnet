@@ -277,8 +277,8 @@ class dotnet {
      * 
      * @param string $message The error message to display.
 	*/
-    public static function ThrowException($message) {      
-		$trace = StackTrace::GetCallStack()->ToString();
+    public static function ThrowException($message) {
+		$trace = StackTrace::GetCallStack();
 		$exc   = dotnetException::FormatOutput($message, $trace);
 				
 		RFC7231Error::err500($exc);
