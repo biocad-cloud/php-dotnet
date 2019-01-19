@@ -31,13 +31,23 @@ class IEnumerator {
     }
 
     /**
-     * @param array $source 
+     * 从一个可遍历的序列构建一个新的可枚举序列
+     * 
+     * @param array $source 这个构造函数会对这个输入序列进行复制
     */    
     public function __construct($source) {
-        $this->sequence = $source;
+        $this->sequence = [];
+        
+        # 由于链式表达式返回来的序列是使用yield方法生成的
+        # 所以在这里会需要使用一个foreach来兼容其输出结果
+        foreach($source as $x) {
+            array_push($this->sequence, $x);
+        }
     }
 
     /**
+     * @param callable $predicate 传递的是一个返回逻辑值的函数 
+     * 
      * @return IEnumerator
     */
     public function Where($predicate) {
