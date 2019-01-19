@@ -42,10 +42,12 @@ class IEnumerator {
     public function __construct($source) {
         $this->sequence = [];
         
-        # 由于链式表达式返回来的序列是使用yield方法生成的
-        # 所以在这里会需要使用一个foreach来兼容其输出结果
-        foreach($source as $x) {
-            array_push($this->sequence, $x);
+        if (!(empty($source) || $source === false)) {
+            # 由于链式表达式返回来的序列是使用yield方法生成的
+            # 所以在这里会需要使用一个foreach来兼容其输出结果
+            foreach($source as $x) {
+                array_push($this->sequence, $x);
+            }
         }
     }
 
