@@ -11,7 +11,7 @@ Imports("System.Collection.ICollection");
 class IEnumerator {
 
     /**
-     * @var Array
+     * @var array
     */
     private $sequence;
 
@@ -23,6 +23,10 @@ class IEnumerator {
      * @return integer Returns the count of the target sequence.
     */
     public function Count($assert = null) {
+        if (empty($this->sequence) || $this->sequence === false) {
+            return 0;
+        }
+
         if ($assert) {
             return $this->Where($assert)->Count();
         } else {
