@@ -196,6 +196,12 @@ class Strings {
 		return str_replace($find, $replacement, $str);
 	}
 
+	/** 
+	 * 得到所给定的字符串之中某一个位置的字符结果
+	 * 
+	 * @param string $string 目标字符串
+	 * @param integer $i 字符的位置，可以为负数。当这个位置值为负数的时候表示从后往前计算，即``strlen($string) - i``
+	*/
 	public static function CharAt($string, $i) {
 		if (empty($string)) {
 			return "";

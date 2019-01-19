@@ -12,6 +12,11 @@ Imports("php.DocComment");
 
 /**
  * php.NET Access controller model
+ * 
+ * 需要重写下面的几个方法才可以正常工作
+ * 
+ * + ``abstract public function accessControl();``
+ * + ``public function Redirect($code) {}``
 */
 abstract class controller {
 
@@ -254,10 +259,18 @@ abstract class controller {
 
         // 先检查目标方法是否存在于逻辑层之中
         if (!method_exists($app, $page = Router::getApp())) {
-            # 不存在，则抛出404
-            $this->handleNotFound();
-            $msg = "Web app `<strong>$page</strong>` is not available in this controller!";
-			dotnet::PageNotFound($message);
+            # 如果是调试模式下，则可能是调试器调用
+            if (APP_DEBUG && dotnetDebugger::IsDebuggerApiCalls()) {
+                # 处理调试器调用请求
+                dotnetDebugger::handleApiCalls();
+                // 在这里需要提前结束脚本的执行
+                // 否则下面的反射调用代码会出错
+                exit(0);
+            } else {
+                # 其他的情况目前都被判定为404错误
+                # 不存在，则抛出404
+                $this->handleNotFound();
+            }
         } else {
             $this->ref = DotNetRegistry::GetInitialScriptName();
             $this->ref = "{$this->ref}/$page";
@@ -270,10 +283,11 @@ abstract class controller {
             throw new Error("App should be a class object!");
         } else {
             $reflector = new ReflectionClass(get_class($app));
+            $appName   = Router::getApp();
 
             $this->reflection = $reflector;
-            $this->app_logic  = $reflector->getMethod(Router::getApp());
-            $this->docComment = $this->app_logic->getDocComment();   
+            $this->app_logic  = $reflector->getMethod($appName);
+            $this->docComment = $this->app_logic->getDocComment();
             $this->docComment = \PHP\ControllerDoc::ParseControllerDoc($this->docComment);
         }
 
@@ -287,7 +301,16 @@ abstract class controller {
     */
     public function handleRequest() {
         $origin = $this->getAccessAllowOrigin();
+        $isView = strtolower($this->getUsage()) === "view";
 
+        if (APP_DEBUG && $isView) {
+            # 2019-1-3 因为http头部必须要在content之前输出才有效
+            # 所以对于当前的session的调试器信息输出必须要
+            # 发生在处理用户请求之前来完成
+            $name = DEBUG_SESSION;
+            $guid = DEBUG_GUID;
+            header("Set-Cookie: $name=$guid");
+        }
         if (!Strings::Empty($origin)) {
             header("Access-Control-Allow-Origin: $origin");
         }
@@ -303,10 +326,17 @@ abstract class controller {
 
         # 在末尾输出调试信息？
         # 只对view类型api调用的有效
-		if (APP_DEBUG && strtolower($this->getUsage()) == "view") {
+        
+		if (APP_DEBUG && $isView) {
             # 在这里自动添加结束标记
             debugView::LogEvent("--- App Exit ---");
 			debugView::Display();
+        } else {
+            // 假设不是view类型的控制器的话，则在这里可能是api类型的调用
+            // 需要在这里写入调试器session信息
+            if (APP_DEBUG) {
+                dotnet::$debugger->WriteDebugSession();
+            }
         }
         
         exit(0);
@@ -335,10 +365,17 @@ abstract class controller {
     }
 
     /**
-     * 处理所请求的资源找不到的错误
+     * 处理所请求的资源找不到的错误，默认为抛出404错误页面
+     * 
+     * > ##### 2019-1-3 
+     * > 请注意，如果需要重写这个函数的话，会需要在处理完之后调用exit结束脚本的执行
+     * > 否则控制器模块没有被提前结束的话，后续的反射调用函数会报错
     */
     public function handleNotFound() {
-        // do nothing
+        $app = Router::getApp();
+        $msg = "Web app `<strong>$app</strong>` is not available in this controller!";
+
+        dotnet::PageNotFound($msg);
     }
 
     /**
@@ -370,6 +407,11 @@ abstract class controller {
         header("Content-Type: application/json");
 
         echo dotnet::successMsg($message);
+
+        if (APP_DEBUG) {
+            dotnet::$debugger->WriteDebugSession();
+        }
+
         exit(0);
     }
 
@@ -382,14 +424,19 @@ abstract class controller {
      * 
      * @return void
     */
-    public static function error($message, $errCode = 1) {
+    public static function error($message, $errCode = 1, $debug = null) {
         header("HTTP/1.1 200 OK");
         # 2018-10-11 不能够在这里设置500错误码，这个会导致
         # jquery的success参数回调判断失败，无法接受错误消息
         # header("HTTP/1.0 500 Internal Server Error");
         header("Content-Type: application/json");
 
-        echo dotnet::errorMsg($message, $errCode);
+        echo dotnet::errorMsg($message, $errCode, $debug);
+
+        if (APP_DEBUG) {
+            dotnet::$debugger->WriteDebugSession();
+        }
+
         exit($errCode);
     }
 }

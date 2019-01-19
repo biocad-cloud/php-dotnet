@@ -23,6 +23,32 @@ class Utils {
         }
     }
 
+    public static function getRealFileType($filename) {
+        return using(new FileStream($filename, "rb"), function($image) {
+            // 只读2字节  
+            $bin      = $image->Read(2);
+            $strInfo  = @unpack("C2chars", $bin);
+            $typeCode = intval($strInfo['chars1'] . $strInfo['chars2']);
+            $fileType = File::GetType($typeCode);
+            
+            return $fileType;
+        });
+    }
+
+    /** 
+     * 如果经过检查之后发现不是图片数据，则这个函数会返回False
+    */
+    public static function imagetype($filename) {
+        $type   = self::getRealFileType($filename);
+        $images = ["jpg", "gif", "bmp", "png"];
+        
+        if (in_array($type, $images)) {
+            return $type;
+        } else {
+            return false;
+        }
+    }
+
     #region "OSS工具"
 
     /**
@@ -226,8 +252,12 @@ class Utils {
      * 
      * @return string
     */
-    public static function URL() {
-        return (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+    public static function URL($includeHostName = true) {
+        if ($includeHostName) {
+            return (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+        } else {
+            return $_SERVER["REQUEST_URI"];
+        }        
     }
 	
 	/**

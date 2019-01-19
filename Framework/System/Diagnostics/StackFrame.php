@@ -70,7 +70,7 @@ class StackFrame {
                 $file = Strings::Replace($file, APP_PATH,   "/wwwroot/docker/ubuntu~/->/");
             }
             if (defined("SITE_PATH")) {
-                $file = Strings::Replace($file, SITE_PATH,  "/wwwroot/docket/ubuntu~/->/");
+                $file = Strings::Replace($file, SITE_PATH,  "/wwwroot/docker/ubuntu~/->/");
             }
         } else {
             # do nothing

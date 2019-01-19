@@ -15,13 +15,18 @@ class FileSystem {
 	 * @param string $path The given file path string value.
 	*/
 	public static function BaseName($path) {
+		# 因为为了兼容文件夹路径，所以path字符串在最开始需要trim操作
+		$path = str_replace("\\", "/", trim($path, "/"));
 		$path = explode("/", $path);
-		$path = $path[count($path) - 1];
-		$path = explode("\\", $path);
-
 		$fileName = $path[count($path) - 1];
 		$fileName = explode(".", $fileName);
 		$tokens   = [];
+
+		if (count($fileName) == 1) {
+			// 没有拓展名，则返回自身的文件名
+			// fileName是一个数组，取出第一个元素即可
+			return $fileName[0];
+		}
 
 		for($i = 0; $i < count($fileName) - 1; $i++) {
 			array_push($tokens, $fileName[$i]);
@@ -148,14 +153,124 @@ class FileSystem {
 	public static function RenameFile($file, $newName) {
 		rename($file, $newName);
 	}
-		
+	
+	private static function DisplayFilePermissions($Mode) {
+
+		# Determine Type
+		if ($Mode & 0x1000) {			
+			$Type = 'p'; // FIFO pipe
+		} else if ($Mode & 0x2000) {
+			$Type = 'c'; // Character special
+		} else if ($Mode & 0x4000) {
+			$Type = 'd'; // Directory
+		} else if ($Mode & 0x6000) {
+			$Type = 'b'; // Block special
+		} else if ($Mode & 0x8000) { 
+			$Type = '-'; // Regular 
+		} else if ($Mode & 0xA000) {
+			$Type = 'l'; // Symbolic Link 
+		} else if ($Mode & 0xC000) {
+			$Type = 's'; // Socket
+		} else {
+			$Type = 'u';// UNKNOWN
+		}
+		 
+		# Determine permissions		 
+		$Owner['read']    = ($Mode & 00400) ? 'r' : '-';     		 
+		$Owner['write']   = ($Mode & 00200) ? 'w' : '-';     		 
+		$Owner['execute'] = ($Mode & 00100) ? 'x' : '-';     		 
+		$Group['read']    = ($Mode & 00040) ? 'r' : '-';     		 
+		$Group['write']   = ($Mode & 00020) ? 'w' : '-';     		 
+		$Group['execute'] = ($Mode & 00010) ? 'x' : '-';     		 
+		$World['read']    = ($Mode & 00004) ? 'r' : '-';     		 
+		$World['write']   = ($Mode & 00002) ? 'w' : '-';     		 
+		$World['execute'] = ($Mode & 00001) ? 'x' : '-';      
+		 
+		# Adjust for SUID, SGID and sticky bit     		 
+		if ($Mode & 0x800) $Owner['execute'] = ($Owner['execute'] == 'x') ? 's' : 'S';   
+		if ($Mode & 0x400) $Group['execute'] = ($Group['execute'] == 'x') ? 's' : 'S';   
+		if ($Mode & 0x200) $World['execute'] = ($World['execute'] == 'x') ? 't' : 'T'; 
+		 
+		return $Type . $Owner['read'] . $Owner['write'] . $Owner['execute'] 
+					 . $Group['read'] . $Group['write'] . $Group['execute'] 
+					 . $World['read'] . $World['write'] . $World['execute']; 
+		 
+	}  
+
+	/** 
+	 * @return boolean|null 文件不存在的时候返回空值
+	*/
+	public static function ViewPermission($path) {
+		if (file_exists($path)) {
+			return self::DisplayFilePermissions(fileperms($path));
+		} else {
+			return null;
+		}
+	}
+
+	# 2018-12-28 如果查看权限发现没有问题，但是任然无法读取文件夹或者文件，则很有可能是SELinux在阻止php对文件的访问
+	# 这个时候会需要在SELinux里面设置额外的访问权限规则或者将SELinux的等级从Enforcing调整至Permissive
+	# 
+	# 获取SELinux的状态getenforce
+	# 设置SELinux的状态setenforce 0或者1
+	#
+	# https://blog.lysender.com/2015/07/centos-7-selinux-php-apache-cannot-writeaccess-file-no-matter-what/
+
 	/**
-	 * Returns a collection of strings representing the path names of subdirectories within a directory.
+	 * Returns a collection of strings representing the path names of subdirectories 
+	 * within a directory.
      *
 	 * @param string $directory 目标文件夹的文件路径
+	 * 
+	 * @return string[]
 	*/
-	public static function GetDirectories($directory) {
-		return glob($directory . '/*', GLOB_ONLYDIR);
+	public static function GetDirectories($directory, $returnRealpath = false) {
+		if (file_exists($directory)) {
+			
+			if ($returnRealpath) {
+				$directory = realpath($directory);
+			}
+			
+			$directory = rtrim($directory, "/");
+			$list      = [];
+			
+			// Loop through the folder
+			$DIR = dir($directory . "/");
+
+			if ($DIR === false || empty($DIR)) {
+				$permission = self::ViewPermission($directory . "/");
+				$msg = "[$permission $directory/] have no permission to read!";
+				$msg = $msg . " If SELinux has enable, please add access rule for php server or set SELinux to [Permissive].";
+
+				if (!posix_access($directory, POSIX_R_OK)) {
+					$error = posix_get_last_error();				
+					$msg   = $msg . " Error $error: " . posix_strerror($error);
+				}
+
+				throw new dotnetException($msg);
+			}
+
+			while (false !== ($entry = $DIR->read())) {
+				// Skip pointers
+				if ($entry == '.' || $entry == '..') {
+					continue;
+				} else {
+					$file = "$directory/$entry";
+
+					if (is_dir($file)) {
+						array_push($list, $file);
+					}
+				}
+			}
+
+			$DIR->close();
+
+			return $list;
+
+		} else {
+			console::warn("Directory '$directory' is not exists on the filesystem!");
+			return [];
+		}
 	}
 		
 	public static function GetParentPath($path) {
@@ -187,9 +302,9 @@ class FileSystem {
 	 * 
 	 * @return string[] 文件的完整路径集合
 	*/
-	public static function GetFiles($directory, $suffix = "*") {
+	public static function GetFiles($directory, $suffix = "*", $realpath = true) {
 		$list  = array_diff(scandir($directory), array('.', '..'));
-		$files = array();
+		$files = [];
 		$requireFilter = !$suffix || $suffix == "*" || $suffix == "*.*";
 		$requireFilter = !$requireFilter;
 		
@@ -206,11 +321,13 @@ class FileSystem {
 					
 					if (Strings::LCase($ext) == $suffix) {
 						# hit
-						array_push($files, realpath("$directory/$entry"));
+						$file = $realpath ? realpath("$directory/$entry") : $entry;
+						array_push($files, $file);
 					}
 				} else {
 					# 不需要做筛选，直接添加
-					array_push($files, realpath("$directory/$entry"));
+					$file = $realpath ? realpath("$directory/$entry") : $entry;
+					array_push($files, $file);
 				}
 			}
 		}
