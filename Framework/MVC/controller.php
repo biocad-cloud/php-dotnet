@@ -9,6 +9,7 @@ Imports("php.DocComment");
 # @rate   用户对当前的控制器函数所指定的服务器资源的访问量的控制，即控制用户在某一段时间长度内的访问请求次数，
 #         一段时间内超过指定的访问次数服务器将会返回429错误代码拒绝用户的访问
 # @origin 控制请求的来源，即服务器的跨域请求配置，*表示当前的服务器资源不限制跨域请求
+# @debugger on/off 通过这个标签来对单独的app页面进行调试器的开始或者关闭
 
 /**
  * php.NET Access controller model
@@ -85,6 +86,15 @@ abstract class controller {
     */
     public function getRateLimits() {
         return $this->getTagValue("rate");
+    }
+
+    /** 
+     * 获取调试器的单独的行为配置，返回空值表示没有配置，使用全局配置
+     * 
+     * @return string ``on/off/<null>``
+    */
+    public function getDebuggerOption() {
+        return $this->getTagValue("debugger");
     }
 
     /**
@@ -327,10 +337,28 @@ abstract class controller {
         # 在末尾输出调试信息？
         # 只对view类型api调用的有效
         
-		if (APP_DEBUG && $isView) {
-            # 在这里自动添加结束标记
-            debugView::LogEvent("--- App Exit ---");
-			debugView::Display();
+		if ($isView) {
+            ## 可能会存在单独的调试器配置
+            $opt               = $this->getDebuggerOption();
+            $opt               = Strings::LCase($opt);
+            $debugger_finalize = function() {
+                # 在这里自动添加结束标记
+                debugView::LogEvent("--- App Exit ---");
+                debugView::Display();
+            };
+
+            if (Strings::Empty($opt)) {
+                # 使用全局配置
+                if (APP_DEBUG) {
+                    $debugger_finalize();
+                }
+            } else if($opt === "on") {
+                $debugger_finalize();
+            } else {
+                # always turn off
+                # do nothing
+            }
+
         } else {
             // 假设不是view类型的控制器的话，则在这里可能是api类型的调用
             // 需要在这里写入调试器session信息
