@@ -9,6 +9,7 @@ Imports("php.DocComment");
 # @rate   用户对当前的控制器函数所指定的服务器资源的访问量的控制，即控制用户在某一段时间长度内的访问请求次数，
 #         一段时间内超过指定的访问次数服务器将会返回429错误代码拒绝用户的访问
 # @origin 控制请求的来源，即服务器的跨域请求配置，*表示当前的服务器资源不限制跨域请求
+# @accept 接受请求的ip白名单列表，ip地址之间使用|进行分割
 # @debugger on/off 通过这个标签来对单独的app页面进行调试器的开始或者关闭
 
 /**
@@ -420,7 +421,7 @@ abstract class controller {
         }
     }
 
-    #region
+    #endregion
 
     /**
      * 在完成了这个函数的调用之后，服务器将会返回成功代码
@@ -468,4 +469,3 @@ abstract class controller {
         exit($errCode);
     }
 }
-?>
