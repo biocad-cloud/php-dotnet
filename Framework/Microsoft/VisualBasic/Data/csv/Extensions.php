@@ -13,20 +13,23 @@ namespace Microsoft\VisualBasic\Data\csv {
         /**
          * Save array collection as a csv file.
          * 
-         * @param array: The object array collection.
-         * @param path: The saved csv file path.
-         * @param project: A dictionary table that specific the columns and 
+         * @param array $array The object array collection.
+         * @param string $path The saved csv file path.
+         * @param callable $project A dictionary table that specific the columns and 
          *                 corresponding field names, column orders, etc.
-         * @param encoding: The csv file text encoding, default is `utf8`.
+         * @param string $encoding The csv file text encoding, default is `utf8`.
          * 
          * @return boolean True for file save success, and false not. 
-         */
-        public static function SaveTo($array, $path, $project = null, $encoding = "utf8") {
-            
-            # 2018-4-10 直接引用其他的模块似乎会因为namespace的缘故而产生错误：
-            # <b>Fatal error</b>:  Class 'Microsoft\VisualBasic\Data\csv\FileSystem' not found
-            # 所以在这里就直接使用这个函数的代码了
-            $directory = dirname($path);
+        */
+        public static function SaveTo($array, $path, $project = null, $encoding = "utf8") {            
+            if (\Strings::Empty($path)) {
+                return false;
+            } else {
+                # 2018-4-10 直接引用其他的模块似乎会因为namespace的缘故而产生错误：
+                # <b>Fatal error</b>:  Class 'Microsoft\VisualBasic\Data\csv\FileSystem' not found
+                # 所以在这里就直接使用这个函数的代码了
+                $directory = dirname($path);
+            }
 
             if (!file_exists($directory)) {
                 mkdir($directory, 0755, true);
@@ -114,6 +117,10 @@ namespace Microsoft\VisualBasic\Data\csv {
 
         /**
          * Load tsv table
+         * 
+         * (这个函数与Load函数的功能基本相同，但是这个函数是用于读取tsv文件的)
+         * 
+         * @param string $path The file path of the tsv format text file.
         */
         public static function LoadTable($path) {
             $lines   = \file_get_contents($path);
@@ -153,5 +160,3 @@ namespace Microsoft\VisualBasic\Data\csv {
         }
     }
 }
-
-?>

@@ -74,6 +74,13 @@ namespace MVC\MySql\Expression {
          */
         public static function AsExpression($asserts, $op = "AND") {
             $list = [];
+ 
+            if (empty($asserts)) {
+                \console::warn("MySqli condition is nothing!");
+                return "";
+            } else {
+                \console::dump($asserts, "MySql expression object is:");
+            }
 
             # 在这个表达式构造函数之中，使用~前导字符作为表达式的标记
             foreach($asserts as $name => $value) {

@@ -51,51 +51,24 @@ class console {
     */
     private static function backtrace(){
         $backtrace = array_reverse(debug_backtrace());
+        // count - 1 为console
+        // count - 2 才是上一层消息发生的位置
+        $index     = count($backtrace) - 2;
 
-        # 在这里主要是为了跳过当前的函数以及
-        # 上一层调用函数的堆栈信息
-        foreach([2, 1] as $top) {
-            if (!empty($trace = self::fixUbench($backtrace, $top))) {
-                return $trace;
-            }
+        if ($index < 0) {
+            return [
+                "file" => "Invalid stack trace", 
+                "line" => 0
+            ];
         }
 
-        return [
-            "file" => "Invalid stack trace", 
-            "line" => 0
-        ];
+        $backtrace = $backtrace[$index]; 
+        # 缩短路径字符串，优化显示
+        $backtrace["file"] = self::shrinkPath($backtrace["file"]);
+        
+        return $backtrace;
     }
     
-    /**
-     * 似乎因为使用了Ubench的lambda函数之后栈的层次信息就错位了
-     * 为了兼容Ubench的lambda函数，在这里跳过Ubench的栈信息
-     * 
-     * 在这里我们假设在Ubench模块之中永远都不会调用调试器的终端输出函数
-     * 
-     * @param integer $top 栈信息片段的偏移量
-    */
-    private static function fixUbench($backtrace, $top) {
-        $i = 0;
-        
-        foreach($backtrace as $k => $v) {
-            # 跳过这个函数的栈片段
-            if ($i <= $top) {
-                $i++;
-            } else if (array_key_exists("class", $v) && $v["class"] === "Ubench") {
-                # 因为认为在Ubench模块之中永远都不会出现调试器的代码调用
-                # 所以在这里是Ubench模块的话，当前的栈信息肯定是错位的
-                # 跳过这个错位的栈信息
-                break;
-            } else {
-                # 缩短路径字符串，优化显示
-                $v["file"] = self::shrinkPath($v["file"]);
-                return $v;
-            };
-        }
-
-        return null;
-    }
-
     /**
      * 输出一般的调试信息，代码默认为零。表示无错误
      * 

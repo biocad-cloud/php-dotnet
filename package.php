@@ -72,6 +72,10 @@ if (!defined("FRAMEWORK_DEBUG")) {
  * Php script running in a cli environment?
 */
 define("IS_CLI", php_sapi_name() === 'cli');
+/**
+ * 当前的源代码版本编号
+*/
+define("GIT_COMMIT", "721557fb87c33306e5c252556e18389c346c3a25");
 
 if (IS_CLI && FRAMEWORK_DEBUG) {
 
@@ -101,6 +105,7 @@ if (IS_CLI && FRAMEWORK_DEBUG) {
     echo "\n";
     echo " -------------============ PHP.NET ============--------------\n\n";
     echo " Repository: https://github.com/GCModeller-Cloud/php-dotnet\n";
+    echo " Version: " . GIT_COMMIT . "\n";
     echo " Author:     xieguigang <xie.guigang@gcmodeller.org>\n";
     echo "\n\n";
 }
@@ -254,6 +259,14 @@ $load->run(function() {
 });
 
 #endregion
+
+if (APP_DEBUG) {
+
+    /** 
+     * 当前SESSION之中的调试器会话的编号
+    */
+    define("DEBUG_GUID", dotnetDebugger::getCurrentDebuggerGuid());
+}
 
 debugView::LogEvent("--- App start ---");
 debugView::LogEvent("Load required modules in " . $load->getTime());

@@ -5,6 +5,11 @@ class DataURI {
 	private $base64;
 	private $type;
 	
+	/** 
+	 * Create from file
+	 * 
+	 * @param string $path The file path string.
+	*/
 	function __construct($path) {
 		$data = file_get_contents($path);
 		$data = base64_encode($data);

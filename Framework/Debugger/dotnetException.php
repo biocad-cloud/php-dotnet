@@ -18,6 +18,8 @@ class dotnetException extends Exception {
 	}	
 	
 	/** 
+	 * 按照.NET框架的错误形式进行格式化输出
+	 * 
 	 * @param string $message
 	 * @param StackTrace $stackTrace
 	*/

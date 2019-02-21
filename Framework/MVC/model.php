@@ -904,11 +904,14 @@ class Table {
     /**
 	 * update table
 	 * 
+	 * @param boolean $limit1 是否是只更新一条记录？默认是只更新一条记录。
+	 * @param array $data 需要进行更新的列数据键值对集合
+	 * 
 	 * @return boolean
 	*/ 
-    public function save($data) {
+    public function save($data, $limit1 = true) {
 		$ref     = $this->schema->ref;
-        $assert  = $this->getWhere();        
+        $assert  = $this->getWhere();
 		$SQL     = "";
 		$updates = [];
 		
@@ -932,10 +935,15 @@ class Table {
 		if (!$assert) {
 			# 更新所有的数据？？？要不要给出警告信息
 			$SQL = $SQL . ";";
+			console::warn("Execute update entire data table! ($SQL)");
 		} else {
-			$SQL = $SQL . " WHERE " . $assert . " LIMIT 1;";
+			if ($limit1) {
+				$SQL = $SQL . " WHERE " . $assert . " LIMIT 1;";
+			} else {
+				$SQL = $SQL . " WHERE " . $assert . ";";
+			}
 		}
-						
+
 		# echo $SQL;
 
 		if (!$this->driver->ExecuteSql($SQL)) {
