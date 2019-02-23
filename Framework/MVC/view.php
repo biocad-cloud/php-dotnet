@@ -73,7 +73,24 @@ class View {
 		# index.html这个文件的，这就导致无法正确的通过这个框架来启动Web程序了
 		# 所以html文件规定放在html文件夹之中
 		$wwwroot = str_replace("\\", "/", $wwwroot);
-		$path    = self::assertFileType($wwwroot, $name);
+
+		# 优先使用用户单独为控制器定义的路径
+		if (!empty(dotnet::$controller)) {
+			$path = dotnet::$controller->getView();
+			
+			# 可能是绝对路径，也可能是相对路径，需要处理一下
+			if (strpos($path, "/") == 0) {
+				# 是一个绝对路径
+			} else {
+				# 是一个相对路径，则需要进行一些额外的处理
+				$path = trim($path, ".");
+				$path = "$wwwroot/$path";
+			}
+
+			$path = realpath($path);
+		} else {
+			$path = self::assertFileType($wwwroot, $name);
+		}
 
 		if ($path === false) {
 			self::missingTemplate($wwwroot, $name);
@@ -131,7 +148,7 @@ class View {
 	/**
 	 * 显示指定的文件路径的html文本的内容
 	 * 
-	 * @param string $path html页面模板文件的文件路径
+	 * @param string $path html页面模板文件的文件路径，可以为html或者php文件，这两种文件会以不同的方式进行处理
 	 * @param array $vars 需要进行填充的变量列表
 	 * @param string $lang 语言配置值，一般不需要指定，框架会根据url参数配置自动加载
 	*/
