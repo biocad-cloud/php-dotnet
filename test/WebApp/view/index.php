@@ -1,3 +1,3 @@
 <?php
 
-include "./test1.php";
+include "./test1.phtml";
