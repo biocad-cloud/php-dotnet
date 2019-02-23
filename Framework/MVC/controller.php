@@ -11,6 +11,7 @@ Imports("php.DocComment");
 # @origin 控制请求的来源，即服务器的跨域请求配置，*表示当前的服务器资源不限制跨域请求
 # @accept 接受请求的ip白名单列表，ip地址之间使用|进行分割
 # @debugger on/off 通过这个标签来对单独的app页面进行调试器的开始或者关闭
+# @view   如果@uses标记当前控制器为view类型的话，则这个标签可以使用，可以通过这个标签来单独为当前的控制器设置视图文件的路径
 
 /**
  * php.NET Access controller model
