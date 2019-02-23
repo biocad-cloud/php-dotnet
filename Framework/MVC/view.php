@@ -2,6 +2,7 @@
 
 Imports("System.Diagnostics.StackTrace");
 Imports("System.Linq.Enumerable");
+Imports("System.IO.Path");
 Imports("Microsoft.VisualBasic.Strings");
 Imports("MVC.View.foreach");
 Imports("MVC.View.inline");
@@ -154,26 +155,40 @@ class View {
 	*/
 	public static function Show($path, $vars = NULL, $lang = null, $suppressDebug = false) {
 		debugView::LogEvent("[Begin] Render html view");
-
+		
 		$bench = new \Ubench();
-		# 2018-08-09 如果在这里使用run，以如下的方式进行调用lambda函数的话
-		# 堆栈信息将会无法正常的产生，所以在这里使用普通的代码调用形式
-
-		/*
-			$html  = $bench->run(function() use ($path, $vars, $lang, $suppressDebug) {
-				return self::Load($path, $vars, $lang, $suppressDebug);
-			});
-		*/
-
-		# 这个普通的函数调用方式所得到的堆栈信息是正常的
 		$bench->start();
-		$html = self::Load($path, $vars, $lang, $suppressDebug);
-		$bench->end();
 
+		if (Path::GetExtensionName($path) == "html") {
+			# 2018-08-09 如果在这里使用run，以如下的方式进行调用lambda函数的话
+			# 堆栈信息将会无法正常的产生，所以在这里使用普通的代码调用形式
+	
+			/*
+				$html  = $bench->run(function() use ($path, $vars, $lang, $suppressDebug) {
+					return self::Load($path, $vars, $lang, $suppressDebug);
+				});
+			*/
+
+			# 这个普通的函数调用方式所得到的堆栈信息是正常的			
+			$html = self::Load($path, $vars, $lang, $suppressDebug);
+				
+			# output html by echo
+			echo $html;
+		} else {
+
+			# 在这里将$vars之中的变量转换为php变量，以进行填充
+			foreach($vars as $name => $value) {
+				${$name} = $value;
+			}
+
+			# output php file by include
+			include $path;
+		}
+
+		$bench->end();
+	
 		debugView::AddItem("benchmark.template", $bench->getTime(true));
 		debugView::LogEvent("[Finish] Render html view");
-
-		echo $html;
 	}
 	
 	/**
@@ -199,6 +214,8 @@ class View {
 	/**
 	 * 加载指定路径的html文档并对其中的占位符利用vars字典进行填充
 	 * 这个函数还会额外的处理includes关系
+	 * 
+	 * 这个函数只处理HTML模板的加载
 	 * 
 	 * @param string $path 视图模板的HTML文本文件的路径
 	 * @param array $vars 需要进行填充的变量列表

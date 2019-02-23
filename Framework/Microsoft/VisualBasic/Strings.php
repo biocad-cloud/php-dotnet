@@ -333,5 +333,3 @@ class Strings {
 		} 
 	}
 }
-
-?>
