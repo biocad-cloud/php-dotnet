@@ -53,6 +53,8 @@ class View {
 	}
 
 	/** 
+	 * 如果控制器配置了view参数，则返回自定义路径，反之返回自动构建的查找路径
+	 * 
 	 * @param string $name The controller name.
 	*/
 	private static function getViewFileAuto($name) {
@@ -71,26 +73,39 @@ class View {
 		# index.html这个文件的，这就导致无法正确的通过这个框架来启动Web程序了
 		# 所以html文件规定放在html文件夹之中
 		$wwwroot = str_replace("\\", "/", $wwwroot);
-		$path    = realpath("$wwwroot/$name.html");
+		$path    = self::assertFileType($wwwroot, $name);
 
-		if (empty($path) || $path == false) {
+		if ($path === false) {
 			self::missingTemplate($wwwroot, $name);
 		} else {
-			if (file_exists($path)) {
-				$path = realpath($path);
-			} else {
-				$path = str_replace("//", "/", $path);
-			}
+			console::log("Current workspace: " . getcwd());
+			console::log("HTML document path is: $path");
+			console::log("View name='$name'");
+			console::log("View wwwroot='$wwwroot'");
 		}
-
-		console::log("Current workspace: " . getcwd());
-		console::log("HTML document path is: $path");
-		console::log("View name='$name'");
-		console::log("View wwwroot='$wwwroot'");
 
 		return $path;
 	}
 	
+	/** 
+	 * 这个函数返回的路径已经是realpath了
+	 * 
+	 * @return string 如果文件不存在的话，则返回false
+	*/
+	private static function assertFileType($wwwroot, $name) {
+		$viewTypes = ["html", "php", "phtml"];
+
+		foreach($viewTypes as $type) {
+			$path = realpath("$wwwroot/$name.$type");
+
+			if (!(empty($path) || $path == false)) {
+				return $path;
+			}
+		}
+
+		return false;
+	}
+
 	private static function missingTemplate($wwwroot, $name) {
 		# 文件丢失？
 		# 或者当前的网站在文件夹下，而不是根文件夹
