@@ -25,7 +25,11 @@ Imports("Debugger.Ubench.Ubench");
 class View {
 	
 	/**
-	 * @param mixed $data any data
+	 * Generate a html ``<script>`` tag for write json data.
+	 * 
+	 * @param mixed $data any data to generate json string
+	 * @param string $id The id attribute of the script tag.
+	 * @param boolean Encoding the generate json text into base64 string? By default is no.
 	 * 
 	 * @return string script tag data with a given id. 
 	*/
