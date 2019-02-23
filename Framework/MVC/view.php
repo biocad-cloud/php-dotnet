@@ -8,6 +8,13 @@ Imports("MVC.View.inline");
 Imports("MVC.View.volist");
 Imports("Debugger.Ubench.Ubench");
 
+# 2019-02-23
+#
+# 视图模块应该支持两种类型的模板文件
+#
+# 1. *.html 采用file_get_content + echo的方式进行输出，采用字符串替换进行数据填充
+# 2. *.php/*.phtml 采用include方式加载，采用变量进行数据填充
+
 /**
  * html user interface view handler
  * 

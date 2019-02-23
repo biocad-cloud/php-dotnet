@@ -91,6 +91,13 @@ abstract class controller {
     }
 
     /** 
+     * 获取得到当前的控制器的视图文件的文件路径
+    */
+    public function getView() {
+        return $this->getTagValue("view");
+    }
+
+    /** 
      * 获取调试器的单独的行为配置，返回空值表示没有配置，使用全局配置
      * 
      * @return string ``on/off/<null>``
