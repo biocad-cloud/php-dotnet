@@ -49,12 +49,22 @@ class View {
 	 *                     系统会强制使用这个语言项进行页面显示
 	*/
 	public static function Display($vars = NULL, $lang = null) {
-		$name    = StackTrace::GetCallerMethodName();		
+		View::Show(self::getViewFileAuto(StackTrace::GetCallerMethodName()), $vars, $lang);
+	}
+
+	/** 
+	 * @param string $name The controller name.
+	*/
+	private static function getViewFileAuto($name) {
 		$wwwroot = DotNetRegistry::GetMVCViewDocumentRoot();
 		
-		if (strpos($wwwroot, "./") == 0) {
+		if (strpos($wwwroot, "/") == 0) {
+			# 是一个绝对路径，则直接使用
+			# do nothing
+		} else {
+			# 是一个相对路径，则需要和 SITE_PATH拼接一下
 			$wwwroot = trim($wwwroot, ".");
-			$wwwroot = SITE_PATH . $wwwroot;
+			$wwwroot = SITE_PATH . "/" . $wwwroot;
 		}
 
 		# 假若直接放在和index.php相同文件夹之下，那么apache服务器会优先读取
@@ -66,18 +76,20 @@ class View {
 		if (empty($path) || $path == false) {
 			# 文件丢失？
 			# 或者当前的网站在文件夹下，而不是根文件夹
-			$msg = "The view template file not found, please consider defined: 
+			$msg = "The view template file {" . "$wwwroot/$name.html" . "} not exists 
+			on the server's filesystem, please consider defined: 
 			<ul>
-			<li>a valid <code>SITE_PATH</code> constant or </li>
-			<li>a valid <code>MVC_VIEW_ROOT</code> configuration</li>
+				<li>1. a valid <code>SITE_PATH</code> constant or </li>
+				<li>2. a valid <code>MVC_VIEW_ROOT</code> configuration</li>
 			</ul>
-			before we load php.NET framework.
+			before we load php.NET framework; Or check the file name of the 
+			html view is correct or not.
 			<br />
 			<br />
 			Current value:
 			<ul>
-			<li>SITE_PATH = " . SITE_PATH . "</li>
-			<li>wwwroot = $wwwroot</li>
+				<li>SITE_PATH = " . SITE_PATH . "</li>
+				<li>wwwroot = $wwwroot</li>
 			</ul>";
 			
 			dotnet::PageNotFound($msg);
@@ -94,7 +106,7 @@ class View {
 		console::log("View name='$name'");
 		console::log("View wwwroot='$wwwroot'");
 
-		View::Show($path, $vars, $lang);
+		return $path;
 	}
 	
 	/**
