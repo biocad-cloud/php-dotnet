@@ -74,25 +74,7 @@ class View {
 		$path    = realpath("$wwwroot/$name.html");
 
 		if (empty($path) || $path == false) {
-			# 文件丢失？
-			# 或者当前的网站在文件夹下，而不是根文件夹
-			$msg = "The view template file {" . "$wwwroot/$name.html" . "} not exists 
-			on the server's filesystem, please consider defined: 
-			<ul>
-				<li>1. a valid <code>SITE_PATH</code> constant or </li>
-				<li>2. a valid <code>MVC_VIEW_ROOT</code> configuration</li>
-			</ul>
-			before we load php.NET framework; Or check the file name of the 
-			html view is correct or not.
-			<br />
-			<br />
-			Current value:
-			<ul>
-				<li>SITE_PATH = " . SITE_PATH . "</li>
-				<li>wwwroot = $wwwroot</li>
-			</ul>";
-			
-			dotnet::PageNotFound($msg);
+			self::missingTemplate($wwwroot, $name);
 		} else {
 			if (file_exists($path)) {
 				$path = realpath($path);
@@ -109,6 +91,28 @@ class View {
 		return $path;
 	}
 	
+	private static function missingTemplate($wwwroot, $name) {
+		# 文件丢失？
+		# 或者当前的网站在文件夹下，而不是根文件夹
+		$msg = "The view template file {" . "$wwwroot/$name.html" . "} not exists 
+			on the server's filesystem, please consider defined: 
+			<ul>
+				<li>1. a valid <code>SITE_PATH</code> constant or </li>
+				<li>2. a valid <code>MVC_VIEW_ROOT</code> configuration</li>
+			</ul>
+			before we load php.NET framework; Or check the file name of the 
+			html view is correct or not.
+			<br />
+			<br />
+			Current value:
+			<ul>
+				<li>SITE_PATH = " . SITE_PATH . "</li>
+				<li>wwwroot = $wwwroot</li>
+			</ul>";
+		
+		dotnet::PageNotFound($msg);
+	}
+
 	/**
 	 * 显示指定的文件路径的html文本的内容
 	 * 
