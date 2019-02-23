@@ -13,12 +13,17 @@
  *
  * php 不像VB.NET一样允许函数重载，所以同一个class模块之中不可以出现相同名字的函数
 */
-class dotnet {    
+class dotnet {
 
     /**
      * @var dotnetDebugger
     */
     public static $debugger;
+
+    /** 
+     * @var controller
+    */
+    public static $controller;
 
     /**
      * 函数返回成功消息的json字符串``{code: 0, info: $msg}``.
@@ -89,7 +94,7 @@ class dotnet {
         # 如果当前的服务器资源上面存在访问控制器的话，则进行用户权限的控制
         if ($injection) {
             debugView::LogEvent("Hook controller");
-            $injection->Hook($app);
+            self::$controller = $injection->Hook($app);
 
             # 用户访问权限控制
             if (!$injection->accessControl()) {

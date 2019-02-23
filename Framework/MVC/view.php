@@ -2,11 +2,19 @@
 
 Imports("System.Diagnostics.StackTrace");
 Imports("System.Linq.Enumerable");
+Imports("System.IO.Path");
 Imports("Microsoft.VisualBasic.Strings");
 Imports("MVC.View.foreach");
 Imports("MVC.View.inline");
 Imports("MVC.View.volist");
 Imports("Debugger.Ubench.Ubench");
+
+# 2019-02-23
+#
+# 视图模块应该支持两种类型的模板文件
+#
+# 1. *.html 采用file_get_content + echo的方式进行输出，采用字符串替换进行数据填充
+# 2. *.php/*.phtml 采用include方式加载，采用变量进行数据填充
 
 /**
  * html user interface view handler
@@ -18,7 +26,11 @@ Imports("Debugger.Ubench.Ubench");
 class View {
 	
 	/**
-	 * @param mixed $data any data
+	 * Generate a html ``<script>`` tag for write json data.
+	 * 
+	 * @param mixed $data any data to generate json string
+	 * @param string $id The id attribute of the script tag.
+	 * @param boolean Encoding the generate json text into base64 string? By default is no.
 	 * 
 	 * @return string script tag data with a given id. 
 	*/
@@ -38,83 +50,145 @@ class View {
 	 *                     系统会强制使用这个语言项进行页面显示
 	*/
 	public static function Display($vars = NULL, $lang = null) {
-		$name    = StackTrace::GetCallerMethodName();		
+		View::Show(self::getViewFileAuto(StackTrace::GetCallerMethodName()), $vars, $lang);
+	}
+
+	/** 
+	 * 如果控制器配置了view参数，则返回自定义路径，反之返回自动构建的查找路径
+	 * 
+	 * @param string $name The controller name.
+	*/
+	private static function getViewFileAuto($name) {
 		$wwwroot = DotNetRegistry::GetMVCViewDocumentRoot();
 		
-		if (strpos($wwwroot, "./") == 0) {
+		if (strpos($wwwroot, "/") == 0) {
+			# 是一个绝对路径，则直接使用
+			# do nothing
+		} else {
+			# 是一个相对路径，则需要和 SITE_PATH拼接一下
 			$wwwroot = trim($wwwroot, ".");
-			$wwwroot = SITE_PATH . $wwwroot;
+			$wwwroot = SITE_PATH . "/" . $wwwroot;
 		}
 
 		# 假若直接放在和index.php相同文件夹之下，那么apache服务器会优先读取
 		# index.html这个文件的，这就导致无法正确的通过这个框架来启动Web程序了
 		# 所以html文件规定放在html文件夹之中
 		$wwwroot = str_replace("\\", "/", $wwwroot);
-		$path    = realpath("$wwwroot/$name.html");
 
-		if (empty($path) || $path == false) {
-			# 文件丢失？
-			# 或者当前的网站在文件夹下，而不是根文件夹
-			$msg = "The view template file not found, please consider defined: 
+		# 优先使用用户单独为控制器定义的路径
+		if (!empty(dotnet::$controller)) {
+			$path = dotnet::$controller->getView();
+			
+			# 可能是绝对路径，也可能是相对路径，需要处理一下
+			if (strpos($path, "/") == 0) {
+				# 是一个绝对路径
+			} else {
+				# 是一个相对路径，则需要进行一些额外的处理
+				$path = trim($path, ".");
+				$path = "$wwwroot/$path";
+			}
+
+			$path = realpath($path);
+		} else {
+			$path = self::assertFileType($wwwroot, $name);
+		}
+
+		if ($path === false) {
+			self::missingTemplate($wwwroot, $name);
+		} else {
+			console::log("Current workspace: " . getcwd());
+			console::log("HTML document path is: $path");
+			console::log("View name='$name'");
+			console::log("View wwwroot='$wwwroot'");
+		}
+
+		return $path;
+	}
+	
+	/** 
+	 * 这个函数返回的路径已经是realpath了
+	 * 
+	 * @return string 如果文件不存在的话，则返回false
+	*/
+	private static function assertFileType($wwwroot, $name) {
+		$viewTypes = ["html", "php", "phtml"];
+
+		foreach($viewTypes as $type) {
+			$path = realpath("$wwwroot/$name.$type");
+
+			if (!(empty($path) || $path == false)) {
+				return $path;
+			}
+		}
+
+		return false;
+	}
+
+	private static function missingTemplate($wwwroot, $name) {
+		# 文件丢失？
+		# 或者当前的网站在文件夹下，而不是根文件夹
+		$msg = "The view template file {" . "$wwwroot/$name.html" . "} not exists 
+			on the server's filesystem, please consider defined: 
 			<ul>
-			<li>a valid <code>SITE_PATH</code> constant or </li>
-			<li>a valid <code>MVC_VIEW_ROOT</code> configuration</li>
+				<li>1. a valid <code>SITE_PATH</code> constant or </li>
+				<li>2. a valid <code>MVC_VIEW_ROOT</code> configuration</li>
 			</ul>
-			before we load php.NET framework.
+			before we load php.NET framework; Or check the file name of the 
+			html view is correct or not.
 			<br />
 			<br />
 			Current value:
 			<ul>
-			<li>SITE_PATH = " . SITE_PATH . "</li>
-			<li>wwwroot = $wwwroot</li>
+				<li>SITE_PATH = " . SITE_PATH . "</li>
+				<li>wwwroot = $wwwroot</li>
 			</ul>";
-			
-			dotnet::PageNotFound($msg);
-		} else {
-			if (file_exists($path)) {
-				$path = realpath($path);
-			} else {
-				$path = str_replace("//", "/", $path);
-			}
-		}
-
-		console::log("Current workspace: " . getcwd());
-		console::log("HTML document path is: $path");
-		console::log("View name='$name'");
-		console::log("View wwwroot='$wwwroot'");
-
-		View::Show($path, $vars, $lang);
+		
+		dotnet::PageNotFound($msg);
 	}
-	
+
 	/**
 	 * 显示指定的文件路径的html文本的内容
 	 * 
-	 * @param string $path html页面模板文件的文件路径
+	 * @param string $path html页面模板文件的文件路径，可以为html或者php文件，这两种文件会以不同的方式进行处理
 	 * @param array $vars 需要进行填充的变量列表
 	 * @param string $lang 语言配置值，一般不需要指定，框架会根据url参数配置自动加载
 	*/
 	public static function Show($path, $vars = NULL, $lang = null, $suppressDebug = false) {
 		debugView::LogEvent("[Begin] Render html view");
-
+		
 		$bench = new \Ubench();
-		# 2018-08-09 如果在这里使用run，以如下的方式进行调用lambda函数的话
-		# 堆栈信息将会无法正常的产生，所以在这里使用普通的代码调用形式
-
-		/*
-			$html  = $bench->run(function() use ($path, $vars, $lang, $suppressDebug) {
-				return self::Load($path, $vars, $lang, $suppressDebug);
-			});
-		*/
-
-		# 这个普通的函数调用方式所得到的堆栈信息是正常的
 		$bench->start();
-		$html = self::Load($path, $vars, $lang, $suppressDebug);
-		$bench->end();
 
+		if (Path::GetExtensionName($path) == "html") {
+			# 2018-08-09 如果在这里使用run，以如下的方式进行调用lambda函数的话
+			# 堆栈信息将会无法正常的产生，所以在这里使用普通的代码调用形式
+	
+			/*
+				$html  = $bench->run(function() use ($path, $vars, $lang, $suppressDebug) {
+					return self::Load($path, $vars, $lang, $suppressDebug);
+				});
+			*/
+
+			# 这个普通的函数调用方式所得到的堆栈信息是正常的			
+			$html = self::Load($path, $vars, $lang, $suppressDebug);
+				
+			# output html by echo
+			echo $html;
+		} else {
+
+			# 在这里将$vars之中的变量转换为php变量，以进行填充
+			foreach($vars as $name => $value) {
+				${$name} = $value;
+			}
+
+			# output php file by include
+			include $path;
+		}
+
+		$bench->end();
+	
 		debugView::AddItem("benchmark.template", $bench->getTime(true));
 		debugView::LogEvent("[Finish] Render html view");
-
-		echo $html;
 	}
 	
 	/**
@@ -140,6 +214,8 @@ class View {
 	/**
 	 * 加载指定路径的html文档并对其中的占位符利用vars字典进行填充
 	 * 这个函数还会额外的处理includes关系
+	 * 
+	 * 这个函数只处理HTML模板的加载
 	 * 
 	 * @param string $path 视图模板的HTML文本文件的路径
 	 * @param array $vars 需要进行填充的变量列表
