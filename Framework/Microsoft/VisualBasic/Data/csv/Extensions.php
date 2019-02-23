@@ -117,6 +117,10 @@ namespace Microsoft\VisualBasic\Data\csv {
 
         /**
          * Load tsv table
+         * 
+         * (这个函数与Load函数的功能基本相同，但是这个函数是用于读取tsv文件的)
+         * 
+         * @param string $path The file path of the tsv format text file.
         */
         public static function LoadTable($path) {
             $lines   = \file_get_contents($path);
@@ -156,5 +160,3 @@ namespace Microsoft\VisualBasic\Data\csv {
         }
     }
 }
-
-?>
