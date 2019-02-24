@@ -278,14 +278,22 @@ class Strings {
 	 * 将字符串转换为大写形式 
 	*/
 	public static function UCase($str) {
-		return strtoupper($str);
+		if (empty($str)) {
+			return "";
+		} else {
+			return strtoupper($str);
+		}
 	}
 
 	/**
 	 * 将字符串转换为小写形式
 	*/
 	public static function LCase($str) {
-		return strtolower($str);
+		if (empty($str)) {
+			return "";
+		} else {
+			return strtolower($str);
+		}
 	}
 
 	/**
@@ -325,5 +333,3 @@ class Strings {
 		} 
 	}
 }
-
-?>

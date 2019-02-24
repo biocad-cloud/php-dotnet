@@ -8,6 +8,7 @@ class Path {
 	/**
 	 * Returns the file name of the specified path string without the extension.
 	 *
+	 * @param string $filePath The given file path string.
 	*/
 	public static function GetFileNameWithoutExtension($filePath) {
 		$path_parts = pathinfo($filePath);
@@ -21,7 +22,7 @@ class Path {
 	/** 
 	 * Get extension name from a given file path
 	 * 
-	 * @param string The given file path.
+	 * @param string $filePath The given file path.
 	 * 
 	 * @return string The file extension name. (返回来的拓展名是不带小数点的)
 	*/

@@ -155,6 +155,8 @@ $users->where(["id" => between(100, 5000)])
 
 ## Table Join
 
+Using ``left_join`` and ``on`` function chaining calls to create a ``LEFT JOIN ... ON`` table operation expression:  
+
 ```php
 $query = (new Table("chk_order_member"))
     ->left_join("chk_box_order")
@@ -217,3 +219,24 @@ ORDER BY
   `chk_box_order`.`index`, 
   `chk_order_member`.`order_sn`;
 ```
+
+## Use expression value
+
+Use a ``~`` symbol prefix to mark the value as an mysql expression, example as:
+
+```php
+# UPDATE `users` SET `balance` = `balance` + 100 WHERE `id` = '5' LIMIT 1;
+$user_id   = 5;
+$rewardVal = 100;
+$users->where(["user_id" => $user_id])
+	->limit(1)
+	->save(["balance" => "~`balance` + $rewardVal"]);
+```
+
+## Field name in Where closure
+
+The where closure in mysql is a kind of ``key-value`` pair collection which could using for build a logical expression in php.NET framework, where the ``key`` part is the left side of the logical expression, and the ``value`` part is the right side of the logical expression. The field name is usually appearing at the left side, and generally it will be wrapped with a <code>`</code> symbol automatic in php.NET framework. The field name could be one of these three situation: 
+
+1. **Basic field name** Just a valid mysql identifier, example like: name;
+2. **multiple names** Using ``|`` or ``&`` logical operator to concatenate multiple field names, example like: ``name|title`` means ``name`` or ``title``; ``name&title`` means ``name`` and ``title``.
+3. **Expression** If the field name contains any symbols like: ``(``, ``)`` or whitespace, then interpreter will treat it as expression, example like: ``mod(`score` + 5)`` will be treated as an expression, not a identifier.
