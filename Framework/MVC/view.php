@@ -159,7 +159,7 @@ class View {
 	*/
 	public static function Show($path, $vars = NULL, $lang = null, $suppressDebug = false) {
 		debugView::LogEvent("[Begin] Render html view");
-
+		
 		$bench = new \Ubench();
 		$bench->start();
 
