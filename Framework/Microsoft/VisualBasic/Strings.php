@@ -46,6 +46,24 @@ class Strings {
 		}		
 	}
 	
+	/** 
+	 * 进行批量的字符串连接
+	 * 
+	 * @param string[] $strings
+	 * @param string $right
+	 * 
+	 * @return string[]
+	*/
+	public static function StrCat($strings, $right) {
+		$out = [];
+
+		foreach($strings as $str) {
+			array_push($out, $str . $right);
+		}
+
+		return $out;
+	}
+
 	/**
 	 * 字符串数组去重
 	*/
@@ -178,6 +196,12 @@ class Strings {
 		return str_replace($find, $replacement, $str);
 	}
 
+	/** 
+	 * 得到所给定的字符串之中某一个位置的字符结果
+	 * 
+	 * @param string $string 目标字符串
+	 * @param integer $i 字符的位置，可以为负数。当这个位置值为负数的时候表示从后往前计算，即``strlen($string) - i``
+	*/
 	public static function CharAt($string, $i) {
 		if (empty($string)) {
 			return "";
@@ -212,6 +236,20 @@ class Strings {
 		}
 	}
 
+	/** 
+	 * 判断目标字符串是否为空
+	 * 
+	 * > 根据``$stringAsFactor``的配置，如果``$stringAsFactor = true``，则下列的字符串都会被当作为空值：
+	 * > + ``null``
+	 * > + ``NULL``
+	 * > + ``NA``
+	 * > + ``NaN``
+	 * > + ``undefined``, ``undefine``
+	 * 
+	 * @param string $str 被判断的目标字符串
+	 * @param boolean $stringAsFactor 是否将一些含有空值意义的字符串也作为空值来处理？
+	 *    如果这个参数为``true``，则字符串的值为null或者NA的时候也会被当作为空值来对待
+	*/
 	public static function Empty($str, $stringAsFactor = false) {
 		# 2018-7-19
 		# 在php之中会将字符串0也作为空值，这是一个bug？？
@@ -228,7 +266,9 @@ class Strings {
 			return $str == "null"      || 
 				   $str == "NULL"      || 
 				   $str == "undefined" || 
-				   $str == "undefine";
+				   $str == "undefine"  || 
+				   $str == "NA"        || 
+				   $str == "NaN";
 		} else {
 			return false;
 		}
@@ -238,14 +278,22 @@ class Strings {
 	 * 将字符串转换为大写形式 
 	*/
 	public static function UCase($str) {
-		return strtoupper($str);
+		if (empty($str)) {
+			return "";
+		} else {
+			return strtoupper($str);
+		}
 	}
 
 	/**
 	 * 将字符串转换为小写形式
 	*/
 	public static function LCase($str) {
-		return strtolower($str);
+		if (empty($str)) {
+			return "";
+		} else {
+			return strtolower($str);
+		}
 	}
 
 	/**
@@ -285,5 +333,3 @@ class Strings {
 		} 
 	}
 }
-
-?>

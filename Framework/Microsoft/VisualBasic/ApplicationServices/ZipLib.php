@@ -1,8 +1,14 @@
 <?php
 
+/**
+ * Zip压缩包帮助函数模块
+*/
 class ZipLib {
 
-    private static $ZipStatusString = array(
+    /**
+     * 错误代码描述
+    */
+    private static $ZipStatusString = [
         ZipArchive::ER_OK          => 'N No error',
         ZipArchive::ER_MULTIDISK   => 'N Multi-disk zip archives not supported',
         ZipArchive::ER_RENAME      => 'S Renaming temporary file failed',
@@ -27,8 +33,14 @@ class ZipLib {
         ZipArchive::ER_INCONS      => 'N Zip archive inconsistent',
         ZipArchive::ER_REMOVE      => 'S Can\'t remove file',
         ZipArchive::ER_DELETED     => 'N Entry has been deleted'
-    );
+    ];
     
+    /**
+     * 将错误代码转换为描述信息字符串
+     * 
+     * @param integer $status 错误代码
+     * @return string 错误描述信息
+    */
     public static function ToString($status) {
         if (array_key_exists($status, ZipLib::$ZipStatusString)) {
             return ZipLib::$ZipStatusString[$status];
@@ -79,10 +91,15 @@ class ZipLib {
      * http://php.net/manual/en/class.ziparchive.php
      * 
      * Usage: 
+     * 
+     * ```php
      *   ZipLib::ZipDirectory('/path/to/sourceDir', '/path/to/out.zip'); 
+     * ```
      * 
      * @param string $sourcePath Path of directory to be zip. 
      * @param string $outZipPath Path of output zip file. 
+     * 
+     * @return void
      */ 
     public static function ZipDirectory($sourcePath, $outZipPath) { 
         $pathInfo   = pathInfo($sourcePath); 
@@ -91,9 +108,11 @@ class ZipLib {
 
         $z = new ZipArchive(); 
         $z->open($outZipPath, ZIPARCHIVE::CREATE); 
-        $z->addEmptyDir($dirName); 
-        self::folderToZip($sourcePath, $z, strlen("$parentPath/")); 
+        $z->addEmptyDir($dirName);
+
+        # 对目标文件夹进行zip打包
+        self::folderToZip($sourcePath, $z, strlen("$parentPath/"));
+
         $z->close(); 
     }
 }
-?>

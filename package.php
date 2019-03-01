@@ -72,13 +72,40 @@ if (!defined("FRAMEWORK_DEBUG")) {
  * Php script running in a cli environment?
 */
 define("IS_CLI", php_sapi_name() === 'cli');
+/**
+ * 当前的源代码版本编号
+*/
+define("GIT_COMMIT", "721557fb87c33306e5c252556e18389c346c3a25");
 
 if (IS_CLI && FRAMEWORK_DEBUG) {
+
     # 2018-10-12 很奇怪，在终端中调试输出的第一行肯定会有一个空格
     # 这个多于的空格会影响输出的格式
     # 在这里跳过第一行
-    echo " ------------============ PHP.NET ============-------------\n\n";
+    $time = date('Y-m-d H:i:s', time());
+
+    echo "\n";
+    echo " [$time]\n";
+    echo " ............................................................\n";
+    echo " ............................................................\n";
+    echo " ..............TT.................TNT....TT..TNNNNTTNNNNNNT..\n";
+    echo " ..............E..................hNh....h...h........E......\n";
+    echo " ..............E..................hhE....h...h........E......\n";
+    echo " .....TTTNNT..TTTNNT..TTTNNT.....TT.NT..TT..TT.......TT......\n";
+    echo " .....EN...E..EN..Th..EN...E.....h..Eh..h...hNNNE....h.......\n";
+    echo " .....E....E..E...TT..E....E.....h..TE..h...h........h.......\n";
+    echo " ....TT....h.TT...E..TT....h....TT...N.TT..TT.......TT.......\n";
+    echo " ....E....h..h....h..E....h.....h....Ehh...h........h........\n";
+    echo " ....NT..hT..h...TT..NT..hT.Th..h....TNh...h........h........\n";
+    echo " ...TThNNT..TT...h..TThNNT..ET.TT.....NT..TNNNNT...TT........\n";
+    echo " ...h...............h........................................\n";
+    echo " ...h...............h........................................\n";
+    echo " ..TT..............TT........................................\n";
+    echo " ............................................................\n";
+    echo "\n";
+    echo " -------------============ PHP.NET ============--------------\n\n";
     echo " Repository: https://github.com/GCModeller-Cloud/php-dotnet\n";
+    echo " Version: " . GIT_COMMIT . "\n";
     echo " Author:     xieguigang <xie.guigang@gcmodeller.org>\n";
     echo "\n\n";
 }
@@ -137,6 +164,54 @@ if (!defined("IS_GET") && !defined("IS_POST")) {
 	define("IS_GET", false);
 }
 
+if (IS_POST && (count($_POST) === 0)) {
+
+    # 2018-12-25 fix $_POST array empty bugs when recieved json object in server
+    #
+    # PHP does not process JSON requests automatically like it does with form-encoded 
+    # or multipart requests. If you want to use JSON to send requests to PHP, you're 
+    # basically doing it correctly with file_get_contents(). If you want to merge those 
+    # variables into your global $_POST object you can, though I would not recommend 
+    # doing this as it might be confusing to other developers.
+    #
+    # it's safe to overwrite the $_POST if the content-type is application/json
+    # because the $_POST var will be empty
+    #
+    # $headers = getallheaders();
+    # if ($headers["Content-Type"] == "application/json")
+    #    $_POST = json_decode(file_get_contents("php://input"), true) ?: [];
+    #
+    # https://stackoverflow.com/questions/9516019/send-json-data-to-php-using-xmlhttprequest-w-o-jquery 
+    #
+    $headers     = getallheaders();
+    $contentType = "Content-Type";
+
+    if (array_key_exists($contentType, $headers)) {
+        $contentType = strtolower($headers[$contentType]);
+    } else {
+        $contentType = "";
+
+        foreach(array_keys($headers) as $key) {
+            if (strtolower($key) == "content-type") {
+                $contentType = $headers[$key];
+                break;
+            }
+        }
+    }   
+
+    if ($contentType == "application/json" || $contentType == "text/json") {
+        $json = file_get_contents("php://input");
+
+        if (empty($json) || $json == "null" || $json == "NULL") {
+            $json = [];
+        } else {
+            $json = json_decode($json, true);
+        }
+
+        $_POST = $json;
+    }
+}
+
 #endregion
 
 #region "file_loads"
@@ -185,6 +260,14 @@ $load->run(function() {
 
 #endregion
 
+if (APP_DEBUG) {
+
+    /** 
+     * 当前SESSION之中的调试器会话的编号
+    */
+    define("DEBUG_GUID", dotnetDebugger::getCurrentDebuggerGuid());
+}
+
 debugView::LogEvent("--- App start ---");
 debugView::LogEvent("Load required modules in " . $load->getTime());
 
@@ -215,11 +298,23 @@ function Imports($namespace) {
 
 /**
  * 对用户的浏览器进行重定向，支持路由规则。
- * 注意，在使用这个函数进行重定向之后，脚本将会从这里退出执行
+ * **注意，在使用这个函数进行重定向之后，脚本将会从这里退出执行**
+ * 
+ * @param string $URL
+ * 
 */
-function Redirect($URL) {   
+function Redirect($URL) {
     header("Location: " . Router::AssignController($URL));
     exit(0);
+}
+
+/** 
+ * 判断目标对象值是否是空的？``empty``或者等于``false``都会被判断为Nothing
+ * 
+ * @return boolean 判断目标对象值是否是空的？
+*/
+function IsNothing($obj) {
+    return empty($obj) || ($obj == false);
 }
 
 /**
@@ -236,6 +331,34 @@ function using(\System\IDisposable $obj, callable $procedure) {
     $result = $procedure($obj);
     $obj->Dispose();
     return $result;
+}
+
+/** 
+ * 对浏览器之中的cookie进行删除操作
+ * 这个函数支持批量处理模式
+ * 
+ * @param string|array
+ * 
+ *  + 如果这个参数为string类型，则只会删除该名称的cookie
+ *  + 如果这个参数为数组，则可以有两种模式：
+ *      1. tuple类型的：    ``[cookie_name => domain]``
+ *      2. 批量cookie删除:  ``[cookie_name => domain][]``
+*/
+function deleteCookies($cookies) {
+    if (is_string($cookies)) {
+        # 只删除单个cookie
+        setcookie($cookies, "", time() - 3600); 
+    } else {
+        if (count($cookies) == 1) {
+            # 将[name => domain]转换为批量模式
+            $cookies = [$cookies];
+        }
+
+        # 执行批量删除
+        foreach($cookies as $cookie_name => $domain) {
+            setcookie($cookie_name, "", time() - 3600, "/", $domain); 
+        }
+    }
 }
 
 #endregion

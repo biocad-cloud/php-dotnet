@@ -25,6 +25,11 @@ define("MVC_VIEW_ROOT",    "MVC_VIEW_ROOT");
 define("DEFAULT_LANGUAGE", "DEFAULT_LANGUAGE");
 define("DEFAULT_AUTH_KEY", "DEFAULT_AUTH_KEY");
 
+/** 
+ * 在路由器模块之中是否启用模板之中的URL重写功能
+*/
+define("REWRITE_ENGINE",   "REWRITE_ENGINE");
+
 #endregion
 
 /**
@@ -52,6 +57,22 @@ class DotNetRegistry {
         } else {
             return $default;
         }
+    }
+
+    /** 
+     * 是否打开路由器的URL重写功能？
+     * 
+     * 注意，这个配置项是会受到网站的根目录下的``.htaccess``文件的影响的：
+     * 
+     * + 即使在网站的配置文件之中设定了重写引擎打开，但是``.htaccess``文件不存在于网站的根目录下，则路由器模块会报错
+     * + 即使在网站的配置文件之中设定了重写引擎打开，但是``.htaccess``文件之中指示RewriteEngine的配置为Off，则路由器不会启用重写功能，并且给出一条警告消息
+     * + ``.htaccess``文件指示RewriteEngine的配置为On，则用户访问web服务器可能会发生重写，但是如果网站配置之中设定重写引擎关闭，则html模板之中的url将不会被重写，并给出一条警告消息
+     * + ``.htaccess``文件指示RewriteEngine的配置为On，则用户访问web服务器可能会发生重写，如果网站配置之中设定开启重写引擎，则html模板之中的url将会根据配置被重写
+     * 
+     * @return boolean
+    */
+    public static function RewriteEngine() {
+
     }
 
     /**
@@ -89,7 +110,13 @@ class DotNetRegistry {
         return [];
     }
 
-    public static function DisableErrorHandler() {    
+    /** 
+     * 函数返回TRUE，表示禁用框架的错误报告系统，直接将所有的错误消息输出到页面或者终端上
+     * 返回FALSE，表示不禁用当前框架的错误报告系统，错误消息将会被输出到调控终端上面
+     * 
+     * @return boolean 
+    */
+    public static function DisableErrorHandler() {
 
         # 当没有定义配置参数的时候，会根据是否处于调试模式来返回flag状态
         # 如果没有定义配置参数，则在调试模式下永远禁用，即将在调试模式下所有的错误都显示在页面上
@@ -98,7 +125,7 @@ class DotNetRegistry {
         if (self::hasValue(ERR_HANDLER_DISABLE)) {
             return Conversion::CBool(self::$config[ERR_HANDLER_DISABLE]); 
         } else {
-            if (APP_DEBUG) {
+            if (APP_DEBUG || FRAMEWORK_DEBUG) {
                 return false;
             } else {
                 return true;
@@ -106,8 +133,8 @@ class DotNetRegistry {
         }        
     }
 
-    public static function LogFile() {      
-        return self::Read(ERR_HANDLER, "./data/php_errors.log");         
+    public static function LogFile() {
+        return self::Read(ERR_HANDLER, "./data/php_errors.log");
     }
 
     /**

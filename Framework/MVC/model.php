@@ -204,6 +204,22 @@ class Table {
 	}
 
 	/**
+	 * mysqli::real_escape_string -- mysqli::escape_string -- mysqli_real_escape_string — 
+	 * Escapes special characters in a string for use in an SQL statement, taking into 
+	 * account the current charset of the connection
+	 * 
+	 * This function is used to create a legal SQL string that you can use in an SQL statement. 
+	 * The given string is encoded to an escaped SQL string, taking into account the current 
+	 * character set of the connection.
+	 * 
+	 * @param string $value The mysql cell value string text.
+	 * @return string
+	*/
+	public function EscapeString($value) {
+		return $this->mysqli()->escape_string($value);
+	}
+
+	/**
 	 * 对查询的结果的数量进行限制，当只有参数m的时候，表示查询结果限制为前m条，
 	 * 当参数n被赋值的时候，表示偏移m条之后返回n条结果
 	 * 
@@ -581,6 +597,10 @@ class Table {
 		return $this->driver->getLastMySqlError();
 	}
 
+	private static function getFieldString($fields) {
+		return empty($fields) ? "*" : Strings::Join($fields, ", ");
+	}
+
 	/**
 	 * select all.(函数参数``$fields``是需要选择的字段列表，如果没有传递任何参数的话，
 	 * 默认是``*``，即选择全部字段)
@@ -597,19 +617,21 @@ class Table {
 		$groupBy = $this->getGroupBy();
 		$limit   = $this->getLimit();
 		$join    = $this->buildJoin();
-		$fields  = empty($fields) ? "*" : Strings::Join($fields, ", ");
+		$fields  = self::getFieldString($fields);
 
         if ($assert) {
             $SQL = "SELECT $fields FROM $ref $join WHERE $assert";
         } else {
             $SQL = "SELECT $fields FROM $ref $join";
-        }	
+		}	
+		if ($groupBy) {
+			# 2018-12-20 如果同时出现了groupby 和 order by选项的话
+			# group by应该出现在最前面，否则会出现语法错误
+			$SQL = "$SQL $groupBy";
+		}
 		if ($orderBy) {
 			$SQL = "$SQL $orderBy";
 		}	
-		if ($groupBy) {
-			$SQL = "$SQL $groupBy";
-		}
 		if ($limit) {
 			$SQL = "$SQL $limit";
 		}
@@ -631,10 +653,10 @@ class Table {
     }
 	
 	/**
-	 * 这个函数通过一个数组返回目标列的所有数据
+	 * 这个函数通过一个数组返回目标列的所有数据，返回来的列数据一般是一个字符串数组
 	 * 
 	 * @param string $fieldName 数据表之中的列名称
-	 * @return array 返回来的列的数据
+	 * @return string[] 返回来的列的数据
 	*/
 	public function project($fieldName) {
 		$data  = $this->select([$fieldName]);
@@ -689,19 +711,20 @@ class Table {
 	/**
 	 * select but limit 1
 	 * 
-	 * 如果查询失败会返回逻辑值false
+	 * 如果查询失败会返回一个空值
 	*/
-    public function find() {
+    public function find($fields = null) {
 		$ref     = $this->schema->ref;
 		$assert  = $this->getWhere();   
 		$join    = $this->buildJoin();		
 		// 排序操作会影响到limit 1的结果
 		$orderBy = $this->getOrderBy();
+		$fields  = self::getFieldString($fields);
 
         if ($assert) {
-            $SQL = "SELECT * FROM $ref $join WHERE $assert";
+            $SQL = "SELECT $fields FROM $ref $join WHERE $assert";
         } else {
-            $SQL = "SELECT * FROM $ref $join";
+            $SQL = "SELECT $fields FROM $ref $join";
         }	
 		if ($orderBy) {
 			$SQL = "$SQL $orderBy";
@@ -881,11 +904,14 @@ class Table {
     /**
 	 * update table
 	 * 
+	 * @param boolean $limit1 是否是只更新一条记录？默认是只更新一条记录。
+	 * @param array $data 需要进行更新的列数据键值对集合
+	 * 
 	 * @return boolean
 	*/ 
-    public function save($data) {
+    public function save($data, $limit1 = true) {
 		$ref     = $this->schema->ref;
-        $assert  = $this->getWhere();        
+        $assert  = $this->getWhere();
 		$SQL     = "";
 		$updates = [];
 		
@@ -909,10 +935,15 @@ class Table {
 		if (!$assert) {
 			# 更新所有的数据？？？要不要给出警告信息
 			$SQL = $SQL . ";";
+			console::warn("Execute update entire data table! ($SQL)");
 		} else {
-			$SQL = $SQL . " WHERE " . $assert . " LIMIT 1;";
+			if ($limit1) {
+				$SQL = $SQL . " WHERE " . $assert . " LIMIT 1;";
+			} else {
+				$SQL = $SQL . " WHERE " . $assert . ";";
+			}
 		}
-						
+
 		# echo $SQL;
 
 		if (!$this->driver->ExecuteSql($SQL)) {
