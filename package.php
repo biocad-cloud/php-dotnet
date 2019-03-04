@@ -298,11 +298,23 @@ function Imports($namespace) {
 
 /**
  * 对用户的浏览器进行重定向，支持路由规则。
- * 注意，在使用这个函数进行重定向之后，脚本将会从这里退出执行
+ * **注意，在使用这个函数进行重定向之后，脚本将会从这里退出执行**
+ * 
+ * @param string $URL
+ * 
 */
-function Redirect($URL) {   
+function Redirect($URL) {
     header("Location: " . Router::AssignController($URL));
     exit(0);
+}
+
+/** 
+ * 判断目标对象值是否是空的？``empty``或者等于``false``都会被判断为Nothing
+ * 
+ * @return boolean 判断目标对象值是否是空的？
+*/
+function IsNothing($obj) {
+    return empty($obj) || ($obj == false);
 }
 
 /**

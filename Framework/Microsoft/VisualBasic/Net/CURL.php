@@ -1,5 +1,8 @@
 <?php
 
+/** 
+ * Http请求帮助模块
+*/
 class CURLExtensions {
 
 	/**
@@ -52,6 +55,9 @@ class CURLExtensions {
 		return $tmpInfo; 
 	}
 	
+	/** 
+	 * 发送一个GET请求，更加简单的GET请求可以直接使用``file_get_contents``函数来执行
+	*/
 	public static function GET($url, $data = NULL) {
 		$res = curl_init($url);
 		
