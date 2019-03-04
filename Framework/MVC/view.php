@@ -78,7 +78,11 @@ class View {
 		# 优先使用用户单独为控制器定义的路径
 		if (!empty(dotnet::$controller)) {
 			$path = dotnet::$controller->getView();
-			
+		} else {
+			$path = NULL;
+		}
+
+		if (!empty($path)) {
 			# 可能是绝对路径，也可能是相对路径，需要处理一下
 			if (strpos($path, "/") == 0) {
 				# 是一个绝对路径
