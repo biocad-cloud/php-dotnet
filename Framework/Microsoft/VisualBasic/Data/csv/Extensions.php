@@ -74,11 +74,20 @@ namespace Microsoft\VisualBasic\Data\csv {
         public static function Load($path, 
             $tsv      = false, 
             $maxLen   = 2048, 
-            $encoding = "utf8") {
+            $encoding = "utf8", 
+            $headers  = NULL) {
 
             $file_handle = fopen($path, 'r');
             $delimiter   = $tsv ? "\t" : ",";
-            $headers     = fgetcsv($file_handle, $maxLen, $delimiter);
+
+            # 2019-03-04 需要注意index问题，当进行header投影的时候
+            if (empty($headers)) {
+                $headers = fgetcsv($file_handle, $maxLen, $delimiter);
+            } else {
+                # skip first line headers
+                # using header parameter value for column projection
+                $devnull = fgetcsv($file_handle, $maxLen, $delimiter);
+            }
 
             if (!file_exists($path) || filesize($path) == 0) {
                 \error_log("[\"$path\"] not exists or contains no data!");
@@ -122,12 +131,16 @@ namespace Microsoft\VisualBasic\Data\csv {
          * 
          * @param string $path The file path of the tsv format text file.
         */
-        public static function LoadTable($path) {
-            $lines   = \file_get_contents($path);
-            $lines   = \trim($lines, "\n\r");
-            $lines   = \StringHelpers::LineTokens($lines);
-            $headers = self::ParseTsvRow($lines[0]);
-            $table   = [];
+        public static function LoadTable($path, $headers = []) {
+            $lines = \file_get_contents($path);
+            $lines = \trim($lines, "\n\r");
+            $lines = \StringHelpers::LineTokens($lines);
+            $table = [];
+
+            # 2019-03-04 需要注意index问题，当进行header投影的时候
+            if (empty($headers)) {
+                $headers = self::ParseTsvRow($lines[0]);
+            }
 
             for($j = 1; $j < count($lines); $j++) {
                 $row      = [];
