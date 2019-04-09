@@ -138,8 +138,7 @@ class taskhost {
      *   脚本文本内容而非路径的话，则脚本会被保存在这个工作区参数所指定的
      *   文件夹之中
     */
-    public static function RunRscript($R, $workspace, $log = "Rscript.log") {
-        $R_HOME  = "/usr/lib64/R/bin";
+    public static function RunRscript($R, $workspace, $log = "Rscript.log", $R_HOME = "/usr/lib64/R/bin") {
         $Rscript = "$R_HOME/Rscript";
         $current = getcwd();
 
