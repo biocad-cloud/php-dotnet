@@ -150,7 +150,17 @@ if (array_key_exists("REQUEST_METHOD", $_SERVER)) {
 		 * 当前的访问请求是否是一个GET请求
 		*/
 		define("IS_GET", true);
-	}	
+    }
+    
+    # 如果不是CLI环境，则尝试设置session
+    # 如果cookie不存在PHPSESSID则直接启动session
+    if (!empty($_COOKIE["PHPSESSID"])) {
+        // 在这里主要是为了防止对个站点共享同一个session
+        // 的时候，可能会造成因为对各站点的session id的cookie导致session信息丢失的问题
+        session_id($_COOKIE["PHPSESSID"]);
+    }
+
+    session_start();
 } 
 
 if (!defined("IS_GET") && !defined("IS_POST")) {
