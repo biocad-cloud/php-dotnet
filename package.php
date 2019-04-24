@@ -313,11 +313,7 @@ function Imports($namespace) {
  * @param string $URL
  * 
 */
-<<<<<<< HEAD
-function Redirect($URL) { 
-=======
 function Redirect($URL) {
->>>>>>> e7df9620c37a0983519a10d6c7e5bcdc952b385f
     header("Location: " . Router::AssignController($URL));
     exit(0);
 }
