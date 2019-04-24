@@ -67,13 +67,20 @@ namespace MVC\MySql\Expression {
         /**
          * 将条件数组转化为MySQL之中的条件表达式 
          * 
-         * @param array $asserts: 条件数组
-         * @param string $op: 条件之间的相互关系，默认为AND关系
+         * @param array $asserts 条件数组
+         * @param string $op 条件之间的相互关系，默认为``AND``关系
          * 
          * @return string MySql查询条件表达式
          */
         public static function AsExpression($asserts, $op = "AND") {
             $list = [];
+ 
+            if (empty($asserts)) {
+                \console::warn("MySqli condition is nothing!");
+                return "";
+            } else {
+                \console::dump($asserts, "MySql expression object is:");
+            }
 
             # 在这个表达式构造函数之中，使用~前导字符作为表达式的标记
             foreach($asserts as $name => $value) {
@@ -104,6 +111,7 @@ namespace MVC\MySql\Expression {
             $exp        = null;
             $expression = array();
 
+            # 开始对整个逻辑表达式的堆栈操作
             array_push($expression, " ( ");
 
             foreach(str_split($name) as $c) {
@@ -111,11 +119,13 @@ namespace MVC\MySql\Expression {
                     $exp    = self::KeyExpression(implode($buffer));
                     $buffer = array();
                     
+                    # 对某一个字段的条件判断表达式进行堆栈操作
                     array_push($expression, "( ");
                     array_push($expression, $exp);
                     array_push($expression, $value);
                     array_push($expression, ") ");
 
+                    # 添加与下一个表达式之间的逻辑操作符
                     if ($c === "|") {
                         array_push($expression, " OR ");
                     } else {

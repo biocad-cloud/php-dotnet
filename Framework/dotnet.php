@@ -13,12 +13,17 @@
  *
  * php 不像VB.NET一样允许函数重载，所以同一个class模块之中不可以出现相同名字的函数
 */
-class dotnet {    
+class dotnet {
 
     /**
      * @var dotnetDebugger
     */
     public static $debugger;
+
+    /** 
+     * @var controller
+    */
+    public static $controller;
 
     /**
      * 函数返回成功消息的json字符串``{code: 0, info: $msg}``.
@@ -45,11 +50,19 @@ class dotnet {
      *                          the http client.
      * 
     */ 
-	public static function errorMsg($msg, $errorCode = 1) {
-		return json_encode([
-			'code' => $errorCode,
-            'info' => $msg
-        ]);
+	public static function errorMsg($msg, $errorCode = 1, $debug = null) {
+        if (empty($debug)) {
+            return json_encode([
+                'code' => $errorCode,
+                'info' => $msg
+            ]);
+        } else {
+            return json_encode([
+                'code'  => $errorCode,
+                'info'  => $msg,
+                "debug" => $debug
+            ]);
+        }
 	}
 
     /**
@@ -81,7 +94,7 @@ class dotnet {
         # 如果当前的服务器资源上面存在访问控制器的话，则进行用户权限的控制
         if ($injection) {
             debugView::LogEvent("Hook controller");
-            $injection->Hook($app);
+            self::$controller = $injection->Hook($app);
 
             # 用户访问权限控制
             if (!$injection->accessControl()) {
@@ -277,8 +290,8 @@ class dotnet {
      * 
      * @param string $message The error message to display.
 	*/
-    public static function ThrowException($message) {      
-		$trace = StackTrace::GetCallStack()->ToString();
+    public static function ThrowException($message) {
+		$trace = StackTrace::GetCallStack();
 		$exc   = dotnetException::FormatOutput($message, $trace);
 				
 		RFC7231Error::err500($exc);
@@ -291,7 +304,7 @@ class dotnet {
      * @param string $message The error message to display.
     */
     public static function PageNotFound($message) {
-        $trace = StackTrace::GetCallStack()->ToString();
+        $trace = StackTrace::GetCallStack();
 		$exc   = dotnetException::FormatOutput($message, $trace);
 				
 		RFC7231Error::err404($exc);
@@ -304,7 +317,7 @@ class dotnet {
      * @param string $message The error message to display.
     */
     public static function AccessDenied($message) {
-        $trace = StackTrace::GetCallStack()->ToString();
+        $trace = StackTrace::GetCallStack();
 		$exc   = dotnetException::FormatOutput($message, $trace);
 				
 		RFC7231Error::err403($exc);
@@ -315,7 +328,7 @@ class dotnet {
      * 429 请求次数过多
     */
     public static function TooManyRequests($message) {
-        $trace = StackTrace::GetCallStack()->ToString();
+        $trace = StackTrace::GetCallStack();
 		$exc   = dotnetException::FormatOutput($message, $trace);
 				
 		RFC7231Error::err429($exc);

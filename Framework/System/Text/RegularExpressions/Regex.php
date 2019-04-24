@@ -49,7 +49,7 @@ class Regex {
             $hits = preg_match_all($pattern, $input, $matches, $options);
         }
 
-        if ($hits > 0) {             
+        if ($hits > 0) {
             return $matches[0];
         } else {
             return NULL;
@@ -79,5 +79,3 @@ class Regex {
         return preg_split("#$pattern#", $input);
     }
 }
-
-?>

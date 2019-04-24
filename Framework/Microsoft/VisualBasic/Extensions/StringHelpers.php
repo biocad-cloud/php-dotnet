@@ -7,6 +7,25 @@ Imports("Microsoft.VisualBasic.Strings");
 */
 class StringHelpers {
 
+    /** 
+     * 只匹配第一次出现的查找字符串
+     * 
+     * @param string $needle 所查找的将要被替换掉的字符串
+     * @param string $replace 将要替换掉目标字符串的字符串值
+     * @param string $haystack 需要进行字符串替换操作的母字符串
+     * 
+     * @return string
+    */
+    public static function str_replace_once($needle, $replace, $haystack) {
+        $pos = strpos($haystack, $needle); 
+
+        if ($pos === false) { 
+            return $haystack; 
+        } else {
+            return substr_replace($haystack, $replace, $pos, strlen($needle)); 
+        }     
+    }        
+
     /**
      * Text split by new line
      * 
@@ -84,21 +103,33 @@ class StringHelpers {
      * 
      * @return array ``[key => value]``
     */
-    public static function GetTagValue($str, $delimiter = " ") {
+    public static function GetTagValue($str, $delimiter = " ", $tuple = false) {
         if (empty($str)) {
-            return [];
+            if ($tuple) {
+                return ["", ""];
+            } else {
+                return [];
+            }
         }
 
         $p = Strings::InStr($str, $delimiter);
 
         if ($p === 0) {
-            return [$str => ""];
+            if ($tuple) {
+                return [$str, ""];
+            } else {
+                return [$str => ""];
+            }
         }
 
         $key   = Strings::Mid($str, 1, $p - 1);
         $value = Strings::Mid($str, $p + Strings::Len($delimiter));
 
-        return [$key => $value];
+        if ($tuple) {
+            return [$key, $value];
+        } else {
+            return [$key => $value];
+        }
     }
 
     /**
@@ -121,4 +152,3 @@ class StringHelpers {
         }
     }    
 }
-?>

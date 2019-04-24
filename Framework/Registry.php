@@ -25,6 +25,11 @@ define("MVC_VIEW_ROOT",    "MVC_VIEW_ROOT");
 define("DEFAULT_LANGUAGE", "DEFAULT_LANGUAGE");
 define("DEFAULT_AUTH_KEY", "DEFAULT_AUTH_KEY");
 
+/** 
+ * 在路由器模块之中是否启用模板之中的URL重写功能
+*/
+define("REWRITE_ENGINE",   "REWRITE_ENGINE");
+
 #endregion
 
 /**
@@ -52,6 +57,22 @@ class DotNetRegistry {
         } else {
             return $default;
         }
+    }
+
+    /** 
+     * 是否打开路由器的URL重写功能？
+     * 
+     * 注意，这个配置项是会受到网站的根目录下的``.htaccess``文件的影响的：
+     * 
+     * + 即使在网站的配置文件之中设定了重写引擎打开，但是``.htaccess``文件不存在于网站的根目录下，则路由器模块会报错
+     * + 即使在网站的配置文件之中设定了重写引擎打开，但是``.htaccess``文件之中指示RewriteEngine的配置为Off，则路由器不会启用重写功能，并且给出一条警告消息
+     * + ``.htaccess``文件指示RewriteEngine的配置为On，则用户访问web服务器可能会发生重写，但是如果网站配置之中设定重写引擎关闭，则html模板之中的url将不会被重写，并给出一条警告消息
+     * + ``.htaccess``文件指示RewriteEngine的配置为On，则用户访问web服务器可能会发生重写，如果网站配置之中设定开启重写引擎，则html模板之中的url将会根据配置被重写
+     * 
+     * @return boolean
+    */
+    public static function RewriteEngine() {
+
     }
 
     /**

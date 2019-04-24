@@ -13,20 +13,23 @@ namespace Microsoft\VisualBasic\Data\csv {
         /**
          * Save array collection as a csv file.
          * 
-         * @param array: The object array collection.
-         * @param path: The saved csv file path.
-         * @param project: A dictionary table that specific the columns and 
+         * @param array $array The object array collection.
+         * @param string $path The saved csv file path.
+         * @param callable $project A dictionary table that specific the columns and 
          *                 corresponding field names, column orders, etc.
-         * @param encoding: The csv file text encoding, default is `utf8`.
+         * @param string $encoding The csv file text encoding, default is `utf8`.
          * 
          * @return boolean True for file save success, and false not. 
-         */
-        public static function SaveTo($array, $path, $project = null, $encoding = "utf8") {
-            
-            # 2018-4-10 直接引用其他的模块似乎会因为namespace的缘故而产生错误：
-            # <b>Fatal error</b>:  Class 'Microsoft\VisualBasic\Data\csv\FileSystem' not found
-            # 所以在这里就直接使用这个函数的代码了
-            $directory = dirname($path);
+        */
+        public static function SaveTo($array, $path, $project = null, $encoding = "utf8") {            
+            if (\Strings::Empty($path)) {
+                return false;
+            } else {
+                # 2018-4-10 直接引用其他的模块似乎会因为namespace的缘故而产生错误：
+                # <b>Fatal error</b>:  Class 'Microsoft\VisualBasic\Data\csv\FileSystem' not found
+                # 所以在这里就直接使用这个函数的代码了
+                $directory = dirname($path);
+            }
 
             if (!file_exists($directory)) {
                 mkdir($directory, 0755, true);
@@ -71,11 +74,20 @@ namespace Microsoft\VisualBasic\Data\csv {
         public static function Load($path, 
             $tsv      = false, 
             $maxLen   = 2048, 
-            $encoding = "utf8") {
+            $encoding = "utf8", 
+            $headers  = NULL) {
 
             $file_handle = fopen($path, 'r');
             $delimiter   = $tsv ? "\t" : ",";
-            $headers     = fgetcsv($file_handle, $maxLen, $delimiter);
+
+            # 2019-03-04 需要注意index问题，当进行header投影的时候
+            if (empty($headers)) {
+                $headers = fgetcsv($file_handle, $maxLen, $delimiter);
+            } else {
+                # skip first line headers
+                # using header parameter value for column projection
+                $devnull = fgetcsv($file_handle, $maxLen, $delimiter);
+            }
 
             if (!file_exists($path) || filesize($path) == 0) {
                 \error_log("[\"$path\"] not exists or contains no data!");
@@ -114,13 +126,21 @@ namespace Microsoft\VisualBasic\Data\csv {
 
         /**
          * Load tsv table
+         * 
+         * (这个函数与Load函数的功能基本相同，但是这个函数是用于读取tsv文件的)
+         * 
+         * @param string $path The file path of the tsv format text file.
         */
-        public static function LoadTable($path) {
-            $lines   = \file_get_contents($path);
-            $lines   = \trim($lines, "\n\r");
-            $lines   = \StringHelpers::LineTokens($lines);
-            $headers = self::ParseTsvRow($lines[0]);
-            $table   = [];
+        public static function LoadTable($path, $headers = []) {
+            $lines = \file_get_contents($path);
+            $lines = \trim($lines, "\n\r");
+            $lines = \StringHelpers::LineTokens($lines);
+            $table = [];
+
+            # 2019-03-04 需要注意index问题，当进行header投影的时候
+            if (empty($headers)) {
+                $headers = self::ParseTsvRow($lines[0]);
+            }
 
             for($j = 1; $j < count($lines); $j++) {
                 $row      = [];
@@ -153,5 +173,3 @@ namespace Microsoft\VisualBasic\Data\csv {
         }
     }
 }
-
-?>

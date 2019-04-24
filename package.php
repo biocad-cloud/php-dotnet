@@ -72,6 +72,10 @@ if (!defined("FRAMEWORK_DEBUG")) {
  * Php script running in a cli environment?
 */
 define("IS_CLI", php_sapi_name() === 'cli');
+/**
+ * 当前的源代码版本编号
+*/
+define("GIT_COMMIT", "721557fb87c33306e5c252556e18389c346c3a25");
 
 if (IS_CLI && FRAMEWORK_DEBUG) {
 
@@ -101,6 +105,7 @@ if (IS_CLI && FRAMEWORK_DEBUG) {
     echo "\n";
     echo " -------------============ PHP.NET ============--------------\n\n";
     echo " Repository: https://github.com/GCModeller-Cloud/php-dotnet\n";
+    echo " Version: " . GIT_COMMIT . "\n";
     echo " Author:     xieguigang <xie.guigang@gcmodeller.org>\n";
     echo "\n\n";
 }
@@ -145,7 +150,17 @@ if (array_key_exists("REQUEST_METHOD", $_SERVER)) {
 		 * 当前的访问请求是否是一个GET请求
 		*/
 		define("IS_GET", true);
-	}	
+    }
+    
+    # 如果不是CLI环境，则尝试设置session
+    # 如果cookie不存在PHPSESSID则直接启动session
+    if (!empty($_COOKIE["PHPSESSID"])) {
+        // 在这里主要是为了防止对个站点共享同一个session
+        // 的时候，可能会造成因为对各站点的session id的cookie导致session信息丢失的问题
+        session_id($_COOKIE["PHPSESSID"]);
+    }
+
+    session_start();
 } 
 
 if (!defined("IS_GET") && !defined("IS_POST")) {
@@ -255,6 +270,14 @@ $load->run(function() {
 
 #endregion
 
+if (APP_DEBUG) {
+
+    /** 
+     * 当前SESSION之中的调试器会话的编号
+    */
+    define("DEBUG_GUID", dotnetDebugger::getCurrentDebuggerGuid());
+}
+
 debugView::LogEvent("--- App start ---");
 debugView::LogEvent("Load required modules in " . $load->getTime());
 
@@ -285,11 +308,27 @@ function Imports($namespace) {
 
 /**
  * 对用户的浏览器进行重定向，支持路由规则。
- * 注意，在使用这个函数进行重定向之后，脚本将会从这里退出执行
+ * **注意，在使用这个函数进行重定向之后，脚本将会从这里退出执行**
+ * 
+ * @param string $URL
+ * 
 */
+<<<<<<< HEAD
 function Redirect($URL) { 
+=======
+function Redirect($URL) {
+>>>>>>> e7df9620c37a0983519a10d6c7e5bcdc952b385f
     header("Location: " . Router::AssignController($URL));
     exit(0);
+}
+
+/** 
+ * 判断目标对象值是否是空的？``empty``或者等于``false``都会被判断为Nothing
+ * 
+ * @return boolean 判断目标对象值是否是空的？
+*/
+function IsNothing($obj) {
+    return empty($obj) || ($obj == false);
 }
 
 /**
