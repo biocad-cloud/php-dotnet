@@ -203,11 +203,11 @@ if (IS_POST && (count($_POST) === 0)) {
 
         foreach(array_keys($headers) as $key) {
             if (strtolower($key) == "content-type") {
-                $contentType = $headers[$key];
+                $contentType = strtolower($headers[$key]);
                 break;
             }
         }
-    }   
+    }
 
     if ($contentType == "application/json" || $contentType == "text/json") {
         $json = file_get_contents("php://input");

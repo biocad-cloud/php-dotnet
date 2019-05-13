@@ -34,6 +34,11 @@ function pasteResponseHeader($headers) {
     return $headers;
 }
 
+/**
+ * 这个模块主要是应用于后台任务调用，需要使用root账号在后台运行这个服务器模块
+ * 然后daemon用户所运行的apache接受请求之后，在通过http请求这个模块所运行的服务
+ * 来执行后台任务
+*/
 class httpSocket {
 
     private $address;
