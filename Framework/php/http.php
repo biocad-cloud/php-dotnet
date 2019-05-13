@@ -1,7 +1,5 @@
 <?php
 
-Imports("Debugger.tableView");
-
 /**
  * Parses the request header into resource, headers and security code
  * (解析http请求头部)
@@ -122,7 +120,7 @@ class httpSocket {
         $buf = socket_read($msgsock, 8192);
         $headers = parseRequestHeader($buf);
 
-        console::dump($headers, "Received msg: ");
+        console::table($headers, ["headers" => "text"]);
         
         // 数据传送 向客户端写入返回结果
         $process = $this->processor;

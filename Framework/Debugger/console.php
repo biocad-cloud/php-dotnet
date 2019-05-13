@@ -1,5 +1,7 @@
 <?php
 
+Imports("Debugger.tableView");
+
 /**
  * 用户调试记录器
  * 这个模块所记录的值会在调试器视图的Console页面上面显示出来
@@ -94,6 +96,34 @@ class console {
             $time = Utils::Now(false);
             echo "[$time] $msg\n";
         }
+    }
+
+    /** 
+     * @param $array 将要被显示为表格的数组可以是下面的两种形式：
+     * 
+     *   1. 键值对数组 [key => value, key => value]，如果是这种形式的数组，则必须要提供``dictionaryHeaders``参数的值
+     *   2. 行集合 [key => value, key => value][]，即数组之中的每一个元素都是一个键值对数组
+    */
+    public static function table($array, $dictionaryHeaders = null) {
+        if (!empty($dictionaryHeaders)) {
+            $table = [];
+            $dictionaryHeaders = Utils::Tuple($dictionaryHeaders);
+            $keyTitle = $dictionaryHeaders[0];
+            $valTitle = $dictionaryHeaders[1];
+
+            foreach($array as $key => $value) {
+                $table[] = [$keyTitle => $key, $valTitle => $value];
+            }
+        } else {
+            $table = $array;
+        }
+
+        $render = new ArrayToTextTable($table);
+        $render->showHeaders(true);
+        $render->setMaxHeight(80);
+        $render->render();
+
+        echo "\n\n";
     }
 
     /**
