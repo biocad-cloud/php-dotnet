@@ -26,10 +26,25 @@ class httpSocket {
     private $address;
     private $port;
     private $socket;
+    private $processor;
 
-    public function __construct($address, $port = 85) {
-        $this->address = $address;
-        $this->port = $port;
+    /** 
+     * @param string $address The ip address of this socket server
+     * @param callable $processor The http request processor, by default is returns nothing
+     * @param integer $port The listen port of the http socket
+    */
+    public function __construct($address, $processor = NULL, $port = 85) {
+        $this->address   = $address;
+        $this->port      = $port;
+        $this->processor = $processor;
+
+        if (empty($this->processor)) {
+            // process the request and then returns the result string
+            $this->processor = function($request) {
+                // do nothing
+                return "";
+            };
+        }
 
         # 确保在连接客户端时不会超时
         set_time_limit(0);
@@ -56,5 +71,35 @@ class httpSocket {
 
     private static function socketErr($trace) {
         return "$trace(): " . socket_strerror(socket_last_error()) . "\n";
+    }
+
+    /** 
+     * Run http socket server daemon
+    */
+    public function Run() {
+        do {
+            $this->doAccept();
+        } while(true);
+    }
+
+    private function doAccept() {
+        // 它接收连接请求并调用一个子连接Socket来处理客户端和服务器间的信息
+        $msgsock = socket_accept($sock) or  die(self::socketErr("socket_accept"));
+        
+        // 读取客户端数据
+        console::log("Read client data");
+
+        // socket_read函数会一直读取客户端数据,直到遇见\n,\t或者\0字符.PHP脚本把这写字符看做是输入的结束符.
+        $buf = socket_read($msgsock, 8192);
+        $headers = parseRequestHeader($buf);
+
+        console::dump($headers, "Received msg: ");
+        
+        // 数据传送 向客户端写入返回结果
+        $msg = $this->processor($headers);
+        
+        socket_write($msgsock, $msg, strlen($msg)) or die(self::socketErr("socket_write"));
+        // 一旦输出被返回到客户端,父/子socket都应通过socket_close($msgsock)函数来终止
+        socket_close($msgsock);
     }
 }
