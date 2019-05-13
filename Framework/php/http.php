@@ -17,6 +17,12 @@ function parseRequestHeader($request) {
             list($key, $value) = explode(': ', $line);
 
             $headers[trim($key)] = trim($value);
+        } else {
+            $tokens = explode(" ", $line);
+
+            $headers["Method"] = $tokens[0];
+            $headers["Url"] = $tokens[1];
+            $headers["Http Version"] = $tokens[2];
         }
     }
 
@@ -40,12 +46,14 @@ class httpSocket {
         $this->port      = $port;
         $this->processor = $processor;
 
-        if (empty($this->processor)) {
+        if (!$this->processor) {
             // process the request and then returns the result string
             $this->processor = function($request) {
                 // do nothing
                 return "";
             };
+
+            console::log("Empty request processor...");
         }
 
         # 确保在连接客户端时不会超时
@@ -87,7 +95,7 @@ class httpSocket {
 
     private function doAccept() {
         // 它接收连接请求并调用一个子连接Socket来处理客户端和服务器间的信息
-        $msgsock = socket_accept($this->socket) or  die(self::socketErr("socket_accept"));
+        $msgsock = socket_accept($this->socket); # or die(self::socketErr("socket_accept"));
         
         // 读取客户端数据
         console::log("Read client data");
@@ -99,9 +107,10 @@ class httpSocket {
         console::dump($headers, "Received msg: ");
         
         // 数据传送 向客户端写入返回结果
-        $msg = $this->processor($headers);
+        $process = $this->processor;
+        $msg = $process($headers);
 
-        socket_write($msgsock, $msg, strlen($msg)) or die(self::socketErr("socket_write"));
+        socket_write($msgsock, $msg, strlen($msg)); # or die(self::socketErr("socket_write"));
         // 一旦输出被返回到客户端,父/子socket都应通过socket_close($msgsock)函数来终止
         socket_close($msgsock);
     }
