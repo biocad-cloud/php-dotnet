@@ -1,5 +1,7 @@
 <?php
 
+Imports("php.URL");
+
 /**
  * Parses the request header into resource, headers and security code
  * (解析http请求头部)
@@ -120,9 +122,16 @@ class httpSocket {
         $buf = socket_read($msgsock, 8192);
         $headers = parseRequestHeader($buf);
 
-        console::table($headers, ["headers" => "text"]);
+        if (IS_CLI && FRAMEWORK_DEBUG) {
+            console::table($headers, ["headers" => "text"]);
+        } else {
+            echo $buf;
+        }        
         
         // 数据传送 向客户端写入返回结果
+        // url请求需要在processor函数之中自己解析，在这里不可以覆盖掉全局的$_GET变量
+        // 因为这个$_GET变量可能是会在好几个并行的process处理过程之中共享的
+        // 在process处理过程之中也不可以覆盖掉$_GET全局变量
         $process = $this->processor;
         $msg = $process($headers);
 
