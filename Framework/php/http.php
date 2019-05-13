@@ -1,5 +1,7 @@
 <?php
 
+Imports("Debugger.tableView");
+
 /**
  * Parses the request header into resource, headers and security code
  * (解析http请求头部)
@@ -97,7 +99,7 @@ class httpSocket {
         
         // 数据传送 向客户端写入返回结果
         $msg = $this->processor($headers);
-        
+
         socket_write($msgsock, $msg, strlen($msg)) or die(self::socketErr("socket_write"));
         // 一旦输出被返回到客户端,父/子socket都应通过socket_close($msgsock)函数来终止
         socket_close($msgsock);
