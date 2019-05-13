@@ -55,7 +55,7 @@ class ArrayToTextTable {
      * @param int $maxWidth Max Column Height (returns)
      * @param int $maxHeight Max Row Width (chars)
     */
-    public function ArrayToTextTable($rows) {
+    public function __construct($rows) {
         $this->rows =& $rows;
         $this->cs=array();
         $this->rs=array();

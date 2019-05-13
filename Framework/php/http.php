@@ -62,6 +62,7 @@ class httpSocket {
         # 开始监听
         $result = socket_listen($sock, 4) or die(self::socketErr("socket_listen"));
 
+        $this->socket = $sock;
         $this->welcomeMessage();
     }
 
@@ -86,7 +87,7 @@ class httpSocket {
 
     private function doAccept() {
         // 它接收连接请求并调用一个子连接Socket来处理客户端和服务器间的信息
-        $msgsock = socket_accept($sock) or  die(self::socketErr("socket_accept"));
+        $msgsock = socket_accept($this->socket) or  die(self::socketErr("socket_accept"));
         
         // 读取客户端数据
         console::log("Read client data");
