@@ -17,7 +17,7 @@ function parseRequestHeader($request) {
             list($key, $value) = explode(': ', $line);
 
             $headers[trim($key)] = trim($value);
-        } else {
+        } else if (!empty($line)) {
             $tokens = explode(" ", $line);
 
             $headers["Method"] = $tokens[0];
