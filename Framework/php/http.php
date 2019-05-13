@@ -21,7 +21,7 @@ function parseRequestHeader($request) {
             $tokens = explode(" ", $line);
 
             $headers["Method"] = $tokens[0];
-            $headers["Url"] = $tokens[1];
+            $headers["Url"] = URL::mb_parse_url($tokens[1], true);
             $headers["Http Version"] = $tokens[2];
         }
     }
@@ -47,6 +47,13 @@ class httpSocket {
     private $processor;
 
     /** 
+     * 是否关闭当前的这个http模块进程
+     * 
+     * @var bool
+    */
+    private $shutdown;
+
+    /** 
      * @param string $address The ip address of this socket server
      * @param callable $processor The http request processor, by default is returns nothing
      * @param integer $port The listen port of the http socket
@@ -55,6 +62,7 @@ class httpSocket {
         $this->address   = $address;
         $this->port      = $port;
         $this->processor = $processor;
+        $this->shutdown  = false;
 
         if (!$this->processor) {
             // process the request and then returns the result string
@@ -108,7 +116,9 @@ class httpSocket {
     public function Run() {
         do {
             $this->doAccept();
-        } while(true);
+        } while(!$this->shutdown);
+
+        console::log("Http task server signaled shutdown...\n\nBye bye.");
     }
 
     private function doAccept() {
@@ -121,6 +131,9 @@ class httpSocket {
         // socket_read函数会一直读取客户端数据,直到遇见\n,\t或者\0字符.PHP脚本把这写字符看做是输入的结束符.
         $buf = socket_read($msgsock, 8192);
         $headers = parseRequestHeader($buf);
+        $origin = "";
+        
+        socket_getpeername($msgsock, $origin);
 
         if (IS_CLI && FRAMEWORK_DEBUG) {
             console::table($headers, ["headers" => "text"]);
@@ -133,10 +146,29 @@ class httpSocket {
         // 因为这个$_GET变量可能是会在好几个并行的process处理过程之中共享的
         // 在process处理过程之中也不可以覆盖掉$_GET全局变量
         $process = $this->processor;
-        $msg = $process($headers);
+        $headers["remote"] = $origin;
+
+        if ($this->checkShutdown($headers)) {
+            $this->shutdown = true;
+        } else {
+            $msg = $process($headers);
+        }        
 
         @socket_write($msgsock, $msg, strlen($msg)); # or die(self::socketErr("socket_write"));
         // 一旦输出被返回到客户端,父/子socket都应通过socket_close($msgsock)函数来终止
         @socket_close($msgsock);
+    }
+
+    /** 
+     * @return bool 返回一个逻辑值来指示是否是关闭当前的服务器的请求
+    */
+    private function checkShutdown($request) {
+        $args = $request["Url"]["query"];
+
+        if ($args["action"] == "shutdown" && $request["remote"] == "127.0.0.1") {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
