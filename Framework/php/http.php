@@ -60,18 +60,7 @@ class httpSocket {
     public function __construct($address, $port = 85) {
         $this->address   = $address;
         $this->port      = $port;
-        $this->processor = $processor;
         $this->shutdown  = false;
-
-        if (!$this->processor) {
-            // process the request and then returns the result string
-            $this->processor = function($request) {
-                // do nothing
-                return "";
-            };
-
-            console::log("Empty request processor...");
-        }
 
         # 确保在连接客户端时不会超时
         set_time_limit(0);
