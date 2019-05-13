@@ -17,8 +17,8 @@ class Router {
 	 *
 	 * @param object $app 控制器对象实例
 	*/
-	public static function HandleRequest($app) {
-		if (method_exists($app, $page = self::getApp())) {
+	public static function HandleRequest($app, $request = NULL) {
+		if (method_exists($app, $page = self::getApp($request))) {
 			$code = $app->{$page}();
 		} else {
 			$message = "Web app `<strong>$page</strong>` is not available in this controller!";
@@ -35,10 +35,13 @@ class Router {
 	 * XXXX.php?app=xxxxx
 	 * ```
 	 * 
+	 * @param array $request The url request parsed query data, by default is using ``$_GET``
+	 *    if this request array is nothing.
+	 * 
 	 * @return string Web app name.
 	*/
-	public static function getApp() {
-		$argv = $_GET;
+	public static function getApp($request = NULL) {
+		$argv = empty($request) ? $_GET : $request;
 
 		if (empty($argv) || count($argv) == 0 || !array_key_exists("app", $argv)) {
 			# index.html as default
