@@ -127,6 +127,10 @@ class httpSocket {
         // 读取客户端数据
         console::log("Read client data");
 
+        $timeout = ['sec' => 1, 'usec' => 0];
+        socket_set_option($msgsock, SOL_SOCKET, SO_RCVTIMEO, $timeout);
+        socket_set_option($msgsock, SOL_SOCKET, SO_SNDTIMEO, $timeout);
+
         // socket_read函数会一直读取客户端数据,直到遇见\n,\t或者\0字符.PHP脚本把这写字符看做是输入的结束符.
         $buf = socket_read($msgsock, 8192);
         $headers = parseRequestHeader($buf);
@@ -141,8 +145,15 @@ class httpSocket {
         }        
                 
         $headers["remote"] = $origin;
-        $msg = $this->response($this->doProcess($headers), $headers["Url Raw"]);
+        $isBrowser = array_key_exists("User-Agent", $headers);
+        $msg = $this->response(
+            $this->doProcess($headers), 
+            $headers["Url Raw"], 
+            $isBrowser
+        );
 
+        # 如果是google chrome浏览器，可能会在这里因为keep alive而占用很长的时间
+        # 导致整个应用服务器无响应
         @socket_write($msgsock, $msg, strlen($msg)); # or die(self::socketErr("socket_write"));
         // 一旦输出被返回到客户端,父/子socket都应通过socket_close($msgsock)函数来终止
         @socket_close($msgsock);
@@ -167,9 +178,10 @@ class httpSocket {
         return $msg;
     }
 
-    private function response($content, $url) {
+    private function response($content, $url, $isBrowser) {
+        $headers = $isBrowser ? "HTTP1.1" : "HTTP/1.1";
         $headers = [
-            $content === 404 ? "HTTP1.1 404 Not Found" : "HTTP1.1 200 OK",
+            $content === 404 ? "$headers 404 Not Found" : "$headers 200 OK",
             "Connection: Close",
             "Content-Type: text/html",
             "Transfer-Encoding: chunked"
