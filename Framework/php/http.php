@@ -10,7 +10,7 @@ Imports("php.URL");
  * @return array Array containing the resource, headers and security code
  */
 function parseRequestHeader($request) {
-    $headers = ["Method" => "NA", "Url" => [], "Http Version" => "NA"];
+    $headers = ["Method" => "NA", "Url" => [], "Url Raw" => "/", "Http Version" => "NA"];
 
     foreach (explode("\r\n", $request) as $line) {
         if (strpos($line, ': ') !== false) {
@@ -22,6 +22,7 @@ function parseRequestHeader($request) {
 
             $headers["Method"] = $tokens[0];
             $headers["Url"] = URL::mb_parse_url($tokens[1], true);
+            $headers["Url Raw"] = $tokens[1];
             $headers["Http Version"] = $tokens[2];
         }
     }
@@ -32,6 +33,16 @@ function parseRequestHeader($request) {
 function pasteResponseHeader($headers) {
     $headers = implode("\r\n", $headers) . "\r\n\r\n";
     return $headers;
+}
+
+function ApachePageNotFound($url) {
+    return "<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML 2.0//EN\">
+    <html><head>
+    <title>404 Not Found</title>
+    </head><body>
+    <h1>Not Found</h1>
+    <p>The requested URL {$url} was not found on this server.</p>
+    </body></html>";
 }
 
 /**
@@ -130,7 +141,7 @@ class httpSocket {
         }        
                 
         $headers["remote"] = $origin;
-        $msg = $this->response($this->doProcess($headers));
+        $msg = $this->response($this->doProcess($headers), $headers["Url Raw"]);
 
         @socket_write($msgsock, $msg, strlen($msg)); # or die(self::socketErr("socket_write"));
         // 一旦输出被返回到客户端,父/子socket都应通过socket_close($msgsock)函数来终止
@@ -156,7 +167,7 @@ class httpSocket {
         return $msg;
     }
 
-    private function response($content) {
+    private function response($content, $url) {
         $headers = [
             $content === 404 ? "HTTP1.1 404 Not Found" : "HTTP1.1 200 OK",
             "Connection: Close",
@@ -164,9 +175,12 @@ class httpSocket {
             "Transfer-Encoding: chunked"
         ];
         $headers = pasteResponseHeader($headers);
-        $headers = $headers . $content;
-
-        return $headers;
+        
+        if ($content === 404) {
+            return $headers . ApachePageNotFound($url);
+        } else {
+            return $headers . $content;
+        }
     }
 
     /** 
