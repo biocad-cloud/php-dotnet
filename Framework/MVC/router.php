@@ -18,14 +18,22 @@ class Router {
 	 * @param object $app 控制器对象实例
 	*/
 	public static function HandleRequest($app, $request = NULL) {
-		if (method_exists($app, $page = self::getApp($request))) {
-			$code = $app->{$page}();
+		$exist_app = method_exists($app, $page = self::getApp($request));
+
+		if (empty($request)) {
+			if ($exist_app) {
+				exit($app->{$page}());
+			} else {
+				$message = "Web app `<strong>$page</strong>` is not available in this controller!";
+				dotnet::PageNotFound($message);
+			}
 		} else {
-			$message = "Web app `<strong>$page</strong>` is not available in this controller!";
-			dotnet::PageNotFound($message);
+			if ($exist_app) {
+				return $app->{$page}($request);
+			} else {
+				return 404;
+			}
 		}
-		
-		exit($code);
 	}
 		
 	/**

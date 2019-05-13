@@ -54,11 +54,10 @@ class httpSocket {
     private $shutdown;
 
     /** 
-     * @param string $address The ip address of this socket server
-     * @param callable $processor The http request processor, by default is returns nothing
+     * @param string $address The ip address of this socket server    
      * @param integer $port The listen port of the http socket
     */
-    public function __construct($address, $processor = NULL, $port = 85) {
+    public function __construct($address, $port = 85) {
         $this->address   = $address;
         $this->port      = $port;
         $this->processor = $processor;
@@ -68,15 +67,7 @@ class httpSocket {
             // process the request and then returns the result string
             $this->processor = function($request) {
                 // do nothing
-                $headers = [
-                    "HTTP1.1 200 OK",
-                    "Connection: Close",
-                    "Content-Type: text/html",
-                    "Transfer-Encoding: chunked"
-                ];
-                $headers = pasteResponseHeader($headers);
-
-                return $headers;
+                return "";
             };
 
             console::log("Empty request processor...");
@@ -112,8 +103,12 @@ class httpSocket {
 
     /** 
      * Run http socket server daemon
+     * 
+     * @param object $app The http request processor
     */
-    public function Run() {
+    public function Run($app) {
+        $this->processor = $app;
+
         do {
             $this->doAccept();
         } while(!$this->shutdown);
@@ -140,23 +135,42 @@ class httpSocket {
         } else {
             echo $buf;
         }        
-        
-        // 数据传送 向客户端写入返回结果
-        // url请求需要在processor函数之中自己解析，在这里不可以覆盖掉全局的$_GET变量
-        // 因为这个$_GET变量可能是会在好几个并行的process处理过程之中共享的
-        // 在process处理过程之中也不可以覆盖掉$_GET全局变量
-        $process = $this->processor;
+                
         $headers["remote"] = $origin;
-
-        if ($this->checkShutdown($headers)) {
-            $this->shutdown = true;
-        } else {
-            $msg = $process($headers);
-        }        
+        $msg = $this->response($this->doProcess($headers));
 
         @socket_write($msgsock, $msg, strlen($msg)); # or die(self::socketErr("socket_write"));
         // 一旦输出被返回到客户端,父/子socket都应通过socket_close($msgsock)函数来终止
         @socket_close($msgsock);
+    }
+
+    private function doProcess($request) {
+        // 数据传送 向客户端写入返回结果
+        // url请求需要在processor函数之中自己解析，在这里不可以覆盖掉全局的$_GET变量
+        // 因为这个$_GET变量可能是会在好几个并行的process处理过程之中共享的
+        // 在process处理过程之中也不可以覆盖掉$_GET全局变量        
+        if ($this->checkShutdown($headers)) {
+            $this->shutdown = true;
+            $msg = "Ok! Bye bye.";
+        } else {
+            $args = Utils::ReadValue($headers, "query", []);
+            $msg = Router::HandleRequest($this->processor, $args);
+        }        
+
+        return $msg;
+    }
+
+    private function response($content) {
+        $headers = [
+            $content === 404 ? "HTTP1.1 404 Not Found" : "HTTP1.1 200 OK",
+            "Connection: Close",
+            "Content-Type: text/html",
+            "Transfer-Encoding: chunked"
+        ];
+        $headers = pasteResponseHeader($headers);
+        $headers = $headers . $content;
+
+        return $headers;
     }
 
     /** 
