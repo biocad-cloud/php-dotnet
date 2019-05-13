@@ -163,9 +163,11 @@ class httpSocket {
      * @return bool 返回一个逻辑值来指示是否是关闭当前的服务器的请求
     */
     private function checkShutdown($request) {
-        $args = $request["Url"]["query"];
+        $args = Utils::ReadValue($request["Url"], "query");
 
-        if ($args["action"] == "shutdown" && $request["remote"] == "127.0.0.1") {
+        if (empty($args)) {
+            return false;
+        } else if ($args["action"] == "shutdown" && $request["remote"] == "127.0.0.1") {
             return true;
         } else {
             return false;
