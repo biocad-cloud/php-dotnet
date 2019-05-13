@@ -127,12 +127,14 @@ class httpSocket {
         // 读取客户端数据
         console::log("Read client data");
 
+        # 2019-05-13 force disconnect socket connection, fix the thread block bugs 
+        # that comes from google chrome.
         $timeout = ['sec' => 1, 'usec' => 0];
         socket_set_option($msgsock, SOL_SOCKET, SO_RCVTIMEO, $timeout);
         socket_set_option($msgsock, SOL_SOCKET, SO_SNDTIMEO, $timeout);
 
         // socket_read函数会一直读取客户端数据,直到遇见\n,\t或者\0字符.PHP脚本把这写字符看做是输入的结束符.
-        $buf = socket_read($msgsock, 8192);
+        $buf = @socket_read($msgsock, 8192);
         $headers = parseRequestHeader($buf);
         $origin = "";
         
