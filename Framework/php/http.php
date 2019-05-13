@@ -10,7 +10,7 @@ Imports("php.URL");
  * @return array Array containing the resource, headers and security code
  */
 function parseRequestHeader($request) {
-    $headers = [];
+    $headers = ["Method" => "NA", "Url" => [], "Http Version" => "NA"];
 
     foreach (explode("\r\n", $request) as $line) {
         if (strpos($line, ': ') !== false) {
@@ -44,6 +44,10 @@ class httpSocket {
     private $address;
     private $port;
     private $socket;
+
+    /** 
+     * The backend app
+    */
     private $processor;
 
     /** 
@@ -137,14 +141,17 @@ class httpSocket {
         // 数据传送 向客户端写入返回结果
         // url请求需要在processor函数之中自己解析，在这里不可以覆盖掉全局的$_GET变量
         // 因为这个$_GET变量可能是会在好几个并行的process处理过程之中共享的
-        // 在process处理过程之中也不可以覆盖掉$_GET全局变量        
-        if ($this->checkShutdown($headers)) {
+        // 在process处理过程之中也不可以覆盖掉$_GET全局变量
+        if ($this->checkShutdown($request)) {
             $this->shutdown = true;
             $msg = "Ok! Bye bye.";
         } else {
-            $args = Utils::ReadValue($headers, "query", []);
-            $msg = Router::HandleRequest($this->processor, $args);
-        }        
+            $args = $request["Url"];
+            $args = Utils::ReadValue($args, "query", []);
+
+            # use the common router module for run backend app
+            $msg  = Router::HandleRequest($this->processor, $args);
+        }
 
         return $msg;
     }
@@ -168,7 +175,7 @@ class httpSocket {
     private function checkShutdown($request) {
         $args = Utils::ReadValue($request["Url"], "query");
 
-        if (empty($args)) {
+        if (empty($args) || !array_key_exists("action", $args)) {
             return false;
         } else if ($args["action"] == "shutdown" && $request["remote"] == "127.0.0.1") {
             return true;

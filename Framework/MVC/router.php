@@ -16,15 +16,18 @@ class Router {
      * 相同的函数名然后进行调用	 
 	 *
 	 * @param object $app 控制器对象实例
+	 * @param array $request CLI后台服务模块所需要的，使用这个参数来模拟$_GET输入
 	*/
 	public static function HandleRequest($app, $request = NULL) {
 		$exist_app = method_exists($app, $page = self::getApp($request));
 
-		if (empty($request)) {
+		# 2019-05-13 当使用empty判断的时候，假设$request是[]空数组，则empty的结果和null判断的结果一致，会产生bug
+		# 所以在这里应该是使用is_array来进行判断
+		if (!is_array($request)) {
 			if ($exist_app) {
 				exit($app->{$page}());
 			} else {
-				$message = "Web app `<strong>$page</strong>` is not available in this controller!";
+				$message = "Web app `<strong>$page</strong>` is not available in controller!";
 				dotnet::PageNotFound($message);
 			}
 		} else {
@@ -35,7 +38,7 @@ class Router {
 			}
 		}
 	}
-		
+
 	/**
 	 * 获取当前所访问的应用程序的名称
 	 * 
@@ -49,7 +52,7 @@ class Router {
 	 * @return string Web app name.
 	*/
 	public static function getApp($request = NULL) {
-		$argv = empty($request) ? $_GET : $request;
+		$argv = (!is_array($request)) ? $_GET : $request;
 
 		if (empty($argv) || count($argv) == 0 || !array_key_exists("app", $argv)) {
 			# index.html as default
