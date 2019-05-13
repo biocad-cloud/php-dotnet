@@ -29,6 +29,11 @@ function parseRequestHeader($request) {
     return $headers;
 }
 
+function pasteResponseHeader($headers) {
+    $headers = implode("\r\n", $headers) . "\r\n\r\n";
+    return $headers;
+}
+
 class httpSocket {
 
     private $address;
@@ -50,7 +55,15 @@ class httpSocket {
             // process the request and then returns the result string
             $this->processor = function($request) {
                 // do nothing
-                return "";
+                $headers = [
+                    "HTTP1.1 200 OK",
+                    "Connection: Close",
+                    "Content-Type: text/html",
+                    "Transfer-Encoding: chunked"
+                ];
+                $headers = pasteResponseHeader($headers);
+
+                return $headers;
             };
 
             console::log("Empty request processor...");
