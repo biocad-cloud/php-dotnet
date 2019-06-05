@@ -160,7 +160,10 @@ if (array_key_exists("REQUEST_METHOD", $_SERVER)) {
         session_id($_COOKIE["PHPSESSID"]);
     }
 
-    session_start();
+    // for avoid the warning message
+    if (session_status() == PHP_SESSION_NONE) {
+        session_start();
+    }
 } 
 
 if (!defined("IS_GET") && !defined("IS_POST")) {
