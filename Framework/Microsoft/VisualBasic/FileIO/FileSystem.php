@@ -127,6 +127,10 @@ class FileSystem {
 
 	/**
 	 * 这是一个迭代器函数，只能够配合foreach一起使用
+	 * 
+	 * @param string $path The file path.
+	 * 
+	 * @return string[]
 	*/
 	public static function IteratesAllLines($path) {
 		$handle = fopen($path, "r");

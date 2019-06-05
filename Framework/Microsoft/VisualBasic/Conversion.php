@@ -78,9 +78,19 @@ class Conversion {
             return false;
         } elseif(is_bool($str)) {
             return $str;
+        } elseif (is_integer($str) && $str == 1) {
+            return true;
+        } elseif (is_integer($str) && $str == 0) {
+            return false;
         } else {
-            $key = Strings::LCase($str);
-        }
+            if ($str === "1") {
+                return true;
+            } else if ($str === "0") {
+                return false;
+            } else {
+                $key = Strings::LCase($str);
+            }            
+        } 
 
         if (array_key_exists($key, Conversion::$TRUEs)) {
             return True;
