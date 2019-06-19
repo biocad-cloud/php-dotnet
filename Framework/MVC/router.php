@@ -16,18 +16,29 @@ class Router {
      * 相同的函数名然后进行调用	 
 	 *
 	 * @param object $app 控制器对象实例
+	 * @param array $request CLI后台服务模块所需要的，使用这个参数来模拟$_GET输入
 	*/
-	public static function HandleRequest($app) {
-		if (method_exists($app, $page = self::getApp())) {
-			$code = $app->{$page}();
+	public static function HandleRequest($app, $request = NULL) {
+		$exist_app = method_exists($app, $page = self::getApp($request));
+
+		# 2019-05-13 当使用empty判断的时候，假设$request是[]空数组，则empty的结果和null判断的结果一致，会产生bug
+		# 所以在这里应该是使用is_array来进行判断
+		if (!is_array($request)) {
+			if ($exist_app) {
+				exit($app->{$page}());
+			} else {
+				$message = "Web app `<strong>$page</strong>` is not available in controller!";
+				dotnet::PageNotFound($message);
+			}
 		} else {
-			$message = "Web app `<strong>$page</strong>` is not available in this controller!";
-			dotnet::PageNotFound($message);
+			if ($exist_app) {
+				return $app->{$page}($request);
+			} else {
+				return 404;
+			}
 		}
-		
-		exit($code);
 	}
-		
+
 	/**
 	 * 获取当前所访问的应用程序的名称
 	 * 
@@ -35,10 +46,13 @@ class Router {
 	 * XXXX.php?app=xxxxx
 	 * ```
 	 * 
+	 * @param array $request The url request parsed query data, by default is using ``$_GET``
+	 *    if this request array is nothing.
+	 * 
 	 * @return string Web app name.
 	*/
-	public static function getApp() {
-		$argv = $_GET;
+	public static function getApp($request = NULL) {
+		$argv = (!is_array($request)) ? $_GET : $request;
 
 		if (empty($argv) || count($argv) == 0 || !array_key_exists("app", $argv)) {
 			# index.html as default
@@ -73,12 +87,12 @@ class Router {
 	 * 
 	 * 例如，控制器php文件在api文件夹下面的user.php文件之中，则可以简写为：
 	 * ``{<api>user/modify_password}`` 
-	 * 表示在api/user.php文件之中
+	 * 表示在``api/user.php``文件之中
 	 * 
 	 * 如果在更深一层文件夹之中，则可以简写为``{<api/user>security/modify_password}``
-	 * 表示在api/user/security.php文件之中
+	 * 表示在``api/user/security.php``文件之中
 	 * 
-	 * 不过并不建议将php控制器文件放在很深的文件夹之中，添加这个前缀只是为了方便对控制器
+	 * 但是不过并不建议将php控制器文件放在很深的文件夹之中，添加这个前缀只是为了方便对控制器
 	 * 按照功能进行分组，便于组织项目代码
 	 * 
 	 * @param string $html 包含有路由器规则占位符的HTML文档 
@@ -100,12 +114,15 @@ class Router {
 		return $html;
 	}
 
+	/**
+	 * 在这个函数之中实现了具体的解析和赋值的功能 
+	*/
 	private static function assignImpl($html, $matches) {
 		foreach ($matches as $s) {
 			$s   = trim($s, "{}");
 			$dir = StringHelpers::GetStackValue($s, "<", ">");
 
-			if (Strings::Len($dir) > 0) {					
+			if (Strings::Len($dir) > 0) {
 				# 因为在这里需要使用dir变量进行替换，所以dir应该在route变量的后面，
 				# 即在完成替换之后才赋值
 				$route = Strings::Replace($s, "<$dir>", "");

@@ -3,6 +3,7 @@
 namespace PHP\WebSocket;
 
 Imports("System.IDisposable");
+Imports("php.http");
 
 /**
  * Class representing a WebSocket client.
@@ -190,7 +191,7 @@ class SocketClient implements \System\IDisposable {
 			);
 		}
 
-		$headers = self::parseRequestHeader($buffer);
+		$headers = parseRequestHeader($buffer);
 		$key     = $headers['Sec-WebSocket-Key'];
 		$hash    = base64_encode(
 			# 2018-09-21 下面的guid是一个magic string，永远不会变的常量
@@ -227,27 +228,6 @@ class SocketClient implements \System\IDisposable {
 		} while($left > 0);
 
 		$this->state = self::STATE_OPEN;
-	}
-
-	/**
-	 * Parses the request header into resource, headers and security code
-	 * (解析http请求头部)
-	 *
-	 * @param string $request The request
-	 * @return array Array containing the resource, headers and security code
-	 */
-	private static function parseRequestHeader($request) {
-		$headers = [];
-
-		foreach (explode("\r\n", $request) as $line) {
-			if (strpos($line, ': ') !== false) {
-				list($key, $value) = explode(': ', $line);
-
-				$headers[trim($key)] = trim($value);
-			}
-		}
-
-		return $headers;
 	}
 
     public function __toString() {
