@@ -160,7 +160,10 @@ if (array_key_exists("REQUEST_METHOD", $_SERVER)) {
         session_id($_COOKIE["PHPSESSID"]);
     }
 
-    session_start();
+    // for avoid the warning message
+    if (session_status() == PHP_SESSION_NONE) {
+        session_start();
+    }
 } 
 
 if (!defined("IS_GET") && !defined("IS_POST")) {
@@ -310,7 +313,7 @@ function Imports($namespace) {
  * 对用户的浏览器进行重定向，支持路由规则。
  * **注意，在使用这个函数进行重定向之后，脚本将会从这里退出执行**
  * 
- * @param string $URL
+ * @param string $URL 目标URL字符串，可以支持诸如``{file/controller}``这样子的路由规则
  * 
 */
 function Redirect($URL) {

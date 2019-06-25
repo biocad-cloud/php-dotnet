@@ -175,6 +175,7 @@ class Strings {
 	 * substring a specified number of times. 进行非正则表达式的替换
 	 *
 	 * @param string $str: Required. String expression containing substring to replace.
+	 *                     这个参数可以是一个字符串数组，则可以在这个函数之中进行批量的替换操作
 	 * @param string $find: Substring being searched for.
 	 * @param string $replacement: Required. Replacement substring.
 	 * 
@@ -184,16 +185,24 @@ class Strings {
 	 *                than length of Expression Nothing Count is 0 Copy of Expression
 	*/
 	public static function Replace($str, $find, $replacement) {
-		if (is_array($str)) {
-			throw new Exception("str is array!");
-		}
 		if (is_array($find)) {
 			throw new Exception("find is array!");
 		}
 		if (is_array($replacement)) {
 			throw new Exception("replacement is array!");
 		}
-		return str_replace($find, $replacement, $str);
+
+		if (is_array($str)) {
+			$result = [];
+
+			foreach($str as $line) {
+				array_push($result, str_replace($find, $replacement, $line));
+			}
+
+			return $result;
+		} else {
+			return str_replace($find, $replacement, $str);
+		}
 	}
 
 	/** 
@@ -303,8 +312,13 @@ class Strings {
 		return strrev($str);
 	}
 
+	/** 
+	 * 判断needle子字符串是否在haystack之中存在与其起始位置
+	*/
 	public static function StartWith($haystack, $needle, $caseSensitive = TRUE) {
-    	$length = strlen($needle);
+		$length = strlen($needle);
+		
+		// 从头部截取目标长度的字符串然后和目标进行比较
     	return (substr($haystack, 0, $length) === $needle);
 	}
 

@@ -87,12 +87,12 @@ class Router {
 	 * 
 	 * 例如，控制器php文件在api文件夹下面的user.php文件之中，则可以简写为：
 	 * ``{<api>user/modify_password}`` 
-	 * 表示在api/user.php文件之中
+	 * 表示在``api/user.php``文件之中
 	 * 
 	 * 如果在更深一层文件夹之中，则可以简写为``{<api/user>security/modify_password}``
-	 * 表示在api/user/security.php文件之中
+	 * 表示在``api/user/security.php``文件之中
 	 * 
-	 * 不过并不建议将php控制器文件放在很深的文件夹之中，添加这个前缀只是为了方便对控制器
+	 * 但是不过并不建议将php控制器文件放在很深的文件夹之中，添加这个前缀只是为了方便对控制器
 	 * 按照功能进行分组，便于组织项目代码
 	 * 
 	 * @param string $html 包含有路由器规则占位符的HTML文档 
@@ -114,12 +114,15 @@ class Router {
 		return $html;
 	}
 
+	/**
+	 * 在这个函数之中实现了具体的解析和赋值的功能 
+	*/
 	private static function assignImpl($html, $matches) {
 		foreach ($matches as $s) {
 			$s   = trim($s, "{}");
 			$dir = StringHelpers::GetStackValue($s, "<", ">");
 
-			if (Strings::Len($dir) > 0) {					
+			if (Strings::Len($dir) > 0) {
 				# 因为在这里需要使用dir变量进行替换，所以dir应该在route变量的后面，
 				# 即在完成替换之后才赋值
 				$route = Strings::Replace($s, "<$dir>", "");
