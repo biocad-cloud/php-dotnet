@@ -78,6 +78,8 @@ abstract class controller {
 
     /**
      * The controller access level, `*` means everyone!
+     * 
+     * 如果需要将当前的控制器标记为多个用户组访问权限，使用``|``进行分隔
     */
     public function getAccessLevel() {
         return $this->getTagValue("access");
