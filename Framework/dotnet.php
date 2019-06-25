@@ -247,6 +247,8 @@ class dotnet {
      * 获取得到当前的语言配置
      * 
      * 这个函数会从GET参数或者cookie之中获取语言配置信息，默认是``zhCN``中文语言
+     * 
+     * @return array ``["lang" => languageName]``
     */
     public static function GetLanguageConfig() {
         if (array_key_exists("lang", $_GET)) {
