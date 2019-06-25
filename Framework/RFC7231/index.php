@@ -57,6 +57,7 @@ class RFC7231Error {
 	public static $httpErrors = [
 		"404" => "Not Found",
 		"403" => "Forbidden",
+		"405" => "Method not allowed",
 		"500" => "Internal Server Error",
 		"429" => "Too Many Requests"
 	]; 
@@ -86,6 +87,10 @@ class RFC7231Error {
 		self::Display(403, $message, "", $allow_custom);
 	}
 	
+	public static function err405($message = NULL, $allow_custom = true) {
+		self::Display(405, $message, "", $allow_custom);
+	}
+
 	public static function err500($message = NULL, $allow_custom = true) {
 		self::Display(500, $message, "", $allow_custom);
 	}

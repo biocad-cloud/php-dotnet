@@ -196,6 +196,27 @@ abstract class controller {
         return $this->getTagValue("uses");
     }
 
+    /** 
+     * 使用``@method``标签来标记当前的控制器函数的访问方法
+     * 
+     * 获取得到控制器访问所允许的http方法
+     * 默认的访问方法是GET访问
+     * 
+     * 如果需要同时允许GET或者POST，可以使用``|``来分隔
+     * 如果允许任意方法访问，可以标记为``*``
+     * 
+     * @return string[] 函数返回方法列表
+    */
+    public function getMethods() {
+        $method = $this->getTagValue("method");
+
+        if (empty($method)) {
+            return ["GET"];
+        } else {
+            return explode("|", $method);
+        }
+    }
+
     /**
      * 当前的服务器资源是否具有访问量的限制？
      * 
@@ -298,6 +319,7 @@ abstract class controller {
             debugView::LogEvent($msg);
         }
 
+        // 然后再下面的代码之中解析控制器函数的注释文档，从而能够完成一些元数据的定义获取操作
         if (!is_object($app)) {
             throw new Error("App should be a class object!");
         } else {
@@ -310,13 +332,32 @@ abstract class controller {
             $this->docComment = \PHP\ControllerDoc::ParseControllerDoc($this->docComment);
         }
 
+        // 在完成初始化之后，在这里检查http方法的合法性
+        // 检查客户端所请求方法是否被允许
+        $methods = $this->getMethods();
+
+        if (!in_array("*", $methods)) {
+            # 如果控制器函数不允许任何方法的话，则在这里执行检查
+            if (IS_GET) {
+                if (!in_array("GET", $methods)) {
+                    $this->handleInvalidMethod("GET");
+                }
+            } else {
+                if (!in_array("POST", $methods)) {
+                    $this->handleInvalidMethod("POST");
+                }
+            }
+        }
+
         return $this;
     }
     
     /**
      * 处理web请求
      * 
-     * 如果需要显示调试窗口，还需要将该控制器标记为view类型
+     * 如果需要显示调试窗口，还需要将该控制器标记为``view``类型
+     * 
+     * 在调用这个函数之前，应该是执行过``Hook``函数完成控制器的初始化操作了的
     */
     public function handleRequest() {
         $origin = $this->getAccessAllowOrigin();
@@ -413,6 +454,16 @@ abstract class controller {
         $msg = "Web app `<strong>$app</strong>` is not available in this controller!";
 
         dotnet::PageNotFound($msg);
+    }
+
+    /** 
+     * 405
+    */
+    public function handleInvalidMethod($currentMethod) {
+        $app = Router::getApp();
+        $msg = "Web app `<strong>$app</strong>` is not allows <code>$currentMethod</code> method!";
+
+        dotnet::InvalidHttpMethod($msg);
     }
 
     /**

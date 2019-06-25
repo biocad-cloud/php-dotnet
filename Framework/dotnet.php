@@ -324,6 +324,21 @@ class dotnet {
 		exit(403);
     }
 
+    /** 
+     * 405 Method not allowed 方法不被允许
+     * 
+     * 例如，某控制器被标记为POST方法，但是http请求为GET请求，就会触发这个405错误
+     * 
+     * @param string $message The error message to display.
+    */
+    public static function InvalidHttpMethod($message) {
+        $trace = StackTrace::GetCallStack();
+		$exc   = dotnetException::FormatOutput($message, $trace);
+				
+		RFC7231Error::err405($exc);
+		exit(405);
+    }
+
     /**
      * 429 请求次数过多
     */
