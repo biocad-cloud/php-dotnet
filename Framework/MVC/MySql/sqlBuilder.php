@@ -170,5 +170,3 @@ class LogicalExpression {
 }
 
 #endregion
-
-?>

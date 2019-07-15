@@ -148,5 +148,3 @@ namespace MVC\MySql {
 		#endregion
 	}
 }
-
-?>

@@ -174,7 +174,7 @@ namespace MVC\MySql {
 		 * 
 		 * @return array|boolean
 		*/
-		public function ExecuteScalar($SQL) {			
+		public function ExecuteScalar($SQL) {
 			$mysql_exec = parent::__init_MySql(false);
 
 			mysqli_select_db($mysql_exec, parent::GetDatabaseName()); 
