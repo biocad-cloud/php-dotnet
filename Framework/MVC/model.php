@@ -225,7 +225,7 @@ class Table {
 	 * 对查询的结果的数量进行限制，当只有参数m的时候，表示查询结果限制为前m条，
 	 * 当参数n被赋值的时候，表示偏移m条之后返回n条结果
 	 * 
-	 * @param integer $m ``LIMIT m``
+	 * @param integer|integer[] $m ``LIMIT m``
 	 * @param integer $n ``LIMIT m,n``
 	 * 
 	 * @return Table
@@ -275,7 +275,7 @@ class Table {
 		} 
 		
 		# 如果是一个字段列表的时候
-		$contracts = [];			
+		$contracts = [];
 
 		foreach ($keys as $exp) {
 			array_push($contracts, MySqlScript::KeyExpression($exp));
@@ -314,7 +314,7 @@ class Table {
 	/**
 	 * @return string where expression
 	*/
-    private function getWhere() {	
+    private function getWhere() {
 
 		# 如果条件是空的话，就不再继续构建表达式了
 		# 这个SQL表达式可能是没有选择条件的
@@ -829,7 +829,10 @@ class Table {
 	/**
 	 * insert into.
 	 *
-	 * @param array $data table row data in array type
+	 * @param array|object $data table row data in array type
+	 * 
+	 * @return boolean|integer 返回成功或者失败的逻辑值，如果目标数据表中存在递增id主键的话，
+	 *                         则这个函数返回当前所插入的新数据行的``id``值
 	*/ 
     public function add($data) {
 		$SQL = MVC\MySql\Expression\InsertInto::Sql($data, $this->schema);

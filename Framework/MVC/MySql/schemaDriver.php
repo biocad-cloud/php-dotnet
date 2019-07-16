@@ -71,6 +71,9 @@ namespace MVC\MySql {
 		/**
 		 * 这个函数是开放给外部schema导入的接口
 		 * 
+		 * 如果是多数据库的结构的话，$ref参数应该是`databaseName`.`tableName`格式的，才可以产生唯一标记
+		 * 如果是仅使用单个数据库的话，无所谓
+		 * 
 		 * @param string $ref 格式为`databaseName`.`tableName`，表示一个数据库表对象的唯一标记
 		*/
 		public static function WriteCache($ref, $schema) {
