@@ -147,4 +147,49 @@ namespace MVC\MySql {
 
 		#endregion
 	}
+
+	class Projector {
+
+		/** 
+		 * @param array $data 从数据库之中查询出来得到的一行数据
+		 * @param object $fillObj 表对象的数据模型
+		*/
+		public static function FillModel($data, $fillObj) {
+			foreach($data as $name => $value) {
+				$fillObj->{$name} = $value;
+			}
+
+			return $fillObj;
+		}
+
+		/** 
+		 * @param array A collection of data rows which are query from the database
+		 * @param callable A Function for create target object
+		*/
+		public static function Fills($rows, $objProvider) {
+			$list = [];
+
+			foreach($rows as $row) {
+				array_push($list, self::FillModel($row, $objProvider()));
+			}
+
+			return $list;
+		}
+
+		/** 
+		 * Convert user data model object to data array
+		 * 
+		 * @param object data model
+		 * @return array Table row in data array view
+		*/
+		public static function ToArray($obj) {
+			$data = [];
+
+			foreach (get_object_vars($obj) as $name) {
+				$data[$name] = $obj->{$name};
+			}
+
+			return $data;
+		}
+	}
 }

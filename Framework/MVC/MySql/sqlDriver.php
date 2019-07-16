@@ -216,5 +216,3 @@ namespace MVC\MySql {
 		public function ExecuteScalar($SQL); 
 	}
 }
-
-?>

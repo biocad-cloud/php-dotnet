@@ -909,7 +909,7 @@ class Table {
 	*/ 
     public function delete() {
 		$ref    = $this->schema->ref;
-        $assert = $this->getWhere();        
+        $assert = $this->getWhere();
 		
 		# DELETE FROM `metacardio`.`experimental_batches` WHERE `id`='4';
 		if (!$assert) {
@@ -927,4 +927,3 @@ class Table {
 
 	#endregion
 }
-?>

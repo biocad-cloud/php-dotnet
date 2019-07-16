@@ -4,7 +4,7 @@ namespace MVC\MySql\Expression {
 
     Imports("System.Type");
 
-    use MVC\MySql\SchemaInfo as SchemaDriver;
+    use \MVC\MySql\SchemaInfo as SchemaDriver;
 
     class InsertInto {
 
@@ -17,12 +17,14 @@ namespace MVC\MySql\Expression {
          * @return string
         */
         public static function Sql($any, $schema) {
+            // 自增的编号字段
+            $auto_increment = $schema->auto_increment;
             $ref    = $schema->ref;
             $fields = [];
             $values = [];
-            
-            // 自增的编号字段
-            $auto_increment = $schema->auto_increment;
+
+            # Ensure that object $any is an data array
+            $data = is_array($any) ? $any : \MVC\MySql\Projector::ToArray($any);
     
             // 使用这个for循环的主要的目的是将所传入的参数数组之中的
             // 无关的名称给筛除掉，避免出现查询错误
