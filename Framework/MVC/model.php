@@ -6,6 +6,7 @@ Imports("MVC.MySql.schemaDriver");
 Imports("MVC.MySql.driver");
 Imports("MVC.MySql.SqlBuilder.expressionParts");
 Imports("MVC.MySql.SqlBuilder.Statements");
+Imports("MVC.MySql.SqlBuilder.sqlBuilder");
 Imports("System.Linq.Enumerable");
 Imports("Debugger.SqlFormatter");
 

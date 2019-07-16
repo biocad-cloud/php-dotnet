@@ -160,7 +160,6 @@ class dotnet {
 		dotnet::Imports("MVC.model");
 		dotnet::Imports("MVC.router");
         dotnet::Imports("MVC.MySql.driver");
-        dotnet::Imports("MVC.MySql.sqlBuilder");
         dotnet::Imports("MVC.MySql.expression");
 
         if ($config) {

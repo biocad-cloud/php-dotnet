@@ -1,5 +1,7 @@
 <?php
 
+use MVC\MySql\Expression\LogicalExpression as LogicalExpression;
+
 # 表达式是使用~符号来进行标记的，其他的起始字符都会将值看作为字符串值
 
 /**

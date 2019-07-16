@@ -25,7 +25,7 @@ namespace MVC\MySql\Expression {
          * 
          * @return string expression
         */
-        public static function AsExpression($option, $type) {           
+        public static function AsExpression($option, $type) {
             $exp  = [];
             $type = self::$types[\Strings::LCase($type)];
 
