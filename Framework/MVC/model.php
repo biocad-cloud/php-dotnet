@@ -4,7 +4,8 @@ Imports("Microsoft.VisualBasic.Strings");
 Imports("MVC.MySql.sqlDriver");
 Imports("MVC.MySql.schemaDriver");
 Imports("MVC.MySql.driver");
-Imports("MVC.MySql.join");
+Imports("MVC.MySql.SqlBuilder.expressionParts");
+Imports("MVC.MySql.SqlBuilder.Statements");
 Imports("System.Linq.Enumerable");
 Imports("Debugger.SqlFormatter");
 
@@ -830,66 +831,15 @@ class Table {
 	 * @param array $data table row data in array type
 	*/ 
     public function add($data) {
-
-		$ref    = $this->schema->ref;
-		$fields = [];
-		$values = [];	
-		
+		$SQL = MVC\MySql\Expression\InsertInto::Sql($data, $this->schema);
+		$result = $this->driver->ExecuteSql($SQL);
 		// 自增的编号字段
 		$auto_increment = $this->schema->auto_increment;
 
-		// 使用这个for循环的主要的目的是将所传入的参数数组之中的
-		// 无关的名称给筛除掉，避免出现查询错误
-		foreach ($this->schema->schema as $fieldName => $def) {
-			if (array_key_exists($fieldName, $data)) {
-				
-				$value = $data[$fieldName];
-				# 使用转义函数进行特殊字符串的转义操作
-				# $value = mysqli_real_escape_string($mysqli_exec, $value);
-
-				array_push($fields, "`$fieldName`");
-				array_push($values, "'$value'");
-				
-			} else if ($auto_increment && Strings::LCase($fieldName) == Strings::LCase($auto_increment) ) {
-				# Do Nothing
-			} else {
-
-                # 检查一下这个字段是否是需要值的？如果需要，就将默认值填上
-                if (Utils::ReadValue($def, "Null", "") == "NO") {
-					
-                    # 这个字段是需要有值的，则尝试获取默认值
-                    $default = $def["Default"];
-
-                    if ($default) {
-
-                        array_push($fields, "`$fieldName`");
-                        array_push($values, "'$default'");
-
-                    } else {
-						
-                        # 这个字段需要有值，但是用户没有提供值，而且也不存在默认值
-                        # 则肯定无法将这条记录插入数据库
-                        # 需要抛出错误？？
-
-                    }
-                }
-            }
-		}
-		
-		$fields = join(", ", $fields);
-		$values = join(", ", $values);
-		
-		# INSERT INTO `metacardio`.`xcms_files` (`task_id`) VALUES ('ABC');
-		$SQL    = "INSERT INTO $ref ($fields) VALUES ($values);";
-		$result = $this->driver->ExecuteSql($SQL);
-
         if (!$result) {
-			
             // 可能有错误，给出错误信息
             return false;
-			
         } else {
-			
             if (!$auto_increment) {
 				# 这个表之中没有自增字段，则返回true
 				return true;
@@ -897,8 +847,8 @@ class Table {
 				# 在这个表之中存在自增字段，则返回这个uid
 				# 方便进行后续的操作
 				return $result;
-			}           
-        }	
+			}
+        }
     }
 
     /**
