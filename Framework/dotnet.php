@@ -221,7 +221,7 @@ class dotnet {
 				$temp = "./data/cache";
 			}			
 		} else {
-            $appName = DotNetRegistry::Read("APP_NAME", "php.NET");
+            $appName = DotNetRegistry::AppName();
             $temp    = "$temp/$appName"; 
         }
 
