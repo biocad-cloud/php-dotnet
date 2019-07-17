@@ -177,6 +177,36 @@ class Utils {
         return false;
     }
 
+    /** 
+     * 一般是用于处理向用户传输比较大的文本文件的传输操作
+     * 
+     * @param string $filepath 目标文件路径
+    */
+    public static function PrintLargeText($filepath) {
+        self::doDataTransfer($filepath);
+    }
+
+    /** 
+     * 执行不限速的文件传输操作
+     * 
+     * @param string $filepath 目标文件路径
+    */
+    private static function doDataTransfer($filepath) {
+        $fp         = fopen($filepath, "r");
+        $file_count = 0; 
+        $buffer     = 1024; 
+
+        //向浏览器返回数据
+        while(!feof($fp) && $file_count < $file_size) { 
+            $file_con    = fread($fp, $buffer); 
+            $file_count += $buffer; 
+            
+            echo $file_con; 
+        } 
+
+        fclose($fp); 
+    }
+
     /**
      * 具有限速功能的文件下载函数 
      * 
@@ -200,7 +230,7 @@ class Utils {
 
         header('Content-Description: File Transfer');
         header('Cache-control: private');
-        header('Content-Type:'                  . $mime);
+        header('Content-Type:' . $mime);
         header("Accept-Ranges: bytes");         
         header("Accept-Length: $file_size");
         header('Content-Disposition: attachment; filename=' . $renameAs);
@@ -210,22 +240,7 @@ class Utils {
         ob_end_clean();
 
         if ($rateLimit <= 0) {
-
-            # 不限速
-            $fp         = fopen($filepath, "r");
-            $file_count = 0; 
-            $buffer     = 1024; 
-
-            //向浏览器返回数据
-            while(!feof($fp) && $file_count < $file_size) { 
-                $file_con    = fread($fp, $buffer); 
-                $file_count += $buffer; 
-                
-                echo $file_con; 
-            } 
-
-            fclose($fp); 
-
+            Utils::doDataTransfer($filepath);
         } else {
             Utils::flushFileWithRateLimits($filepath, $rateLimit);
         }
