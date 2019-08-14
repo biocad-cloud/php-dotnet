@@ -340,6 +340,9 @@ function session($name, $value) {
     $_SESSION[$name] = $value;
 }
 
+/** 
+ * 主要是进行``Dispose``方法的自动调用
+*/
 function using(\System\IDisposable $obj, callable $procedure) {
     $result = $procedure($obj);
     $obj->Dispose();
