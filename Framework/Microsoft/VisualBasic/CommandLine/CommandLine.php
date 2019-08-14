@@ -29,8 +29,4 @@ class CommandLine implements ArrayAccess {
     }
 
     #endregion
-
-
 }
-
-?>

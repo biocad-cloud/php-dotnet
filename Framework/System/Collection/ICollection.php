@@ -132,5 +132,3 @@ abstract class ICollection implements ArrayAccess, Countable {
         }
     }
 }
-
-?>
