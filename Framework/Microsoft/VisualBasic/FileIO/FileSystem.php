@@ -119,6 +119,13 @@ class FileSystem {
 		}
 	}
 
+	/** 
+	 * 读取文本文件中的首行
+	 * 
+	 * @param string $path 文件路径
+	 * 
+	 * @return string 返回文本文件中的首行
+	*/
 	public static function ReadFirstLine($path) {
 		foreach(self::IteratesAllLines($path) as $line) {
 			return $line;

@@ -156,6 +156,11 @@ namespace Microsoft\VisualBasic\Data\csv {
             return $table;
         }
 
+        /** 
+         * 解析TSV文件中的一行数据
+         * 
+         * @return string[]
+        */
         private static function ParseTsvRow($line) {
             $tokens = explode("\t", $line);
 
@@ -170,6 +175,24 @@ namespace Microsoft\VisualBasic\Data\csv {
             }
 
             return $tokens;
+        }
+
+        /** 
+         * 解析文本文件的首行，将行标题返回
+         * 
+         * @param string $path 文件的路径
+         * @param boolean $tsv 是否是一个TSV文件？
+         * 
+         * @return string[] 函数返回tsv或者csv文件的行标题
+        */
+        public static function GetFieldHeaders($path, $tsv = false) {
+            $firstLine = \FileSystem::ReadFirstLine($path);
+
+            if ($tsv) {
+                return self::ParseTsvRow($firstLine);
+            } else {
+                return str_getcsv($firstLine); 
+            }
         }
     }
 }
