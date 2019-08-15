@@ -66,7 +66,7 @@ class View {
 		if (Utils::IsWindowsOS()) {
 			$isFull = false;
 
-			foreach(["C:/", "D:/", "E:/", "F:/"] as $drive) {
+			foreach(["C:/", "D:/", "E:/", "F:/", "G:/"] as $drive) {
 				if (strpos($wwwroot, $drive) == 0) {
 					$isFull = true;
 					break;
