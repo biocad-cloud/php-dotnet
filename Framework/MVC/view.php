@@ -294,12 +294,16 @@ class View {
 			if (!array_key_exists("authors", $vars) && !empty($_DOC->authors)) {
 				$vars["authors"] = join(", ", $_DOC->authors);
 			}
+			if (!array_key_exists("appName", $vars)) {
+				$vars["appName"] = DotNetRegistry::Read("APP_TITLE", null);
+			}
 		} else {
 			# $vars是空的
 			$vars = [
 				"title"       => $_DOC->title, 
 				"description" => $_DOC->summary,
-				"authors"     => Strings::Join($_DOC->authors, ", ")
+				"authors"     => Strings::Join($_DOC->authors, ", "),
+				"appName"     => DotNetRegistry::Read("APP_TITLE", null)
 			]; 
 		}
 
