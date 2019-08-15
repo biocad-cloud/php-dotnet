@@ -7,6 +7,7 @@ Imports("Microsoft.VisualBasic.Strings");
 Imports("MVC.View.foreach");
 Imports("MVC.View.inline");
 Imports("MVC.View.volist");
+Imports("MVC.View.minifier");
 Imports("Debugger.Ubench.Ubench");
 
 # 2019-02-23
