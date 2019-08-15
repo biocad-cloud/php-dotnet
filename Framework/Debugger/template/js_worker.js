@@ -28,9 +28,9 @@ var php_debugger;
     */
     function initTabUI() {
         var open = php_debugger.$pick('#think_page_trace_open');
-        var close = php_debugger.$pick('#think_page_trace_close').childNodes[1];
+        var close = php_debugger.$pick('#think_page_trace_close_button');
         var trace = php_debugger.$pick('#think_page_trace_tab');
-        var container = close.parentNode;
+        var container = php_debugger.$pick('#think_page_trace_close');
         var closeDebuggerTab = function () {
             trace.style.display = 'none';
             container.style.display = 'none';
