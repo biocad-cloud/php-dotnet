@@ -1,32 +1,35 @@
 <?php
 
-namespace DonCadavona\HtmlMinifier;
+namespace MVC\Views;
 
-class HtmlMinifier
-{
-    /**
-     * Create a new HtmlMinifier Instance
-     */
-    public function __construct()
-    {
-        // constructor body
-    }
+/** 
+ * A PHP package to minify HTML strings and remove CSS and Javascript.
+ * 
+ * > https://github.com/doncadavona/html_minifier
+*/
+class HtmlMinifier {
 
     /**
      * Returns a minified version of the given HTML.
-     * @param  string  $html       The original HTML.
+     * 
+     * @param  string  $html       The original HTML content string or its file path.
      * @param  boolean $remove_css Defines whether to remove CSS or not.
      * @param  boolean $remove_js  Defines whether to remove Javascripts or not.
+     * 
      * @return string              The minified version of the given HTML.
-     */
-    public static function minify($html, $remove_js = false, $remove_css = false)
-    {
+    */
+    public static function minify($html, $remove_js = false, $remove_css = false) {
+
+        if (\FileSystem::isValidPath($html)) {
+            $html = \file_get_contents($html);
+        }
+
         /**
          * The set of regular expressions to match against
          * the given HTML and their respective replacements.
          * Reference: https://github.com/ogheo/yii2-htmlcompress
          * @var array
-         */
+        */
         $filters = [
             // remove javascript comments
             '/(?:<script[^>]*>|\G(?!\A))(?:[^\'"\/<]+|"(?:[^\\"]+|\\.)*"|\'(?:[^\\\']+|\\.)*\'|\/(?!\/)|<(?!\/script))*+\K\/\/[^\n|<]*/xsu' => '',

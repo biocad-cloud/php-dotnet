@@ -166,7 +166,6 @@ class FileSystem {
 	}
 	
 	private static function DisplayFilePermissions($Mode) {
-
 		# Determine Type
 		if ($Mode & 0x1000) {			
 			$Type = 'p'; // FIFO pipe
@@ -435,5 +434,21 @@ class FileSystem {
 		
 		return sprintf("%.2f $symbol", $val);		
 	}
+
+	/** 
+	 * 判断目标字符串是否是一个合法的路径字符串
+	 * 
+	 * @param string $str 目标待判断的字符串
+	 * 
+	 * @return boolean 返回字符串是否是合法的路径字符串
+	*/
+	public static function isValidPath($str) {
+		foreach(["\r", "\n", "?", "*", ">", "<"] as $char) {
+			if (Strings::InStr($str, $char) > 0) {
+				return false;
+			}
+		}
+
+		return true;
+	}
 }
-?>
