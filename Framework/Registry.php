@@ -75,6 +75,13 @@ class DotNetRegistry {
 
     }
 
+    /** 
+     * Do html minifier of the cache page its content text?
+    */
+    public static function HtmlMinifyOfCache() {
+        return self::optFalse("CACHE.MINIFY");
+    }
+
     public static function AppName($default = "php.net") {
         return self::Read("APP_NAME", $default);
     }
