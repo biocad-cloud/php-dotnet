@@ -313,8 +313,11 @@ class View {
 				# 将html片段合并为一个完整的html文档
 				# 得到了完整的html模板
 				$html      = file_get_contents($path);
+				
 				$cachePage = View::interpolate_includes($html, $path);
 				$cachePage = View::valueAssign($cachePage, $language);
+				# 进行html文件的压缩
+				$cachePage = \MVC\Views\HtmlMinifier::minify($cachePage);
 				$cacheDir  = dirname($cache);
 				
 				if (!file_exists($cacheDir)) {
