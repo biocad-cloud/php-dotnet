@@ -61,8 +61,24 @@ class View {
 	*/
 	private static function getViewFileAuto($name) {
 		$wwwroot = DotNetRegistry::GetMVCViewDocumentRoot();
+		$wwwroot = str_replace("\\", "/", $wwwroot);
+
+		if (Utils::IsWindowsOS()) {
+			$isFull = false;
+
+			foreach(["C:/", "D:/", "E:/", "F:/"] as $drive) {
+				if (strpos($wwwroot, $drive) == 0) {
+					$isFull = true;
+					break;
+				}
+			}
+		} else if (strpos($wwwroot, "/") == 0) {
+			# 是一个绝对路径，则直接使用
+			# do nothing
+			$isFull = true;
+		} 
 		
-		if (strpos($wwwroot, "/") == 0) {
+		if ($isFull) {
 			# 是一个绝对路径，则直接使用
 			# do nothing
 		} else {
