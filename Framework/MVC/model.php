@@ -713,7 +713,9 @@ class Table {
 	/**
 	 * select but limit 1
 	 * 
-	 * 如果查询失败会返回一个空值
+	 * 如果查询失败会返回逻辑值false
+	 * 
+	 * @return boolean|array 如果查询成功，则返回行数据，反之返回一个逻辑值false来表示失败
 	*/
     public function find($fields = null) {
 		$ref     = $this->schema->ref;

@@ -190,9 +190,9 @@ namespace MVC\MySql {
 				\debugView::LogEvent("MySql query => ExecuteScalar");
 			}
 			
-			$this->last_mysql_expression = $SQL;						
+			$this->last_mysql_expression = $SQL;
 
-			if ($data) {
+			if (!empty($data) && count($data) > 0) {
 				
 				// 只返回一条记录数据
 				while($row = mysqli_fetch_array($data, MYSQLI_ASSOC)) { 
@@ -204,4 +204,3 @@ namespace MVC\MySql {
 		}
     }
 }
-?>
