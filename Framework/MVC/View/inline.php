@@ -10,6 +10,29 @@ namespace MVC\Views {
     */
     class InlineView {
 
+        /** 
+         * 内联常量的标记语法为``{#name}``，与变量表达式``{$name}``相似
+         * 常量标记渲染不需要显式的传递常量值，只需要直接在脚本中定义常量，
+         * 然后再html视图页面内通过标记语法进行引用即可
+         * 
+         * @param string $template
+         * 
+         * @return string
+        */
+        public static function RenderInlineConstants($template) {
+            $tags = \Regex::Matches($template, "[{][#]\S+[}]");
+            $tags = array_unique($tags);
+            $consts = get_defined_constants(true)['user'];
+
+            foreach ($tags as $ref) {
+                $name  = \substr($ref, 2, \strlen($ref) - 3);
+                $value = \Utils::ReadValue($consts, $name, "");
+                $template = str_replace($ref, $value, $template);
+            }
+
+            return $template;
+        }
+
         /**
          * 2018-6-15
          * 
@@ -32,7 +55,7 @@ namespace MVC\Views {
 
             if ($missing && count($missing) > 0) {
                 # 任然存在未被替换掉的变量，给出警告消息
-                \console::error(self::warnings($missing));              
+                \console::error(self::warnings($missing));
             }
 
             if (!self::checkPHPinline($template)) {
@@ -42,7 +65,7 @@ namespace MVC\Views {
                 return $template;
             }
 
-            $config = ini_get('allow_url_include');            
+            $config = ini_get('allow_url_include');
 
             # allow_url_include = On
             # echo "templates for inline scripting: \n\n";

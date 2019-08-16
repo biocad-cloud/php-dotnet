@@ -555,6 +555,7 @@ class View {
 		$html = MVC\Views\volistViews::InterpolateTemplate($html, $vars);
 		# 处理内联的表达式，例如if条件显示
 		$html = MVC\Views\InlineView::RenderInlineTemplate($html);
+		$html = MVC\Views\InlineView::RenderInlineConstants($html);
 		# 最后将完整的页面里面的url简写按照路由规则还原
 		$html = Router::AssignController($html);
 
