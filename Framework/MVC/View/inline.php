@@ -20,7 +20,8 @@ namespace MVC\Views {
          * @return string
         */
         public static function RenderInlineConstants($template) {
-            $tags = \Regex::Matches($template, "[{][#]\S+[}]");
+            # 这个常量标记应该是满足php的变量命名规则的
+            $tags = \Regex::Matches($template, "[{][#].+?[}]");
             $tags = array_unique($tags);
             $consts = get_defined_constants(true)['user'];
 
