@@ -562,4 +562,3 @@ class View {
 		return $html;
 	}
 }
-?>

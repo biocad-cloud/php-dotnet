@@ -261,7 +261,7 @@ class dotnet {
 			$lang = "zhCN";
 		}
 
-		if ($lang && ($lang === "enus" || $lang === "en") ) {
+		if ($lang && ($lang === "enus" || $lang === "en" || $lang === "en-us")) {
 			$lang = "enUS";
 		} else {
 			$lang = "zhCN";
