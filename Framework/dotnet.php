@@ -161,6 +161,9 @@ class dotnet {
 		dotnet::Imports("MVC.router");
         dotnet::Imports("MVC.MySql.driver");
         dotnet::Imports("MVC.MySql.expression");
+        dotnet::Imports("php.URL");
+
+        URL::NormalizeRedirectArguments();
 
         if ($config) {
             # config存在赋值，则判断一下是否为字符串？
