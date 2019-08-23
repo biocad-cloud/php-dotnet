@@ -180,4 +180,20 @@ class URL {
             return $parts;
         }
     }
+
+    /** 
+     * 将重写之间的url查询参数写入$_GET中
+     * 
+     * 因为URL重写之后，有一部分的查询参数可能会不存在于重写后的URL中
+     * 所以会需要用这个函数将重写前的参数写入$_GET数组中来解决这个问题
+    */
+    public static function NormalizeRedirectArguments() {
+        $args = self::mb_parse_url($_SERVER["REQUEST_URI"]);
+
+        foreach($args as $name => $val) {
+            if (!array_key_exists($name, $_GET)) {
+                $_GET[$name] = $val;
+            }
+        }
+    }
 }
