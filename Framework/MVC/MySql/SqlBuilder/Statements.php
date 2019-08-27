@@ -38,12 +38,12 @@ namespace MVC\MySql\Expression {
                     array_push($fields, "`$fieldName`");
                     array_push($values, "'$value'");
                     
-                } else if ($auto_increment && Strings::LCase($fieldName) == Strings::LCase($auto_increment) ) {
+                } else if ($auto_increment && \Strings::LCase($fieldName) == \Strings::LCase($auto_increment) ) {
                     # Do Nothing
                 } else {
     
                     # 检查一下这个字段是否是需要值的？如果需要，就将默认值填上
-                    if (Utils::ReadValue($def, "Null", "") == "NO") {
+                    if (\Utils::ReadValue($def, "Null", "") == "NO") {
                         # 这个字段是需要有值的，则尝试获取默认值
                         $default = $def["Default"];
 

@@ -110,6 +110,11 @@ if (IS_CLI && FRAMEWORK_DEBUG) {
     echo "\n\n";
 }
 
+if (!IS_CLI) {
+    # send a fake information header
+    header("X-Powered-By: ASP.NET");
+}
+
 if (!defined("SITE_PATH")) {
 	if (array_key_exists("DOCUMENT_ROOT", $_SERVER)) {
         /**
