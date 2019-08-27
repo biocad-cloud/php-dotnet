@@ -83,7 +83,7 @@ namespace MVC\MySql\Expression {
             $exp = [];
 
             foreach($this->expressions as $expr) {
-                $expr = MVC\MySql\Expression\WhereAssert::ValueExpression($expr);
+                $expr = \MVC\MySql\Expression\WhereAssert::ValueExpression($expr);
                 $expr = "($key $expr)";
 
                 array_push($exp, $expr);
@@ -104,7 +104,7 @@ namespace MVC\MySql\Expression {
          * @return string SQL语句之中的值表达式
         */
         public static function AutoValue($expr) {
-            return MVC\MySql\Expression\WhereAssert::AutoValue($expr);
+            return \MVC\MySql\Expression\WhereAssert::AutoValue($expr);
         }
     }
 }
