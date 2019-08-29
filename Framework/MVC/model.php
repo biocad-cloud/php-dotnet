@@ -837,7 +837,7 @@ class Table {
 	 *                         则这个函数返回当前所插入的新数据行的``id``值
 	*/ 
     public function add($data) {
-		$SQL = MVC\MySql\Expression\InsertInto::Sql($data, $this->schema);
+		$SQL = MVC\MySql\Expression\InsertInto::Sql($data, $this->schema); 
 		$result = $this->driver->ExecuteSql($SQL);
 		// 自增的编号字段
 		$auto_increment = $this->schema->auto_increment;

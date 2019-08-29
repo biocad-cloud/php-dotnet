@@ -186,10 +186,13 @@ namespace MVC\MySql {
 		 * @return array Table row in data array view
 		*/
 		public static function ToArray($obj) {
-			$data = [];
+			$data = get_object_vars($obj);
 
-			foreach (get_object_vars($obj) as $name) {
-				$data[$name] = $obj->{$name};
+			# 需要将空值删除
+			foreach($data as $name => $value) {			
+				if (is_null($value)) {
+					unset($data[$name]);
+				}
 			}
 
 			return $data;
