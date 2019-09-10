@@ -584,6 +584,9 @@ class Table {
 	/**
 	 * 获取当前的这个实例之中所执行的最后一条MySql语句
 	 * 
+	 * @param boolean $code 这个参数用来切换输出的代码字符串的格式，如果这个参数设置为true，
+	 *                      则返回带有代码高亮样式的html代码，反之则是纯文本格式的sql代码字符串
+	 * 
 	 * @return string
 	*/
 	public function getLastMySql($code = false) {
