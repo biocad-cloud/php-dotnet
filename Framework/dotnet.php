@@ -357,5 +357,13 @@ class dotnet {
 		RFC7231Error::err429($exc);
 		exit(429);
     }
+
+    public static function BadRequest($message) {
+        $trace = StackTrace::GetCallStack();
+		$exc   = dotnetException::FormatOutput($message, $trace);
+				
+		RFC7231Error::err400($exc);
+		exit(400);
+    }
     #endregion
 }
