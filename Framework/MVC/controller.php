@@ -379,7 +379,7 @@ abstract class controller {
                     default:
                         # 默认是要求不为空
                         if (Strings::Empty($val)) {
-                            $this->handleBadRequest($arg[0], "not null");
+                            $this->handleBadRequest($arg[0], "none null");
                         }
                 }
             }
