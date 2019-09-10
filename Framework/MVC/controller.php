@@ -376,6 +376,13 @@ abstract class controller {
                         }
                         break;
                     
+                    case "boolean":
+
+                        if (!($val == "true" || $val == "false")) {
+                            $this->handleBadRequest($arg[0], "boolean");
+                        }
+                        break;
+
                     default:
                         # 默认是要求不为空
                         if (Strings::Empty($val)) {
