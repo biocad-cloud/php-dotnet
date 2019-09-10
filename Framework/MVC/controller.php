@@ -219,6 +219,16 @@ abstract class controller {
         }
     }
 
+    public function getRequiredArguments() {
+        $require = $this->getTagValue("require");
+
+        if (empty($require)) {
+            return null;
+        } else {
+            return explode("|", $require);
+        }
+    }
+
     /**
      * 当前的服务器资源是否具有访问量的限制？
      * 
@@ -351,6 +361,30 @@ abstract class controller {
             }
         }
 
+        $require = $this->getRequiredArguments();
+
+        // 只有当出现了@require标签的时候才进行检查
+        if (!empty($require)) {
+            foreach($require as $arg) {
+                $arg = StringHelpers::GetTagValue($arg, "=", true);
+                $val = Utils::ReadValue($_GET, $arg[0]);
+
+                switch ($arg[1]) {
+                    case "i32":
+                        if (!StringHelpers::IsPattern($val, "\\d+")) {
+                            $this->handleBadRequest($arg[0], "integer");
+                        }
+                        break;
+                    
+                    default:
+                        # 默认是要求不为空
+                        if (Strings::Empty($val)) {
+                            $this->handleBadRequest($arg[0], "not null");
+                        }
+                }
+            }
+        }
+
         return $this;
     }
     
@@ -466,6 +500,13 @@ abstract class controller {
         $msg = "Web app `<strong>$app</strong>` is not allows <code>$currentMethod</code> method!";
 
         dotnet::InvalidHttpMethod($msg);
+    }
+
+    private function handleBadRequest($arg, $format) {
+        $app = Router::getApp();
+        $msg = "Web app `<strong>$app</strong>` have a required argument <code>$arg</code> which should be a $format value!";
+
+        dotnet::BadRequest($msg);
     }
 
     /**

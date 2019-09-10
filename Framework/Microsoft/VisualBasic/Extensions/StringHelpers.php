@@ -100,6 +100,7 @@ class StringHelpers {
      * 
      * @param string $str
      * @param string $delimiter
+     * @param boolean $tuple 如果这个参数为true，则返回一个只含有两个元素的数组，反之返回一个键值对
      * 
      * @return array ``[key => value]``
     */
