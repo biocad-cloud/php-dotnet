@@ -238,7 +238,7 @@ if (IS_POST && (count($_POST) === 0)) {
  * PHP.NET框架的根文件夹位置
  * 获取得到package.php这个文件的所处的文件夹的位置
 */
-define("PHP_DOTNET", dirname(__FILE__) . "/Framework");
+define("PHP_DOTNET", realpath( __DIR__ . "/Framework") );
 
 bootstrapLoader::imports("Debugger.Ubench.Ubench");
 
