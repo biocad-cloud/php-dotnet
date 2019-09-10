@@ -42,10 +42,10 @@
 			<div class="think_page_trace_tab_cont" style="display:none;">
 				<ol style="padding: 0; margin:0">
 					<li style="border-bottom:1px solid #EEE;font-size:14px;padding:0 12px">Http Header :
-						<?php echo Utils::Now(); ?>
-						<?php echo $_SERVER["SERVER_PROTOCOL"]; ?>
-						<?php echo $_SERVER["REQUEST_METHOD"]; ?> :
-						<?php echo $_SERVER["REQUEST_URI"]; ?>
+						{$http.time}
+						{$http.protocol}
+						{$http.method} :
+						{$http.uri}
 					</li>
 					<li style="border-bottom:1px solid #EEE;font-size:14px;padding:0 12px">Benchmark : {$benchmark} ( Load:{$benchmark.load}
 						Init:{$benchmark.init} Exec:{$benchmark.exec} Template:{$benchmark.template} )
@@ -57,7 +57,7 @@
 					<li style="border-bottom:1px solid #EEE;font-size:14px;padding:0 12px">File Loaded : {$files}</li>
 					<li style="border-bottom:1px solid #EEE;font-size:14px;padding:0 12px">Cache : {$cache.path} </li>
 					<li style="border-bottom:1px solid #EEE;font-size:14px;padding:0 12px">PHP_SESSION :
-						<?php echo session_id(); ?>
+						{$http.php_session}
 					</li>
 					<!-- 获取得到调试器数据所需要的一个guid编号 -->
 					<li style="border-bottom:1px solid #EEE;font-size:14px;padding:0 12px">Debugger Guid :
