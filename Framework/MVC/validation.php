@@ -23,8 +23,58 @@ class controllerValidation {
      * 主要是对url查询进行输入验证
     */
     public function doValidation() {
+        $this->validateAcceptIPWhitelist();
         $this->validateMethod();
         $this->validateArguments();
+    }
+
+    private function validateAcceptIPWhitelist() {
+        $whitelist = $this->getAccepts();
+
+        if (count($whitelist) > 0) {
+            # 设置了白名单，则只允许白名单上面的ip地址来源的请求进行访问
+            $user = Utils::UserIPAddress();
+
+            if (!in_array($user, $whitelist)) {
+                # 不在白名单中的请求都禁止访问当前的控制器
+                dotnet::AccessDenied("You ip address '$user' is not in current server resource's ip whitelist...");
+            }
+        }
+    }
+
+    /**
+     * 获取当前的控制器所接受的访问的ip地址列表
+     * ``#localhost``标记会被自动转换为本地服务器
+     * 的ip地址列表
+     * 
+     * ip地址列表之中的地址使用``|``符号进行分隔
+    */
+    public function getAccepts() {
+        $iplist = $this->controller->getTagValue("accept");
+
+        if ($iplist) {
+            // 仅限于来自于这个ip列表的数据请求
+            // 来自于其他的ip地址的数据请求一律拒绝
+            $iplist  = explode("|", $iplist);
+            $accepts = [];
+
+            foreach($iplist as $tagIP) {
+                if (strtolower($tagIP) === "@localhost") {
+                    foreach(localhost() as $ip) {
+                        $accepts[] = $ip;
+                    }
+                } else {
+                    $accepts[] = $tagIP;
+                }
+            }
+
+            $iplist = $accepts;
+        } else {
+            // 没有做任何限制
+            $iplist = [];
+        }
+
+        return $iplist;
     }
 
     private function validateMethod() {
