@@ -30,7 +30,7 @@ class controllerValidation {
     private function validateMethod() {
         // 在完成初始化之后，在这里检查http方法的合法性
         // 检查客户端所请求方法是否被允许
-        $methods = $this->getMethods();
+        $methods = $this->controller->getMethods();
 
         if (!in_array("*", $methods)) {
             # 如果控制器函数不允许任何方法的话，则在这里执行检查
@@ -47,7 +47,7 @@ class controllerValidation {
     }
 
     private function validateArguments() {
-        $require = $this->getRequiredArguments();
+        $require = $this->controller->getRequiredArguments();
 
         // 只有当出现了@require标签的时候才进行检查
         if (!empty($require)) {
@@ -81,5 +81,25 @@ class controllerValidation {
                     $this->handleBadRequest($arg[0], "none null");
                 }
         }
+    }
+
+    /** 
+     * 405
+    */
+    public function handleInvalidMethod($currentMethod) {
+        $app = Router::getApp();
+        $msg = "Web app `<strong>$app</strong>` is not allows <code>$currentMethod</code> method!";
+
+        dotnet::InvalidHttpMethod($msg);
+    }
+
+    /**
+     * 400
+    */
+    private function handleBadRequest($arg, $format) {
+        $app = Router::getApp();
+        $msg = "Web app `<strong>$app</strong>` have a required argument <code>$arg</code> which should be a $format value!";
+
+        dotnet::BadRequest($msg);
     }
 }

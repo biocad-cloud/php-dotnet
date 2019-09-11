@@ -455,23 +455,6 @@ abstract class controller {
         dotnet::PageNotFound($msg);
     }
 
-    /** 
-     * 405
-    */
-    public function handleInvalidMethod($currentMethod) {
-        $app = Router::getApp();
-        $msg = "Web app `<strong>$app</strong>` is not allows <code>$currentMethod</code> method!";
-
-        dotnet::InvalidHttpMethod($msg);
-    }
-
-    private function handleBadRequest($arg, $format) {
-        $app = Router::getApp();
-        $msg = "Web app `<strong>$app</strong>` have a required argument <code>$arg</code> which should be a $format value!";
-
-        dotnet::BadRequest($msg);
-    }
-
     /**
      * 假若没有权限的话，会执行这个函数进行重定向
      * 这个函数默认是返回403错误页面
