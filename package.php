@@ -113,6 +113,9 @@ if (IS_CLI && FRAMEWORK_DEBUG) {
 if (!IS_CLI) {
     # send a fake information header
     header("X-Powered-By: ASP.NET");
+    
+    # server header not working
+    # header("Server: IIS Docker");
 }
 
 if (!defined("SITE_PATH")) {
