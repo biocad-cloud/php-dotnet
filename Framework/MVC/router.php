@@ -60,7 +60,7 @@ class Router {
 			$page = "index";
 		} else {
 			$page = $argv["app"];
-		}		
+		}
 
 		return $page;
 	}

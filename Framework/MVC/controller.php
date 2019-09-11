@@ -308,7 +308,7 @@ abstract class controller {
             $controller->error($message, $errCode);
         };
         */
-
+        
         // 先检查目标方法是否存在于逻辑层之中
         if (!method_exists($app, $page = Router::getApp())) {
             # 如果是调试模式下，则可能是调试器调用
