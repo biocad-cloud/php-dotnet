@@ -42,6 +42,9 @@ function month($textual = false) {
  * @return string[] 返回本地服务器的IP列表
 */
 function localhost() {
+	
+	# 20190911 ifconfig 好像在阿里云服务器上没有办法直接获取得到当前服务器的公网ip地址
+	
 	$print  = shell_exec("ifconfig | grep \"inet \"");
 	$print  = StringHelpers::LineTokens($print);
 	$iplist = [];
