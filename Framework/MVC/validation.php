@@ -59,7 +59,7 @@ class controllerValidation {
             $accepts = [];
 
             foreach($iplist as $tagIP) {
-                if (strtolower($tagIP) === "@localhost") {
+                if (strtolower($tagIP) === "localhost") {
                     foreach(localhost() as $ip) {
                         $accepts[] = $ip;
                     }
