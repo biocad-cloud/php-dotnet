@@ -613,11 +613,11 @@ class Table {
 	 * @param array $fields A string array.
 	 * @param string $keyBy 如果这个参数不是空的话，则返回来的数组将会使用这个字段的值作为index key.
 	 * 
-	 * @return array
+	 * @return array|boolean 当查询出错的时候，这个函数是会返回一个逻辑值false的
 	*/
     public function select($fields = null, $keyBy = null) {
 		$ref     = $this->schema->ref;
-        $assert  = $this->getWhere();        
+        $assert  = $this->getWhere();
 		$orderBy = $this->getOrderBy();
 		$groupBy = $this->getGroupBy();
 		$limit   = $this->getLimit();
@@ -643,6 +643,12 @@ class Table {
 
 		$data = $this->driver->Fetch($SQL . ";");
 		
+		if ($false === $data) {
+			# 20190911
+			# 查询出错了
+			return false;
+		}
+
 		if (!empty($keyBy) && strlen($keyBy) > 0) {
 			$out = [];
 
