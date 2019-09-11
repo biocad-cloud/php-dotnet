@@ -774,7 +774,7 @@ class Table {
 	 * Select and limit 1 and return the field value, if target 
 	 * record is not found, then returns false.
 	 * 
-	 * @param name The table field name. Case sensitive! 
+	 * @param string $name The table field name. Case sensitive! 
 	 * 
 	 * @return mixed The reuqired field value. 
 	*/
