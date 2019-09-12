@@ -424,7 +424,7 @@ class View {
 	 * 
 	 * @param path html模版文件的文件位置
 	*/
-	private static function interpolate_includes($html, $path) {
+	public static function interpolate_includes($html, $path) {
 		if (!$path) {
 			return $html;
 		}
@@ -468,7 +468,7 @@ class View {
 	 * @param string $html 模板html文本
 	 * @param array $vars 需要进行渲染的数据
 	*/
-	private static function valueAssign($html, $vars) {
+	public static function valueAssign($html, $vars) {
 		# 在这里需要按照键名称长度倒叙排序，防止出现可能的错误替换		
 		// $vars = Enumerable::OrderByKeyDescending($vars, function($key) {
 		// 		return strlen($key);
