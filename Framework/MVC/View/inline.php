@@ -22,8 +22,21 @@ namespace MVC\Views {
         public static function RenderInlineConstants($template) {
             # 这个常量标记应该是满足php的变量命名规则的
             $tags = \Regex::Matches($template, "[{][#].+?[}]");
-            $tags = array_unique($tags);
-            $consts = get_defined_constants(true)['user'];
+
+            if (empty($tags) || count($tags) == 0) {
+                if (APP_DEBUG) {
+                    \console::log("Current template contains no inline constant tags.");
+
+                    if (\strlen($template) == 0) {
+                        \console::warn("Current template is empty! Please check for your template file...");
+                    }
+                }
+
+                return $template;
+            } else {
+                $tags = array_unique($tags);
+                $consts = get_defined_constants(true)['user'];
+            }
 
             foreach ($tags as $ref) {
                 $name  = \substr($ref, 2, \strlen($ref) - 3);
