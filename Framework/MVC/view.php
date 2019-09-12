@@ -522,7 +522,10 @@ class View {
 		// 		return strlen($key);
 		// });		
 		if (empty($vars)) {
+			\console::log("No variables for template interpolation...");
 			return $html;
+		} else if (APP_DEBUG && strlen($html) == 0) {
+			\console::warn("The raw template data is nothing!");
 		}
 
 		# 变量的名称$name的值为名称字符串，例如 id

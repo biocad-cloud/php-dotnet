@@ -62,17 +62,23 @@ namespace MVC\Views {
          * @return string
         */
         public static function RenderInlineTemplate($template) {
-
             # 有些替换的变量没有被替换掉，可能会导致php的内联表达式失败
             # 在这里进行检查，然后给出警告消息
             $missing = self::checkVars($template);
 
-            if ($missing && count($missing) > 0) {
+            if (APP_DEBUG && $missing && count($missing) > 0) {
                 # 任然存在未被替换掉的变量，给出警告消息
                 \console::error(self::warnings($missing));
             }
+            if (APP_DEBUG && \strlen($template) == 0) {
+                \console::warn("Template data is empty!");
+            }
 
             if (!self::checkPHPinline($template)) {
+                if (APP_DEBUG) {
+                    \debugView::LogEvent("No needs for do PHP inline scripting.");
+                }
+
                 # 不存在php的内联脚本标签
                 # 则不进行动态脚本处理了，否则会降低服务器的性能的
                 # 在这里直接返回结果
@@ -150,7 +156,9 @@ namespace MVC\Views {
 
         private static function warnings($missing) {
             $missing = "<span style='color:red'><strong>" . \implode(", ", $missing) . "</strong></span>";
-            return "Missing variable: $missing. And these missing variable may caused the inline scripting error!<br />";      
+            $message = "Missing variable: $missing. And these missing variable may caused the inline scripting error!<br />";
+
+            return $message;
         }
 
         # <?php if ({$id} > 10): ?&gt;
@@ -168,6 +176,11 @@ namespace MVC\Views {
             if (!$matches || count($matches) == 0) {
                 return false;
             } else {
+                
+                if (APP_DEBUG) {
+                    \console::dump($matches, "Found these php inline script tags:");
+                }
+
                 return true;
             }
         }
