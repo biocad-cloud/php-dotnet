@@ -75,7 +75,7 @@ define("IS_CLI", php_sapi_name() === 'cli');
 /**
  * 当前的源代码版本编号
 */
-define("GIT_COMMIT", "721557fb87c33306e5c252556e18389c346c3a25");
+define("GIT_COMMIT", "5199591d44fdf133d33ad97495bfbfa881327af6");
 
 if (IS_CLI && FRAMEWORK_DEBUG) {
 
