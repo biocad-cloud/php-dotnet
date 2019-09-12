@@ -22,16 +22,20 @@ class ViewCache {
             $cachePage = View::interpolate_includes($html, $path);
             $cachePage = View::valueAssign($cachePage, $language);
 
+            console::log("Cache data created!");
+            console::log("sizeof cache is " . strlen($cachePage));
+
             if (DotNetRegistry::HtmlMinifyOfCache()) {
                 # 进行html文件的压缩
                 $cachePage = \MVC\Views\HtmlMinifier::minify($cachePage);
+                console::log("sizeof cache after minify is: " . strlen($cachePage)); 
             }
 
             $cacheDir  = dirname($cache);
             
             if (!file_exists($cacheDir)) {
                 mkdir($cacheDir, 0777, true);
-            }				
+            }
             file_put_contents($cache, $cachePage);
 
             debugView::LogEvent("HTML view cache created!");

@@ -428,10 +428,13 @@ class View {
 		if (!$path) {
 			console::log("No path value was provided, skip template fragments interpolation...");
 			return $html;
+		} else {
+			$pattern = "#[$]\{.+?\}#";
+			$dirName = dirname($path);
 		}
-
-		$pattern = "#[$]\{.+?\}#";
-		$dirName = dirname($path);
+		
+		console::log("Processing: $path");
+		console::log("Working directory: $dirName");
 		
 		if (preg_match_all($pattern, $html, $matches, PREG_PATTERN_ORDER) > 0) { 
 			$matches = $matches[0];
@@ -456,7 +459,13 @@ class View {
 				$include = file_get_contents($path);
 				$include = self::interpolate_includes($include, $path);
 
+				if (empty($include)) {
+					$include = "";
+				}
+
 				$html = Strings::Replace($html, $s, $include);
+
+				console::log(strlen($html) . " characters.");
 			}
 		}
 		
@@ -470,7 +479,7 @@ class View {
 	 * @param array $vars 需要进行渲染的数据
 	*/
 	public static function valueAssign($html, $vars) {
-		# 在这里需要按照键名称长度倒叙排序，防止出现可能的错误替换		
+		# 在这里需要按照键名称长度倒叙排序，防止出现可能的错误替换
 		// $vars = Enumerable::OrderByKeyDescending($vars, function($key) {
 		// 		return strlen($key);
 		// });		
