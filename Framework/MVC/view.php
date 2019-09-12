@@ -321,14 +321,14 @@ class View {
 	private static function loadTemplate($path, $language) {
 		$usingCache = DotNetRegistry::Read("CACHE", false);
 
-		if ($usingCache && !Strings::Empty($path)) {			
+		if ($usingCache && !Strings::Empty($path)) {
 			# 在配置文件之中开启了缓存选项
-			$cache = self::getCachePath($path);			
+			$cache = self::getCachePath($path);
 
 			# 在调试模式下总是不使用cache
 			# 为了将cache的信息也输出到调试终端，在这里设置条件为调试模式或者缓存文件
 			# 不存在都会进行缓存的生成
-			if (APP_DEBUG || !file_exists($cache)) {
+			if (APP_DEBUG || (!file_exists($cache)) || (filesize($cache) <= 0)) {
 				# 当缓存文件不存在的时候，生成缓存，然后返回
 				
 				# 将html片段合并为一个完整的html文档
@@ -488,8 +488,13 @@ class View {
 				$path = Strings::Mid($s, 3, strlen($s) - 3);
 				$path = realpath("$dirName/$path");
 
-				if (APP_DEBUG && !empty($path)) {
-					console::log("Found template segment: $path");
+				if (APP_DEBUG) {
+					if (!empty($path)) {
+						console::log("Found template segment: $path");
+					} else {
+						console::warn("Incorrect fileName in $dirName/" . Strings::Mid($s, 3, strlen($s) - 3));
+						console::warn("Raw string is: $s");
+					}
 				}
 
 				# 读取获得到了文档的碎片
@@ -498,7 +503,7 @@ class View {
 				$include = file_get_contents($path);
 				$include = self::interpolate_includes($include, $path);
 
-				$html = Strings::Replace($html, $s, $include);				
+				$html = Strings::Replace($html, $s, $include);
 			}
 		}
 		
