@@ -308,7 +308,7 @@ class View {
 		if ($usingCache && !Strings::Empty($path)) {
 			Imports("MVC.View.cache");
 
-			list($html, $cache) = ViewCache::doCache($path);
+			list($html, $cache) = ViewCache::doCache($path, $language);
 		} else {
 			$cache = 'disabled';
 			# 不使用缓存，需要进行页面模板的拼接渲染
@@ -426,6 +426,7 @@ class View {
 	*/
 	public static function interpolate_includes($html, $path) {
 		if (!$path) {
+			console::log("No path value was provided, skip template fragments interpolation...");
 			return $html;
 		}
 

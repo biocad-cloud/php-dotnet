@@ -2,7 +2,7 @@
 
 class ViewCache {
     
-    public static function doCache($path) {
+    public static function doCache($path, $language) {
         # 在配置文件之中开启了缓存选项
         $cache = self::getCachePath($path);
 
@@ -16,6 +16,8 @@ class ViewCache {
             # 将html片段合并为一个完整的html文档
             # 得到了完整的html模板
             $html      = file_get_contents($path);
+
+            console::log("Template size = <strong>" . strlen($html) . "</strong> characters.");
 
             $cachePage = View::interpolate_includes($html, $path);
             $cachePage = View::valueAssign($cachePage, $language);
