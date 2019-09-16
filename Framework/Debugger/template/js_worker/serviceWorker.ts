@@ -71,8 +71,53 @@
             "li", {
                 style: "border-bottom:1px solid #EEE;font-size:14px;padding:0 12px"
             },
-            `${log.SQL} [ RunTime:${log.runtime} ]`))
+            sql(log)))
         );
+    }
+
+    function showQuery(sql: string) {
+        $.post(debuggerSqlApi, {
+            sql: sql,
+            guid: debuggerGuid
+        }, function (table: IMsg<{}[]>) {
+            let display = $pick("#mysql-query-display");
+
+            $pick("#mysql-logs").style.display = "none";
+            display.style.display = "block";
+            display.innerHTML = "";
+
+            if (table.code == 0) {
+                // table rows data
+            } else {
+                // error message
+                display.innerHTML = `<span style="font-style: bold; color: red">${<string>table.info}</span>`;
+            }
+        });
+    }
+
+    function sql(log: SQLlog): HTMLElement | string {
+        let sql = log.SQL;
+
+        if (sql.indexOf("SELECT ") == 0) {
+            let div = $new("div", {}, "");
+
+            div.appendChild($new("a", {
+                href: "javascript:void(0);",
+                onclick: function () {
+                    showQuery(log.SQL);
+                }
+            }, log.SQL));
+            div.appendChild($new("span", {}, ` [ RunTime:${log.runtime} ]`));
+
+            return div;
+        } else {
+            return `${log.SQL} [ RunTime:${log.runtime} ]`;
+        }
+    }
+
+    export interface IMsg<T> {
+        code: number;
+        info: string | T;
     }
 
     export interface SQLlog {
