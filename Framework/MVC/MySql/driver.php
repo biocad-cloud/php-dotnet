@@ -32,6 +32,42 @@ namespace MVC\MySql {
 		}
 
 		/**
+		 * 从给定的配置文件中加载当前的这个mysql的驱动程序模块
+		 * 
+		 * @param string $configName 当这个参数为空的时候，默认使用master的配置
+		 * 
+		 * @return MySqlExecDriver
+		*/
+		public static function LoadDriver($configName = null) {
+			if (empty($configName) || strlen($configName) == 0) {
+				// master
+				$config = \DotNetRegistry::$config;
+			} else {
+				// slave
+				$config = \DotNetRegistry::$config[$configName];
+			}
+			
+			if (empty($config) || false == $config) {
+				if (empty($configName)) {
+					return "No config file was loaded!";
+				} else {
+					return "Missing mysql driver config profile for `$configName`!";
+				}
+			}
+
+			$databaseName = $config["DB_NAME"];
+			$driver       = new Driver(
+				$config["DB_NAME"], 
+				$config["DB_USER"],
+				$config["DB_PWD"],
+				$config["DB_HOST"],
+				$config["DB_PORT"]
+			);
+
+			return $driver;
+		}
+
+		/**
 		 * 获取当前的这个实例之中所执行的最后一条MySql语句
 		 * 
 		 * @return string

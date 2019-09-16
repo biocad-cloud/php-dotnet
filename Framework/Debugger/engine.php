@@ -129,7 +129,8 @@ class dotnetDebugger {
 	 * 判断当前的调用是否为调试器api调用，假设api调试器调用仅发生在index.php
 	 * 
 	 * ```
-	 * index.php?api=debugger
+	 * /index.php?api=debugger  ' 获取调试器后台数据更新
+	 * /index.php?api=sql_query ' 查看mysql查询结果 
 	 * ```
 	 * 
 	 * 并且为POST提交方式进行请求
@@ -145,11 +146,13 @@ class dotnetDebugger {
 			return false;
 		}
 
-		if (Utils::ReadValue($calls->query, "api") != "debugger") {
-			return false;
-		}
+		$api = Utils::ReadValue($calls->query, "api");
 
-		return true;
+		if (($api != "debugger") && ($api != "sql_query")) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 
 	/** 
@@ -173,17 +176,39 @@ class dotnetDebugger {
 		$checkpoints = $_POST;
 		$guid        = $_GET["guid"];
 
-		// 调试器的数据是保存在当前的session之中的
-		$debuggerOut = $_SESSION[DEBUG_SESSION];
-		// 然后通过guid读取当前页面的关联的调试信息
-		$debuggerOut = $debuggerOut[$guid];
-		// 然后根据checkpoint，读取得到对应的调试器结果数据
-		$out = [
-			"SQL" => self::getCheckpointValue($debuggerOut["logs"], "SQL", $checkpoints["SQL"])
-		];
-	
-		// 最后生成数组，以json返回
-		echo json_encode($out);
+		if ($_GET["api"] == "debugger") {
+			// 返回后台调试器数据更新
+
+			// 调试器的数据是保存在当前的session之中的
+			$debuggerOut = $_SESSION[DEBUG_SESSION];
+			// 然后通过guid读取当前页面的关联的调试信息
+			$debuggerOut = $debuggerOut[$guid];
+			// 然后根据checkpoint，读取得到对应的调试器结果数据
+			$out = [
+				"SQL" => self::getCheckpointValue($debuggerOut["logs"], "SQL", $checkpoints["SQL"])
+			];
+
+			// 最后生成数组，以json返回
+			echo json_encode($out);
+
+		} elseif ($_GET["api"] == "sql_query") {
+			// 查询数据库，然后返回结果
+			$sql = trim($_POST["sql"]);
+			$configName = Utils::ReadValue($_POST, "configName");
+			$mysql = MVC\MySql\MySqlExecDriver::LoadDriver($configName);
+
+			# 只执行查询操作
+			# insert/update/delete/replace之类的修改数据库的语句不可以执行
+			if (is_string($mysql)) {
+				controller::error($mysql);
+			} else {
+				if (strpos($sql, "SELECT") > 0) {
+					controller::success($mysql->Fetch($sql));
+				} else {
+					controller::error("<code>DML</code> is not allowed executed from external calls.");
+				}
+			}
+		}
 	}
 
 	/**
