@@ -88,6 +88,29 @@
 
             if (table.code == 0) {
                 // table rows data
+                let rowDatas: {}[] = <{}[]>table.info;
+                let titles: string[] = Object.keys(rowDatas[0]);
+                let thead: HTMLElement = $new("thead");
+                let tbody: HTMLElement = $new("tbody");
+                let r: HTMLElement;
+
+                for (let td of titles) {
+                    thead.appendChild($new("th", {}, td));
+                }
+
+                for (let row of rowDatas) {
+                    r = $new("tr");
+
+                    for (var i: number = 0; i < titles.length; i++) {
+                        r.appendChild($new("td", {}, row[titles[i]]));
+                    }
+
+                    tbody.appendChild(r);
+                }
+
+                display.appendChild(thead);
+                display.appendChild(tbody);
+
             } else {
                 // error message
                 display.innerHTML = `<span style="font-style: bold; color: red">${<string>table.info}</span>`;
