@@ -25,7 +25,7 @@ declare module php_debugger.serviceWorker {
     /**
      * 更新的时间间隔过短，可能会影响调试
     */
-    const workerInterval = 5000;
+    const workerInterval = 1000;
     /**
      * 每一秒钟执行一次服务器查询
     */
