@@ -202,7 +202,7 @@ class dotnetDebugger {
 			if (is_string($mysql)) {
 				controller::error($mysql);
 			} else {
-				if (strpos($sql, "SELECT") > 0) {
+				if (strpos($sql, "SELECT") == 0) {
 					controller::success($mysql->Fetch($sql));
 				} else {
 					controller::error("<code>DML</code> is not allowed executed from external calls.");
