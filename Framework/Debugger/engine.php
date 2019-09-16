@@ -174,7 +174,7 @@ class dotnetDebugger {
 		header("Content-Type: application/json");
 		
 		$checkpoints = $_POST;
-		$guid        = $_GET["guid"];
+		$guid        = $_POST["guid"];
 
 		if ($_GET["api"] == "debugger") {
 			// 返回后台调试器数据更新

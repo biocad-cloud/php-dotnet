@@ -2,6 +2,7 @@
 
     export const debuggerGuid: string = $pick("#debugger_guid").innerText;
     export const debuggerApi: string = "/index.php?app=php.NET&api=debugger";
+    export const debuggerSqlApi: string = "/index.php?app=php.NET&api=sql_query";
 
     /**
      * 服务器返回来的是大于这个checkpoint数值的所有的后续新增记录
@@ -33,6 +34,8 @@
     }
 
     export function StartWorker() {
+        checkpoints["guid"] = debuggerGuid;
+
         try {
             serviceWorker.StopWorker();
         } catch (ex) {
@@ -53,7 +56,7 @@
      * 假设服务器上一定会存在一个``index.php``文件？
     */
     export function fetch() {
-        $.post(`${debuggerApi}&guid=${debuggerGuid}`, checkpoints, function (info: debuggerInfo) {
+        $.post(debuggerApi, checkpoints, function (info: debuggerInfo) {
             if (info.SQL.lastCheckPoint > 0 && checkpoints["SQL"] != info.SQL.lastCheckPoint) {
                 checkpoints["SQL"] = info.SQL.lastCheckPoint;
                 appendSQL(info.SQL.data);
