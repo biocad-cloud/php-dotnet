@@ -56,7 +56,7 @@ namespace MVC\MySql {
 			}
 
 			$databaseName = $config["DB_NAME"];
-			$driver       = new Driver(
+			$driver       = new MySqlExecDriver(
 				$config["DB_NAME"], 
 				$config["DB_USER"],
 				$config["DB_PWD"],
