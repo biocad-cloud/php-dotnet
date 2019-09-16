@@ -44,7 +44,7 @@ var php_debugger;
         var close = php_debugger.$pick('#think_page_trace_close_button');
         var trace = php_debugger.$pick('#think_page_trace_tab');
         var container = php_debugger.$pick('#think_page_trace_close');
-        var closeTable = php_debugger.$pick("#mysql_close");
+        var closeTable = php_debugger.$pick("#mysql-close");
         var closeDebuggerTab = function () {
             trace.style.display = 'none';
             container.style.display = 'none';
@@ -60,6 +60,7 @@ var php_debugger;
         close.onclick = closeDebuggerTab;
         closeTable.onclick = function () {
             php_debugger.$pick("#mysql-query-display-page").style.display = "none";
+            php_debugger.$pick("#mysql-logs").style.display = "block";
         };
         attachTabSwitch();
         closeDebuggerTab();
@@ -123,6 +124,7 @@ var php_debugger;
             // 但是最开始的时候调试器的标签页还没有打开
             // 所以没有必要一开始就启动后台线程
             // serviceWorker.StartWorker();
+            fetch();
         }
         serviceWorker.doInit = doInit;
         function StartWorker() {
@@ -162,13 +164,14 @@ var php_debugger;
             }, sql(log))); });
         }
         function showQuery(sql) {
+            php_debugger.$pick("#mysql").innerHTML = sql;
             $.post(serviceWorker.debuggerSqlApi, {
                 sql: sql,
                 guid: serviceWorker.debuggerGuid
             }, function (table) {
                 var display = php_debugger.$pick("#mysql-query-display");
                 php_debugger.$pick("#mysql-logs").style.display = "none";
-                display.style.display = "block";
+                php_debugger.$pick("#mysql-query-display-page").style.display = "block";
                 display.innerHTML = "";
                 if (table.code == 0) {
                     // table rows data

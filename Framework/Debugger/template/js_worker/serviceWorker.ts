@@ -31,6 +31,7 @@
         // 但是最开始的时候调试器的标签页还没有打开
         // 所以没有必要一开始就启动后台线程
         // serviceWorker.StartWorker();
+        fetch();
     }
 
     export function StartWorker() {
@@ -76,6 +77,7 @@
     }
 
     function showQuery(sql: string) {
+        $pick("#mysql").innerHTML = sql;
         $.post(debuggerSqlApi, {
             sql: sql,
             guid: debuggerGuid
@@ -83,7 +85,8 @@
             let display = $pick("#mysql-query-display");
 
             $pick("#mysql-logs").style.display = "none";
-            display.style.display = "block";
+            $pick("#mysql-query-display-page").style.display = "block";
+
             display.innerHTML = "";
 
             if (table.code == 0) {
