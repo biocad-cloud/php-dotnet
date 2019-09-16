@@ -44,6 +44,7 @@ var php_debugger;
         var close = php_debugger.$pick('#think_page_trace_close_button');
         var trace = php_debugger.$pick('#think_page_trace_tab');
         var container = php_debugger.$pick('#think_page_trace_close');
+        var closeTable = php_debugger.$pick("#mysql_close");
         var closeDebuggerTab = function () {
             trace.style.display = 'none';
             container.style.display = 'none';
@@ -57,6 +58,9 @@ var php_debugger;
             php_debugger.serviceWorker.StartWorker();
         };
         close.onclick = closeDebuggerTab;
+        closeTable.onclick = function () {
+            php_debugger.$pick("#mysql-query-display-page").style.display = "none";
+        };
         attachTabSwitch();
         closeDebuggerTab();
     }

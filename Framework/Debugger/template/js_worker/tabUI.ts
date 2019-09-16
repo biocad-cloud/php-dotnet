@@ -10,6 +10,7 @@ module php_debugger {
         var close: HTMLElement = <any>$pick('#think_page_trace_close_button');
         var trace = $pick('#think_page_trace_tab');
         var container: HTMLElement = <any>$pick('#think_page_trace_close');
+        var closeTable: HTMLElement = <any>$pick("#mysql_close");
         var closeDebuggerTab = function () {
             trace.style.display = 'none';
             container.style.display = 'none';
@@ -26,6 +27,9 @@ module php_debugger {
             serviceWorker.StartWorker();
         }
         close.onclick = closeDebuggerTab;
+        closeTable.onclick = function () {
+            $pick("#mysql-query-display-page").style.display = "none";
+        }
 
         attachTabSwitch();
         closeDebuggerTab();
