@@ -76,7 +76,7 @@
         );
     }
 
-    function showQuery(sql: string) {
+    export function showQuery(sql: string) {
         $pick("#mysql").innerHTML = sql;
         $.post(debuggerSqlApi, {
             sql: sql,
