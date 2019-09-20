@@ -46,9 +46,9 @@ namespace Microsoft\VisualBasic\Data\csv {
         }
 
         public static function delimiterFromFileName($path) {
-            $path_parts = pathinfo($path);
+            $path_parts = pathinfo($path, PATHINFO_EXTENSION);
 
-            if (strtolower($path_parts['extension']) != "txt"){
+            if (strtolower($path_parts) != "txt"){
                 $separator = ",";
             } else {
                 $separator = "\t";
@@ -61,8 +61,8 @@ namespace Microsoft\VisualBasic\Data\csv {
          * 将一个csv或者tsv表格文件中的数据以列向量的形式读取出来
          * 
         */
-        public static function redCsvColAll($filepath, $separator = null) {
-            $separator = empty($separator) ? self::delimiterFromFileName($separator) : $separator;
+        public static function redCsvColAll($path, $separator = null) {
+            $separator = empty($separator) ? self::delimiterFromFileName($path) : $separator;
             $file = new FileFormat($path);
             $keystemp = $file->GetColumnHeaders($separator == "\t");
             $keys = array();
@@ -74,8 +74,11 @@ namespace Microsoft\VisualBasic\Data\csv {
             
             foreach($file->PopulateAllRows($separator == "\t") as $data) {
                 for ($x=0; $x < count($keys); $x++) {
-                    $colx = $filedata[$keys[$x]];
-                    if (!isset($colx)){
+                    $key = $keys[$x];
+
+                    if (array_key_exists($key, $filedata)) {
+                        $colx = $filedata[$key];
+                    } else {
                         $filedata[$keys[$x]] = array();
                         $colx = $filedata[$keys[$x]];
                     }
