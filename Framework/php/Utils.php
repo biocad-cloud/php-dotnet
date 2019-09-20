@@ -210,28 +210,38 @@ class Utils {
     /**
      * 具有限速功能的文件下载函数 
      * 
-     * @param string $filepath 待文件下载的文件路径
+     * @param string $file 待文件下载的文件路径
      * @param integer $rateLimit 文件下载的限速大小，小于等于零表示不限速，这个函数参数的单位为字节Byte
      * @param string $renameAs 可以在这里重设所下载的文件的文件名
      * 
     */
-    public static function PushDownload($filepath, $rateLimit = -1, $mime = null, $renameAs = null) {
-        # 2018-6-18 有些服务器上面mime_content_type函数可能无法使用
-        # 所以在这里添加了一个可选参数来手动指定文件类型
-        if (!$mime) {
-            $mime = mime_content_type($filepath);
-        }
+    public static function PushDownload($file, $rateLimit = -1, $mime = null, $renameAs = null, $isdata = false) {
+        if (!$isdata) {
+            # file object is a disk file
 
-        if (!$renameAs) {
-            $renameAs = basename($filepath);
-        }
+            # 2018-6-18 有些服务器上面mime_content_type函数可能无法使用
+            # 所以在这里添加了一个可选参数来手动指定文件类型
+            if (!$mime) {
+                $mime = mime_content_type($file);
+            }
 
-        $file_size = filesize($filepath); 
+            if (!$renameAs) {
+                $renameAs = basename($file);
+            }
+
+            $file_size = filesize($file); 
+        } else {
+            # is the file data itself
+
+            $mime = empty($mime) ? "application/octet-stream" : $mime;
+            $renameAs = empty($renameAs) ? "file" : $renameAs ;
+            $file_size = strlen($file);
+        }
 
         header('Content-Description: File Transfer');
         header('Cache-control: private');
         header('Content-Type:' . $mime);
-        header("Accept-Ranges: bytes");         
+        header("Accept-Ranges: bytes");
         header("Accept-Length: $file_size");
         header('Content-Disposition: attachment; filename=' . $renameAs);
         // 告诉浏览器，这是二进制文件
@@ -239,10 +249,14 @@ class Utils {
 
         ob_end_clean();
 
-        if ($rateLimit <= 0) {
-            Utils::doDataTransfer($filepath);
+        if(!$isdata) {
+            if ($rateLimit <= 0) {
+                Utils::doDataTransfer($file);
+            } else {
+                Utils::flushFileWithRateLimits($file, $rateLimit);
+            }
         } else {
-            Utils::flushFileWithRateLimits($filepath, $rateLimit);
+            echo $file;
         }
     }
 
