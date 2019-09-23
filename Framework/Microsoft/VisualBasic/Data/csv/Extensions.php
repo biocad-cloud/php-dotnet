@@ -21,7 +21,7 @@ namespace Microsoft\VisualBasic\Data\csv {
          * 
          * @return boolean True for file save success, and false not. 
         */
-        public static function SaveTo($array, $path, $project = null, $encoding = "utf8") {            
+        public static function SaveTo($array, $path, $project = null, $encoding = "utf8") {
             if (\Strings::Empty($path)) {
                 return false;
             } else {

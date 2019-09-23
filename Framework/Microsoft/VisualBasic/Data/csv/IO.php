@@ -57,11 +57,23 @@ namespace Microsoft\VisualBasic\Data\csv {
             return $separator;
         }
 
+        public static function readStringMatrix($path, $separator = null) {
+            $separator = empty($separator) ? self::delimiterFromFileName($path) : $separator;
+            $file = new FileFormat($path);
+            $matrix = [$file->GetColumnHeaders($separator == "\t")];
+
+            foreach($file->PopulateAllRows($separator == "\t") as $data) {
+                $matrix[] = $data;
+            }
+
+            return $matrix;
+        }
+
         /**
          * 将一个csv或者tsv表格文件中的数据以列向量的形式读取出来
          * 
         */
-        public static function redCsvColAll($path, $separator = null) {
+        public static function readCsvColAll($path, $separator = null) {
             $separator = empty($separator) ? self::delimiterFromFileName($path) : $separator;
             $file = new FileFormat($path);
             $keystemp = $file->GetColumnHeaders($separator == "\t");
