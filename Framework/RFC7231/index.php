@@ -47,6 +47,7 @@ class RFC7231Error {
 			header($httpResponse = RFC7231Error::getRFC($code, $header));	
 		}	
 
+		View::Push("description", $httpResponse);
 		View::Show(RFC7231Error::getPath($code, $allow_custom), [
 			"message" => $message,
 			"url"     => Utils::URL(),
