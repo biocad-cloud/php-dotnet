@@ -49,9 +49,10 @@ class RFC7231Error {
 
 		View::Push("description", $httpResponse);
 		View::Show(RFC7231Error::getPath($code, $allow_custom), [
-			"message" => $message,
-			"url"     => Utils::URL(),
-			"title"   => $httpResponse
+			"description" => $httpResponse,
+			"message"     => $message,
+			"url"         => Utils::URL(),
+			"title"       => $httpResponse
 		]);
 
 		exit($code);
