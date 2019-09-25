@@ -215,7 +215,7 @@ class Utils {
      * @param string $renameAs 可以在这里重设所下载的文件的文件名
      * 
     */
-    public static function PushDownload($file, $rateLimit = -1, $mime = null, $renameAs = null, $isdata = false) {
+    public static function PushDownload($file, $rateLimit = -1, $mime = null, $renameAs = null, $isdata = false, $filetransferMode = true) {
         if (!$isdata) {
             # file object is a disk file
 
@@ -238,15 +238,18 @@ class Utils {
             $file_size = strlen($file);
         }
 
-        header('Content-Description: File Transfer');
+        if ($filetransferMode) {
+            header('Content-Description: File Transfer');
+            header('Content-Disposition: attachment; filename=' . $renameAs);
+            // 告诉浏览器，这是二进制文件
+            header("Content-Transfer-Encoding: binary"); 
+        }
+        
         header('Cache-control: private');
         header('Content-Type:' . $mime);
         header("Accept-Ranges: bytes");
         header("Accept-Length: $file_size");
-        header('Content-Disposition: attachment; filename=' . $renameAs);
-        // 告诉浏览器，这是二进制文件
-        header("Content-Transfer-Encoding: binary"); 
-
+        
         ob_end_clean();
 
         if(!$isdata) {
