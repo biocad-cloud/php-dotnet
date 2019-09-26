@@ -120,11 +120,6 @@ class SqlFormatter {
     public static $variable_attributes = 'style="color: orange;"';
     public static $pre_attributes = 'style="color: black; background-color: white;"';
 
-    // Boolean - whether or not the current environment is the CLI
-    // This affects the type of syntax highlighting
-    // If not defined, it will be determined automatically
-    public static $cli;
-
     // For CLI syntax highlighting
     public static $cli_quote = "\x1b[34;1m";
     public static $cli_backtick_quote = "\x1b[35;1m";
@@ -860,7 +855,7 @@ class SqlFormatter {
     protected static function highlightToken($token) {
         $type = $token[self::TOKEN_TYPE];
 
-        if (self::is_cli()) {
+        if (IS_CLI) {
             $token = $token[self::TOKEN_VALUE];
         } else {
             if (defined('ENT_IGNORE')) {
@@ -903,7 +898,7 @@ class SqlFormatter {
      * @return String HTML code of the highlighted token.
      */
     protected static function highlightQuote($value) {
-        if (self::is_cli()) {
+        if (IS_CLI) {
             return self::$cli_quote . $value . "\x1b[0m";
         } else {
             return '<span ' . self::$quote_attributes . '>' . $value . '</span>';
@@ -918,7 +913,7 @@ class SqlFormatter {
      * @return String HTML code of the highlighted token.
      */
     protected static function highlightBacktickQuote($value) {
-        if (self::is_cli()) {
+        if (IS_CLI) {
             return self::$cli_backtick_quote . $value . "\x1b[0m";
         } else {
             return '<span ' . self::$backtick_quote_attributes . '>' . $value . '</span>';
@@ -933,7 +928,7 @@ class SqlFormatter {
      * @return String HTML code of the highlighted token.
      */
     protected static function highlightReservedWord($value) {
-        if (self::is_cli()) {
+        if (IS_CLI) {
             return self::$cli_reserved . $value . "\x1b[0m";
         } else {
             return '<span ' . self::$reserved_attributes . '>' . $value . '</span>';
@@ -951,7 +946,7 @@ class SqlFormatter {
     {
         if ($value==='(' || $value===')') return $value;
 
-        if (self::is_cli()) {
+        if (IS_CLI) {
             return self::$cli_boundary . $value . "\x1b[0m";
         } else {
             return '<span ' . self::$boundary_attributes . '>' . $value . '</span>';
@@ -967,7 +962,7 @@ class SqlFormatter {
      */
     protected static function highlightNumber($value)
     {
-        if (self::is_cli()) {
+        if (IS_CLI) {
             return self::$cli_number . $value . "\x1b[0m";
         } else {
             return '<span ' . self::$number_attributes . '>' . $value . '</span>';
@@ -983,7 +978,7 @@ class SqlFormatter {
      */
     protected static function highlightError($value)
     {
-        if (self::is_cli()) {
+        if (IS_CLI) {
             return self::$cli_error . $value . "\x1b[0m";
         } else {
             return '<span ' . self::$error_attributes . '>' . $value . '</span>';
@@ -997,9 +992,8 @@ class SqlFormatter {
      *
      * @return String HTML code of the highlighted token.
      */
-    protected static function highlightComment($value)
-    {
-        if (self::is_cli()) {
+    protected static function highlightComment($value) {
+        if (IS_CLI) {
             return self::$cli_comment . $value . "\x1b[0m";
         } else {
             return '<span ' . self::$comment_attributes . '>' . $value . '</span>';
@@ -1013,9 +1007,8 @@ class SqlFormatter {
      *
      * @return String HTML code of the highlighted token.
      */
-    protected static function highlightWord($value)
-    {
-        if (self::is_cli()) {
+    protected static function highlightWord($value) {
+        if (IS_CLI) {
             return self::$cli_word . $value . "\x1b[0m";
         } else {
             return '<span ' . self::$word_attributes . '>' . $value . '</span>';
@@ -1029,9 +1022,8 @@ class SqlFormatter {
      *
      * @return String HTML code of the highlighted token.
      */
-    protected static function highlightVariable($value)
-    {
-        if (self::is_cli()) {
+    protected static function highlightVariable($value) {
+        if (IS_CLI) {
             return self::$cli_variable . $value . "\x1b[0m";
         } else {
             return '<span ' . self::$variable_attributes . '>' . $value . '</span>';
@@ -1057,20 +1049,16 @@ class SqlFormatter {
      * @return String The quoted string
      */
     private static function output($string) {
-        if (self::is_cli()) {
+        if (IS_CLI) {
             return $string."\n";
         } else {
-            $string=trim($string);
+            $string = trim($string);
+
             if (!self::$use_pre) {
                 return $string;
+            } else {
+                return '<pre '.self::$pre_attributes.'>' . $string . '</pre>';
             }
-
-            return '<pre '.self::$pre_attributes.'>' . $string . '</pre>';
         }
-    }
-
-    private static function is_cli() {
-        if (isset(self::$cli)) return self::$cli;
-        else return php_sapi_name() === 'cli';
     }
 }
