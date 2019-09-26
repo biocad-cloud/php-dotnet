@@ -243,12 +243,14 @@ class Utils {
             header('Content-Disposition: attachment; filename=' . $renameAs);
             // 告诉浏览器，这是二进制文件
             header("Content-Transfer-Encoding: binary"); 
+            header('Cache-control: private');
+            header("Accept-Length: $file_size");
         }
         
-        header('Cache-control: private');
+        
         header('Content-Type:' . $mime);
+        header("Content-Length: $file_size");
         header("Accept-Ranges: bytes");
-        header("Accept-Length: $file_size");
         
         ob_end_clean();
 

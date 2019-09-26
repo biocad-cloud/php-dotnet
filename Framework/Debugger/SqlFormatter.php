@@ -792,10 +792,8 @@ class SqlFormatter {
      *
      * @return String The SQL string without comments
      */
-    public static function removeComments($string)
-    {
+    public static function removeComments($string) {
         $result = '';
-
         $tokens = self::tokenize($string);
 
         foreach ($tokens as $token) {
@@ -805,7 +803,7 @@ class SqlFormatter {
             }
 
             $result .= $token[self::TOKEN_VALUE];
-        }
+        }        
         $result = self::format( $result,false);
 
         return $result;
@@ -818,13 +816,11 @@ class SqlFormatter {
      *
      * @return String The SQL string without comments
      */
-    public static function compress($string)
-    {
+    public static function compress($string) {
         $result = '';
-
         $tokens = self::tokenize($string);
-
         $whitespace = true;
+
         foreach ($tokens as $token) {
             // Skip comment tokens
             if ($token[self::TOKEN_TYPE] === self::TOKEN_TYPE_COMMENT || $token[self::TOKEN_TYPE] === self::TOKEN_TYPE_BLOCK_COMMENT) {
@@ -861,8 +857,7 @@ class SqlFormatter {
      *
      * @return String HTML code of the highlighted token.
      */
-    protected static function highlightToken($token)
-    {
+    protected static function highlightToken($token) {
         $type = $token[self::TOKEN_TYPE];
 
         if (self::is_cli()) {
@@ -907,8 +902,7 @@ class SqlFormatter {
      *
      * @return String HTML code of the highlighted token.
      */
-    protected static function highlightQuote($value)
-    {
+    protected static function highlightQuote($value) {
         if (self::is_cli()) {
             return self::$cli_quote . $value . "\x1b[0m";
         } else {
@@ -923,8 +917,7 @@ class SqlFormatter {
      *
      * @return String HTML code of the highlighted token.
      */
-    protected static function highlightBacktickQuote($value)
-    {
+    protected static function highlightBacktickQuote($value) {
         if (self::is_cli()) {
             return self::$cli_backtick_quote . $value . "\x1b[0m";
         } else {
@@ -939,8 +932,7 @@ class SqlFormatter {
      *
      * @return String HTML code of the highlighted token.
      */
-    protected static function highlightReservedWord($value)
-    {
+    protected static function highlightReservedWord($value) {
         if (self::is_cli()) {
             return self::$cli_reserved . $value . "\x1b[0m";
         } else {
@@ -1053,8 +1045,7 @@ class SqlFormatter {
      *
      * @return String The quoted string
      */
-    private static function quote_regex($a)
-    {
+    private static function quote_regex($a) {
         return preg_quote($a,'/');
     }
 
@@ -1065,8 +1056,7 @@ class SqlFormatter {
      *
      * @return String The quoted string
      */
-    private static function output($string)
-    {
+    private static function output($string) {
         if (self::is_cli()) {
             return $string."\n";
         } else {
@@ -1079,10 +1069,8 @@ class SqlFormatter {
         }
     }
 
-    private static function is_cli()
-    {
+    private static function is_cli() {
         if (isset(self::$cli)) return self::$cli;
         else return php_sapi_name() === 'cli';
     }
-
 }
