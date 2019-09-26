@@ -202,13 +202,43 @@ class dotnetDebugger {
 			if (is_string($mysql)) {
 				controller::error($mysql);
 			} else {
-				if (strpos($sql, "SELECT") == 0) {
+				if (!self::is_dmlCalls($sql)) {
+					// select * from `xxx`
 					controller::success($mysql->Fetch($sql));
 				} else {
-					controller::error("<code>DML</code> is not allowed executed from external calls.");
+					controller::error("<code>DML</code> or <code>DCL</code> is not allowed executed from external calls.");
 				}
 			}
 		}
+	}
+
+	private static function is_dmlCalls($sql) {
+		Imports("Debugger.SqlFormatter");
+
+		$tokens = SqlFormatter::tokenize($sql);
+
+		foreach($tokens as $token) {
+			$type  = $token[SqlFormatter::TOKEN_TYPE];
+			$token = $token[SqlFormatter::TOKEN_VALUE];
+			$token = strtolower($token);
+			
+			if ($type == SqlFormatter::TOKEN_TYPE_RESERVED || $type == SqlFormatter::TOKEN_TYPE_RESERVED_TOPLEVEL) {
+				if ($token == "delete"  || 
+					$token == "update"  || 
+					$token == "drop"    || 
+					$token == "replace" ||
+					$token == "create"  ||
+					$token == "alter"   ||
+					$token == "insert"  ||
+					$token == "grant"   ||
+					$token == "revoke") {
+
+					return true;
+				}
+			}
+		}
+
+		return false;
 	}
 
 	/**
