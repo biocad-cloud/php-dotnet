@@ -151,6 +151,7 @@ class SqlFormatter {
     // Cache variables
     // Only tokens shorter than this size will be cached.  Somewhere between 10 and 20 seems to work well for most cases.
     public static $max_cachekey_size = 15;
+    
     protected static $token_cache = [];
     protected static $cache_hits = 0;
     protected static $cache_misses = 0;
@@ -159,8 +160,7 @@ class SqlFormatter {
      * Get stats about the token cache
      * @return Array An array containing the keys 'hits', 'misses', 'entries', and 'size' in bytes
      */
-    public static function getCacheStats()
-    {
+    public static function getCacheStats() {
         return array(
             'hits'=>self::$cache_hits,
             'misses'=>self::$cache_misses,
