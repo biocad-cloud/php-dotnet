@@ -172,8 +172,7 @@ class SqlFormatter {
     /**
      * Stuff that only needs to be done once.  Builds regular expressions and sorts the reserved words.
      */
-    protected static function init()
-    {
+    protected static function init() {
         if (self::$init) return;
 
         // Sort reserved word list from longest word to shortest, 3x faster than usort
@@ -201,8 +200,7 @@ class SqlFormatter {
      *
      * @return Array An associative array containing the type and value of the token.
      */
-    protected static function getNextToken($string, $previous = null)
-    {
+    protected static function getNextToken($string, $previous = null) {
         // Whitespace
         if (preg_match('/^\s+/',$string,$matches)) {
             return array(
@@ -327,8 +325,7 @@ class SqlFormatter {
         );
     }
 
-    protected static function getQuotedString($string)
-    {
+    protected static function getQuotedString($string) {
         $ret = null;
         
         // This checks for the following patterns:
@@ -347,12 +344,11 @@ class SqlFormatter {
      * Takes a SQL string and breaks it into tokens.
      * Each token is an associative array with type and value.
      *
-     * @param String $string The SQL string
+     * @param string $string The SQL string
      *
-     * @return Array An array of tokens.
+     * @return array An array of tokens.
      */
-    protected static function tokenize($string)
-    {
+    public static function tokenize($string) {
         self::init();
 
         $tokens = array();
@@ -424,8 +420,7 @@ class SqlFormatter {
      *
      * @return String The SQL string with HTML styles and formatting wrapped in a <pre> tag
      */
-    public static function format($string, $highlight=true)
-    {
+    public static function format($string, $highlight=true) {
         // This variable will be populated with formatted html
         $return = '';
 
@@ -725,10 +720,8 @@ class SqlFormatter {
      *
      * @return String The SQL string with HTML styles applied
      */
-    public static function highlight($string)
-    {
+    public static function highlight($string) {
         $tokens = self::tokenize($string);
-
         $return = '';
 
         foreach ($tokens as $token) {
@@ -746,8 +739,7 @@ class SqlFormatter {
      *
      * @return Array An array of individual query strings without trailing semicolons
      */
-    public static function splitQuery($string)
-    {
+    public static function splitQuery($string) {
         $queries = array();
         $current_query = '';
         $empty = true;
