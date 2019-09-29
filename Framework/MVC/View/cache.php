@@ -25,10 +25,9 @@ class ViewCache {
             console::log("Cache data created!");
             console::log("sizeof cache is " . strlen($cachePage));
 
-            if (DotNetRegistry::HtmlMinifyOfCache()) {
+            if ((!APP_DEBUG) && DotNetRegistry::HtmlMinifyOfCache()) {
                 # 进行html文件的压缩
-                $cachePage = \MVC\Views\HtmlMinifier::minify($cachePage);
-                console::log("sizeof cache after minify is: " . strlen($cachePage)); 
+                $cachePage = \MVC\Views\HtmlMinifier::minify($cachePage);                
             }
 
             $cacheDir  = dirname($cache);

@@ -167,14 +167,33 @@ class Utils {
         return $tuple;
     }
 
-    public static function mime_content_type($filename) {
+    /**
+     * @param string $filename
+    */
+    public static function get_MIMEcontentType($filename) {    
+        // mime_content_type函数会将js/css文件解释为text/plain或者text/html
+        // 在这里需要修复一下这个bug
+        $ext = strtolower(pathinfo($file)["extension"]);
+
+        if ($ext == "js") {
+            return "text/javascript";
+        } else if ($ext == "css") {
+            return "text/css";     
+        }
+
         $result = new finfo();
-    
+
         if (is_resource($result) === true) {
             return $result->file($filename, FILEINFO_MIME_TYPE);
+        } else {
+            $mime = \mime_content_type($file);
         }
     
-        return false;
+        if (empty($mime) || false == $mime) {
+            return "application/octet-stream";
+        } else {
+            return $mime;
+        }
     }
 
     /** 
@@ -221,8 +240,8 @@ class Utils {
 
             # 2018-6-18 有些服务器上面mime_content_type函数可能无法使用
             # 所以在这里添加了一个可选参数来手动指定文件类型
-            if (!$mime) {
-                $mime = mime_content_type($file);
+            if (empty($mime) || false == $mime) {
+                $mime = self::get_MIMEcontentType($file);
             }
 
             if (!$renameAs) {
@@ -232,9 +251,8 @@ class Utils {
             $file_size = filesize($file); 
         } else {
             # is the file data itself
-
-            $mime = empty($mime) ? "application/octet-stream" : $mime;
-            $renameAs = empty($renameAs) ? "file" : $renameAs ;
+            $renameAs  = empty($renameAs) ? "file" : $renameAs ;
+            $mime      = empty($mime) ? self::get_MIMEcontentType($renameAs) : $mime;
             $file_size = strlen($file);
         }
 
@@ -244,12 +262,12 @@ class Utils {
             // 告诉浏览器，这是二进制文件
             header("Content-Transfer-Encoding: binary"); 
             header('Cache-control: private');
-            header("Accept-Length: $file_size");
-        }
-        
+            header("Accept-Length: $file_size");                 
+        } else {
+            header("Content-Length: $file_size");
+        }        
         
         header('Content-Type:' . $mime);
-        header("Content-Length: $file_size");
         header("Accept-Ranges: bytes");
         
         ob_end_clean();
