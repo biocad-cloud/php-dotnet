@@ -40,6 +40,32 @@ namespace Microsoft\VisualBasic\Data\csv {
         }
 
         /**
+         * 查看所给定的表头是否都存在于当前的这个表格文件之中
+         * 
+         * 如果这个函数返回空值，说明没有不存在的表头
+         * 
+         * @param string[] 所需要进行检查的目标表头字符串的集合
+         * 
+         * @return 这个函数会返回不存在的表头
+        */
+        public function checkHeaderExists($headersToCheck, $tsv = false) {
+            $tableHeaders = $this->GetColumnHeaders($tsv);
+            $nonExists = [];
+
+            foreach($headersToCheck as $title) {
+                if (!in_array($title, $tableHeaders)) {
+                    $nonExists[] = $title;
+                }
+            }
+
+            if (count($nonExists) == 0) {
+                return null;
+            } else {
+                return $nonExists;
+            }
+        }
+
+        /**
          * @param boolean $asObject 是否以对象集合的形式返回所有的行数据，这个函数默认是返回原始字符串数组的
         */
         public function PopulateAllRows($tsv = false, $maxLen = 2048, $asObject = false) {
