@@ -2,6 +2,8 @@
 
 namespace Microsoft\VisualBasic\Data\csv {
 
+    Imports("Microsoft.VisualBasic.Data.csv.Extensions");
+
     class FileFormat implements \System\IDisposable {
 
         /** 
@@ -37,11 +39,23 @@ namespace Microsoft\VisualBasic\Data\csv {
             }
         }
 
-        public function PopulateAllRows($tsv = false, $maxLen = 2048) {
+        /**
+         * @param boolean $asObject 是否以对象集合的形式返回所有的行数据，这个函数默认是返回原始字符串数组的
+        */
+        public function PopulateAllRows($tsv = false, $maxLen = 2048, $asObject = false) {
             $delimiter = $tsv ? "\t" : ",";
 
-            while (!feof($this->file_handle)) {
-                yield fgetcsv($this->file_handle, $maxLen, $delimiter);
+            if ($asObject) {
+                return Extensions::doParseObjects(
+                    $this->file_handle, 
+                    $this->GetColumnHeaders($tsv), 
+                    $maxLen, 
+                    $delimiter
+                );
+            } else {
+                while (!feof($this->file_handle)) {
+                    yield fgetcsv($this->file_handle, $maxLen, $delimiter);
+                }
             }
         }
 

@@ -92,17 +92,10 @@ namespace Microsoft\VisualBasic\Data\csv {
             if (!file_exists($path) || filesize($path) == 0) {
                 \error_log("[\"$path\"] not exists or contains no data!");
                 return null;
-            }
-
-            while (!feof($file_handle) ) {
-                $lineText = fgetcsv($file_handle, $maxLen, $delimiter);
-                $row = [];
-
-                for ($i = 0; $i < count($headers); $i++) {
-                    $row[$headers[$i]] = $lineText[$i];
-                }
-
-                $line_of_text[] = $row;
+            } else {
+                foreach(self::doParseObjects($file_handle, $headers) as $obj) {
+                    $line_of_text[] = $obj;
+                }                
             }
 
             $n       = count($line_of_text) - 1;
@@ -122,6 +115,19 @@ namespace Microsoft\VisualBasic\Data\csv {
             fclose($file_handle);
             
             return $line_of_text;
+        }
+
+        public static function doParseObjects($file_handle, $headers, $maxLen = 2048, $delimiter = ",") {
+            while (!feof($file_handle) ) {
+                $lineText = fgetcsv($file_handle, $maxLen, $delimiter);
+                $row = [];
+
+                for ($i = 0; $i < count($headers); $i++) {
+                    $row[$headers[$i]] = $lineText[$i];
+                }
+
+                yield $row;
+            }
         }
 
         /**
