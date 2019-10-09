@@ -838,7 +838,7 @@ class Table {
 	}
 	
 	/**
-	 * insert into.
+	 * insert into. (对于具有auto_increment类型的主键的表，这个函数会返回递增之后的主键)
 	 *
 	 * @param array|object $data table row data in array type
 	 * 
