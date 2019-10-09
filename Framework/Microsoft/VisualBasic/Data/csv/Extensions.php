@@ -98,32 +98,38 @@ namespace Microsoft\VisualBasic\Data\csv {
                 }                
             }
 
-            $n       = count($line_of_text) - 1;
-            $allNull = true;
-
-            foreach($line_of_text[$n] as $key => $val) {
-                if (!empty($val)) {
-                    $allNull = false;
-                    break;
-                }
-            }
-
-            if ($allNull) {
-                unset($line_of_text[$n]);
-            }
-
             fclose($file_handle);
             
             return $line_of_text;
         }
 
         public static function doParseObjects($file_handle, $headers, $maxLen = 2048, $delimiter = ",") {
-            while (!feof($file_handle) ) {
+            while (!feof($file_handle)) {
                 $lineText = fgetcsv($file_handle, $maxLen, $delimiter);
                 $row = [];
 
                 for ($i = 0; $i < count($headers); $i++) {
                     $row[$headers[$i]] = $lineText[$i];
+                }
+
+                if (feof($file_handle)) {
+                    # 20191009
+                    # 最末尾一般是一个换行符
+                    # 所以一般会导致最后一个元素全部都是空值
+                    # 在这里处理一下这种情况
+                    $allNull = true;
+
+                    foreach($row as $key => $val) {
+                        if (!empty($val)) {
+                            $allNull = false;
+                            break;
+                        }
+                    }
+        
+                    if ($allNull) {
+                        # 如果全部都是空值，就不返回数据了
+                        break;
+                    }
                 }
 
                 yield $row;

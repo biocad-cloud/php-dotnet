@@ -46,12 +46,17 @@ namespace Microsoft\VisualBasic\Data\csv {
             $delimiter = $tsv ? "\t" : ",";
 
             if ($asObject) {
-                return Extensions::doParseObjects(
+                foreach(Extensions::doParseObjects(
                     $this->file_handle, 
                     $this->GetColumnHeaders($tsv), 
                     $maxLen, 
                     $delimiter
-                );
+                ) as $obj) {
+
+                    # 20191009 直接使用return关键词返回yield表达式的数据源生成函数
+                    # 会出现bug，所以在这里还需要使用一个for循环来产生数据
+                    yield $obj;
+                }
             } else {
                 while (!feof($this->file_handle)) {
                     yield fgetcsv($this->file_handle, $maxLen, $delimiter);
