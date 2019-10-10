@@ -61,6 +61,8 @@ function not_between($a, $b) { return "~NOT " . substr(between($a, $b), 1); }
 
 /**
  * 在集合中，在数据库查询之中判断目标字段值是否在给定的集合中
+ * 
+ * @param array $value 这个参数应该是一个数组，而非键值对
 */
 function in($values) { return "~IN ('". join("', '", $values) ."')"; }
 # function in(...$values) { return "~IN ('". join("', '", $values) ."')"; }
