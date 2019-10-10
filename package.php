@@ -348,6 +348,17 @@ function session($name, $value) {
     $_SESSION[$name] = $value;
 }
 
+/**
+ * 重置当前的会话，将当前的绘制切换到所给定的会话中的
+ * 
+ * @param string $new_ssID 将当前的会话切换到这个新编号所指定的会话中去
+*/
+function reset_session($new_ssID) {
+    session_abort();
+    session_id($new_ssID);
+    session_start();
+}
+
 /** 
  * 主要是进行``Dispose``方法的自动调用
 */
