@@ -353,7 +353,7 @@ function session($name, $value) {
  * 
  * @param string $new_ssID 将当前的会话切换到这个新编号所指定的会话中去
 */
-function reset_session($new_ssID) {
+function ResetSession($new_ssID) {
     session_abort();
     session_id($new_ssID);
     session_start();
