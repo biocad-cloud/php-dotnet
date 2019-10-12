@@ -643,7 +643,7 @@ class Table {
 
 		$data = $this->driver->Fetch($SQL . ";");
 		
-		if ($false === $data) {
+		if (false === $data) {
 			# 20190911
 			# 查询出错了
 			return false;
