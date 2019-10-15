@@ -33,5 +33,3 @@ class DataURI {
 		return $this->getURI();
 	}
 }
-
-?>

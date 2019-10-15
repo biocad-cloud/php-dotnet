@@ -236,7 +236,7 @@ class Strings {
 	 * @return integer length
 	*/
 	public static function Len($obj) {
-		if (is_string($obj)) {
+		if (is_string($obj) || is_numeric($obj)) {
 			return strlen($obj);
 		} else if (is_array($obj)) {
 			return count($obj);

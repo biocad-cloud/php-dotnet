@@ -23,7 +23,7 @@ class Conversion {
         // 空格部分会在计算之前被trim去除掉
         preg_match("^\s*-?\d+(\.\d+)?", $exp, $matches, PREG_OFFSET_CAPTURE, 3);
 
-        $exp = $match[0];
+        $exp = $matches[0];
         $exp = trim($exp);
         $value = Conversion::CDbl($exp);
 
