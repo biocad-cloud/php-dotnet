@@ -47,13 +47,14 @@ namespace Microsoft\VisualBasic\Data\csv {
         public function MeasureTsvFormat() {
             $comma = 0;
             $tab   = 0;
+            $header = $this->firstLine;
 
-            for($i = 0; $i < strlen($this->firstLine); $i++) {
-                $c = $this->$firstLine[$i];
+            for($i = 0; $i < strlen($header); $i++) {
+                $c = $header[$i];
 
                 if ($c == ",") {
                     $comma++;
-                } else {
+                } else if ($c == "\t") {
                     $tab++;
                 }
             }
