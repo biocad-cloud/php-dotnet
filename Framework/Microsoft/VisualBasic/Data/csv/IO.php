@@ -99,6 +99,10 @@ namespace Microsoft\VisualBasic\Data\csv {
             }
         }
 
+        public function isEOF() {
+            return feof($this->file_handle);
+        }
+
         /**
          * @param boolean $asObject 是否以对象集合的形式返回所有的行数据，这个函数默认是返回原始字符串数组的
         */
@@ -180,7 +184,11 @@ namespace Microsoft\VisualBasic\Data\csv {
             $data = [];
             
             foreach($file->PopulateAllRows($separator == "\t") as $row) {
-                $data[] = $row[$index];
+                if (\Strings::Empty($row, true) && $file->isEOF()) {
+                    // do nothing
+                } else {
+                    $data[] = $row[$index];
+                }               
             }
 
             return $data;
