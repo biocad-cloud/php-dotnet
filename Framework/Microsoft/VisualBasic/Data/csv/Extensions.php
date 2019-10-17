@@ -173,7 +173,7 @@ namespace Microsoft\VisualBasic\Data\csv {
          * 
          * @return string[]
         */
-        private static function ParseTsvRow($line) {
+        public static function ParseTsvRow($line) {
             $tokens = explode("\t", $line);
 
             for($i = 0; $i < count($tokens); $i++) {

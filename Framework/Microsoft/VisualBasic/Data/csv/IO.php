@@ -115,6 +115,44 @@ namespace Microsoft\VisualBasic\Data\csv {
         }
 
         /**
+         * 讲一个csv文件的某一指定的列中的数据读取出来
+         * 
+         * @param string|integer $col 列标题或者列索引号
+         * 
+         * @return array 以数组的形式返回目标列的数据
+        */
+        public static function readCsvColVector($path, $col, $separator = null) {
+            $separator = empty($separator) ? self::delimiterFromFileName($path) : $separator;
+            $file = new FileFormat($path);
+            $index = -1;
+echo var_dump($index);
+            if (\is_integer($col)) {
+                $index = $col;
+                # skip first row
+                $file->GetColumnHeaders($separator == "\t");
+            } else {    
+                $col = strtolower($col);
+                $index = 0;
+
+                foreach ($file->GetColumnHeaders($separator == "\t") as $keytemp){
+                    if ($col == strtolower($keytemp)) {
+                        break;
+                    } else {
+                        $index++;
+                    }
+                }
+            }            
+
+            $data = [];
+            
+            foreach($file->PopulateAllRows($separator == "\t") as $row) {
+                $data = $row[$index];
+            }
+
+            return $data;
+        }
+
+        /**
          * 将一个csv或者tsv表格文件中的数据以列向量的形式读取出来
          * 
         */
