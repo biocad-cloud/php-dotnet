@@ -40,6 +40,28 @@ namespace Microsoft\VisualBasic\Data\csv {
         }
 
         /**
+         * 尝试从行首的字符推断出文件的格式
+         * 
+         * @return boolean 文件是否为tsv文件
+        */
+        public function MeasureTsvFormat() {
+            $comma = 0;
+            $tab   = 0;
+
+            for($i = 0; $i < strlen($this->firstLine); $i++) {
+                $c = $this->$firstLine[$i];
+
+                if ($c == ",") {
+                    $comma++;
+                } else {
+                    $tab++;
+                }
+            }
+
+            return $tab > $comma;
+        }
+
+        /**
          * 查看所给定的表头是否都存在于当前的这个表格文件之中
          * 
          * 如果这个函数返回空值，说明没有不存在的表头
@@ -125,7 +147,7 @@ namespace Microsoft\VisualBasic\Data\csv {
             $separator = empty($separator) ? self::delimiterFromFileName($path) : $separator;
             $file = new FileFormat($path);
             $index = -1;
-echo var_dump($index);
+
             if (\is_integer($col)) {
                 $index = $col;
                 # skip first row
@@ -141,12 +163,12 @@ echo var_dump($index);
                         $index++;
                     }
                 }
-            }            
-
+            } 
+            
             $data = [];
             
             foreach($file->PopulateAllRows($separator == "\t") as $row) {
-                $data = $row[$index];
+                $data[] = $row[$index];
             }
 
             return $data;
