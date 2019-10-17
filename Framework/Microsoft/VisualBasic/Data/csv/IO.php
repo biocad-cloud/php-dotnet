@@ -184,7 +184,7 @@ namespace Microsoft\VisualBasic\Data\csv {
             $data = [];
             
             foreach($file->PopulateAllRows($separator == "\t") as $row) {
-                if (\Strings::Empty($row, true) && $file->isEOF()) {
+                if ((empty($row) || (count($row) == 0)) && $file->isEOF()) {
                     // do nothing
                 } else {
                     $data[] = $row[$index];
