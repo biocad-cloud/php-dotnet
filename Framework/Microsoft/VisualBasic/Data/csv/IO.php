@@ -62,6 +62,17 @@ namespace Microsoft\VisualBasic\Data\csv {
         }
 
         /**
+         * @param string $file;
+         * 
+         * @return boolean 目标文件是否为一个tsv文件
+        */
+        public static function isTsv($file) {
+            return using(new FileFormat($file), function($table) {
+                return $table->MeasureTsvFormat();
+            });
+        }
+
+        /**
          * 查看所给定的表头是否都存在于当前的这个表格文件之中
          * 
          * 如果这个函数返回空值，说明没有不存在的表头
