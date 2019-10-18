@@ -187,9 +187,9 @@ namespace MVC\MySql {
 		*/
 		public static function ToArray($obj) {
 			$data = get_object_vars($obj);
-
+			
 			# 需要将空值删除
-			foreach($data as $name => $value) {			
+			foreach($data as $name => $value) {
 				if (is_null($value)) {
 					unset($data[$name]);
 				}

@@ -318,6 +318,24 @@ function Imports($namespace) {
 }
 
 /**
+ * 在打印调试数据之后，脚本程序将会在这里退出执行
+*/
+function breakpoint($dump) {
+    header("Content-Type: text/html");
+
+    echo "<h3>Break Point:</h3>";
+    echo "<hr />";
+    echo StackTrace::GetCallStack()->ToString(true);
+    echo "<hr />";
+    echo "<h3>Object dumping data:</h3>";
+    echo "<pre><code>";
+    echo var_dump($dump);
+    echo "</code></pre>";
+
+    exit(0);
+}
+
+/**
  * 对用户的浏览器进行重定向，支持路由规则。
  * **注意，在使用这个函数进行重定向之后，脚本将会从这里退出执行**
  * 

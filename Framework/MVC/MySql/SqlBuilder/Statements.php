@@ -25,7 +25,7 @@ namespace MVC\MySql\Expression {
 
             # Ensure that object $any is an data array
             $data = is_array($any) ? $any : \MVC\MySql\Projector::ToArray($any);
-
+            
             // 使用这个for循环的主要的目的是将所传入的参数数组之中的
             // 无关的名称给筛除掉，避免出现查询错误
             foreach ($schema->schema as $fieldName => $def) {
@@ -64,6 +64,8 @@ namespace MVC\MySql\Expression {
             
             # INSERT INTO `metacardio`.`xcms_files` (`task_id`) VALUES ('ABC');
             $SQL = "INSERT INTO $ref ($fields) VALUES ($values);";
+
+            breakpoint($SQL);
 
             return $SQL;
         }

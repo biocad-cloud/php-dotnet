@@ -94,7 +94,11 @@ class Table {
 				NULL  
 			);
 
-		} else {
+		} else if(is_array($config)) {
+
+			if (count($config) < 2) {
+				dotnet::ThrowException("Invalid slave database endpoint configuration: " . json_encode($config));
+			}
 
 			// 如果在配置文件之中配置了多个数据库的链接参数信息
 			// 则在这里可以使用下面的格式来指定数据库的连接信息的获取
@@ -112,7 +116,9 @@ class Table {
 				$msg = "Invalid database name config or database config '$dbName' is not exists!";
 				throw new Exception($msg);
 			}
-		} 
+		} else {
+			dotnet::ThrowException("Unsupports data was given at here...");
+		}
 		
 		$this->condition = $condition;
 	}
