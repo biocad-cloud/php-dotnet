@@ -65,8 +65,6 @@ namespace MVC\MySql\Expression {
             # INSERT INTO `metacardio`.`xcms_files` (`task_id`) VALUES ('ABC');
             $SQL = "INSERT INTO $ref ($fields) VALUES ($values);";
 
-            breakpoint($SQL);
-
             return $SQL;
         }
     }
