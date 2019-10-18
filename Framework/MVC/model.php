@@ -91,31 +91,19 @@ class Table {
 				$this->driver,
 				# 是直接从已经存在的数据库驱动对象构建，说明前面可能已经加载了缓存文件，
 				# 在这里使用NULL忽略掉可能的重复加载
-				NULL  
+				NULL
 			);
 
-		} else if(is_array($config)) {
+		} else if (is_array($config)) {
 
 			if (count($config) < 2) {
 				dotnet::ThrowException("Invalid slave database endpoint configuration: " . json_encode($config));
-			}
-
-			// 如果在配置文件之中配置了多个数据库的链接参数信息
-			// 则在这里可以使用下面的格式来指定数据库的连接信息的获取
-			// 
-			// [dbName => tableName] for multiple database config.
-			//
-			list($dbName, $tableName) = Utils::Tuple($config);
-
-			if (array_key_exists($dbName, DotNetRegistry::$config)) {
-				$this->__initBaseOnExternalConfig(
-					$tableName, DotNetRegistry::$config[$dbName]
-				);
 			} else {
-				# 无效的配置参数信息
-				$msg = "Invalid database name config or database config '$dbName' is not exists!";
-				throw new Exception($msg);
+				$this->slaveEndpointConfigFromTuple($config);
 			}
+
+		} else if (is_object($config)) {
+			$this->slaveEndpointConfigFromTuple($config);
 		} else {
 			dotnet::ThrowException("Unsupports data was given at here...");
 		}
@@ -123,6 +111,28 @@ class Table {
 		$this->condition = $condition;
 	}
 	
+	/**
+	 * @param array|object $config
+	*/
+	private function slaveEndpointConfigFromTuple($config) {
+		// 如果在配置文件之中配置了多个数据库的链接参数信息
+		// 则在这里可以使用下面的格式来指定数据库的连接信息的获取
+		// 
+		// [dbName => tableName] for multiple database config.
+		//
+		list($dbName, $tableName) = Utils::Tuple($config);
+
+		if (array_key_exists($dbName, DotNetRegistry::$config)) {
+			$this->__initBaseOnExternalConfig(
+				$tableName, DotNetRegistry::$config[$dbName]
+			);
+		} else {
+			# 无效的配置参数信息
+			$msg = "Invalid database name config or database config '$dbName' is not exists!";
+			dotnet::ThrowException($msg);
+		}
+	}
+
 	/**
 	 * 这个函数只适用于命令行终端环境下的数据库查询调试
 	 * 
