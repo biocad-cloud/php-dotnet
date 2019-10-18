@@ -95,8 +95,9 @@ class Table {
 			);
 
 		} else if (is_array($config)) {
-
-			if (count($config) < 2) {
+			$keys = array_keys($config);
+			
+			if (is_integer($keys[0])) {
 				dotnet::ThrowException("Invalid slave database endpoint configuration: " . json_encode($config));
 			} else {
 				$this->slaveEndpointConfigFromTuple($config);
