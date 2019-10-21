@@ -97,6 +97,11 @@ namespace MVC\MySql {
 		/**
 		 * 这个方法主要是用于执行一些无返回值的方法，
 		 * 例如INSERT, UPDATE, DELETE等
+		 * 
+		 * > https://www.php.net/manual/en/mysqli.query.php
+		 * 
+		 * @return boolean|integer ``insert`` 如果存在``auto_increment``类型的主键的话
+		 *     会返回新增的id编号，其他的语句返回true或者false
 		*/
 		public function ExecuteSql($SQL) {
 			

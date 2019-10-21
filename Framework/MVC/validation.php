@@ -111,26 +111,34 @@ class controllerValidation {
 
     private function validateArgument($arg) {
         $arg = StringHelpers::GetTagValue($arg, "=", true);
-        $val = Utils::ReadValue($_GET, $arg[0]);
+        $argName = $arg[0];
+
+        if (array_key_exists($argName, $_GET)) {
+            $val = $_GET[$argName];
+        } else if (IS_POST) {
+            $val = Utils::ReadValue($_POST, $argName);
+        } else {
+            $val = null;
+        }        
 
         switch ($arg[1]) {
             case "i32":
                 if (!StringHelpers::IsPattern($val, "\\d+")) {
-                    $this->handleBadRequest($arg[0], "integer");
+                    $this->handleBadRequest($argName, "integer");
                 }
                 break;
             
             case "boolean":
 
                 if (!($val == "true" || $val == "false" || $val == "1" || $val == "0")) {
-                    $this->handleBadRequest($arg[0], "boolean");
+                    $this->handleBadRequest($argName, "boolean");
                 }
                 break;
 
             default:
                 # 默认是要求不为空
                 if (Strings::Empty($val)) {
-                    $this->handleBadRequest($arg[0], "none null");
+                    $this->handleBadRequest($argName, "none null");
                 }
         }
     }
