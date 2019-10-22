@@ -620,14 +620,22 @@ class Table {
 	}
 
 	private static function getFieldString($fields) {
-		return empty($fields) ? "*" : Strings::Join($fields, ", ");
+		if (empty($fields)) {
+			return "*";
+		} else if (is_string($fields)) {
+			return $fields;
+		} else if (is_array($fields)) {
+			return Strings::Join($fields, ", ");
+		} else {
+			dotnet::BadRequest("Invalid data type of the selected field names!");
+		}
 	}
 
 	/**
 	 * select all.(函数参数``$fields``是需要选择的字段列表，如果没有传递任何参数的话，
 	 * 默认是``*``，即选择全部字段)
 	 * 
-	 * @param array $fields A string array.
+	 * @param array|string $fields A string array.
 	 * @param string $keyBy 如果这个参数不是空的话，则返回来的数组将会使用这个字段的值作为index key.
 	 * 
 	 * @return array|boolean 当查询出错的时候，这个函数是会返回一个逻辑值false的
