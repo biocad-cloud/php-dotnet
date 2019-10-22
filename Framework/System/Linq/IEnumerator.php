@@ -70,7 +70,7 @@ class IEnumerator {
      * @return IEnumerator
     */
     public function Select($project) {
-        return new IEnumerator(Enumerable::Select($this->sequence, $predicate));
+        return new IEnumerator(Enumerable::Select($this->sequence, $project));
     }
 
     /**

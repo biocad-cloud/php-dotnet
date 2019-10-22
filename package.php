@@ -414,4 +414,16 @@ function deleteCookies($cookies) {
     }
 }
 
+/**
+ * Create a linq sequence object
+ * 
+ * @param array $array
+ * 
+ * @return IEnumerator
+*/
+function from($array) {
+    Imports("System.Linq.IEnumerator");
+    return new IEnumerator($array);
+}
+
 #endregion
