@@ -123,7 +123,7 @@ class controllerValidation {
 
         switch ($arg[1]) {
             case "i32":
-                if (!StringHelpers::IsPattern($val, "\\d+")) {
+                if (!StringHelpers::IsPattern($val, "[-]?\\d+")) {
                     $this->handleBadRequest($argName, "integer");
                 }
                 break;
