@@ -156,11 +156,21 @@ namespace Microsoft\VisualBasic\Data\csv {
          * 讲一个csv文件的某一指定的列中的数据读取出来
          * 
          * @param string|integer $col 列标题或者列索引号
+         * @param string|boolean $separator 分隔符，当为逻辑值的时候，true表示为tsv文件，反之为csv文件
          * 
          * @return array 以数组的形式返回目标列的数据
         */
         public static function readCsvColVector($path, $col, $separator = null) {
-            $separator = empty($separator) ? self::delimiterFromFileName($path) : $separator;
+            if (empty($separator)) {
+                $separator = empty($separator) ? self::delimiterFromFileName($path) : $separator;
+            } else if (is_bool($separator)) {
+                $separator = $separator ? "\t" : ",";
+            } else if (is_string($separator)) {
+                // do nothing
+            } else {
+                \dotnet::ThrowException("Unsupported separator!");
+            }
+            
             $file = new FileFormat($path);
             $index = -1;
 
