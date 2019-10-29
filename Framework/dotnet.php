@@ -158,7 +158,8 @@ class dotnet {
         # 在这里加载框架之中的基本的MVC驱动程序模块
 		dotnet::Imports("MVC.view");
 		dotnet::Imports("MVC.model");
-		dotnet::Imports("MVC.router");
+        dotnet::Imports("MVC.router");
+        dotnet::Imports("MVC.request");
         dotnet::Imports("MVC.MySql.driver");
         dotnet::Imports("MVC.MySql.expression");
         dotnet::Imports("php.URL");
