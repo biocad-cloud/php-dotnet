@@ -415,6 +415,7 @@ class View {
 				# 在这里合并时，出现重复键名的话
 				# 从Display函数传递的参数的优先度要高于join的参数
 				# 
+				# 20191029
 				# 在下面的for循环中，会将join中的同名变量覆盖掉
 				$data = self::$join;
 				
