@@ -411,7 +411,18 @@ class View {
 			} else if (!self::$join) {
 				// do nothing
 			} else {
-				$vars = array_merge($vars, self::$join);
+				# join类型的变量类似于预定义的静态变量
+				# 在这里合并时，出现重复键名的话
+				# 从Display函数传递的参数的优先度要高于join的参数
+				# 
+				# 在下面的for循环中，会将join中的同名变量覆盖掉
+				$data = self::$join;
+				
+				foreach($vars as $name => $value) {
+					$data[$name] = $value;
+				}
+
+				$vars = $data;
 			}
 
 			return View::Assign($html, $vars);
