@@ -96,7 +96,7 @@ class Conversion {
         } elseif (is_integer($str) && $str == 0) {
             return false;
         } else {
-            if ($str === "1") {
+            if ($str === "1" || $str == "✔") {
                 return true;
             } else if ($str === "0") {
                 return false;
