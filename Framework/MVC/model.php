@@ -298,7 +298,7 @@ class Table {
 			array_push($contracts, MySqlScript::KeyExpression($exp));
 		}
 		
-		return join(", ", $contracts);		
+		return join(", ", $contracts);
 	}
 
 	/**
@@ -310,13 +310,30 @@ class Table {
 	 * @return Table
 	*/
 	public function order_by($keys, $desc = false) {
-		$condition = null;
-		$key       = self::getKeys($keys);
+		if (is_string($keys)) {
+			$order = Regex::Match($keys, "\s((asc)|(desc))$");
+
+			# asc/desc only allows one field name
+			if (!empty($order) && $order != false) {
+				$keys = trim(str_replace($order, "", $keys));
+				$key  = "`$keys`";
+
+				if (trim($order) == "asc") {
+					$desc = false;
+				} else {
+					$desc = true;
+				}
+			} else {
+				$key = self::getKeys($keys);
+			}
+		} else {
+			$key = self::getKeys($keys);
+		}
 
 		if ($desc) {
-			$condition["order_by"] = [$key => "DESC"];
+			$condition = ["order_by" => [$key => "DESC"]];
 		} else {
-			$condition["order_by"] = [$key => "ASC"];
+			$condition = ["order_by" => [$key => "ASC"]];
 		}
 
 		$condition = $this->addOption($condition);
