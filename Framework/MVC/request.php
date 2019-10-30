@@ -13,14 +13,14 @@ class WebRequest {
      * 
      * @return string
     */
-    public function get($queryKey, $default = null) {
+    public static function get($queryKey, $default = null) {
         return Utils::ReadValue($_GET, $queryKey, $default);
     }
 
     /**
      * @return boolean
     */
-    public function getBool($queryKey) {
+    public static function getBool($queryKey) {
         $value = Utils::ReadValue($_GET, $queryKey, false);
         // get option value and then 
         // try to convert string to boolean
@@ -36,7 +36,7 @@ class WebRequest {
      * 
      * @return integer
     */
-    public function getInteger($queryKey, $default = 0, $unsigned = true) {
+    public static function getInteger($queryKey, $default = 0, $unsigned = true) {
         $value = Utils::ReadValue($_GET, $queryKey, $default);
         // get option value and then 
         // try to convert string to integer
@@ -54,7 +54,7 @@ class WebRequest {
      * 
      * @return string[]
     */
-    public function getList($queryKey, $delimiter = ",") {
+    public static function getList($queryKey, $delimiter = ",") {
         $value = Utils::ReadValue($_GET, $queryKey, null);
 
         if (empty($value)) {
