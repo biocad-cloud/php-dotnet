@@ -1,9 +1,6 @@
 <?php
 
-include "../../package.php";
-
-include "../../MVC/expression.php";
-include "../../MVC/sqlBuilder.php";
+include __DIR__ . "/../../package.php";
 
 dotnet::AutoLoad();
 
@@ -20,5 +17,3 @@ $asserts = [
 $expression = \MVC\MySql\Expression\WhereAssert::AsExpression($asserts);
 
 echo $expression . "\n\n";
-
-?>

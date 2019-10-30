@@ -188,7 +188,11 @@ class URL {
      * 所以会需要用这个函数将重写前的参数写入$_GET数组中来解决这个问题
     */
     public static function NormalizeRedirectArguments() {
-        $args = self::mb_parse_url($_SERVER["REQUEST_URI"], true);
+        if (IS_CLI) {
+            return;
+        } else {
+            $args = self::mb_parse_url($_SERVER["REQUEST_URI"], true);
+        }
 
         foreach($args as $name => $val) {
             if (!array_key_exists($name, $_GET)) {
