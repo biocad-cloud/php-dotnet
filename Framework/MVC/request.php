@@ -28,13 +28,25 @@ class WebRequest {
     }
 
     /**
+     * 从url查询之中获取得到值并解析为整形数
+     * 
+     * @param string $queryKey
+     * @param integer $default 当查询参数不存在或者不满足约束条件的时候的默认值
+     * @param boolean $unsigned 约束规则：目标结果值是否应该为正实数
+     * 
      * @return integer
     */
-    public function getInteger($queryKey, $default = 0) {
+    public function getInteger($queryKey, $default = 0, $unsigned = true) {
         $value = Utils::ReadValue($_GET, $queryKey, $default);
         // get option value and then 
         // try to convert string to integer
-        return Conversion::CInt($value);
+        $i32 = Conversion::CInt($value);
+
+        if ($unsigned && $i32 < 0) {
+            return $default;
+        } else {
+            return $i32;
+        }
     }
 
     /**
