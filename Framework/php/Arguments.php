@@ -148,6 +148,13 @@ class Arguments implements ArrayAccess {
         return $v;
     }
 
+    /**
+     * A simple cli arguments parser, an example cli input format:
+     * 
+     * ```
+     * php myscript.php --user=nobody --password=secret -p --access="host=127.0.0.1 port=456"
+     * ```
+    */
     public static function simpleArguments() {
         $_ARG = array();
 
