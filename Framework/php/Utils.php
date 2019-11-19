@@ -446,7 +446,7 @@ class Utils {
     public static function ReadValue($array, $key, $default = null) {
         if ($array == false || is_null($array) || empty($array)) {
             return $default;
-        } else if (is_array($array)) {
+        } else if (is_array($array) || ($array instanceof ArrayAccess)) {
 
             if (array_key_exists($key, $array)) {
                 return $array[$key];

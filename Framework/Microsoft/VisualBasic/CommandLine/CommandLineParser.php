@@ -26,28 +26,39 @@ class CommandLineParser {
      *           所以在这里是从1开始的，即跳过第一个文件名，第二个元素
      *           （下标1）开始才是所需要的命令行数据
      *  
+     * @return CommandLine
     */
-    public static function ParseCLIArgvs($offset = 1) {
+    public static function ParseCLIArgvs() {
         $argv      = $_SERVER['argv'];
-        $name      = $argv[$offset];
+        $script    = $argv[0];
+        $name      = $argv[1];
         $arguments = [];
 
-        for ($i = 2 + $offset; $i < count($argv); $i++) {
-            $term = $argv[$i];
+        if (Strings::InStr($name, "=") > 0) {
+            # no command name
+            list($key, $value) = self::parseCmdToken($name);
+            $name = "";
+            $arguments[$key] = $value;
+        } else {
+            # do nothing
+        }
 
-            if (Strings::InStr($term, "=")) {
-                $term = StringHelpers::GetTagValue($term, "=");
-                list($key, $value) = Utils::Tuple($term);
-            } else {
-                // is a logical boolean flag, and it is 
-                // true if it is presented.
-                list($key, $value) = [$term, true]; 
-            }
-
+        for ($i = 2; $i < count($argv); $i++) {
+            list($key, $value) = self::parseCmdToken($argv[$i]);
+            // push to array
             $arguments[$key] = $value;
         }
-echo var_dump($name);
-echo var_dump($arguments);
-        return new CommandLine($name, $arguments);
+
+        return new CommandLine($name, $arguments, $script);
+    }
+
+    private static function parseCmdToken($term) {
+        if (Strings::InStr($term, "=")) {           
+            return Utils::Tuple(StringHelpers::GetTagValue($term, "="));
+        } else {
+            // is a logical boolean flag, and it is 
+            // true if it is presented.
+            return [$term, true]; 
+        }
     }
 }
