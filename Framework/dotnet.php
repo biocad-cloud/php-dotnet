@@ -171,13 +171,24 @@ class dotnet {
             # 如果是字符串，则使用文件的加载方式
             # 反之再判断是否为数组
             # 如果既不是字符串又不是数组，则使用默认配置数据并给出警告
-            if (is_string($config) && file_exists($config)) {
-                DotNetRegistry::$config = include $config;
+            if (is_string($config)) {
+                if (file_exists($config)) {
+                    # load configuration file from a given config file.
+                    DotNetRegistry::$config = include $config;
+                    # debug echo on cli
+                    console::log("Load framework config file from '" . realpath($config) . "'");
+                } else {
+                    # file not exists!
+                    console::warn("Config data php file '$config' is not exists on your filesystem...");
+                    # load default configuration data.
+                    DotNetRegistry::$config = DotNetRegistry::DefaultConfig();
+                }
             } elseif (is_array($config)) {
                 DotNetRegistry::$config = $config;
             } else {
                 # 无效的配置参数信息，使用默认的配置并且给出警告信息
                 console::warn("A config data was given, but data type is mismatched, require a php file path or config data array.");
+                # load default configuration data.
                 DotNetRegistry::$config = DotNetRegistry::DefaultConfig();
             }
         } else {
