@@ -18,7 +18,6 @@ class CommandLineParser {
         $name      = "";
         $arguments = [];
 
-
         return new CommandLine($name, $arguments);
     }
 
@@ -39,11 +38,10 @@ class CommandLineParser {
                 $term = StringHelpers::GetTagValue($term, "=");
                 list($key, $value) = Utils::Tuple($term);
             } else {
-
                 // is a logical boolean flag, and it is 
                 // true if it is presented.
                 list($key, $value) = [$term, true]; 
-            }            
+            }
 
             $arguments[$key] = $value;
         }
@@ -51,5 +49,3 @@ class CommandLineParser {
         return new CommandLine($name, $arguments);
     }
 }
-
-?>
