@@ -27,11 +27,12 @@ class CommandLineParser {
      *           （下标1）开始才是所需要的命令行数据
      *  
     */
-    public static function ParseCLIArgvs() {
-        $name      = $argv[1];
+    public static function ParseCLIArgvs($offset = 1) {
+        $argv      = $_SERVER['argv'];
+        $name      = $argv[$offset];
         $arguments = [];
 
-        for ($i = 2; $i < count($argv); $i++) {
+        for ($i = 2 + $offset; $i < count($argv); $i++) {
             $term = $argv[$i];
 
             if (Strings::InStr($term, "=")) {
@@ -45,7 +46,8 @@ class CommandLineParser {
 
             $arguments[$key] = $value;
         }
-
+echo var_dump($name);
+echo var_dump($arguments);
         return new CommandLine($name, $arguments);
     }
 }
