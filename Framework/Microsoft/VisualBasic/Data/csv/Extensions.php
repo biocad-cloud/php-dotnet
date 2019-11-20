@@ -11,6 +11,13 @@ namespace Microsoft\VisualBasic\Data\csv {
     class Extensions {
 
         /**
+         * Save [key => value] tuples into a csv file.
+        */
+        public static function SaveNamedValues($array, $path, $title = ["name", "value"], $encoding = "utf8") {
+            
+        }
+
+        /**
          * Save array collection as a csv file.
          * 
          * @param array $array The object array collection.
