@@ -14,7 +14,15 @@ namespace Microsoft\VisualBasic\Data\csv {
          * Save [key => value] tuples into a csv file.
         */
         public static function SaveNamedValues($array, $path, $title = ["name", "value"], $encoding = "utf8") {
-            
+            $data = [];
+            $keyName = $title[0];
+            $valName = $title[1]; 
+
+            foreach($array as $key => $value) {
+                $data[] = [$keyName => $key, $valName => $value];
+            }
+
+            return self::SaveTo($data, $path, null, $encoding);
         }
 
         /**
