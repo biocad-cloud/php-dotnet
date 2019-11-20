@@ -176,6 +176,8 @@ class taskhost {
             $CLI = "Rscript --no-save --no-restore --verbose \"{$R}\" > {$workspace}/$log 2>&1";
         }
 
+        console::log($CLI);
+
         shell_exec($CLI);
         # 切换回之前的工作区文件夹
         chdir($current);
