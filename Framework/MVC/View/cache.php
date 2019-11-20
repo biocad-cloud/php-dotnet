@@ -61,11 +61,18 @@ class ViewCache {
 		# 会因为主html文件没有被修改的原因而没有更新cache
 		# 在这里使用app version来更新缓存
 		$appVer  = DotNetRegistry::Read("APP_VERSION", "0.0.0");
-		$file    = basename($path);
+        $file    = basename($path);
+        
 		# 2018-09-18 从下面的代码之中可以看见，因为缓存页面是和用户请求有关的
-		# 所以没有办法为每一个视图页面生成缓存页面
-		$path    = md5($_SERVER["REQUEST_URI"]);
-		$cache   = "$temp/$appVer/$file/$version/$path.html";
+        # 所以没有办法为每一个视图页面生成缓存页面
+        if (IS_CLI) {
+            # may be have some task for rendering view page in cli app
+            $path = md5(join(" ", $_SERVER['argv']));
+        } else {
+            $path = md5($_SERVER["REQUEST_URI"]);
+        }
+		
+		$cache = "$temp/$appVer/$file/$version/$path.html";
 
 		return $cache;
 	}
