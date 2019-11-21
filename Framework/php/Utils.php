@@ -168,9 +168,11 @@ class Utils {
     }
 
     /**
-     * @param string $filename
+     * Get mime content type based on the file extension shuffix name
+     * 
+     * @param string $file
     */
-    public static function get_MIMEcontentType($filename) {    
+    public static function get_MIMEcontentType($file) {    
         // mime_content_type函数会将js/css文件解释为text/plain或者text/html
         // 在这里需要修复一下这个bug
         $ext = strtolower(pathinfo($file)["extension"]);
@@ -184,7 +186,7 @@ class Utils {
         $result = new finfo();
 
         if (is_resource($result) === true) {
-            return $result->file($filename, FILEINFO_MIME_TYPE);
+            return $result->file($file, FILEINFO_MIME_TYPE);
         } else {
             $mime = \mime_content_type($file);
         }
@@ -210,7 +212,7 @@ class Utils {
      * 
      * @param string $filepath 目标文件路径
     */
-    private static function doDataTransfer($filepath) {
+    private static function doDataTransfer($filepath, $file_size) {
         $fp         = fopen($filepath, "r");
         $file_count = 0; 
         $buffer     = 1024; 
@@ -274,7 +276,7 @@ class Utils {
 
         if(!$isdata) {
             if ($rateLimit <= 0) {
-                Utils::doDataTransfer($file);
+                Utils::doDataTransfer($file, $file_size);
             } else {
                 Utils::flushFileWithRateLimits($file, $rateLimit);
             }
