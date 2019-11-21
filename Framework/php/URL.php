@@ -1,7 +1,8 @@
 <?php
 
 /**
- * URL帮助类
+ * The php url data helper.
+ * (URL帮助类)
 */
 class URL {
 
