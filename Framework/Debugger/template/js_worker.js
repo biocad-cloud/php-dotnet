@@ -11,10 +11,23 @@ var php_debugger;
         if (html === void 0) { html = null; }
         var node = document.createElement(tagName);
         if (attrs) {
-            Object.keys(attrs).forEach(function (name) { return node.setAttribute(name, attrs[name]); });
+            Object.keys(attrs)
+                .forEach(function (name) {
+                if (name == "onclick") {
+                    node.onclick = attrs[name];
+                }
+                else {
+                    node.setAttribute(name, attrs[name]);
+                }
+            });
         }
         if (html) {
-            node.innerHTML = html;
+            if (typeof html == "string") {
+                node.innerHTML = html;
+            }
+            else {
+                node.appendChild(html);
+            }
         }
         return node;
     }
@@ -28,9 +41,10 @@ var php_debugger;
     */
     function initTabUI() {
         var open = php_debugger.$pick('#think_page_trace_open');
-        var close = php_debugger.$pick('#think_page_trace_close').childNodes[1];
+        var close = php_debugger.$pick('#think_page_trace_close_button');
         var trace = php_debugger.$pick('#think_page_trace_tab');
-        var container = close.parentNode;
+        var container = php_debugger.$pick('#think_page_trace_close');
+        var closeTable = php_debugger.$pick("#mysql-close");
         var closeDebuggerTab = function () {
             trace.style.display = 'none';
             container.style.display = 'none';
@@ -44,6 +58,10 @@ var php_debugger;
             php_debugger.serviceWorker.StartWorker();
         };
         close.onclick = closeDebuggerTab;
+        closeTable.onclick = function () {
+            php_debugger.$pick("#mysql-query-display-page").style.display = "none";
+            php_debugger.$pick("#mysql-logs").style.display = "block";
+        };
         attachTabSwitch();
         closeDebuggerTab();
     }
@@ -81,6 +99,7 @@ var php_debugger;
     (function (serviceWorker) {
         serviceWorker.debuggerGuid = php_debugger.$pick("#debugger_guid").innerText;
         serviceWorker.debuggerApi = "/index.php?app=php.NET&api=debugger";
+        serviceWorker.debuggerSqlApi = "/index.php?app=php.NET&api=sql_query";
         /**
          * 服务器返回来的是大于这个checkpoint数值的所有的后续新增记录
         */
@@ -92,7 +111,7 @@ var php_debugger;
         /**
          * 更新的时间间隔过短，可能会影响调试
         */
-        serviceWorker.workerInterval = 5000;
+        serviceWorker.workerInterval = 1000;
         /**
          * 每一秒钟执行一次服务器查询
         */
@@ -105,9 +124,11 @@ var php_debugger;
             // 但是最开始的时候调试器的标签页还没有打开
             // 所以没有必要一开始就启动后台线程
             // serviceWorker.StartWorker();
+            fetch();
         }
         serviceWorker.doInit = doInit;
         function StartWorker() {
+            checkpoints["guid"] = serviceWorker.debuggerGuid;
             try {
                 serviceWorker.StopWorker();
             }
@@ -128,7 +149,7 @@ var php_debugger;
          * 假设服务器上一定会存在一个``index.php``文件？
         */
         function fetch() {
-            $.post(serviceWorker.debuggerApi + "&guid=" + serviceWorker.debuggerGuid, checkpoints, function (info) {
+            $.post(serviceWorker.debuggerApi, checkpoints, function (info) {
                 if (info.SQL.lastCheckPoint > 0 && checkpoints["SQL"] != info.SQL.lastCheckPoint) {
                     checkpoints["SQL"] = info.SQL.lastCheckPoint;
                     appendSQL(info.SQL.data);
@@ -140,7 +161,62 @@ var php_debugger;
             var mysqlLogs = php_debugger.$pick("#mysql-logs");
             SQLlogs.forEach(function (log) { return mysqlLogs.appendChild(php_debugger.$new("li", {
                 style: "border-bottom:1px solid #EEE;font-size:14px;padding:0 12px"
-            }, log.SQL + " [ RunTime:" + log.runtime + " ]")); });
+            }, sql(log))); });
+        }
+        function showQuery(sql) {
+            php_debugger.$pick("#mysql").innerHTML = sql;
+            $.post(serviceWorker.debuggerSqlApi, {
+                sql: sql,
+                guid: serviceWorker.debuggerGuid
+            }, function (table) {
+                var display = php_debugger.$pick("#mysql-query-display");
+                php_debugger.$pick("#mysql-logs").style.display = "none";
+                php_debugger.$pick("#mysql-query-display-page").style.display = "block";
+                display.innerHTML = "";
+                if (table.code == 0) {
+                    // table rows data
+                    var rowDatas = table.info;
+                    var titles = Object.keys(rowDatas[0]);
+                    var thead = php_debugger.$new("thead");
+                    var tbody = php_debugger.$new("tbody");
+                    var r = void 0;
+                    for (var _i = 0, titles_1 = titles; _i < titles_1.length; _i++) {
+                        var td = titles_1[_i];
+                        thead.appendChild(php_debugger.$new("th", {}, td));
+                    }
+                    for (var _a = 0, rowDatas_1 = rowDatas; _a < rowDatas_1.length; _a++) {
+                        var row = rowDatas_1[_a];
+                        r = php_debugger.$new("tr");
+                        for (var i = 0; i < titles.length; i++) {
+                            r.appendChild(php_debugger.$new("td", {}, row[titles[i]]));
+                        }
+                        tbody.appendChild(r);
+                    }
+                    display.appendChild(thead);
+                    display.appendChild(tbody);
+                }
+                else {
+                    // error message
+                    display.innerHTML = "<span style=\"font-style: bold; color: red\">" + table.info + "</span>";
+                }
+            });
+        }
+        function sql(log) {
+            var sql = log.SQL;
+            if (sql.indexOf("SELECT ") == 0) {
+                var div = php_debugger.$new("div", {}, "");
+                div.appendChild(php_debugger.$new("a", {
+                    href: "javascript:void(0);",
+                    onclick: function () {
+                        showQuery(log.SQL);
+                    }
+                }, log.SQL));
+                div.appendChild(php_debugger.$new("span", {}, " [ RunTime:" + log.runtime + " ]"));
+                return div;
+            }
+            else {
+                return log.SQL + " [ RunTime:" + log.runtime + " ]";
+            }
         }
     })(serviceWorker = php_debugger.serviceWorker || (php_debugger.serviceWorker = {}));
 })(php_debugger || (php_debugger = {}));

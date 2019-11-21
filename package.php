@@ -75,7 +75,7 @@ define("IS_CLI", php_sapi_name() === 'cli');
 /**
  * 当前的源代码版本编号
 */
-define("GIT_COMMIT", "721557fb87c33306e5c252556e18389c346c3a25");
+define("GIT_COMMIT", "5199591d44fdf133d33ad97495bfbfa881327af6");
 
 if (IS_CLI && FRAMEWORK_DEBUG) {
 
@@ -108,6 +108,14 @@ if (IS_CLI && FRAMEWORK_DEBUG) {
     echo " Version: " . GIT_COMMIT . "\n";
     echo " Author:     xieguigang <xie.guigang@gcmodeller.org>\n";
     echo "\n\n";
+}
+
+if (!IS_CLI) {
+    # send a fake information header
+    header("X-Powered-By: ASP.NET");
+    
+    # server header not working
+    # header("Server: IIS Docker");
 }
 
 if (!defined("SITE_PATH")) {
@@ -233,7 +241,7 @@ if (IS_POST && (count($_POST) === 0)) {
  * PHP.NET框架的根文件夹位置
  * 获取得到package.php这个文件的所处的文件夹的位置
 */
-define("PHP_DOTNET", dirname(__FILE__) . "/Framework");
+define("PHP_DOTNET", realpath( __DIR__ . "/Framework") );
 
 bootstrapLoader::imports("Debugger.Ubench.Ubench");
 
@@ -310,6 +318,24 @@ function Imports($namespace) {
 }
 
 /**
+ * 在打印调试数据之后，脚本程序将会在这里退出执行
+*/
+function breakpoint($dump) {
+    header("Content-Type: text/html");
+
+    echo "<h3>Break Point:</h3>";
+    echo "<hr />";
+    echo StackTrace::GetCallStack()->ToString(true);
+    echo "<hr />";
+    echo "<h3>Object dumping data:</h3>";
+    echo "<pre><code>";
+    echo var_dump($dump);
+    echo "</code></pre>";
+
+    exit(0);
+}
+
+/**
  * 对用户的浏览器进行重定向，支持路由规则。
  * **注意，在使用这个函数进行重定向之后，脚本将会从这里退出执行**
  * 
@@ -340,6 +366,20 @@ function session($name, $value) {
     $_SESSION[$name] = $value;
 }
 
+/**
+ * 重置当前的会话，将当前的绘制切换到所给定的会话中的
+ * 
+ * @param string $new_ssID 将当前的会话切换到这个新编号所指定的会话中去
+*/
+function ResetSession($new_ssID) {
+    session_abort();
+    session_id($new_ssID);
+    session_start();
+}
+
+/** 
+ * 主要是进行``Dispose``方法的自动调用
+*/
 function using(\System\IDisposable $obj, callable $procedure) {
     $result = $procedure($obj);
     $obj->Dispose();
@@ -372,6 +412,18 @@ function deleteCookies($cookies) {
             setcookie($cookie_name, "", time() - 3600, "/", $domain); 
         }
     }
+}
+
+/**
+ * Create a linq sequence object
+ * 
+ * @param array $array
+ * 
+ * @return IEnumerator
+*/
+function from($array) {
+    Imports("System.Linq.IEnumerator");
+    return new IEnumerator($array);
 }
 
 #endregion

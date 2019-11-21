@@ -4,7 +4,9 @@ Imports("Microsoft.VisualBasic.Strings");
 Imports("MVC.MySql.sqlDriver");
 Imports("MVC.MySql.schemaDriver");
 Imports("MVC.MySql.driver");
-Imports("MVC.MySql.join");
+Imports("MVC.MySql.SqlBuilder.expressionParts");
+Imports("MVC.MySql.SqlBuilder.Statements");
+Imports("MVC.MySql.SqlBuilder.sqlBuilder");
 Imports("System.Linq.Enumerable");
 Imports("Debugger.SqlFormatter");
 
@@ -89,32 +91,49 @@ class Table {
 				$this->driver,
 				# 是直接从已经存在的数据库驱动对象构建，说明前面可能已经加载了缓存文件，
 				# 在这里使用NULL忽略掉可能的重复加载
-				NULL  
+				NULL
 			);
 
-		} else {
-
-			// 如果在配置文件之中配置了多个数据库的链接参数信息
-			// 则在这里可以使用下面的格式来指定数据库的连接信息的获取
-			// 
-			// [dbName => tableName] for multiple database config.
-			//
-			list($dbName, $tableName) = Utils::Tuple($config);
-
-			if (array_key_exists($dbName, DotNetRegistry::$config)) {
-				$this->__initBaseOnExternalConfig(
-					$tableName, DotNetRegistry::$config[$dbName]
-				);
+		} else if (is_array($config)) {
+			$keys = array_keys($config);
+			
+			if (is_integer($keys[0])) {
+				dotnet::ThrowException("Invalid slave database endpoint configuration: " . json_encode($config));
 			} else {
-				# 无效的配置参数信息
-				$msg = "Invalid database name config or database config '$dbName' is not exists!";
-				throw new Exception($msg);
+				$this->slaveEndpointConfigFromTuple($config);
 			}
-		} 
+
+		} else if (is_object($config)) {
+			$this->slaveEndpointConfigFromTuple($config);
+		} else {
+			dotnet::ThrowException("Unsupports data was given at here...");
+		}
 		
 		$this->condition = $condition;
 	}
 	
+	/**
+	 * @param array|object $config
+	*/
+	private function slaveEndpointConfigFromTuple($config) {
+		// 如果在配置文件之中配置了多个数据库的链接参数信息
+		// 则在这里可以使用下面的格式来指定数据库的连接信息的获取
+		// 
+		// [dbName => tableName] for multiple database config.
+		//
+		list($dbName, $tableName) = Utils::Tuple($config);
+
+		if (array_key_exists($dbName, DotNetRegistry::$config)) {
+			$this->__initBaseOnExternalConfig(
+				$tableName, DotNetRegistry::$config[$dbName]
+			);
+		} else {
+			# 无效的配置参数信息
+			$msg = "Invalid database name config or database config '$dbName' is not exists!";
+			dotnet::ThrowException($msg);
+		}
+	}
+
 	/**
 	 * 这个函数只适用于命令行终端环境下的数据库查询调试
 	 * 
@@ -223,7 +242,7 @@ class Table {
 	 * 对查询的结果的数量进行限制，当只有参数m的时候，表示查询结果限制为前m条，
 	 * 当参数n被赋值的时候，表示偏移m条之后返回n条结果
 	 * 
-	 * @param integer $m ``LIMIT m``
+	 * @param integer|integer[] $m ``LIMIT m``
 	 * @param integer $n ``LIMIT m,n``
 	 * 
 	 * @return Table
@@ -273,13 +292,13 @@ class Table {
 		} 
 		
 		# 如果是一个字段列表的时候
-		$contracts = [];			
+		$contracts = [];
 
 		foreach ($keys as $exp) {
 			array_push($contracts, MySqlScript::KeyExpression($exp));
 		}
 		
-		return join(", ", $contracts);		
+		return join(", ", $contracts);
 	}
 
 	/**
@@ -291,13 +310,30 @@ class Table {
 	 * @return Table
 	*/
 	public function order_by($keys, $desc = false) {
-		$condition = null;
-		$key       = self::getKeys($keys);
+		if (is_string($keys)) {
+			$order = Regex::Match($keys, "\s((asc)|(desc))$");
+
+			# asc/desc only allows one field name
+			if (!empty($order) && $order != false) {
+				$keys = trim(str_replace($order, "", $keys));
+				$key  = "`$keys`";
+
+				if (trim($order) == "asc") {
+					$desc = false;
+				} else {
+					$desc = true;
+				}
+			} else {
+				$key = self::getKeys($keys);
+			}
+		} else {
+			$key = self::getKeys($keys);
+		}
 
 		if ($desc) {
-			$condition["order_by"] = [$key => "DESC"];
+			$condition = ["order_by" => [$key => "DESC"]];
 		} else {
-			$condition["order_by"] = [$key => "ASC"];
+			$condition = ["order_by" => [$key => "ASC"]];
 		}
 
 		$condition = $this->addOption($condition);
@@ -312,7 +348,7 @@ class Table {
 	/**
 	 * @return string where expression
 	*/
-    private function getWhere() {	
+    private function getWhere() {
 
 		# 如果条件是空的话，就不再继续构建表达式了
 		# 这个SQL表达式可能是没有选择条件的
@@ -582,6 +618,9 @@ class Table {
 	/**
 	 * 获取当前的这个实例之中所执行的最后一条MySql语句
 	 * 
+	 * @param boolean $code 这个参数用来切换输出的代码字符串的格式，如果这个参数设置为true，
+	 *                      则返回带有代码高亮样式的html代码，反之则是纯文本格式的sql代码字符串
+	 * 
 	 * @return string
 	*/
 	public function getLastMySql($code = false) {
@@ -598,21 +637,29 @@ class Table {
 	}
 
 	private static function getFieldString($fields) {
-		return empty($fields) ? "*" : Strings::Join($fields, ", ");
+		if (empty($fields)) {
+			return "*";
+		} else if (is_string($fields)) {
+			return $fields;
+		} else if (is_array($fields)) {
+			return Strings::Join($fields, ", ");
+		} else {
+			dotnet::BadRequest("Invalid data type of the selected field names!");
+		}
 	}
 
 	/**
 	 * select all.(函数参数``$fields``是需要选择的字段列表，如果没有传递任何参数的话，
 	 * 默认是``*``，即选择全部字段)
 	 * 
-	 * @param array $fields A string array.
+	 * @param array|string $fields A string array.
 	 * @param string $keyBy 如果这个参数不是空的话，则返回来的数组将会使用这个字段的值作为index key.
 	 * 
-	 * @return array
+	 * @return array|boolean 当查询出错的时候，这个函数是会返回一个逻辑值false的
 	*/
     public function select($fields = null, $keyBy = null) {
 		$ref     = $this->schema->ref;
-        $assert  = $this->getWhere();        
+        $assert  = $this->getWhere();
 		$orderBy = $this->getOrderBy();
 		$groupBy = $this->getGroupBy();
 		$limit   = $this->getLimit();
@@ -638,6 +685,12 @@ class Table {
 
 		$data = $this->driver->Fetch($SQL . ";");
 		
+		if (false === $data) {
+			# 20190911
+			# 查询出错了
+			return false;
+		}
+
 		if (!empty($keyBy) && strlen($keyBy) > 0) {
 			$out = [];
 
@@ -711,7 +764,9 @@ class Table {
 	/**
 	 * select but limit 1
 	 * 
-	 * 如果查询失败会返回一个空值
+	 * 如果查询失败会返回逻辑值false
+	 * 
+	 * @return boolean|array 如果查询成功，则返回行数据，反之返回一个逻辑值false来表示失败
 	*/
     public function find($fields = null) {
 		$ref     = $this->schema->ref;
@@ -761,7 +816,7 @@ class Table {
 	 * Select and limit 1 and return the field value, if target 
 	 * record is not found, then returns false.
 	 * 
-	 * @param name The table field name. Case sensitive! 
+	 * @param string $name The table field name. Case sensitive! 
 	 * 
 	 * @return mixed The reuqired field value. 
 	*/
@@ -825,71 +880,23 @@ class Table {
 	}
 	
 	/**
-	 * insert into.
+	 * insert into. (对于具有auto_increment类型的主键的表，这个函数会返回递增之后的主键)
 	 *
-	 * @param array $data table row data in array type
+	 * @param array|object $data table row data in array type
+	 * 
+	 * @return boolean|integer 返回成功或者失败的逻辑值，如果目标数据表中存在递增id主键的话，
+	 *                         则这个函数返回当前所插入的新数据行的``id``值
 	*/ 
     public function add($data) {
-
-		$ref    = $this->schema->ref;
-		$fields = [];
-		$values = [];	
-		
+		$SQL = MVC\MySql\Expression\InsertInto::Sql($data, $this->schema); 
+		$result = $this->driver->ExecuteSql($SQL);
 		// 自增的编号字段
 		$auto_increment = $this->schema->auto_increment;
 
-		// 使用这个for循环的主要的目的是将所传入的参数数组之中的
-		// 无关的名称给筛除掉，避免出现查询错误
-		foreach ($this->schema->schema as $fieldName => $def) {
-			if (array_key_exists($fieldName, $data)) {
-				
-				$value = $data[$fieldName];
-				# 使用转义函数进行特殊字符串的转义操作
-				# $value = mysqli_real_escape_string($mysqli_exec, $value);
-
-				array_push($fields, "`$fieldName`");
-				array_push($values, "'$value'");
-				
-			} else if ($auto_increment && Strings::LCase($fieldName) == Strings::LCase($auto_increment) ) {
-				# Do Nothing
-			} else {
-
-                # 检查一下这个字段是否是需要值的？如果需要，就将默认值填上
-                if (Utils::ReadValue($def, "Null", "") == "NO") {
-					
-                    # 这个字段是需要有值的，则尝试获取默认值
-                    $default = $def["Default"];
-
-                    if ($default) {
-
-                        array_push($fields, "`$fieldName`");
-                        array_push($values, "'$default'");
-
-                    } else {
-						
-                        # 这个字段需要有值，但是用户没有提供值，而且也不存在默认值
-                        # 则肯定无法将这条记录插入数据库
-                        # 需要抛出错误？？
-
-                    }
-                }
-            }
-		}
-		
-		$fields = join(", ", $fields);
-		$values = join(", ", $values);
-		
-		# INSERT INTO `metacardio`.`xcms_files` (`task_id`) VALUES ('ABC');
-		$SQL    = "INSERT INTO $ref ($fields) VALUES ($values);";
-		$result = $this->driver->ExecuteSql($SQL);
-
         if (!$result) {
-			
             // 可能有错误，给出错误信息
             return false;
-			
         } else {
-			
             if (!$auto_increment) {
 				# 这个表之中没有自增字段，则返回true
 				return true;
@@ -897,8 +904,8 @@ class Table {
 				# 在这个表之中存在自增字段，则返回这个uid
 				# 方便进行后续的操作
 				return $result;
-			}           
-        }	
+			}
+        }
     }
 
     /**
@@ -958,7 +965,7 @@ class Table {
 	*/ 
     public function delete() {
 		$ref    = $this->schema->ref;
-        $assert = $this->getWhere();        
+        $assert = $this->getWhere();
 		
 		# DELETE FROM `metacardio`.`experimental_batches` WHERE `id`='4';
 		if (!$assert) {
@@ -976,4 +983,3 @@ class Table {
 
 	#endregion
 }
-?>

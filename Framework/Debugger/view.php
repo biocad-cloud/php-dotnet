@@ -168,6 +168,12 @@ class debugView {
             "tabUI_js"        => $uiJs
         ], self::$summary);
 
+        $vars["http.time"]     = \Utils::Now();
+        $vars["http.protocol"] = $_SERVER["SERVER_PROTOCOL"];
+        $vars["http.method"]   = $_SERVER["REQUEST_METHOD"];
+        $vars["http.uri"]      = $_SERVER["REQUEST_URI"];
+        $vars["http.php_session"] = session_id();
+
         return self::benchmark($vars);
     }
 

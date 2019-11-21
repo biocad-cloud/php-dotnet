@@ -109,41 +109,6 @@ abstract class controller {
     }
 
     /**
-     * 获取当前的控制器所接受的访问的ip地址列表
-     * ``#localhost``标记会被自动转换为本地服务器
-     * 的ip地址列表
-     * 
-     * ip地址列表之中的地址使用``|``符号进行分隔
-    */
-    public function getAccepts() {
-        $iplist = $this->getTagValue("accept");
-
-        if ($iplist) {
-            // 仅限于来自于这个ip列表的数据请求
-            // 来自于其他的ip地址的数据请求一律拒绝
-            $iplist  = explode("|", $iplist);
-            $accepts = [];
-
-            foreach($iplist as $tagIP) {
-                if (strtolower($tagIP) === "@localhost") {
-                    foreach(localhost() as $ip) {
-                        $accepts[] = $ip;
-                    }
-                } else {
-                    $accepts[] = $tagIP;
-                }
-            }
-
-            $iplist = $accepts;
-        } else {
-            // 没有做任何限制
-            $iplist = [];
-        }
-
-        return $iplist;
-    }
-
-    /**
      * 获取跨域访问控制
     */
     public function getAccessAllowOrigin() {
@@ -216,6 +181,16 @@ abstract class controller {
             return ["GET"];
         } else {
             return explode("|", $method);
+        }
+    }
+
+    public function getRequiredArguments() {
+        $require = $this->getTagValue("require");
+
+        if (empty($require)) {
+            return null;
+        } else {
+            return explode("|", $require);
         }
     }
 
@@ -298,7 +273,7 @@ abstract class controller {
             $controller->error($message, $errCode);
         };
         */
-
+        
         // 先检查目标方法是否存在于逻辑层之中
         if (!method_exists($app, $page = Router::getApp())) {
             # 如果是调试模式下，则可能是调试器调用
@@ -334,22 +309,9 @@ abstract class controller {
             $this->docComment = \PHP\ControllerDoc::ParseControllerDoc($this->docComment);
         }
 
-        // 在完成初始化之后，在这里检查http方法的合法性
-        // 检查客户端所请求方法是否被允许
-        $methods = $this->getMethods();
+        include_once __DIR__ . "/validation.php";
 
-        if (!in_array("*", $methods)) {
-            # 如果控制器函数不允许任何方法的话，则在这里执行检查
-            if (IS_GET) {
-                if (!in_array("GET", $methods)) {
-                    $this->handleInvalidMethod("GET");
-                }
-            } else {
-                if (!in_array("POST", $methods)) {
-                    $this->handleInvalidMethod("POST");
-                }
-            }
-        }
+        (new controllerValidation($this))->doValidation();
 
         return $this;
     }
@@ -456,16 +418,6 @@ abstract class controller {
         $msg = "Web app `<strong>$app</strong>` is not available in this controller!";
 
         dotnet::PageNotFound($msg);
-    }
-
-    /** 
-     * 405
-    */
-    public function handleInvalidMethod($currentMethod) {
-        $app = Router::getApp();
-        $msg = "Web app `<strong>$app</strong>` is not allows <code>$currentMethod</code> method!";
-
-        dotnet::InvalidHttpMethod($msg);
     }
 
     /**

@@ -158,5 +158,3 @@ class StackTrace {
         return $trace->ToString();
     }
 }
-
-?>

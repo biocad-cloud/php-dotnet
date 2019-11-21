@@ -15,8 +15,15 @@ namespace MVC\Views {
         public static function InterpolateTemplate($html, $vars) {
             $templates = ForEachView::ParseTemplates($html, "volist");
 
+            \debugView::LogEvent("Do volist interpolation...");
+            
+            if (APP_DEBUG && strlen($html) == 0) {
+                \console::warn("Template data is empty!");
+            }
+
             # 没有找到任何模板
             if (!$templates || count($templates) === 0) {
+                \console::log("Not required for volist interpolation.");
                 return $html;
             }
 
@@ -36,7 +43,7 @@ namespace MVC\Views {
                     $src  = \Utils::ReadValue($vars, $name);
                     $fill = self::processTemplate($volist, $template, $src);
                     $html = \str_replace($template, $fill, $html); 
-                }                
+                }
             }
 
             return $html;

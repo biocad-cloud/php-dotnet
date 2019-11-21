@@ -14,6 +14,7 @@ class dotnetException extends Exception {
 		
 	function __constructor($message, $code = -1) {
 		parent::__construct ($message, $code);
+		
 		$this->stackTrace = StackTrace::GetCallStack();
 	}	
 	

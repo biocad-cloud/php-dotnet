@@ -167,67 +167,119 @@ class Utils {
         return $tuple;
     }
 
-    public static function mime_content_type($filename) {
+    /**
+     * @param string $filename
+    */
+    public static function get_MIMEcontentType($filename) {    
+        // mime_content_type函数会将js/css文件解释为text/plain或者text/html
+        // 在这里需要修复一下这个bug
+        $ext = strtolower(pathinfo($file)["extension"]);
+
+        if ($ext == "js") {
+            return "text/javascript";
+        } else if ($ext == "css") {
+            return "text/css";     
+        }
+
         $result = new finfo();
-    
+
         if (is_resource($result) === true) {
             return $result->file($filename, FILEINFO_MIME_TYPE);
+        } else {
+            $mime = \mime_content_type($file);
         }
     
-        return false;
+        if (empty($mime) || false == $mime) {
+            return "application/octet-stream";
+        } else {
+            return $mime;
+        }
+    }
+
+    /** 
+     * 一般是用于处理向用户传输比较大的文本文件的传输操作
+     * 
+     * @param string $filepath 目标文件路径
+    */
+    public static function PrintLargeText($filepath) {
+        self::doDataTransfer($filepath);
+    }
+
+    /** 
+     * 执行不限速的文件传输操作
+     * 
+     * @param string $filepath 目标文件路径
+    */
+    private static function doDataTransfer($filepath) {
+        $fp         = fopen($filepath, "r");
+        $file_count = 0; 
+        $buffer     = 1024; 
+
+        //向浏览器返回数据
+        while(!feof($fp) && $file_count < $file_size) { 
+            $file_con    = fread($fp, $buffer); 
+            $file_count += $buffer; 
+            
+            echo $file_con; 
+        } 
+
+        fclose($fp); 
     }
 
     /**
      * 具有限速功能的文件下载函数 
      * 
-     * @param string $filepath 待文件下载的文件路径
+     * @param string $file 待文件下载的文件路径
      * @param integer $rateLimit 文件下载的限速大小，小于等于零表示不限速，这个函数参数的单位为字节Byte
      * @param string $renameAs 可以在这里重设所下载的文件的文件名
      * 
     */
-    public static function PushDownload($filepath, $rateLimit = -1, $mime = null, $renameAs = null) {
-        # 2018-6-18 有些服务器上面mime_content_type函数可能无法使用
-        # 所以在这里添加了一个可选参数来手动指定文件类型
-        if (!$mime) {
-            $mime = mime_content_type($filepath);
+    public static function PushDownload($file, $rateLimit = -1, $mime = null, $renameAs = null, $isdata = false, $filetransferMode = true) {
+        if (!$isdata) {
+            # file object is a disk file
+
+            # 2018-6-18 有些服务器上面mime_content_type函数可能无法使用
+            # 所以在这里添加了一个可选参数来手动指定文件类型
+            if (empty($mime) || false == $mime) {
+                $mime = self::get_MIMEcontentType($file);
+            }
+
+            if (!$renameAs) {
+                $renameAs = basename($file);
+            }
+
+            $file_size = filesize($file); 
+        } else {
+            # is the file data itself
+            $renameAs  = empty($renameAs) ? "file" : $renameAs ;
+            $mime      = empty($mime) ? self::get_MIMEcontentType($renameAs) : $mime;
+            $file_size = strlen($file);
         }
 
-        if (!$renameAs) {
-            $renameAs = basename($filepath);
-        }
-
-        $file_size = filesize($filepath); 
-
-        header('Content-Description: File Transfer');
-        header('Cache-control: private');
-        header('Content-Type:'                  . $mime);
-        header("Accept-Ranges: bytes");         
-        header("Accept-Length: $file_size");
-        header('Content-Disposition: attachment; filename=' . $renameAs);
-        // 告诉浏览器，这是二进制文件
-        header("Content-Transfer-Encoding: binary"); 
-
+        if ($filetransferMode) {
+            header('Content-Description: File Transfer');
+            header('Content-Disposition: attachment; filename=' . $renameAs);
+            // 告诉浏览器，这是二进制文件
+            header("Content-Transfer-Encoding: binary"); 
+            header('Cache-control: private');
+            header("Accept-Length: $file_size");                 
+        } else {
+            header("Content-Length: $file_size");
+        }        
+        
+        header('Content-Type:' . $mime);
+        header("Accept-Ranges: bytes");
+        
         ob_end_clean();
 
-        if ($rateLimit <= 0) {
-
-            # 不限速
-            $fp         = fopen($filepath, "r");
-            $file_count = 0; 
-            $buffer     = 1024; 
-
-            //向浏览器返回数据
-            while(!feof($fp) && $file_count < $file_size) { 
-                $file_con    = fread($fp, $buffer); 
-                $file_count += $buffer; 
-                
-                echo $file_con; 
-            } 
-
-            fclose($fp); 
-
+        if(!$isdata) {
+            if ($rateLimit <= 0) {
+                Utils::doDataTransfer($file);
+            } else {
+                Utils::flushFileWithRateLimits($file, $rateLimit);
+            }
         } else {
-            Utils::flushFileWithRateLimits($filepath, $rateLimit);
+            echo $file;
         }
     }
 
@@ -392,9 +444,9 @@ class Utils {
      *      返回第一个被查找到的键名的值，这个表达式通常用来表示别名查找
     */
     public static function ReadValue($array, $key, $default = null) {
-        if (empty($array)) {
+        if ($array == false || is_null($array) || empty($array)) {
             return $default;
-        } else if (is_array($array)) {
+        } else if (is_array($array) || ($array instanceof ArrayAccess)) {
 
             if (array_key_exists($key, $array)) {
                 return $array[$key];

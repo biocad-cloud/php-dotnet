@@ -15,7 +15,7 @@ namespace PhpDotNet {
          * @return string
         */
         public static function url($fullName, $lang = "en-us") {
-            $fullName = Strings::LCase($fullName);
+            $fullName = \Strings::LCase($fullName);
             return "https://msdn.microsoft.com/$lang/library/$fullName(v=vs.110).aspx?cs-save-lang=1&cs-lang=vb";
         }
 

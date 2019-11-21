@@ -7,6 +7,7 @@ Imports("Microsoft.VisualBasic.Strings");
 Imports("MVC.View.foreach");
 Imports("MVC.View.inline");
 Imports("MVC.View.volist");
+Imports("MVC.View.minifier");
 Imports("Debugger.Ubench.Ubench");
 
 # 2019-02-23
@@ -60,8 +61,24 @@ class View {
 	*/
 	private static function getViewFileAuto($name) {
 		$wwwroot = DotNetRegistry::GetMVCViewDocumentRoot();
+		$wwwroot = str_replace("\\", "/", $wwwroot);
+
+		if (Utils::IsWindowsOS()) {
+			$isFull = false;
+
+			foreach(["C:/", "D:/", "E:/", "F:/", "G:/"] as $drive) {
+				if (strpos($wwwroot, $drive) == 0) {
+					$isFull = true;
+					break;
+				}
+			}
+		} else if (strpos($wwwroot, "/") == 0) {
+			# 是一个绝对路径，则直接使用
+			# do nothing
+			$isFull = true;
+		} 
 		
-		if (strpos($wwwroot, "/") == 0) {
+		if ($isFull) {
 			# 是一个绝对路径，则直接使用
 			# do nothing
 		} else {
@@ -196,26 +213,6 @@ class View {
 	}
 	
 	/**
-	 * 获取目标html文档梭对应的缓存文件的文件路径
-	*/
-	private static function getCachePath($path) {
-		// temp/{yyymmmdd}/viewName
-		$version = filemtime($path);
-		$temp    = dotnet::getMyTempDirectory();
-		# 因为缓存的路径和主html文件的修改时间相关，所以如果只是文档碎片被更新了
-		# 会因为主html文件没有被修改的原因而没有更新cache
-		# 在这里使用app version来更新缓存
-		$appVer  = DotNetRegistry::Read("APP_VERSION", "0.0.0");
-		$file    = basename($path);
-		# 2018-09-18 从下面的代码之中可以看见，因为缓存页面是和用户请求有关的
-		# 所以没有办法为每一个视图页面生成缓存页面
-		$path    = md5($_SERVER["REQUEST_URI"]);
-		$cache   = "$temp/$appVer/$file/$version/$path.html";
-
-		return $cache;
-	}
-
-	/**
 	 * 加载指定路径的html文档并对其中的占位符利用vars字典进行填充
 	 * 这个函数还会额外的处理includes关系
 	 * 
@@ -238,6 +235,10 @@ class View {
 
 		if (file_exists($path)) {
 			$html = self::loadTemplate($path, $lang);
+
+			if (APP_DEBUG && strlen($html) == 0) {
+				console::warn("The raw template data is empty! Please check for file <strong>$path</strong>.");
+			}
 		} else {
 			# 给出文件不存在的警告信息
 			return "HTML document view <strong>&lt;$path></strong> could not be found!";
@@ -277,12 +278,16 @@ class View {
 			if (!array_key_exists("authors", $vars) && !empty($_DOC->authors)) {
 				$vars["authors"] = join(", ", $_DOC->authors);
 			}
+			if (!array_key_exists("appName", $vars)) {
+				$vars["appName"] = DotNetRegistry::Read("APP_TITLE", null);
+			}
 		} else {
 			# $vars是空的
 			$vars = [
 				"title"       => $_DOC->title, 
 				"description" => $_DOC->summary,
-				"authors"     => Strings::Join($_DOC->authors, ", ")
+				"authors"     => Strings::Join($_DOC->authors, ", "),
+				"appName"     => DotNetRegistry::Read("APP_TITLE", null)
 			]; 
 		}
 
@@ -300,37 +305,10 @@ class View {
 	private static function loadTemplate($path, $language) {
 		$usingCache = DotNetRegistry::Read("CACHE", false);
 
-		if ($usingCache && !Strings::Empty($path)) {			
-			# 在配置文件之中开启了缓存选项
-			$cache = self::getCachePath($path);			
+		if ($usingCache && !Strings::Empty($path)) {
+			Imports("MVC.View.cache");
 
-			# 在调试模式下总是不使用cache
-			# 为了将cache的信息也输出到调试终端，在这里设置条件为调试模式或者缓存文件
-			# 不存在都会进行缓存的生成
-			if (APP_DEBUG || !file_exists($cache)) {
-				# 当缓存文件不存在的时候，生成缓存，然后返回
-				
-				# 将html片段合并为一个完整的html文档
-				# 得到了完整的html模板
-				$html      = file_get_contents($path);
-				$cachePage = View::interpolate_includes($html, $path);
-				$cachePage = View::valueAssign($cachePage, $language);
-				$cacheDir  = dirname($cache);
-				
-				if (!file_exists($cacheDir)) {
-					mkdir($cacheDir, 0777, true);
-				}				
-				file_put_contents($cache, $cachePage);
-
-				debugView::LogEvent("HTML view cache created!");
-			} else {
-				debugView::LogEvent("HTML view cache hits!");
-			}
-
-			$cache = realpath($cache);			
-			$html  = file_get_contents($cache);
-
-			debugView::LogEvent("Cache=$cache");
+			list($html, $cache) = ViewCache::doCache($path, $language);
 		} else {
 			$cache = 'disabled';
 			# 不使用缓存，需要进行页面模板的拼接渲染
@@ -356,6 +334,8 @@ class View {
 		$name = pathinfo($path);
 		$name = $name['filename'];
 		$lang = dirname($path) . "/$name.$lang.php";		
+
+		\debugView::LogEvent("Language file for current view: <strong>$lang</strong>.");
 
 		if (!file_exists($lang)) { 
 			return $vars;
@@ -419,7 +399,7 @@ class View {
 	 * Create user html document based on the html template 
 	 * and the given configuration data.
 	*/
-	public static function InterpolateTemplate($html, $vars) {		
+	public static function InterpolateTemplate($html, $vars) {
 		# 没有需要进行设置的变量字符串，则直接在这里返回html文件
 		if (!$vars && !self::$join) {
 			# 假设在html文档里面总是会存在url简写的，
@@ -431,7 +411,19 @@ class View {
 			} else if (!self::$join) {
 				// do nothing
 			} else {
-				$vars = array_merge($vars, self::$join);
+				# join类型的变量类似于预定义的静态变量
+				# 在这里合并时，出现重复键名的话
+				# 从Display函数传递的参数的优先度要高于join的参数
+				# 
+				# 20191029
+				# 在下面的for循环中，会将join中的同名变量覆盖掉
+				$data = self::$join;
+				
+				foreach($vars as $name => $value) {
+					$data[$name] = $value;
+				}
+
+				$vars = $data;
 			}
 
 			return View::Assign($html, $vars);
@@ -444,13 +436,17 @@ class View {
 	 * 
 	 * @param path html模版文件的文件位置
 	*/
-	private static function interpolate_includes($html, $path) {
+	public static function interpolate_includes($html, $path) {
 		if (!$path) {
+			console::log("No path value was provided, skip template fragments interpolation...");
 			return $html;
+		} else {
+			$pattern = "#[$]\{.+?\}#";
+			$dirName = dirname($path);
 		}
-
-		$pattern = "#[$]\{.+?\}#";
-		$dirName = dirname($path);
+		
+		console::log("Processing: $path");
+		console::log("Working directory: $dirName");
 		
 		if (preg_match_all($pattern, $html, $matches, PREG_PATTERN_ORDER) > 0) { 
 			$matches = $matches[0];
@@ -460,8 +456,13 @@ class View {
 				$path = Strings::Mid($s, 3, strlen($s) - 3);
 				$path = realpath("$dirName/$path");
 
-				if (APP_DEBUG && !empty($path)) {
-					console::log("Found template segment: $path");
+				if (APP_DEBUG) {
+					if (!empty($path)) {
+						console::log("Found template segment: $path");
+					} else {
+						console::warn("Incorrect fileName in $dirName/" . Strings::Mid($s, 3, strlen($s) - 3));
+						console::warn("Raw string is: $s");
+					}
 				}
 
 				# 读取获得到了文档的碎片
@@ -470,7 +471,13 @@ class View {
 				$include = file_get_contents($path);
 				$include = self::interpolate_includes($include, $path);
 
-				$html = Strings::Replace($html, $s, $include);				
+				if (empty($include)) {
+					$include = "";
+				}
+
+				$html = Strings::Replace($html, $s, $include);
+
+				console::log(strlen($html) . " characters.");
 			}
 		}
 		
@@ -483,13 +490,16 @@ class View {
 	 * @param string $html 模板html文本
 	 * @param array $vars 需要进行渲染的数据
 	*/
-	private static function valueAssign($html, $vars) {
-		# 在这里需要按照键名称长度倒叙排序，防止出现可能的错误替换		
+	public static function valueAssign($html, $vars) {
+		# 在这里需要按照键名称长度倒叙排序，防止出现可能的错误替换
 		// $vars = Enumerable::OrderByKeyDescending($vars, function($key) {
 		// 		return strlen($key);
 		// });		
 		if (empty($vars)) {
+			\console::log("No variables for template interpolation...");
 			return $html;
+		} else if (APP_DEBUG && strlen($html) == 0) {
+			\console::warn("The raw template data is nothing!");
 		}
 
 		# 变量的名称$name的值为名称字符串，例如 id
@@ -527,10 +537,10 @@ class View {
 		$html = MVC\Views\volistViews::InterpolateTemplate($html, $vars);
 		# 处理内联的表达式，例如if条件显示
 		$html = MVC\Views\InlineView::RenderInlineTemplate($html);
+		$html = MVC\Views\InlineView::RenderInlineConstants($html);
 		# 最后将完整的页面里面的url简写按照路由规则还原
 		$html = Router::AssignController($html);
 
 		return $html;
 	}
 }
-?>

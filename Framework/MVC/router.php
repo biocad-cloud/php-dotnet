@@ -2,6 +2,7 @@
 
 Imports("Microsoft.VisualBasic.Strings");
 Imports("Microsoft.VisualBasic.Extensions.StringHelpers");
+Imports("php.URL");
 
 /**
  * REST api handler
@@ -20,7 +21,7 @@ class Router {
 	*/
 	public static function HandleRequest($app, $request = NULL) {
 		$exist_app = method_exists($app, $page = self::getApp($request));
-
+	
 		# 2019-05-13 当使用empty判断的时候，假设$request是[]空数组，则empty的结果和null判断的结果一致，会产生bug
 		# 所以在这里应该是使用is_array来进行判断
 		if (!is_array($request)) {
@@ -59,7 +60,7 @@ class Router {
 			$page = "index";
 		} else {
 			$page = $argv["app"];
-		}		
+		}
 
 		return $page;
 	}

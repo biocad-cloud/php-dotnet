@@ -67,5 +67,3 @@ class CURLExtensions {
 		return CURLExtensions::shell($res);
 	}
 }
-
-?>

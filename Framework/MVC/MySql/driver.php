@@ -32,6 +32,42 @@ namespace MVC\MySql {
 		}
 
 		/**
+		 * 从给定的配置文件中加载当前的这个mysql的驱动程序模块
+		 * 
+		 * @param string $configName 当这个参数为空的时候，默认使用master的配置
+		 * 
+		 * @return MySqlExecDriver
+		*/
+		public static function LoadDriver($configName = null) {
+			if (empty($configName) || strlen($configName) == 0) {
+				// master
+				$config = \DotNetRegistry::$config;
+			} else {
+				// slave
+				$config = \DotNetRegistry::$config[$configName];
+			}
+			
+			if (empty($config) || false == $config) {
+				if (empty($configName)) {
+					return "No config file was loaded!";
+				} else {
+					return "Missing mysql driver config profile for `$configName`!";
+				}
+			}
+
+			$databaseName = $config["DB_NAME"];
+			$driver       = new MySqlExecDriver(
+				$config["DB_NAME"], 
+				$config["DB_USER"],
+				$config["DB_PWD"],
+				$config["DB_HOST"],
+				$config["DB_PORT"]
+			);
+
+			return $driver;
+		}
+
+		/**
 		 * 获取当前的这个实例之中所执行的最后一条MySql语句
 		 * 
 		 * @return string
@@ -61,6 +97,11 @@ namespace MVC\MySql {
 		/**
 		 * 这个方法主要是用于执行一些无返回值的方法，
 		 * 例如INSERT, UPDATE, DELETE等
+		 * 
+		 * > https://www.php.net/manual/en/mysqli.query.php
+		 * 
+		 * @return boolean|integer ``insert`` 如果存在``auto_increment``类型的主键的话
+		 *     会返回新增的id编号，其他的语句返回true或者false
 		*/
 		public function ExecuteSql($SQL) {
 			
@@ -174,7 +215,7 @@ namespace MVC\MySql {
 		 * 
 		 * @return array|boolean
 		*/
-		public function ExecuteScalar($SQL) {			
+		public function ExecuteScalar($SQL) {
 			$mysql_exec = parent::__init_MySql(false);
 
 			mysqli_select_db($mysql_exec, parent::GetDatabaseName()); 
@@ -190,9 +231,9 @@ namespace MVC\MySql {
 				\debugView::LogEvent("MySql query => ExecuteScalar");
 			}
 			
-			$this->last_mysql_expression = $SQL;						
+			$this->last_mysql_expression = $SQL;
 
-			if ($data) {
+			if (!empty($data) && count($data) > 0) {
 				
 				// 只返回一条记录数据
 				while($row = mysqli_fetch_array($data, MYSQLI_ASSOC)) { 
@@ -204,4 +245,3 @@ namespace MVC\MySql {
 		}
     }
 }
-?>

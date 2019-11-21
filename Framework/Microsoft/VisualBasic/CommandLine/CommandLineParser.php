@@ -18,7 +18,6 @@ class CommandLineParser {
         $name      = "";
         $arguments = [];
 
-
         return new CommandLine($name, $arguments);
     }
 
@@ -27,29 +26,39 @@ class CommandLineParser {
      *           所以在这里是从1开始的，即跳过第一个文件名，第二个元素
      *           （下标1）开始才是所需要的命令行数据
      *  
+     * @return CommandLine
     */
     public static function ParseCLIArgvs() {
+        $argv      = $_SERVER['argv'];
+        $script    = $argv[0];
         $name      = $argv[1];
         $arguments = [];
 
+        if (Strings::InStr($name, "=") > 0) {
+            # no command name
+            list($key, $value) = self::parseCmdToken($name);
+            $name = "";
+            $arguments[$key] = $value;
+        } else {
+            # do nothing
+        }
+
         for ($i = 2; $i < count($argv); $i++) {
-            $term = $argv[$i];
-
-            if (Strings::InStr($term, "=")) {
-                $term = StringHelpers::GetTagValue($term, "=");
-                list($key, $value) = Utils::Tuple($term);
-            } else {
-
-                // is a logical boolean flag, and it is 
-                // true if it is presented.
-                list($key, $value) = [$term, true]; 
-            }            
-
+            list($key, $value) = self::parseCmdToken($argv[$i]);
+            // push to array
             $arguments[$key] = $value;
         }
 
-        return new CommandLine($name, $arguments);
+        return new CommandLine($name, $arguments, $script);
+    }
+
+    private static function parseCmdToken($term) {
+        if (Strings::InStr($term, "=")) {           
+            return Utils::Tuple(StringHelpers::GetTagValue($term, "="));
+        } else {
+            // is a logical boolean flag, and it is 
+            // true if it is presented.
+            return [$term, true]; 
+        }
     }
 }
-
-?>

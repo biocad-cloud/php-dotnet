@@ -1,11 +1,16 @@
 declare module php_debugger {
+    interface Sub {
+        (): void;
+    }
     /**
      * 按照id来获取得到HTML节点元素
     */
     function $pick(id: string): HTMLElement;
     function $new(tagName: string, attrs?: {
         style?: string;
-    }, html?: string): HTMLElement;
+        href?: string;
+        onclick?: Sub;
+    }, html?: string | HTMLElement): HTMLElement;
 }
 declare module php_debugger {
     /**
@@ -16,10 +21,11 @@ declare module php_debugger {
 declare module php_debugger.serviceWorker {
     const debuggerGuid: string;
     const debuggerApi: string;
+    const debuggerSqlApi: string;
     /**
      * 更新的时间间隔过短，可能会影响调试
     */
-    const workerInterval = 5000;
+    const workerInterval = 1000;
     /**
      * 每一秒钟执行一次服务器查询
     */
@@ -32,6 +38,10 @@ declare module php_debugger.serviceWorker {
      * 假设服务器上一定会存在一个``index.php``文件？
     */
     function fetch(): void;
+    interface IMsg<T> {
+        code: number;
+        info: string | T;
+    }
     interface SQLlog {
         time: string;
         SQL: string;

@@ -11,6 +11,21 @@ namespace Microsoft\VisualBasic\Data\csv {
     class Extensions {
 
         /**
+         * Save [key => value] tuples into a csv file.
+        */
+        public static function SaveNamedValues($array, $path, $title = ["name", "value"], $encoding = "utf8") {
+            $data = [];
+            $keyName = $title[0];
+            $valName = $title[1]; 
+
+            foreach($array as $key => $value) {
+                $data[] = [$keyName => $key, $valName => $value];
+            }
+
+            return self::SaveTo($data, $path, null, $encoding);
+        }
+
+        /**
          * Save array collection as a csv file.
          * 
          * @param array $array The object array collection.
@@ -21,7 +36,7 @@ namespace Microsoft\VisualBasic\Data\csv {
          * 
          * @return boolean True for file save success, and false not. 
         */
-        public static function SaveTo($array, $path, $project = null, $encoding = "utf8") {            
+        public static function SaveTo($array, $path, $project = null, $encoding = "utf8") {
             if (\Strings::Empty($path)) {
                 return false;
             } else {
@@ -92,9 +107,19 @@ namespace Microsoft\VisualBasic\Data\csv {
             if (!file_exists($path) || filesize($path) == 0) {
                 \error_log("[\"$path\"] not exists or contains no data!");
                 return null;
+            } else {
+                foreach(self::doParseObjects($file_handle, $headers) as $obj) {
+                    $line_of_text[] = $obj;
+                }                
             }
 
-            while (!feof($file_handle) ) {
+            fclose($file_handle);
+            
+            return $line_of_text;
+        }
+
+        public static function doParseObjects($file_handle, $headers, $maxLen = 2048, $delimiter = ",") {
+            while (!feof($file_handle)) {
                 $lineText = fgetcsv($file_handle, $maxLen, $delimiter);
                 $row = [];
 
@@ -102,26 +127,28 @@ namespace Microsoft\VisualBasic\Data\csv {
                     $row[$headers[$i]] = $lineText[$i];
                 }
 
-                $line_of_text[] = $row;
-            }
+                if (feof($file_handle)) {
+                    # 20191009
+                    # 最末尾一般是一个换行符
+                    # 所以一般会导致最后一个元素全部都是空值
+                    # 在这里处理一下这种情况
+                    $allNull = true;
 
-            $n       = count($line_of_text) - 1;
-            $allNull = true;
-
-            foreach($line_of_text[$n] as $key => $val) {
-                if (!empty($val)) {
-                    $allNull = false;
-                    break;
+                    foreach($row as $key => $val) {
+                        if (!empty($val)) {
+                            $allNull = false;
+                            break;
+                        }
+                    }
+        
+                    if ($allNull) {
+                        # 如果全部都是空值，就不返回数据了
+                        break;
+                    }
                 }
-            }
 
-            if ($allNull) {
-                unset($line_of_text[$n]);
+                yield $row;
             }
-
-            fclose($file_handle);
-            
-            return $line_of_text;
         }
 
         /**
@@ -156,7 +183,12 @@ namespace Microsoft\VisualBasic\Data\csv {
             return $table;
         }
 
-        private static function ParseTsvRow($line) {
+        /** 
+         * 解析TSV文件中的一行数据
+         * 
+         * @return string[]
+        */
+        public static function ParseTsvRow($line) {
             $tokens = explode("\t", $line);
 
             for($i = 0; $i < count($tokens); $i++) {
@@ -170,6 +202,24 @@ namespace Microsoft\VisualBasic\Data\csv {
             }
 
             return $tokens;
+        }
+
+        /** 
+         * 解析文本文件的首行，将行标题返回
+         * 
+         * @param string $path 文件的路径
+         * @param boolean $tsv 是否是一个TSV文件？
+         * 
+         * @return string[] 函数返回tsv或者csv文件的行标题
+        */
+        public static function GetFieldHeaders($path, $tsv = false) {
+            $firstLine = \FileSystem::ReadFirstLine($path);
+
+            if ($tsv) {
+                return self::ParseTsvRow($firstLine);
+            } else {
+                return str_getcsv($firstLine); 
+            }
         }
     }
 }

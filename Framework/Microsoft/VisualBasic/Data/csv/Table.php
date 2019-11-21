@@ -5,6 +5,8 @@ namespace Microsoft\VisualBasic\Data\csv {
     class TableView {
 
         /**
+         * Rendering a csv data table to html table.
+         * 
          * @param array $data
          * @param boolean $bootstrap Add bootstrap class to the generated html table?
         */
@@ -63,7 +65,7 @@ namespace Microsoft\VisualBasic\Data\csv {
         */
         public static function FieldProjects($array, $project) {
             # 确保域不是空的，即需要写入csv文件的列不是空集合
-            if (!$project) {                
+            if (!$project) {
                 $project = [];
 
                 foreach (array_keys($array[0]) as $fieldName) {

@@ -95,9 +95,16 @@ namespace PhpDotNet {
          * @param string $module php文件的路径
         */
         private static function importsImpl($module) {
-            include_once($module);
+            if (\file_exists($module)) {
+                include_once($module);
+            } else {
+                # 目标源文件不存在？
+                throw new \Exception("Module php file '${$module}' was not found!");
+            }            
                     
             if (!APP_DEBUG) {
+                # 如果是非调试模式下，就不进行脚本间的加载依赖关系的收集分析了
+                # 减少系统的性能影响
                 return;
             }
 

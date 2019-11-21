@@ -36,25 +36,35 @@ class RFC7231Error {
 	*/
 	public static function Display($code, $message, 
 		$header = "Unknown", 
-		$allow_custom = true) {
+		$allow_custom = true, 
+		$dohttpheader = true) {
 			
+		ob_end_clean();
+
 		if (!is_integer($code)) {
 			$msg = "Error code must be an " . \PhpDotNet\MSDN::link("System.Int32") . " numeric type!";
 			dotnet::ThrowException($msg);
 		} else {
-			header($httpResponse = RFC7231Error::getRFC($code, $header));	
+			$httpResponse = RFC7231Error::getRFC($code, $header);
+
+			if ($dohttpheader) {
+				header($httpResponse);	
+			}
 		}	
 
+		View::Push("description", $httpResponse);
 		View::Show(RFC7231Error::getPath($code, $allow_custom), [
-			"message" => $message,
-			"url"     => Utils::URL(),
-			"title"   => $httpResponse
+			"description" => $httpResponse,
+			"message"     => $message,
+			"url"         => Utils::URL(),
+			"title"       => $httpResponse
 		]);
 
 		exit($code);
 	}
 	
 	public static $httpErrors = [
+		"400" => "Bad Request",
 		"404" => "Not Found",
 		"403" => "Forbidden",
 		"405" => "Method not allowed",
@@ -98,7 +108,9 @@ class RFC7231Error {
 	public static function err429($message = NULL, $allow_custom = true) {
 		self::Display(429, $message, "", $allow_custom);
 	}
+
+	public static function err400($message = NULL, $allow_custom = true) {
+		self::Display(400, $message, "", $allow_custom);
+	}
 	#endregion
 }
-
-?>

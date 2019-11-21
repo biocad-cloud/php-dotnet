@@ -98,15 +98,20 @@ namespace MVC\Views {
         public static function InterpolateTemplate($html, $vars) {
             $templates = self::StackParser($html);
 
+            if (APP_DEBUG && strlen($html) == 0) {
+                \console::warn("Template data is nothing...");
+            }
+
             # 没有找到任何模板
             if (!$templates || count($templates) === 0) {
+                \console::log("No foreach template was found...");
                 return $html;
             }
 
             foreach($templates as $template) {
                 $var  = \explode(">", $template)[0];
                 $var  = \explode("@", $var);
-                $name = end($var);                            
+                $name = end($var);
 
                 if (!array_key_exists($name, $vars)) {
                     # 目标模板的数据源不存在

@@ -133,7 +133,8 @@ class taskhost {
     /**
      * 运行R脚本的帮助函数
      * 
-     * @param string|ScriptBuilder $R 所将要运行的目标R语言脚本的文件路径或者文本内容
+     * @param string|ScriptBuilder $R The R script file path or its text content in string or stringbuilder type.
+     *      (所将要运行的目标R语言脚本的文件路径或者文本内容)
      * @param string $workspace 运行R脚本的工作区路径，如果R脚本参数是
      *   脚本文本内容而非路径的话，则脚本会被保存在这个工作区参数所指定的
      *   文件夹之中
@@ -174,6 +175,8 @@ class taskhost {
             // 这段代码是能够被正常的执行的
             $CLI = "Rscript --no-save --no-restore --verbose \"{$R}\" > {$workspace}/$log 2>&1";
         }
+
+        console::log($CLI);
 
         shell_exec($CLI);
         # 切换回之前的工作区文件夹

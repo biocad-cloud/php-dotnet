@@ -158,23 +158,37 @@ class dotnet {
         # 在这里加载框架之中的基本的MVC驱动程序模块
 		dotnet::Imports("MVC.view");
 		dotnet::Imports("MVC.model");
-		dotnet::Imports("MVC.router");
+        dotnet::Imports("MVC.router");
+        dotnet::Imports("MVC.request");
         dotnet::Imports("MVC.MySql.driver");
-        dotnet::Imports("MVC.MySql.sqlBuilder");
         dotnet::Imports("MVC.MySql.expression");
+        dotnet::Imports("php.URL");
+
+        URL::NormalizeRedirectArguments();
 
         if ($config) {
             # config存在赋值，则判断一下是否为字符串？
             # 如果是字符串，则使用文件的加载方式
             # 反之再判断是否为数组
             # 如果既不是字符串又不是数组，则使用默认配置数据并给出警告
-            if (is_string($config) && file_exists($config)) {
-                DotNetRegistry::$config = include $config;
+            if (is_string($config)) {
+                if (file_exists($config)) {
+                    # load configuration file from a given config file.
+                    DotNetRegistry::$config = include $config;
+                    # debug echo on cli
+                    console::log("Load framework config file from '" . realpath($config) . "'");
+                } else {
+                    # file not exists!
+                    console::warn("Config data php file '$config' is not exists on your filesystem...");
+                    # load default configuration data.
+                    DotNetRegistry::$config = DotNetRegistry::DefaultConfig();
+                }
             } elseif (is_array($config)) {
                 DotNetRegistry::$config = $config;
             } else {
                 # 无效的配置参数信息，使用默认的配置并且给出警告信息
                 console::warn("A config data was given, but data type is mismatched, require a php file path or config data array.");
+                # load default configuration data.
                 DotNetRegistry::$config = DotNetRegistry::DefaultConfig();
             }
         } else {
@@ -222,7 +236,7 @@ class dotnet {
 				$temp = "./data/cache";
 			}			
 		} else {
-            $appName = DotNetRegistry::Read("APP_NAME", "php.NET");
+            $appName = DotNetRegistry::AppName();
             $temp    = "$temp/$appName"; 
         }
 
@@ -259,7 +273,7 @@ class dotnet {
 			$lang = "zhCN";
 		}
 
-		if ($lang && ($lang === "enus" || $lang === "en") ) {
+		if ($lang && ($lang === "enus" || $lang === "en" || $lang === "en-us")) {
 			$lang = "enUS";
 		} else {
 			$lang = "zhCN";
@@ -354,6 +368,14 @@ class dotnet {
 				
 		RFC7231Error::err429($exc);
 		exit(429);
+    }
+
+    public static function BadRequest($message) {
+        $trace = StackTrace::GetCallStack();
+		$exc   = dotnetException::FormatOutput($message, $trace);
+				
+		RFC7231Error::err400($exc);
+		exit(400);
     }
     #endregion
 }

@@ -23,6 +23,7 @@ The relationships between these View api are:
 The placeholder in the user view document, includes:
 
 + variable tag: ``{$variable}``; For example, there is a placeholder in the view file: ``{$title}``, then you can config in the view api calls: ``["title" => "123"]`` 
++ constant tag: ``{#constant_name}``; The constant tag can be used for rendering any user defined constant in your html view file. 
 + url tag: ``{<directory>phpfile/controller}``; The directory part can be omit if the controller file is in the document root, for point to a controller which named ``hello`` in ``index.php`` file, then you can write ``{index/hello}``, and it will rendering as ``/index.php?app=hello``, for point to a controller which named hello in ``test/index.php`` file, then you can write ``{<test>index/hello}``, and it will rendering as ``/test/index.php?app=hello``.
 + fragment includes: ``${folder/file}``; If a html document ``footer.html`` is part of the view document, then you can include the footer fragment document by using expression: ``${includes/footer.html}``.
 + foreach loop: ``<foreach @array></foreach>``

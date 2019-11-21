@@ -100,5 +100,3 @@ class Dictionary extends ICollection implements ArrayAccess {
 		return new Dictionary($table, $default);
 	}
 }
-
-?>

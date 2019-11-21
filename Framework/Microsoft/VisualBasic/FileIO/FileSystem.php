@@ -119,6 +119,13 @@ class FileSystem {
 		}
 	}
 
+	/** 
+	 * 读取文本文件中的首行
+	 * 
+	 * @param string $path 文件路径
+	 * 
+	 * @return string 返回文本文件中的首行
+	*/
 	public static function ReadFirstLine($path) {
 		foreach(self::IteratesAllLines($path) as $line) {
 			return $line;
@@ -159,7 +166,6 @@ class FileSystem {
 	}
 	
 	private static function DisplayFilePermissions($Mode) {
-
 		# Determine Type
 		if ($Mode & 0x1000) {			
 			$Type = 'p'; // FIFO pipe
@@ -428,5 +434,21 @@ class FileSystem {
 		
 		return sprintf("%.2f $symbol", $val);		
 	}
+
+	/** 
+	 * 判断目标字符串是否是一个合法的路径字符串
+	 * 
+	 * @param string $str 目标待判断的字符串
+	 * 
+	 * @return boolean 返回字符串是否是合法的路径字符串
+	*/
+	public static function isValidPath($str) {
+		foreach(["\r", "\n", "?", "*", ">", "<"] as $char) {
+			if (Strings::InStr($str, $char) > 0) {
+				return false;
+			}
+		}
+
+		return true;
+	}
 }
-?>

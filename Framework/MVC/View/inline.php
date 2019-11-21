@@ -10,6 +10,43 @@ namespace MVC\Views {
     */
     class InlineView {
 
+        /** 
+         * 内联常量的标记语法为``{#name}``，与变量表达式``{$name}``相似
+         * 常量标记渲染不需要显式的传递常量值，只需要直接在脚本中定义常量，
+         * 然后再html视图页面内通过标记语法进行引用即可
+         * 
+         * @param string $template
+         * 
+         * @return string
+        */
+        public static function RenderInlineConstants($template) {
+            # 这个常量标记应该是满足php的变量命名规则的
+            $tags = \Regex::Matches($template, "[{][#].+?[}]");
+
+            if (empty($tags) || count($tags) == 0) {
+                if (APP_DEBUG) {
+                    \console::log("Current template contains no inline constant tags.");
+
+                    if (\strlen($template) == 0) {
+                        \console::warn("Current template is empty! Please check for your template file...");
+                    }
+                }
+
+                return $template;
+            } else {
+                $tags = array_unique($tags);
+                $consts = get_defined_constants(true)['user'];
+            }
+
+            foreach ($tags as $ref) {
+                $name  = \substr($ref, 2, \strlen($ref) - 3);
+                $value = \Utils::ReadValue($consts, $name, "");
+                $template = str_replace($ref, $value, $template);
+            }
+
+            return $template;
+        }
+
         /**
          * 2018-6-15
          * 
@@ -25,24 +62,30 @@ namespace MVC\Views {
          * @return string
         */
         public static function RenderInlineTemplate($template) {
-
             # 有些替换的变量没有被替换掉，可能会导致php的内联表达式失败
             # 在这里进行检查，然后给出警告消息
             $missing = self::checkVars($template);
 
-            if ($missing && count($missing) > 0) {
+            if (APP_DEBUG && $missing && count($missing) > 0) {
                 # 任然存在未被替换掉的变量，给出警告消息
-                \console::error(self::warnings($missing));              
+                \console::error(self::warnings($missing));
+            }
+            if (APP_DEBUG && \strlen($template) == 0) {
+                \console::warn("Template data is empty!");
             }
 
             if (!self::checkPHPinline($template)) {
+                if (APP_DEBUG) {
+                    \debugView::LogEvent("No needs for do PHP inline scripting.");
+                }
+
                 # 不存在php的内联脚本标签
                 # 则不进行动态脚本处理了，否则会降低服务器的性能的
                 # 在这里直接返回结果
                 return $template;
             }
 
-            $config = ini_get('allow_url_include');            
+            $config = ini_get('allow_url_include');
 
             # allow_url_include = On
             # echo "templates for inline scripting: \n\n";
@@ -113,7 +156,9 @@ namespace MVC\Views {
 
         private static function warnings($missing) {
             $missing = "<span style='color:red'><strong>" . \implode(", ", $missing) . "</strong></span>";
-            return "Missing variable: $missing. And these missing variable may caused the inline scripting error!<br />";      
+            $message = "Missing variable: $missing. And these missing variable may caused the inline scripting error!<br />";
+
+            return $message;
         }
 
         # <?php if ({$id} > 10): ?&gt;
@@ -131,6 +176,11 @@ namespace MVC\Views {
             if (!$matches || count($matches) == 0) {
                 return false;
             } else {
+                
+                if (APP_DEBUG) {
+                    \console::dump($matches, "Found these php inline script tags:");
+                }
+
                 return true;
             }
         }
@@ -160,4 +210,3 @@ namespace MVC\Views {
         }
     }
 }
-?>

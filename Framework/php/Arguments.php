@@ -147,6 +147,5 @@ class Arguments implements ArrayAccess {
 
         return $v;
     }
-}
 
-?>
+}

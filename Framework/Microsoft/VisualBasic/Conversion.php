@@ -4,21 +4,26 @@ dotnet::Imports("Microsoft.VisualBasic.Strings");
 
 /**
  * 模拟VisualBasic之中的一些简单的数据类型转换关键词
- */ 
+ * 
+ * 这个模块中的所有的函数都是安全的，类似于VB中的值对象的默认值，空值在数值上都会被转换为零，逻辑值转换则为false
+*/ 
 class Conversion {
 
     /**
      * 这个函数安全的将字符串转换为数值类型  
      * 
      * @exp: 任何一非数字开始的字符串都会被解析为0
-     */
+    */
     public static function Val($exp) {
-    
+        if (empty($exp)) {
+            return 0.0;
+        }
+
         // 首先解析出Double格式的字符串，这个解析出来的字符串前面可以包含有空格部分
         // 空格部分会在计算之前被trim去除掉
         preg_match("^\s*-?\d+(\.\d+)?", $exp, $matches, PREG_OFFSET_CAPTURE, 3);
 
-        $exp = $match[0];
+        $exp = $matches[0];
         $exp = trim($exp);
         $value = Conversion::CDbl($exp);
 
@@ -29,14 +34,22 @@ class Conversion {
      * Alias of the ``intval`` function.
     */
     public static function CInt($str) {
-        return intval($str);
+        if (empty($str)) {
+            return 0;
+        } else {
+            return intval($str);
+        }
     }
 
     /**
      * 非安全的将字符串转换为Double类型的实数，可能会因为字符串的格式问题而出错
      */
     public static function CDbl($str) {
-        return doubleval($str);
+        if (empty($str)) {
+            return 0.0;
+        } else {
+            return doubleval($str);
+        }
     }
 
     /**
@@ -83,7 +96,7 @@ class Conversion {
         } elseif (is_integer($str) && $str == 0) {
             return false;
         } else {
-            if ($str === "1") {
+            if ($str === "1" || $str == "✔") {
                 return true;
             } else if ($str === "0") {
                 return false;
@@ -121,8 +134,10 @@ class Conversion {
     }
 
     public static function CSng($str) {
-        return floatval($str);
+        if (empty($str)) {
+            return 0.0;
+        } else {
+            return floatval($str);
+        }
     }
 }
-
-?>
