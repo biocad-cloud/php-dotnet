@@ -98,6 +98,21 @@ class URL {
     }
 
     /**
+     * The refer url
+     * 
+     * @param boolean $raw This function returns the refer url string or parsed url object?
+     * 
+     * @return string Get the previous page that navigate to current page.
+    */
+    public static function HttpRefer($raw = true) {
+        if ($raw) {
+            return $_SERVER['HTTP_REFERER'];
+        } else {
+            return self::mb_parse_url($_SERVER['HTTP_REFERER'], true);
+        }        
+    }
+
+    /**
      * 将字符串参数变为数组
      * 
      * @param string $query

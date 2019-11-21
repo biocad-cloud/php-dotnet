@@ -44,7 +44,7 @@ public function Redirect($code) {
     // 并且记录下用户的活动信息
     (new Table(["my_biodeep" => "activity"]))
         ->add([
-            "user_id"    => Common::CurrentUserId(),
+            "user_id"    => BioDeep::LoginUserId(),
             "action"     => Utils::URL(),
             "time"       => Utils::Now(),
             "error_code" => $code
@@ -110,7 +110,7 @@ public function Restrictions() {
         return false;
     } else {
         global $limitTest;
-        $limitTest = (new Restrictions(Common::CurrentUserId(), $this));
+        $limitTest = (new Restrictions(BioDeep::LoginUserId(), $this));
         return $limitTest->Check();
     }
 }
