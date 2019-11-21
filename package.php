@@ -21,6 +21,12 @@ class bootstrapLoader {
     */
     public static $loaded = [];
 
+    /**
+     * Add loaded script path and its module name
+     * 
+     * @param string $module
+     * @param string[] $files
+    */
     public static function push($module, $files) {
         self::$loaded[$module] = $files;
     }
@@ -29,6 +35,7 @@ class bootstrapLoader {
      * 使用这个函数来判断目标模块是否已经被加载
      * 
      * @param string $module 命名空间（不是文件路径）
+     * 
      * @return boolean
     */
     public static function isLoaded($module) {
@@ -39,6 +46,8 @@ class bootstrapLoader {
      * 最简单的加载函数，直接进行字符替换后加载模块文档
      * 
      * **注意，这个函数仅适合于框架初始化的时候使用，其他的时候请使用``Imports``全局函数来加载模块**
+     * 
+     * @param string $module The module name, VisualBasic namespace reference liked string text.
     */
     public static function imports($module) {
         $file = str_replace(".", "/", $module);
@@ -319,6 +328,8 @@ function Imports($namespace) {
 
 /**
  * 在打印调试数据之后，脚本程序将会在这里退出执行
+ * 
+ * @param mixed $dump Any php object for display in debug view
 */
 function breakpoint($dump) {
     header("Content-Type: text/html");
@@ -422,7 +433,7 @@ function deleteCookies($cookies) {
  * @return IEnumerator
 */
 function from($array) {
-    Imports("System.Linq.IEnumerator");
+    bootstrapLoader::imports("System.Linq.IEnumerator");
     return new IEnumerator($array);
 }
 

@@ -1,8 +1,7 @@
 # php.NET
-dotnet class simulation in php language
+dotnet class and framework simulation in php language
 
 > [WARNING] This project is a work in progress and is not recommended for production use.
-
 
 ```
 ............................................................
@@ -34,13 +33,12 @@ It contains:
 2. And then add includes to the package manager module:
    ```php
    <?php
-       include_once "./mod/php-dotnet/package.php";
-   ?>
+       include_once "./php.NET/package.php";
    ```
 3. If you want using one of the module in this project, just includes it, example:
    ```php
    <?php
-       include_once "./mod/php-dotnet/package.php";
+       include_once "./php.NET/package.php";
 
        Imports("System.Collection.Generic.Dictionary");
        Imports("Microsoft.VisualBasic.Language.List");
@@ -49,7 +47,6 @@ It contains:
        $double = Conversion::Val("123");
        $list   = new ArrayList;
        $list->Add($double);
-   ?>
    ```
 4. Enjoy yourself coding with this package
 
