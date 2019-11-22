@@ -204,7 +204,7 @@ class Utils {
      * @param string $filepath 目标文件路径
     */
     public static function PrintLargeText($filepath) {
-        self::doDataTransfer($filepath);
+        self::doDataTransfer($filepath, filesize($filepath));
     }
 
     /** 
