@@ -9,6 +9,8 @@
 class WebRequest {
 
     /**
+     * Get request query value from ``$_GET`` or ``$_POST`` if the http request is a post request 
+     * 
      * @param string $queryKey
      * 
      * @return string
@@ -24,10 +26,12 @@ class WebRequest {
     }
 
     /**
+     * Get a logical value 
+     * 
      * @return boolean
     */
     public static function getBool($queryKey) {
-        $value = Utils::ReadValue($_GET, $queryKey, false);
+        $value = self::get($queryKey, false);
         // get option value and then 
         // try to convert string to boolean
         return Conversion::CBool($value);
@@ -43,7 +47,7 @@ class WebRequest {
      * @return integer
     */
     public static function getInteger($queryKey, $default = 0, $unsigned = true) {
-        $value = Utils::ReadValue($_GET, $queryKey, $default);
+        $value = self::get($queryKey, $default);
         // get option value and then 
         // try to convert string to integer
         $i32 = Conversion::CInt($value);
@@ -56,7 +60,7 @@ class WebRequest {
     }
 
     public static function getNumeric($queryKey, $default = 0.0, $unsigned = true) {
-        $value = Utils::ReadValue($_GET, $queryKey, $default);
+        $value = self::get($queryKey, $default);
         // get option value and then 
         // try to convert string to integer
         $f64 = Conversion::CDbl($value);
@@ -69,11 +73,22 @@ class WebRequest {
     }
 
     /**
-     * Get a file path that comes from the url query parameter or post arguments
+     * Get a file path components that comes from the url query parameter or post arguments
     */
     public static function getPath($queryKey, $default = NULL, $raw = FALSE) {
-        ($_GET, $queryKey, $default);
+        $value = self::get($queryKey, $default);
         
+        if (empty($value)) {
+            return $default;
+        } else {
+            # strip parent path visits
+            # avoid unexpected file access problem.
+            # pattern for visit parent path is /../
+            $value = str_replace('/../', "/", $value);
+            $value = ltrim($value, "./");
+
+            return $value;
+        }
     }
 
     /**
@@ -82,7 +97,7 @@ class WebRequest {
      * @return string[]
     */
     public static function getList($queryKey, $delimiter = ",") {
-        $value = Utils::ReadValue($_GET, $queryKey, null);
+        $value = self::get($queryKey, null);
 
         if (empty($value)) {
             return [];
