@@ -51,6 +51,8 @@ It contains:
    ```
 4. Enjoy yourself coding with this package
 
+For more details development information, please visit the online docs: https://framework.web_dev.biocad.cloud/
+
 ## The improved Debugger
 
 .NET system like stack trace information, example as:
