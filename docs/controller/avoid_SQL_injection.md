@@ -59,6 +59,11 @@ WebRequest::getBool($key);
 # Get an integer value from the specific query parameter,
 # Any non-numeric parameter value will be convert to ZERO
 WebRequest::getInteger($queryKey, $default = 0, $unsigned = true);
+WebRequest::getNumeric($queryKey, $default = 0.0, $unsigned = true);
+
+# Get a file path components that comes from 
+# the url query parameter or post arguments
+WebRequest::getPath($queryKey, $default = NULL, $raw = FALSE);
 
 # Get a item list from the query parameter value string,
 # The items in the list is split by the specific delimiter symbol
