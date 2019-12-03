@@ -47,7 +47,7 @@ After writing the custom error page html view file, then you should link the vie
 <?php
 
 return [
-    .... other registry value
+    ... other registry value
     # modify or add the registry value
     "RFC7231" => "path/to/the/http/error/page/folder"
 ];
