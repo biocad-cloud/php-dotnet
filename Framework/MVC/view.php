@@ -232,7 +232,7 @@ class View {
 		
 		$lang = self::LoadLanguage($path, $lang, NULL);
 		$vars = self::unionPhpDocs($_DOC, $vars);
-
+		
 		if (file_exists($path)) {
 			$html = self::loadTemplate($path, $lang);
 
@@ -311,6 +311,7 @@ class View {
 			list($html, $cache) = ViewCache::doCache($path, $language);
 		} else {
 			$cache = 'disabled';
+		
 			# 不使用缓存，需要进行页面模板的拼接渲染
 			$html  = file_get_contents($path);
 			$html  = View::interpolate_includes($html, $path);

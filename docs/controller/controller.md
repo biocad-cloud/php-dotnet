@@ -60,3 +60,17 @@ public function Redirect($code) {
     }
 } 
 ```
+
+## Apply the accessController
+
+Just create a new instance of your ``accessController`` class object, and then passing it to the second parameter of the ``dotnet::HandleRequest`` function for you web app ``App`` class object instance:
+
+```php
+<?php
+
+include "./modules/dotnet/package.php";
+include "./accessController.php";
+
+dotnet::AutoLoad("./etc/config.php");
+dotnet::HandleRequest(new App(), new accessController());
+```

@@ -1,4 +1,4 @@
-# HTML user interface view handler
+# HTML user interface view engine
 
 ## View api
 
@@ -29,9 +29,9 @@ The placeholder in the user view document, includes:
 + foreach loop: ``<foreach @array></foreach>``
 + volist: ``<volist name="variable" id="alias"></volist>``
 
-Example:
+## Example
 
-1. template file
+###### 1. template file
 
 ```html
 <title>{$title}_test</title>
@@ -45,13 +45,13 @@ Example:
 ${includes/footer.html}
 ```
 
-2. A footer includes file
+###### 2. A footer includes file
 
 ```html
 <p>This is a test web app</p>
 ```
 
-3. View display
+###### 3. View display
 
 ```php
 <?php
@@ -65,7 +65,7 @@ View::Display([
 ]);
 ```
 
-4. Template rendering result
+###### 4. Template rendering result
 
 ```html
 <title>2233_test</title>
@@ -97,7 +97,7 @@ If the ``MVC_VIEW_ROOT`` item is missing from the php config file, then a defaul
 
 If your web app have multiple controller file, then you can specific the seperate view document directory for each controller file, example as above code shows. For a more specific example, like you want using ``<DOCUMENT_ROOT>/html/biodeepDB`` directory for all of the view in ``biodeepDB.php`` file, then you can write a key-value config data in the ``MVC_VIEW_ROOT`` section, like: ``"biodeepDB" => "./html/biodeepDB/"``. The relationship of the ``biodeepDB.php`` controller file and the view document directory is:
 
-```
+```txt
 wwwroot/
   +------biodeepDB.php
   +------html/

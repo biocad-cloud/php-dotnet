@@ -1,6 +1,8 @@
-# Using MySql
+# Using MySql Model
 
-* MySql module only works when the configuration is presented.
+* **MySql module only works when the configuration is presented.**
+
+## Configuration
 
 A very basic mysql connection arguments:
 
@@ -23,25 +25,27 @@ If your web app contains multiple database for power up your busness, then you m
 <?php
 
 return [
-    // For master database
-    'DB_TYPE' => 'mysql',
-	'DB_HOST' => 'localhost',
-	'DB_NAME' => 'mz_biodeep_cn',
-	'DB_USER' => 'root',
-	'DB_PWD'  => 'root',
-    'DB_PORT' => '3306'
-    
-    // For another database
-    "my_biodeep" => [
-        'DB_TYPE' => 'mysql',
-        'DB_HOST' => 'localhost',
-        'DB_NAME' => 'my_biodeep',
-        'DB_USER' => 'root',
-        'DB_PWD'  => 'root',
-        'DB_PORT' => '3306'
-    ]
+  // For master database
+  'DB_TYPE' => 'mysql',
+  'DB_HOST' => 'localhost',
+  'DB_NAME' => 'mz_biodeep_cn',
+  'DB_USER' => 'root',
+  'DB_PWD'  => 'root',
+  'DB_PORT' => '3306'
+
+  // For another database
+  "my_biodeep" => [
+      'DB_TYPE' => 'mysql',
+      'DB_HOST' => 'localhost',
+      'DB_NAME' => 'my_biodeep',
+      'DB_USER' => 'root',
+      'DB_PWD'  => 'root',
+      'DB_PORT' => '3306'
+  ]
 ];
 ```
+
+## Expression Examples
 
 ### 1. Create table model
 
@@ -83,6 +87,14 @@ $online_list = $users
         "gender"    => 1
     ])->limit(5, 10)
       ->select();
+
+# SELECT count(*) FROM `users` WHERE `is_online` = '1' AND `gender` = '1';
+$online_list = $users
+    ->where([
+        "is_online" => 1,
+        "gender"    => 1
+    ])
+    ->count();
 ```
 
 ### 3. INSERT INTO
@@ -232,6 +244,8 @@ $users->where(["user_id" => $user_id])
 	->limit(1)
 	->save(["balance" => "~`balance` + $rewardVal"]);
 ```
+
+**Important NOTE**: the value string with a ``~`` symbol prefix will be treated as a raw query expression, so if the query value is comes from the url query parameter, then the SQL injection will success very easily if the condition value is comes from the url query directly without any post process. For avoid the SQl injection, please reference to the help document **Avoid SQL Injection** of the php.NET framework.
 
 ## Field name in Where closure
 

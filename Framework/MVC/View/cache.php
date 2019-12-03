@@ -32,10 +32,20 @@ class ViewCache {
 
             $cacheDir  = dirname($cache);
             
+            # 20191201 当web服务器对缓存文件夹没有写入权限的时候
+            # 会因为cache文件不存在而无法显示出页面
+            # 产生空白页面的bug现象
             if (!file_exists($cacheDir)) {
                 mkdir($cacheDir, 0777, true);
             }
             file_put_contents($cache, $cachePage);
+
+            if (!file_exists($cache)) {
+                # 缓存文件没有写入成功
+                # 可能是缓存文件夹所在的位置没有写入权限
+                # 给出错误消息
+                throw new Exception("Cache location '$cache' is not writable!");
+            }
 
             debugView::LogEvent("HTML view cache created!");
         } else {

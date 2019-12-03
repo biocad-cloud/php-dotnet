@@ -39,7 +39,9 @@ class RFC7231Error {
 		$allow_custom = true, 
 		$dohttpheader = true) {
 			
-		ob_end_clean();
+		if (!IS_CLI) {
+			ob_end_clean();
+		}
 
 		if (!is_integer($code)) {
 			$msg = "Error code must be an " . \PhpDotNet\MSDN::link("System.Int32") . " numeric type!";
@@ -47,7 +49,7 @@ class RFC7231Error {
 		} else {
 			$httpResponse = RFC7231Error::getRFC($code, $header);
 
-			if ($dohttpheader) {
+			if ((!IS_CLI) && $dohttpheader) {
 				header($httpResponse);	
 			}
 		}	

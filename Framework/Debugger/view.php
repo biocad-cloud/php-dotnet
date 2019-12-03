@@ -46,6 +46,11 @@ class debugView {
      * 在这里主要是将变量组织之后传递给视图引擎进行调试器视图的渲染
     */
     public static function Display() {
+        if (IS_CLI) {
+            # disable debug view in commandline mode
+            return "";
+        }
+
         $template = debugView::Template();  
         $vars     = debugView::union();
 
@@ -152,20 +157,11 @@ class debugView {
      * 因为调试环境下，服务器压力不是很大，所以在这里
      * 从文件读取之后进行模板的序列化填充不会产生很大的性能问题
     */
-    private static function Summary() {
-        $js   = dirname(self::Template()) . "/jquery.jsonview.min.js";        
-        $js   = base64_encode(file_get_contents($js));
-        $uiJs = dirname(self::Template()) . "/js_worker.js";
-        $uiJs = base64_encode(file_get_contents($uiJs));
-        $css  = dirname(self::Template()) . "/jquery.jsonview.min.css";
-        $css  = file_get_contents($css);        
+    private static function Summary() {        
         $vars = array_merge([
             "files"           => count(get_included_files()),
-            "memory_size"     => FileSystem::Lanudry(memory_get_usage()),
-            "json_viewer_js"  => $js,
-            "json_viewer_css" => $css,
-            "git"             => GIT_COMMIT,
-            "tabUI_js"        => $uiJs
+            "memory_size"     => FileSystem::Lanudry(memory_get_usage()),            
+            "git"             => GIT_COMMIT            
         ], self::$summary);
 
         $vars["http.time"]     = \Utils::Now();
@@ -265,4 +261,3 @@ class debugView {
 		return $MySql;
 	}
 }
-?>

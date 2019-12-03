@@ -146,9 +146,10 @@ class dotnetDebugger {
 			return false;
 		}
 
-		$api = Utils::ReadValue($calls->query, "api");
+		$api      = Utils::ReadValue($calls->query, "api");
+		$apiNames = ["debugger", "sql_query", "asset"];
 
-		if (($api != "debugger") && ($api != "sql_query")) {
+		if (!in_array($api, $apiNames)) {
 			return false;
 		} else {
 			return true;
@@ -169,14 +170,14 @@ class dotnetDebugger {
 	 *    所以在获取SQL的调试信息的时候不能够直接读取当前对象的数组数据
 	 * 2. 获取信息只能够从session来完成
 	*/
-	public static function handleApiCalls() {
-		header("HTTP/1.1 200 OK");
-		header("Content-Type: application/json");
-		
+	public static function handleApiCalls() {	
 		$checkpoints = $_POST;
 		$guid        = $_POST["guid"];
+		$apiPointTo  = $_GET["api"];
 
-		if ($_GET["api"] == "debugger") {
+		if ($apiPointTo == "debugger") {
+			header("HTTP/1.1 200 OK");
+			header("Content-Type: application/json");
 			// 返回后台调试器数据更新
 
 			// 调试器的数据是保存在当前的session之中的
@@ -191,7 +192,10 @@ class dotnetDebugger {
 			// 最后生成数组，以json返回
 			echo json_encode($out);
 
-		} elseif ($_GET["api"] == "sql_query") {
+		} elseif ($apiPointTo == "sql_query") {
+			header("HTTP/1.1 200 OK");
+			header("Content-Type: application/json");
+
 			// 查询数据库，然后返回结果
 			$sql = trim($_POST["sql"]);
 			$configName = Utils::ReadValue($_POST, "configName");
@@ -209,7 +213,19 @@ class dotnetDebugger {
 					controller::error("<code>DML</code> or <code>DCL</code> is not allowed executed from external calls.");
 				}
 			}
+		} elseif ($apiPointTo == "asset") {
+			self::assets($_GET["resource"]);
 		}
+	}
+
+	/**
+	 * 因为使用base64将js或者css镶嵌进入调试器页面中
+	 * 可能会导致语法错误的问题出现
+	 * 所以在这里不在通过base64镶嵌脚本代码，而是通过
+	 * http请求来进行库文件的加载来避免可能的语法错误而导致页面无法正常显示
+	*/
+	private static function assets($file) {
+		echo file_get_contents(__DIR__ . "/template/$file");
 	}
 
 	private static function is_dmlCalls($sql) {
