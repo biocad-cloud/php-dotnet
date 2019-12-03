@@ -22,9 +22,7 @@ Generally, you can add some tags data on your web app controller function, and t
    + ``boolean`` means the query parameter its value should be a logical value in text like 1/0/true/false/T/F, etc
    + ``string`` means the query parameter its value should not be empty!
 
-
-   > If the parameter value validation is not success based on the pattern that define on your web app, 
-   > then a ``400 bad request`` http error will be triggered.
+If the parameter value validation is not success based on the pattern that define on your web app, then a ``400 bad request`` http error will be triggered.
 
 + ``cache`` tag can let you to controlling of the cache behaviour in the user browser. All of the controller response from the php is not cachable by default, but you could try this meta tag value to send a cache header to the user browser to force the browser cache the current resource, if the current resource is static file or something. All of the avaiable cache controls in this meta tag value are:
 

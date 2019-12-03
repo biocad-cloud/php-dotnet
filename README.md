@@ -1,4 +1,5 @@
-# php.NET
+# php.NET Framework
+
 dotnet class and framework simulation in php language
 
 > [WARNING] This project is a work in progress and is not recommended for production use.
@@ -25,7 +26,7 @@ dotnet class and framework simulation in php language
 It contains:
 
 + A MVC framework for Web App
-+ A CLI framework for terminal scripting.
++ A CLI framework for commandline scripting.
 
 ## How to use?
 
