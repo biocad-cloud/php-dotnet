@@ -27,17 +27,15 @@ Generally, you can add some tags data on your web app controller function, and t
 
 + ``cache`` tag can let you to controlling of the cache behaviour in the user browser. All of the controller response from the php is not cachable by default, but you could try this meta tag value to send a cache header to the user browser to force the browser cache the current resource, if the current resource is static file or something. All of the avaiable cache controls in this meta tag value are:
 
-   + ``none`` tells the user browser do not cache current server resource.
-   + ``max-age=<seconds>`` tells the user browser to cache of the current server resource.
-Cache-control: must-revalidate
-Cache-control: no-cache
-Cache-control: no-store
-Cache-control: no-transform
-Cache-control: public
-Cache-control: private
-Cache-control: proxy-revalidate
-Cache-Control: max-age=<seconds>
-Cache-control: s-maxage=<seconds>
+   + ``no-cache`` tells the user browser do not cache current server resource.
+   + ``max-age=<seconds>`` tells the user browser to cache of the current server resource. Specifies the maximum amount of time a resource will be considered fresh. Contrary to Expires, this directive is relative to the time of the request.
+   + ``must-revalidate`` indicates that once a resource has become stale (e.g. max-age has expired), a cache must not use the response to satisfy subsequent requests for this resource without successful validation on the origin server.
+   + ``no-store`` the cache should not store anything about the client request or server response.
+   + ``no-transform`` No transformations or conversions should be made to the resource. The Content-Encoding, Content-Range, Content-Type headers must not be modified by a proxy. A non-transparent proxy or browser feature such as Google's Light Mode might, for example, convert between image formats in order to save cache space or to reduce the amount of traffic on a slow link. The no-transform directive disallows this.
+   + ``public`` indicates that the response may be cached by any cache, even if the response would normally be non-cacheable (e.g. if the response does not contain a max-age directive or the Expires header).
+   + ``private`` indicates that the response is intended for a single user and must not be stored by a shared cache. A private cache may store the response.
+   + ``proxy-revalidate`` same as must-revalidate, but it only applies to shared caches (e.g., proxies) and is ignored by a private cache.
+   + ``s-maxage=<seconds>`` takes precedence over max-age or the Expires header, but it only applies to shared caches (e.g., proxies) and is ignored by a private cache.
 
 + ``method`` tag tells the php web server how to accept the current http request. If the tag value of this ``method`` data tag is ``GET``, then it means only the GET request will be acceptted, POST method will trigger a ``405 method not allowed`` http error response. This meta data only supports GET or POST method.
 + ``debugger`` meta tag will turn on/off the php debugger for current web app. Note that the php debug only works for the html view controller, which means the ``@uses view`` configuration should be appears on your current web app controller. 
