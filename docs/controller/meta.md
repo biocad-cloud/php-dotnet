@@ -22,6 +22,7 @@ Generally, you can add some tags data on your web app controller function, and t
    + ``boolean`` means the query parameter its value should be a logical value in text like 1/0/true/false/T/F, etc
    + ``string`` means the query parameter its value should not be empty!
 
+
    > If the parameter value validation is not success based on the pattern that define on your web app, 
    > then a ``400 bad request`` http error will be triggered.
 
