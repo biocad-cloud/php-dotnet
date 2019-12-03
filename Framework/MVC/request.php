@@ -14,7 +14,13 @@ class WebRequest {
      * @return string
     */
     public static function get($queryKey, $default = null) {
-        return Utils::ReadValue($_GET, $queryKey, $default);
+        if (array_key_exists($queryKey, $_GET)) {
+            return $_GET[$queryKey];
+        } else if (IS_POST && array_key_exists($queryKey, $_POST)) {
+            return $_POST[$queryKey];
+        } else {
+            return $default;
+        }
     }
 
     /**
@@ -47,6 +53,27 @@ class WebRequest {
         } else {
             return $i32;
         }
+    }
+
+    public static function getNumeric($queryKey, $default = 0.0, $unsigned = true) {
+        $value = Utils::ReadValue($_GET, $queryKey, $default);
+        // get option value and then 
+        // try to convert string to integer
+        $f64 = Conversion::CDbl($value);
+
+        if ($unsigned && $f64 < 0) {
+            return $default;
+        } else {
+            return $f64;
+        }
+    }
+
+    /**
+     * Get a file path that comes from the url query parameter or post arguments
+    */
+    public static function getPath($queryKey, $default = NULL, $raw = FALSE) {
+        ($_GET, $queryKey, $default);
+        
     }
 
     /**
