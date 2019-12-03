@@ -53,4 +53,4 @@ return [
 ];
 ```
 
-About how to do configuration in php.NET framework, read this document: **&lt;Configuration and Registry>**.
+About how to do configuration in php.NET framework, read this document: [**&lt;Configuration and Registry>**](../../docs/framework/registry.md).
