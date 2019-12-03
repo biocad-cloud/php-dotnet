@@ -22,7 +22,13 @@ Generally, you can add some tags data on your web app controller function, and t
    + ``boolean`` means the query parameter its value should be a logical value in text like 1/0/true/false/T/F, etc
    + ``string`` means the query parameter its value should not be empty!
 
-If the parameter value validation is not success based on the pattern that define on your web app, then a ``400 bad request`` http error will be triggered.
+   > If the parameter value validation is not success based on the pattern that define on your web app, 
+   > then a ``400 bad request`` http error will be triggered.
+
++ ``cache`` tag can let you to controlling of the cache behaviour in the user browser. All of the controller response from the php is not cachable by default, but you could try this meta tag value to send a cache header to the user browser to force the browser cache the current resource, if the current resource is static file or something. All of the avaiable cache controls in this meta tag value are:
+
+   + ``none`` tells the user browser do not cache current server resource.
+   + ``max-age=<seconds>`` tells the user browser to cache of the current server resource.
 
 + ``method`` tag tells the php web server how to accept the current http request. If the tag value of this ``method`` data tag is ``GET``, then it means only the GET request will be acceptted, POST method will trigger a ``405 method not allowed`` http error response. This meta data only supports GET or POST method.
 + ``debugger`` meta tag will turn on/off the php debugger for current web app. Note that the php debug only works for the html view controller, which means the ``@uses view`` configuration should be appears on your current web app controller. 
@@ -78,6 +84,32 @@ public function querySQL() {
 */
 public function submit() {
     # ...
+}
+```
+
+4. The web app ``file`` only allowes the ``GET`` method, and it also suggested that the user browser should cache of the requested server resource.
+
+```php
+<?php
+
+/**
+ * A static file proxy for server resource
+ * 
+ * @method GET
+ * @access *
+ * @cache max-age=360
+ * @require resource=string
+*/
+public function file() {
+    $resource = $_GET["resource"];
+    $isGetVersion = WebRequest::getBool("ver");
+    $file = INTERNAL . "/" . stripParentDots($resource);
+
+    if ($isGetVersion) {
+        controller::success(filetime($file));
+    } else {
+        Utils::PushDownload($file);
+    }
 }
 ```
 
