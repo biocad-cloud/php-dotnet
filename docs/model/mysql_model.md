@@ -245,7 +245,7 @@ $users->where(["user_id" => $user_id])
 	->save(["balance" => "~`balance` + $rewardVal"]);
 ```
 
-**Important NOTE**: the value string with a ``~`` symbol prefix will be treated as a raw query expression, so if the query value is comes from the url query parameter, then the SQL injection will success very easily if the condition value is comes from the url query directly without any post process. For avoid the SQl injection, please reference to the help document **Avoid SQL Injection** of the php.NET framework.
+**Important NOTE**: the value string with a ``~`` symbol prefix will be treated as a raw query expression, so if the query value is comes from the url query parameter, then the SQL injection will success very easily if the condition value is comes from the url query directly without any post process. For avoid the SQl injection, please reference to the help document [**&lt;Avoid SQL Injection>**](../../docs/controller/avoid_SQL_injection.md) of the php.NET framework.
 
 ## Field name in Where closure
 

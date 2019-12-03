@@ -4,7 +4,7 @@ The registry file is the configuration tools for your web app in php.NET framewo
 
 ### How to config php.NET registry?
 
-For an instance example, see document ***&lt;Using MySql Model>**.
+For an instance example, see document [**&lt;Using MySql Model>**](../../docs/model/mysql_model.md).
 
 ```php
 <?php
