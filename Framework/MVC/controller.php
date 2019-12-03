@@ -115,6 +115,10 @@ abstract class controller {
         return $this->getTagValue("origin");
     }
 
+    public function getCacheControls() {
+        return $this->getTagValue("cache");
+    }
+
     /**
      * 获取当前的控制器函数的注释文档里面的某一个标签的说明文本
     */
@@ -325,6 +329,7 @@ abstract class controller {
     */
     public function handleRequest() {
         $origin = $this->getAccessAllowOrigin();
+        $cache  = $this->getCacheControls();
         $isView = strtolower($this->getUsage()) === "view";
 
         if (APP_DEBUG && $isView) {
@@ -337,6 +342,13 @@ abstract class controller {
         }
         if (!Strings::Empty($origin)) {
             header("Access-Control-Allow-Origin: $origin");
+        }
+        if (!Strings::Empty($cache)) {
+            $cache = explode("|", $cache);
+
+            foreach($cache as $control) {
+                header("Cache-control: $control");
+            }
         }
 
         # 在这里执行用户的控制器函数

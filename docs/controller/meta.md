@@ -29,6 +29,15 @@ Generally, you can add some tags data on your web app controller function, and t
 
    + ``none`` tells the user browser do not cache current server resource.
    + ``max-age=<seconds>`` tells the user browser to cache of the current server resource.
+Cache-control: must-revalidate
+Cache-control: no-cache
+Cache-control: no-store
+Cache-control: no-transform
+Cache-control: public
+Cache-control: private
+Cache-control: proxy-revalidate
+Cache-Control: max-age=<seconds>
+Cache-control: s-maxage=<seconds>
 
 + ``method`` tag tells the php web server how to accept the current http request. If the tag value of this ``method`` data tag is ``GET``, then it means only the GET request will be acceptted, POST method will trigger a ``405 method not allowed`` http error response. This meta data only supports GET or POST method.
 + ``debugger`` meta tag will turn on/off the php debugger for current web app. Note that the php debug only works for the html view controller, which means the ``@uses view`` configuration should be appears on your current web app controller. 
