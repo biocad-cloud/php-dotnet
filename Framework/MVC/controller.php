@@ -80,6 +80,8 @@ abstract class controller {
      * The controller access level, `*` means everyone!
      * 
      * 如果需要将当前的控制器标记为多个用户组访问权限，使用``|``进行分隔
+     * 
+     * @return string
     */
     public function getAccessLevel() {
         return $this->getTagValue("access");
@@ -87,6 +89,8 @@ abstract class controller {
 
     /**
      * 获取对当前的服务器资源的访问量限制的阈值
+     * 
+     * @return string
     */
     public function getRateLimits() {
         return $this->getTagValue("rate");
@@ -94,6 +98,8 @@ abstract class controller {
 
     /** 
      * 获取得到当前的控制器的视图文件的文件路径
+     * 
+     * @return string
     */
     public function getView() {
         return $this->getTagValue("view");
@@ -110,6 +116,8 @@ abstract class controller {
 
     /**
      * 获取跨域访问控制
+     * 
+     * @return string
     */
     public function getAccessAllowOrigin() {
         return $this->getTagValue("origin");
@@ -128,6 +136,11 @@ abstract class controller {
 
     /**
      * 如果tag或者tag之中不存在所给定的key，这两种情况都会返回空字符串
+     * 
+     * @param string $tag The meta tag name
+     * @param string $key The section key in the meta tag data
+     * 
+     * @return string
     */
     private function readTagImpl($tag, $key) {
         if (empty($this->docComment)) {
@@ -143,6 +156,13 @@ abstract class controller {
         }
     }
 
+    /**
+     * Get value part in the meta tag
+     * 
+     * @param string $tag The meta tag name
+     * 
+     * @return string
+    */
     public function getTagValue($tag) {
         return $this->readTagImpl($tag, "value");
     }

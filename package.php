@@ -169,6 +169,9 @@ if (array_key_exists("REQUEST_METHOD", $_SERVER)) {
 		define("IS_GET", true);
     }
     
+    # 20191205 disable php session management
+
+    /* 
     # 如果不是CLI环境，则尝试设置session
     # 如果cookie不存在PHPSESSID则直接启动session
     if (!empty($_COOKIE["PHPSESSID"])) {
@@ -181,6 +184,7 @@ if (array_key_exists("REQUEST_METHOD", $_SERVER)) {
     if (session_status() == PHP_SESSION_NONE) {
         session_start();
     }
+    */
 } 
 
 if (!defined("IS_GET") && !defined("IS_POST")) {
@@ -215,6 +219,10 @@ if (IS_POST && (count($_POST) === 0)) {
     #
     $headers     = getallheaders();
     $contentType = "Content-Type";
+
+    if ($headers == false) {
+        $headers = [];
+    }
 
     if (array_key_exists($contentType, $headers)) {
         $contentType = strtolower($headers[$contentType]);
@@ -317,7 +325,7 @@ date_default_timezone_set('Asia/Shanghai');
  * 
  * @param string $namespace php module file path
 */
-function Imports($namespace) {
+function imports($namespace) {
     // 因为为了从namespace解析出所需要加载的php文件会执行比较多的预处理操作
     // 所以为了减轻模块的加载压力，在这里会使用这个帮助模块来避免
     // 不必要的加载预处理操作

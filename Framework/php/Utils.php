@@ -444,6 +444,7 @@ class Utils {
      * 
      * 阻止出现警告提示： Notice: Undefined index: blabla...
      * 
+     * @param array $array 
      * @param string $key 数组之中的元素的引用键名，可以使用|来表示多个键名，这些键名表示或关系，
      *      返回第一个被查找到的键名的值，这个表达式通常用来表示别名查找
     */
