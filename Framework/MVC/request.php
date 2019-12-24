@@ -106,3 +106,17 @@ class WebRequest {
         }
     }
 }
+
+/**
+ * Web response helper
+*/
+class WebResponse {
+
+    /**
+     * @param string $mime Set content-type
+    */
+    public static function content_type($mime) {
+        header("Content-Type: $mime");
+    }
+
+}

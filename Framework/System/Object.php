@@ -13,7 +13,7 @@ namespace System {
          * @return \System\Type
         */
         public function GetType() {
-            Imports("System.Type");
+            imports("System.Type");
             # 在函数之中动态加载模块，可以尽量减少服务器的I/O负担
             return \System\Type::TypeOf($this);
         }

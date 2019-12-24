@@ -2,8 +2,8 @@
 
 namespace System {
 
-    Imports("System.Object");
-    Imports("System.Reflection.PropertyInfo");
+    imports("System.Object");
+    imports("System.Reflection.PropertyInfo");
 
     use \System\Reflection\PropertyInfo as Property;
 
