@@ -2,11 +2,10 @@
 
 include "../../package.php";
 
-dotnet::Imports("System.Diagnostics.StackTrace");
 dotnet::AutoLoad("etc/config.php");
 
-Imports("RFC7231.index");
-Imports("Microsoft.VisualBasic.Conversion");
+imports("RFC7231.index");
+imports("Microsoft.VisualBasic.Conversion");
 
 dotnet::HandleRequest(new App());
 

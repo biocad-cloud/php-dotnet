@@ -1,6 +1,6 @@
 <?php
 
-Imports("System.IDisposable");
+imports("System.IDisposable");
 
 /**
  * Implements a System.IO.TextWriter for writing characters to a stream in a particular encoding.

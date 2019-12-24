@@ -1,14 +1,14 @@
 <?php
 
-Imports("System.Diagnostics.StackTrace");
-Imports("System.Linq.Enumerable");
-Imports("System.IO.Path");
-Imports("Microsoft.VisualBasic.Strings");
-Imports("MVC.View.foreach");
-Imports("MVC.View.inline");
-Imports("MVC.View.volist");
-Imports("MVC.View.minifier");
-Imports("Debugger.Ubench.Ubench");
+imports("System.Diagnostics.StackTrace");
+imports("System.Linq.Enumerable");
+imports("System.IO.Path");
+imports("Microsoft.VisualBasic.Strings");
+imports("MVC.View.foreach");
+imports("MVC.View.inline");
+imports("MVC.View.volist");
+imports("MVC.View.minifier");
+imports("Debugger.Ubench.Ubench");
 
 # 2019-02-23
 #
@@ -306,7 +306,7 @@ class View {
 		$usingCache = DotNetRegistry::Read("CACHE", false);
 
 		if ($usingCache && !Strings::Empty($path)) {
-			Imports("MVC.View.cache");
+			imports("MVC.View.cache");
 
 			list($html, $cache) = ViewCache::doCache($path, $language);
 		} else {

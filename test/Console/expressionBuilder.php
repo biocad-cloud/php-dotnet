@@ -4,8 +4,8 @@ include __DIR__ . "/../../package.php";
 
 dotnet::AutoLoad();
 
-Imports("Microsoft.VisualBasic.Strings");
-Imports("System.Text.StringBuilder");
+imports("Microsoft.VisualBasic.Strings");
+imports("System.Text.StringBuilder");
 
 $asserts = [
     "lower(`account`)|lower(`email`)" => "1233333", 

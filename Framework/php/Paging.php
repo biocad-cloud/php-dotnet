@@ -1,6 +1,6 @@
 <?php
 
-Imports("php.Utils");
+imports("php.Utils");
 
 /**
  * 数据库查询数据分页帮助工具

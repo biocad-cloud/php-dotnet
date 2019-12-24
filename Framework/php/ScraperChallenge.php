@@ -1,6 +1,6 @@
 <?php
 
-Imports("System.Math");
+imports("System.Math");
 
 use \System\Math as Math;
 

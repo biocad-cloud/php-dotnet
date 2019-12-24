@@ -14,7 +14,7 @@ $xml = "<div style='color: red; font-size:2em;'>
 
 include "../../package.php";
 
-Imports("php.Xml");
+imports("php.Xml");
 
 $xml = (new XmlParser($xml, "contents"))->data;
 

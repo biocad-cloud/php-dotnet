@@ -2,7 +2,7 @@
 
 include "../../../package.php";
 
-Imports("php.WkHtmlToPdf");
+imports("php.WkHtmlToPdf");
 
 $page = new \PHP\WkHtmlToPdf\Options\Page();
 $page->allow = "test.js";

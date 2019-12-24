@@ -1,7 +1,7 @@
 <?php
 
-Imports("System.Collection.ArrayList");
-Imports("System.Collection.ICollection");
+imports("System.Collection.ArrayList");
+imports("System.Collection.ICollection");
 
 /**
  * Supports a simple iteration over a non-generic collection. And 

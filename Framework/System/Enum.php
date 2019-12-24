@@ -1,6 +1,6 @@
 <?php
 
-Imports("System.Diagnostics.StackTrace");
+imports("System.Diagnostics.StackTrace");
 
 /** 
  * 为枚举提供基类。

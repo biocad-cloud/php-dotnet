@@ -5,7 +5,8 @@ include "REST.php";
 
 dotnet::$debug = false;
 
-dotnet::Imports("System.Diagnostics.StackTrace");
+imports("System.Diagnostics.StackTrace");
+
 dotnet::AutoLoad("etc/config.php");
 
 Control::$debug = false;

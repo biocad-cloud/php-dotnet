@@ -1,7 +1,7 @@
 <?php
 
-dotnet::Imports("Microsoft.VisualBasic.Strings");
-dotnet::Imports("System.Text.RegularExpressions.Regex");
+imports("Microsoft.VisualBasic.Strings");
+imports("System.Text.RegularExpressions.Regex");
 
 /**
  * Provides properties and methods for working with drives, 

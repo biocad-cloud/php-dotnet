@@ -2,7 +2,7 @@
 
 namespace System\Reflection {
 
-    Imports("php.DocComment");
+    imports("php.DocComment");
 
     class PropertyInfo {
 

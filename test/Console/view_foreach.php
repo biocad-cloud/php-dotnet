@@ -4,8 +4,8 @@ include "../../package.php";
 
 dotnet::AutoLoad();
 
-Imports("MVC.View.foreach");
-Imports("php.Utils");
+imports("MVC.View.foreach");
+imports("php.Utils");
 
 $template = <<<EOT
 <ul>

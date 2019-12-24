@@ -2,7 +2,7 @@
 
 namespace Microsoft\VisualBasic\Math\Quantile;
 
-Imports("System.Collection.ArrayList");
+imports("System.Collection.ArrayList");
 
 class Point {
     var $quantile;

@@ -2,7 +2,7 @@
 
 namespace PHP\WkHtmlToPdf\Options {
 
-    Imports("System.Object");
+    imports("System.Object");
 
     /**
      * The page decoration options: Headers And Footer Options

@@ -4,9 +4,9 @@ include "../../package.php";
 
 dotnet::AutoLoad();
 
-Imports("MVC.View.foreach");
-Imports("MVC.View.inline");
-Imports("php.Utils");
+imports("MVC.View.foreach");
+imports("MVC.View.inline");
+imports("php.Utils");
 
 $vars["title"] = "测试";
 

@@ -1,6 +1,6 @@
 <?php
 
-Imports("php.URL");
+imports("php.URL");
 
 /**
  * Parses the request header into resource, headers and security code

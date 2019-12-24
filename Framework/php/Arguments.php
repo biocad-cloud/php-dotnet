@@ -1,6 +1,6 @@
 <?php
 
-Imports("Microsoft.VisualBasic.CommandLine.CommandLineParser");
+imports("Microsoft.VisualBasic.CommandLine.CommandLineParser");
 
 /**
  * 这个模块是为了统一查询参数的获取方式而设定的

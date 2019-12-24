@@ -1,7 +1,7 @@
 <?php
 
-Imports("Microsoft.VisualBasic.FileIO.FileSystem");
-Imports("Microsoft.VisualBasic.Language.Value.Uid");
+imports("Microsoft.VisualBasic.FileIO.FileSystem");
+imports("Microsoft.VisualBasic.Language.Value.Uid");
 
 /**
  * 定时任务的宿主进程

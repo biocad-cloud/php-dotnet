@@ -1,6 +1,6 @@
 <?php
 
-Imports("System.Object");
-Imports("System.Type");
-Imports("Microsoft.VisualBasic.CommandLine.Argv");
-Imports("Arguments/*");
+imports("System.Object");
+imports("System.Type");
+imports("Microsoft.VisualBasic.CommandLine.Argv");
+imports("Arguments/*");

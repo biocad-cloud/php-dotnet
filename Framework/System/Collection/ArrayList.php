@@ -1,6 +1,6 @@
 <?php
 
-Imports("System.Collection.ICollection");
+imports("System.Collection.ICollection");
 
 /**
  * A dynamics array object. Implements the ``System.Collections.IList`` interface 

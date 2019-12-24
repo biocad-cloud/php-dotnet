@@ -2,8 +2,8 @@
 
 namespace PHP\WebSocket;
 
-Imports("System.IDisposable");
-Imports("php.http");
+imports("System.IDisposable");
+imports("php.http");
 
 /**
  * Class representing a WebSocket client.

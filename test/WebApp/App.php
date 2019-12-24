@@ -30,7 +30,7 @@ class App {
 	 * @access *
 	*/
 	public function aesTest() {
-		Imports("Microsoft.VisualBasic.Net.OPENSSL_AES");
+		imports("Microsoft.VisualBasic.Net.OPENSSL_AES");
 
 		$aes = new AES128CBC("1234567890abcdef");
 		$message = $aes->Encrypt("hello world!");
@@ -47,7 +47,7 @@ class App {
 	}
 
 	public function aes_message() {
-		Imports("Microsoft.VisualBasic.Net.OPENSSL_AES");
+		imports("Microsoft.VisualBasic.Net.OPENSSL_AES");
 
 		$aes = new AES128CBC("1234567890abcdef");
 		$message = $aes->Encrypt("hello world!");

@@ -1,6 +1,6 @@
 <?php 
 
-dotnet::Imports("Microsoft.VisualBasic.Strings");
+imports("Microsoft.VisualBasic.Strings");
 
 /**
  * 模拟VisualBasic之中的一些简单的数据类型转换关键词

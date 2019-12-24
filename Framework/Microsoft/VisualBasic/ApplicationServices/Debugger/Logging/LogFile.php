@@ -1,9 +1,9 @@
 <?php
 
-dotnet::Imports("System.Diagnostics.StackTrace");
-dotnet::Imports("System.Text.StringBuilder");
-dotnet::Imports("Microsoft.VisualBasic.ApplicationServices.Debugger.Logging.LogEntry");
-dotnet::Imports("Microsoft.VisualBasic.FileIO.FileSystem");
+imports("System.Diagnostics.StackTrace");
+imports("System.Text.StringBuilder");
+imports("Microsoft.VisualBasic.ApplicationServices.Debugger.Logging.LogEntry");
+imports("Microsoft.VisualBasic.FileIO.FileSystem");
 
 class LogFile {
 	

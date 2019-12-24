@@ -2,7 +2,7 @@
 
 namespace MVC\MySql\Expression {
 
-    Imports("System.Type");
+    imports("System.Type");
 
     use \MVC\MySql\SchemaInfo as SchemaDriver;
 

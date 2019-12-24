@@ -4,7 +4,7 @@ include __DIR__ . "../../../package.php";
 
 dotnet::AutoLoad();
 
-Imports("php.websocket");
+imports("php.websocket");
 
 $app = (new WsAppHandler())
 	/**

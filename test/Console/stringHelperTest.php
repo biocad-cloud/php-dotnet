@@ -4,8 +4,8 @@ include "../../package.php";
 
 dotnet::AutoLoad();
 
-Imports("Microsoft.VisualBasic.Strings");
-Imports("Microsoft.VisualBasic.Extensions.StringHelpers");
+imports("Microsoft.VisualBasic.Strings");
+imports("Microsoft.VisualBasic.Extensions.StringHelpers");
 
 $str = "<foreach @variableName>& blablablabla     <ul>afsdasdad</ul>    &</foreach>";
 

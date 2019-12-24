@@ -2,7 +2,7 @@
 
 namespace MVC\MySql\Expression {
 
-    Imports("Microsoft.VisualBasic.Strings");
+    imports("Microsoft.VisualBasic.Strings");
 
     /**
      * Syntax:

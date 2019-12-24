@@ -2,9 +2,9 @@
 
 namespace PHP;
 
-Imports("Microsoft.VisualBasic.Extensions.StringHelpers");
-Imports("Microsoft.VisualBasic.Strings");
-Imports("php.Utils");
+imports("Microsoft.VisualBasic.Extensions.StringHelpers");
+imports("Microsoft.VisualBasic.Strings");
+imports("php.Utils");
 
 /**
  * 解析php的函数注释文档

@@ -289,7 +289,7 @@ class dotnet {
      * @param string $module: 直接为命名空间的路径，不需要考虑相对路径或者添加文件后缀名，例如需要导入VisualBasic的Strings模块的方法，
      *                     只需要调用代码
      * 
-     *     ``dotnet::Imports("Microsoft.VisualBasic.Strings");``
+     *     ``imports("Microsoft.VisualBasic.Strings");``
      * 
      * @return string 这个函数返回所导入的模块的完整的文件路径
     */

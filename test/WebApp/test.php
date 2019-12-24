@@ -13,9 +13,9 @@ echo "A:" . true == $APP_DEBUG  .   "  \n\n\n";
 
 echo "B:" . true == $APP_DEBUG  .   "  \n\n\n";
 
-Imports("System.Threading.Thread");
-Imports("php.Utils");
-Imports("Debugger.engine");
+imports("System.Threading.Thread");
+imports("php.Utils");
+imports("Debugger.engine");
 
 use System\Threading\Thread as Thread;
 

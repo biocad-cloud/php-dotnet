@@ -2,10 +2,10 @@
 
 namespace MVC\Views {
 
-    Imports("System.Text.RegularExpressions.Regex");
-    Imports("MVC.View.foreach");
-    Imports("php.Utils");
-    Imports("php.Xml");
+    imports("System.Text.RegularExpressions.Regex");
+    imports("MVC.View.foreach");
+    imports("php.Utils");
+    imports("php.Xml");
 
     /**
      * 支持部分的thinkphp的volist标签语法

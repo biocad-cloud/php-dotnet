@@ -2,7 +2,7 @@
 
 namespace Microsoft\VisualBasic\Data\csv {
 
-    Imports("Microsoft.VisualBasic.Data.csv.Extensions");
+    imports("Microsoft.VisualBasic.Data.csv.Extensions");
 
     class FileFormat implements \System\IDisposable {
 

@@ -2,7 +2,7 @@
 
 include __DIR__ . "/../../package.php";
 
-Imports("Microsoft.VisualBasic.Math.Quantile");
+imports("Microsoft.VisualBasic.Math.Quantile");
 
 $list = ArrayList::From(1,2,3,4,5,6,7,8,9,0);
 

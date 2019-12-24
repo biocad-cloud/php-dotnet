@@ -1,6 +1,6 @@
 <?php
 
-Imports("Microsoft.VisualBasic.Conversion");
+imports("Microsoft.VisualBasic.Conversion");
 
 #region ".NET Registry keys"
 

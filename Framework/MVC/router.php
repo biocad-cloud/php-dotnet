@@ -1,8 +1,8 @@
 <?php
 
-Imports("Microsoft.VisualBasic.Strings");
-Imports("Microsoft.VisualBasic.Extensions.StringHelpers");
-Imports("php.URL");
+imports("Microsoft.VisualBasic.Strings");
+imports("Microsoft.VisualBasic.Extensions.StringHelpers");
+imports("php.URL");
 
 /**
  * REST api handler

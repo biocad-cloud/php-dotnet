@@ -36,7 +36,7 @@ namespace PhpDotNet {
         private static function getInternalModuleRefer($module) {
             $module = str_replace(".", "/", $module);
 
-            # 2018-5-15 假若Imports("MVC.view");
+            # 2018-5-15 假若imports("MVC.view");
             # 因为文件结构之中，有一个view.php和view文件夹
             # 所以在这里会产生冲突
             # 在linux上面因为文件系统区分大小写，所以可以通过大小写来避免冲突

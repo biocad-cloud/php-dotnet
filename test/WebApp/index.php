@@ -7,7 +7,7 @@ include "../../package.php";
 include "App.php";
 include "accessController.php";
 
-Imports("System.Diagnostics.StackTrace");
+imports("System.Diagnostics.StackTrace");
 
 dotnet::AutoLoad("etc/config.php");
 dotnet::HandleRequest(new App(), new c());

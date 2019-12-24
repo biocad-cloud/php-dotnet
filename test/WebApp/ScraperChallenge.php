@@ -4,7 +4,7 @@ session_start();
 
 include "../../package.php";
 
-Imports("php.ScraperChallenge");
+imports("php.ScraperChallenge");
 
 $dynamics = new ScraperChallenge();
 

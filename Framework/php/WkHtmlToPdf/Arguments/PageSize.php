@@ -2,8 +2,8 @@
 
 namespace PHP\WkHtmlToPdf\Options {
 
-    Imports("System.Object");
-    Imports("System.Enum");
+    imports("System.Object");
+    imports("System.Enum");
 
     /**
      * The default page size of the rendered document is A4, but using this

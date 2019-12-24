@@ -1,9 +1,9 @@
 <?php
 
-Imports("Microsoft.VisualBasic.CommandLine.CommandLine");
-Imports("Microsoft.VisualBasic.Extensions.StringHelpers");
-Imports("Microsoft.VisualBasic.Strings");
-Imports("php.Utils");
+imports("Microsoft.VisualBasic.CommandLine.CommandLine");
+imports("Microsoft.VisualBasic.Extensions.StringHelpers");
+imports("Microsoft.VisualBasic.Strings");
+imports("php.Utils");
 
 /**
  * 命令行字符串解析器模块

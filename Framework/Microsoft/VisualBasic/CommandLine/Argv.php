@@ -1,6 +1,6 @@
 <?php
 
-Imports("System.Text.StringBuilder");
+imports("System.Text.StringBuilder");
 
 /**
  * ``@argv``标签解释器

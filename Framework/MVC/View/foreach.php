@@ -6,12 +6,12 @@ namespace MVC\Views {
     # 命名空间的申明前面不可以存在其他的php语句
     # 所以这些imports必须要放在namespace的里面
 
-    Imports("System.Collection.ArrayList");
-    Imports("System.Linq.Enumerable");
-    Imports("System.Text.RegularExpressions.Regex");
-    Imports("Microsoft.VisualBasic.Extensions.StringHelpers");
-    Imports("Microsoft.VisualBasic.Strings");
-    Imports("php.Utils");
+    imports("System.Collection.ArrayList");
+    imports("System.Linq.Enumerable");
+    imports("System.Text.RegularExpressions.Regex");
+    imports("Microsoft.VisualBasic.Extensions.StringHelpers");
+    imports("Microsoft.VisualBasic.Strings");
+    imports("php.Utils");
 
     /**
      * 根据HTML文档之中所定义的模板来生成列表或者表格

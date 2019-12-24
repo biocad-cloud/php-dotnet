@@ -1,7 +1,7 @@
 <?php
 
-Imports("System.Collection.ICollection");
-Imports("php.Utils");
+imports("System.Collection.ICollection");
+imports("php.Utils");
 
 /**
  * Represents a collection of keys and values.To browse the .NET Framework source code for this 

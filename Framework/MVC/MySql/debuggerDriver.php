@@ -2,9 +2,9 @@
 
 namespace MVC\MySql {
 
-	Imports("Microsoft.VisualBasic.Strings");	
-	Imports("MVC.MySql.schemaDriver");
-    Imports("MVC.MySql.sqlDriver");
+	imports("Microsoft.VisualBasic.Strings");	
+	imports("MVC.MySql.schemaDriver");
+    imports("MVC.MySql.sqlDriver");
     
     /**
      * 这个模块并不执行mysql语句，而是将mysql语句显示出来

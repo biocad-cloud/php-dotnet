@@ -1,6 +1,6 @@
 <?php
 
-Imports("php.URL");
+imports("php.URL");
 
 /**
  * 调试器的后续rest api的信息输出在当前的session之中的存放键名 
@@ -229,7 +229,7 @@ class dotnetDebugger {
 	}
 
 	private static function is_dmlCalls($sql) {
-		Imports("Debugger.SqlFormatter");
+		imports("Debugger.SqlFormatter");
 
 		$tokens = SqlFormatter::tokenize($sql);
 

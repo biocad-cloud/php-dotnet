@@ -2,8 +2,8 @@
 
 namespace MVC\Views {
 
-    Imports("System.Text.RegularExpressions.Regex");
-    Imports("Microsoft.VisualBasic.Strings");
+    imports("System.Text.RegularExpressions.Regex");
+    imports("Microsoft.VisualBasic.Strings");
 
     /**
      * 直接支持php内联标签

@@ -1,14 +1,14 @@
 <?php
 
-Imports("Microsoft.VisualBasic.Strings");
-Imports("MVC.MySql.sqlDriver");
-Imports("MVC.MySql.schemaDriver");
-Imports("MVC.MySql.driver");
-Imports("MVC.MySql.SqlBuilder.expressionParts");
-Imports("MVC.MySql.SqlBuilder.Statements");
-Imports("MVC.MySql.SqlBuilder.sqlBuilder");
-Imports("System.Linq.Enumerable");
-Imports("Debugger.SqlFormatter");
+imports("Microsoft.VisualBasic.Strings");
+imports("MVC.MySql.sqlDriver");
+imports("MVC.MySql.schemaDriver");
+imports("MVC.MySql.driver");
+imports("MVC.MySql.SqlBuilder.expressionParts");
+imports("MVC.MySql.SqlBuilder.Statements");
+imports("MVC.MySql.SqlBuilder.sqlBuilder");
+imports("System.Linq.Enumerable");
+imports("Debugger.SqlFormatter");
 
 use MVC\MySql\Expression\WhereAssert as MySqlScript;
 use MVC\MySql\Expression\JoinExpression as JoinScript;

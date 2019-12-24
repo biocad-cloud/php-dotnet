@@ -1,6 +1,6 @@
 <?php
 
-Imports("php.DocComment");
+imports("php.DocComment");
 
 # 当前所支持的控制器函数的程序注解标签
 # 

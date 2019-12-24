@@ -1,6 +1,6 @@
 <?php
 
-Imports("php.websocket");
+imports("php.websocket");
 
 class WsAppHandler implements PHP\WebSocket\SocketListener {
 

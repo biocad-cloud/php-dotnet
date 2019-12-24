@@ -1,6 +1,6 @@
 <?php
 
-Imports("System.Collection.ArrayList");
+imports("System.Collection.ArrayList");
 
 /** 
  * The unique id generator.

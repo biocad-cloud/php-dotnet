@@ -17,7 +17,7 @@
 
 namespace biodeep_workspace {
 
-    Imports("MVC.MySql.schemaDriver");
+    imports("MVC.MySql.schemaDriver");
 
     /**
      * biodeep_workspace.mysqli.class

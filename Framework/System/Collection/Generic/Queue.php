@@ -1,6 +1,6 @@
 <?php 
 
-dotnet::Imports("System.Collection.ICollection");
+imports("System.Collection.ICollection");
 
 /**
  * Represents a first-in, first-out collection of objects.

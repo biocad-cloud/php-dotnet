@@ -2,8 +2,8 @@
 
 namespace MVC\MySql {
 
-	Imports("System.Text.StringBuilder");
-    Imports("Microsoft.VisualBasic.Strings");
+	imports("System.Text.StringBuilder");
+    imports("Microsoft.VisualBasic.Strings");
 
     /**
      * MySql execute or sql model debugger

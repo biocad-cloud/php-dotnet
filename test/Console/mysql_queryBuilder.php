@@ -4,7 +4,7 @@ include __DIR__ . "/../../package.php";
 
 dotnet::AutoLoad();
 
-Imports("MVC.MySql.debuggerDriver");
+imports("MVC.MySql.debuggerDriver");
 
 $table = Table::GetDebugger("program", "biodeep_workspace", __DIR__ . "/etc/workspace.php");
 

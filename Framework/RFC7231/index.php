@@ -1,7 +1,7 @@
 <?php
 
-Imports("php.Utils");
-Imports("MSDN");
+imports("php.Utils");
+imports("MSDN");
 
 /**
  * Custom error page supports

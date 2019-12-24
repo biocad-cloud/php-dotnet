@@ -1,6 +1,6 @@
 <?php
 
-Imports("Debugger.tableView");
+imports("Debugger.tableView");
 
 /**
  * 用户调试记录器

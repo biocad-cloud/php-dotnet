@@ -4,7 +4,7 @@ include __DIR__ . "../../../package.php";
 
 dotnet::AutoLoad();
 
-Imports("php.http");
+imports("php.http");
 
 class services {
 	

@@ -1,8 +1,8 @@
 <?php
 
-Imports("System.Diagnostics.StackFrame");
-Imports("System.Text.StringBuilder");
-Imports("Microsoft.VisualBasic.Strings");
+imports("System.Diagnostics.StackFrame");
+imports("System.Text.StringBuilder");
+imports("Microsoft.VisualBasic.Strings");
 
 /**
  * Represents a stack trace, which is an ordered collection of 

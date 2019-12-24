@@ -1,6 +1,6 @@
 <?php 
 
-Imports("Microsoft.VisualBasic.Data.csv.Extensions");
+imports("Microsoft.VisualBasic.Data.csv.Extensions");
 
 /**
  * Defines size, enumerators, and synchronization methods for all nongeneric collections.

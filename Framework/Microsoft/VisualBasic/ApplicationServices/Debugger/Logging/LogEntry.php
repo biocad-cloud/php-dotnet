@@ -1,6 +1,7 @@
 <?php
-dotnet::Imports("php.Utils");
-dotnet::Imports("Microsoft.VisualBasic.Strings");
+
+imports("php.Utils");
+imports("Microsoft.VisualBasic.Strings");
 
 class LogEntry {
 	

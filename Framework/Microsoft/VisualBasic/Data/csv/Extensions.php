@@ -2,8 +2,8 @@
 
 namespace Microsoft\VisualBasic\Data\csv {
 
-    Imports("Microsoft.VisualBasic.FileIO.FileSystem");
-    Imports("Microsoft.VisualBasic.Data.csv.Table");
+    imports("Microsoft.VisualBasic.FileIO.FileSystem");
+    imports("Microsoft.VisualBasic.Data.csv.Table");
 
     /**
      * The csv file I/O extensions

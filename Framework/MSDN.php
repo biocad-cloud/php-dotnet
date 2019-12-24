@@ -2,7 +2,7 @@
 
 namespace PhpDotNet {
 
-    Imports("Microsoft.VisualBasic.Strings");
+    imports("Microsoft.VisualBasic.Strings");
 
     /**
      * Helper for some common data type in .NET framework

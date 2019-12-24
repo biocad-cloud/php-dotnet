@@ -1,6 +1,6 @@
 <?php
 
-Imports("MVC.controller");
+imports("MVC.controller");
 
 class c extends controller {
 	

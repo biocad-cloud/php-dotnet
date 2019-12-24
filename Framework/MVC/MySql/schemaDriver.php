@@ -2,8 +2,8 @@
 
 namespace MVC\MySql {
 
-    Imports("Microsoft.VisualBasic.Strings");
-    Imports("MVC.MySql.sqlDriver");
+    imports("Microsoft.VisualBasic.Strings");
+    imports("MVC.MySql.sqlDriver");
 
     /**
      * 获取数据库的目标数据表的表结构

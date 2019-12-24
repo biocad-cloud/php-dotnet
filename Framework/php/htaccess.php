@@ -2,10 +2,10 @@
 
 namespace PHP;
 
-Imports("System.Text.RegularExpressions.Regex");
-Imports("Microsoft.VisualBasic.FileIO.FileSystem");
-Imports("Microsoft.VisualBasic.Strings");
-Imports("php.URL");
+imports("System.Text.RegularExpressions.Regex");
+imports("Microsoft.VisualBasic.FileIO.FileSystem");
+imports("Microsoft.VisualBasic.Strings");
+imports("php.URL");
 
 /** 
  * 主要用于路由器的url重写规则的自动设置

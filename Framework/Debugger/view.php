@@ -1,6 +1,6 @@
 <?php
 
-Imports("MVC.view");
+imports("MVC.view");
 
 /**
  * 调试器的输出视图引擎

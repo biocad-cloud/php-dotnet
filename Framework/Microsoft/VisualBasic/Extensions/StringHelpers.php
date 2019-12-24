@@ -1,6 +1,6 @@
 <?php
 
-Imports("Microsoft.VisualBasic.Strings");
+imports("Microsoft.VisualBasic.Strings");
 
 /**
  * String helper extensions

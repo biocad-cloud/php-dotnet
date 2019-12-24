@@ -58,7 +58,7 @@ class controllerValidation {
             $iplist  = explode("|", $iplist);
             $accepts = [];
 
-            Imports("php.export");
+            imports("php.export");
 
             foreach($iplist as $tagIP) {
                 if (strtolower($tagIP) === "localhost") {
