@@ -55,9 +55,25 @@ class Router {
 	public static function getApp($request = NULL) {
 		$argv = (!is_array($request)) ? $_GET : $request;
 
-		if (empty($argv) || count($argv) == 0 || !array_key_exists("app", $argv)) {
+		# 20191226
+		# 对于调试器api，其控制器变量为api
+		# 如果用户的web app模块之中定义了index控制器函数
+		# 则会因为没有app变量而返回index字符串
+		# 导致请求被分配到了index控制器之上
+		# 所以为了兼容调试器的请求，在下面应该添加一个api控制器变量的判断
+		if (empty($argv) || count($argv) == 0) {
 			# index.html as default
 			$page = "index";
+		} else if (!array_key_exists("app", $argv)) {
+			# probably is a http request of debugger api calls
+			if (array_key_exists("api", $argv)) {
+				# this name is not exists in controller module
+				# i sure for this
+				return "this_is_a_debugger_api_calls!!!";
+			} else {
+				# redirect to index controller
+				return "index";
+			}
 		} else {
 			$page = $argv["app"];
 		}
