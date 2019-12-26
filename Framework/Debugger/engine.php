@@ -138,16 +138,22 @@ class dotnetDebugger {
 	public static function IsDebuggerApiCalls() {
 		$calls = URL::mb_parse_url(null, true, true);
 
-		if (!IS_POST) {
-			return false;
-		}
-
 		if (basename($calls->path) != "index.php") {
 			return false;
 		}
 
 		$api      = Utils::ReadValue($calls->query, "api");
 		$apiNames = ["debugger", "sql_query", "asset"];
+
+		# asset api is request in GET method
+		if (!IS_POST) {
+			if (IS_GET && ($api == "asset")) {
+				# get static asset resource files.
+				return true;
+			} else {
+				return false;
+			}
+		}
 
 		if (!in_array($api, $apiNames)) {
 			return false;
