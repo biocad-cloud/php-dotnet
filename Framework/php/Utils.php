@@ -264,7 +264,7 @@ class Utils {
             // 告诉浏览器，这是二进制文件
             header("Content-Transfer-Encoding: binary"); 
             header('Cache-control: private');
-            header("Accept-Length: $file_size");                 
+            header("Accept-Length: $file_size");
         } else {
             header("Content-Length: $file_size");
         }        

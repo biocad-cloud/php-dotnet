@@ -231,6 +231,9 @@ class dotnetDebugger {
 	 * http请求来进行库文件的加载来避免可能的语法错误而导致页面无法正常显示
 	*/
 	private static function assets($file) {
+		header("HTTP/1.1 200 OK");
+		header("Content-Type: " . Utils::get_MIMEcontentType($file));
+
 		echo file_get_contents(__DIR__ . "/template/$file");
 	}
 
