@@ -181,6 +181,8 @@ class Utils {
             return "text/javascript";
         } else if ($ext == "css") {
             return "text/css";     
+        } else if ($ext == "gif") {
+            return "image/gif";
         }
 
         $result = new finfo();
