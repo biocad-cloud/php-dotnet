@@ -185,7 +185,9 @@ class Utils {
             return "image/gif";
         } else if ($ext == "jpg") {
             return "image/jpeg";
-        } 
+        } else if ($ext == "png") {
+            return "image/png";
+        }
 
         $result = new finfo();
 
