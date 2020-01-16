@@ -15,6 +15,13 @@ class debugView {
     private static $vars;
     private static $debugger;
 
+	/**
+	 * Show stack trace content on error page or not?
+	 * 
+	 * @var boolean
+	*/
+	public static $showStackTrace;
+
     /**
      * 添加App的事件记录
      * 
