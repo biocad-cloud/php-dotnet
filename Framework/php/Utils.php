@@ -714,13 +714,12 @@ class Utils {
         return $n;
     }
 
-    public static function LoadImage($path, $ext = null) {
-        $info = pathinfo($path);
-        
+    public static function LoadImage($path, $ext = null) {       
         if (!file_exists($path)) {
             return null;
         } else if (empty($ext)) {
-            $ext = strtolower($info['extension']);
+            $info = pathinfo($path);
+            $ext  = strtolower($info['extension']);
         }
 
         if ($ext === 'jpg') {
