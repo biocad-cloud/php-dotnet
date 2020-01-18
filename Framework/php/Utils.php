@@ -714,12 +714,13 @@ class Utils {
         return $n;
     }
 
-    public static function LoadImage($path) {
+    public static function LoadImage($path, $ext = null) {
         $info = pathinfo($path);
-        $ext  = strtolower($info['extension']);
         
         if (!file_exists($path)) {
             return null;
+        } else if (empty($ext)) {
+            $ext = strtolower($info['extension']);
         }
 
         if ($ext === 'jpg') {
@@ -738,9 +739,9 @@ class Utils {
      * @param string $thumbImage 输出的缩略图文件路径
      * @param integer $thumbWidth
     */
-    public static function ImageThumbs($rawImage, $thumbImage, $thumbWidth = 120) {
+    public static function ImageThumbs($rawImage, $thumbImage, $thumbWidth = 120, $ext) {
         // load image and get image size
-        $img = self::LoadImage($rawImage);
+        $img = self::LoadImage($rawImage, $ext);
 
         if (!$img) {
             return false;
