@@ -82,7 +82,7 @@ namespace System {
             }
 
             $date = date('Y-m-d H:i:s', $stamp);
-            $date = new DateTime($date);
+            $date = self::Parse($date);
 
             return $date;
         }
