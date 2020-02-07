@@ -73,6 +73,21 @@ namespace System {
         }
 
         /**
+         * @param string|integer
+         * @return DateTime
+        */
+        public static function FromTimeStamp($stamp) {
+            if (\is_string($stamp)) {
+                $stamp = \strtotime($stamp);
+            }
+
+            $date = date('Y-m-d H:i:s', $stamp);
+            $date = new DateTime($date);
+
+            return $date;
+        }
+
+        /**
          * 获取今天开始的时间点
          * 
          * @param DateTime $day 如果这个参数被忽略掉了，就默认为今天
