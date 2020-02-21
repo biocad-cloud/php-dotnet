@@ -140,7 +140,7 @@ namespace PhpDotNet {
 
             if ($fileName == basename(__FILE__) || $fileName == "package.php") {
                 return false;
-            } else if ($funcName !== "Imports" || $funcName == "LoadModule") {
+            } else if ($funcName !== "imports" || $funcName == "LoadModule") {
                 return false;
             } else if (count($args) != 1) {
                 return false;

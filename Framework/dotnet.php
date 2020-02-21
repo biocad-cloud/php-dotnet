@@ -179,9 +179,7 @@ class dotnet {
                     console::log("Load framework config file from '" . realpath($config) . "'");
                 } else {
                     # file not exists!
-                    console::warn("Config data php file '$config' is not exists on your filesystem...");
-                    # load default configuration data.
-                    DotNetRegistry::$config = DotNetRegistry::DefaultConfig();
+                    breakpoint("Config data php file '$config' is not exists on your filesystem...");
                 }
             } elseif (is_array($config)) {
                 DotNetRegistry::$config = $config;
