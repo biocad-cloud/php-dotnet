@@ -426,6 +426,10 @@ abstract class controller {
     */
     abstract public function accessControl();
 
+    protected function recordNotFoundActivity() {
+        # do nothing
+    }
+
     /**
      * 对当前用户访问当前的这个服务器资源的访问量控制的控制器函数
      * 
@@ -449,6 +453,9 @@ abstract class controller {
         $app = Router::getApp();
         $msg = "Web app `<strong>$app</strong>` is not available in this controller!";
 
+        $this->recordNotFoundActivity();
+
+        # show http 404 error page
         dotnet::PageNotFound($msg);
     }
 

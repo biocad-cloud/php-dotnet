@@ -181,6 +181,12 @@ class Utils {
             return "text/javascript";
         } else if ($ext == "css") {
             return "text/css";     
+        } else if ($ext == "gif") {
+            return "image/gif";
+        } else if ($ext == "jpg") {
+            return "image/jpeg";
+        } else if ($ext == "png") {
+            return "image/png";
         }
 
         $result = new finfo();
@@ -708,12 +714,12 @@ class Utils {
         return $n;
     }
 
-    public static function LoadImage($path) {
-        $info = pathinfo($path);
-        $ext  = strtolower($info['extension']);
-        
+    public static function LoadImage($path, $ext = null) {       
         if (!file_exists($path)) {
             return null;
+        } else if (empty($ext)) {
+            $info = pathinfo($path);
+            $ext  = strtolower($info['extension']);
         }
 
         if ($ext === 'jpg') {
@@ -732,9 +738,9 @@ class Utils {
      * @param string $thumbImage 输出的缩略图文件路径
      * @param integer $thumbWidth
     */
-    public static function ImageThumbs($rawImage, $thumbImage, $thumbWidth = 120) {
+    public static function ImageThumbs($rawImage, $thumbImage, $thumbWidth = 120, $ext) {
         // load image and get image size
-        $img = self::LoadImage($rawImage);
+        $img = self::LoadImage($rawImage, $ext);
 
         if (!$img) {
             return false;

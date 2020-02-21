@@ -199,6 +199,7 @@ class dotnet {
 
         $initiator->end();
 
+        debugView::$showStackTrace = DotNetRegistry::Read("show.stacktrace", true);
         debugView::LogEvent("App init in " . $initiator->getTime());
         debugView::AddItem("benchmark.init", $initiator->getTime(true));
     }
@@ -302,17 +303,25 @@ class dotnet {
 
     #region "error codes"
 
+    private static function exceptionMsg($message) {
+        if (debugView::$showStackTrace) {
+            $trace = StackTrace::GetCallStack();
+            $exc   = dotnetException::FormatOutput($message, $trace);
+        } else {
+            $exc   = $message;
+        }
+
+        return $exc;
+    }
+
 	/**
 	 * 500 PHP throw exception helper for show exception in .NET 
      * exception style
      * 
      * @param string $message The error message to display.
 	*/
-    public static function ThrowException($message) {
-		$trace = StackTrace::GetCallStack();
-		$exc   = dotnetException::FormatOutput($message, $trace);
-				
-		RFC7231Error::err500($exc);
+    public static function ThrowException($message) {			
+		RFC7231Error::err500(self::exceptionMsg($message));
 		exit(500);
     }
 
@@ -321,11 +330,8 @@ class dotnet {
      * 
      * @param string $message The error message to display.
     */
-    public static function PageNotFound($message) {
-        $trace = StackTrace::GetCallStack();
-		$exc   = dotnetException::FormatOutput($message, $trace);
-				
-		RFC7231Error::err404($exc);
+    public static function PageNotFound($message) {				
+		RFC7231Error::err404(self::exceptionMsg($message));
 		exit(404);
     }
 
@@ -335,10 +341,7 @@ class dotnet {
      * @param string $message The error message to display.
     */
     public static function AccessDenied($message) {
-        $trace = StackTrace::GetCallStack();
-		$exc   = dotnetException::FormatOutput($message, $trace);
-				
-		RFC7231Error::err403($exc);
+		RFC7231Error::err403(self::exceptionMsg($message));
 		exit(403);
     }
 
@@ -349,30 +352,21 @@ class dotnet {
      * 
      * @param string $message The error message to display.
     */
-    public static function InvalidHttpMethod($message) {
-        $trace = StackTrace::GetCallStack();
-		$exc   = dotnetException::FormatOutput($message, $trace);
-				
-		RFC7231Error::err405($exc);
+    public static function InvalidHttpMethod($message) {				
+		RFC7231Error::err405(self::exceptionMsg($message));
 		exit(405);
     }
 
     /**
      * 429 请求次数过多
     */
-    public static function TooManyRequests($message) {
-        $trace = StackTrace::GetCallStack();
-		$exc   = dotnetException::FormatOutput($message, $trace);
-				
-		RFC7231Error::err429($exc);
+    public static function TooManyRequests($message) {			
+		RFC7231Error::err429(self::exceptionMsg($message));
 		exit(429);
     }
 
-    public static function BadRequest($message) {
-        $trace = StackTrace::GetCallStack();
-		$exc   = dotnetException::FormatOutput($message, $trace);
-				
-		RFC7231Error::err400($exc);
+    public static function BadRequest($message) {	
+		RFC7231Error::err400(self::exceptionMsg($message));
 		exit(400);
     }
     #endregion
