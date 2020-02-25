@@ -127,6 +127,10 @@ abstract class controller {
         return $this->getTagValue("cache");
     }
 
+    public function getXFrameOption() {
+        return $this->getTagValue("xframe");
+    }
+
     /**
      * 获取当前的控制器函数的注释文档里面的某一个标签的说明文本
     */
@@ -240,6 +244,29 @@ abstract class controller {
     */
     public function AccessByEveryOne() {
         return $this->getAccessLevel() == "*";
+    }
+
+    private function sendXFrameHeader() {
+        $config = $this->getXFrameOption();
+
+        if (empty($config) || $config == "") {
+            header("X-Frame-Options: sameorigin");
+        } else {
+            switch($config) {
+                case "deny":
+                    header("X-Frame-Options: deny");
+                    break;
+                case "sameorigin":
+                    header("X-Frame-Options: sameorigin");
+                    break;
+                
+                default:
+                    # sameorigin and specific domain
+                    # allow-from uri
+                    #                
+                    header("Content-Security-Policy: frame-src 'self' $config;");
+            }
+        }
     }
 
     /**
@@ -370,6 +397,8 @@ abstract class controller {
                 header("Cache-control: $control");
             }
         }
+
+        $this->sendXFrameHeader();
 
         # 在这里执行用户的控制器函数
         $bench = new \Ubench();

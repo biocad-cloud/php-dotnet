@@ -231,10 +231,17 @@ class dotnetDebugger {
 	 * http请求来进行库文件的加载来避免可能的语法错误而导致页面无法正常显示
 	*/
 	private static function assets($file) {
-		header("HTTP/1.1 200 OK");
-		header("Content-Type: " . Utils::get_MIMEcontentType($file));
+		$path = __DIR__ . "/template/$file";
 
-		echo file_get_contents(__DIR__ . "/template/$file");
+		if (!file_exists($path)) {
+			$path = __DIR__ . "/template/assets/$file";
+		}
+
+		if (!file_exists($path)) {
+			dotnet::PageNotFound("Unable to found resource file: <code>$file</code>");
+		} else {
+			Utils::PushDownload($path);
+		}
 	}
 
 	private static function is_dmlCalls($sql) {

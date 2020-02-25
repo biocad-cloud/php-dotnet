@@ -5,11 +5,11 @@ Generally, you can add some tags data on your web app controller function, and t
 + ``access`` tag for specific that the access control user group, like ``admin``, ``user`` group, etc, and anything else that you like. A special character ``*`` means this web app can be accessed by everyone. If the request user is not in one of the user role group, then a ``403 Forbidden`` error will be triggered.
 + ``uses`` tag will tells the web server how to send the content type http header to the user browser, this tag data has 4 kinds of value:
 
-   + ``view`` for html view page, Content-Type: ``text/html``
-   + ``api`` for json data response, Content-Type: ``application/json``
-   + ``soap`` for xml data response, Content-Type: ``text/xml``
-   + ``router`` means current web app will redirect the user browser to a new location.
-   + ``text`` for plain text, Content-Type: ``text/plain``
+  + ``view`` for html view page, Content-Type: ``text/html``
+  + ``api`` for json data response, Content-Type: ``application/json``
+  + ``soap`` for xml data response, Content-Type: ``text/xml``
+  + ``router`` means current web app will redirect the user browser to a new location.
+  + ``text`` for plain text, Content-Type: ``text/plain``
 
    This meta tag will produce the content type http header like: ``Content-Type: application/json``.
 
@@ -18,32 +18,37 @@ Generally, you can add some tags data on your web app controller function, and t
 
 + ``require`` tag tells the php web server that the parameter names which listed in this require tag data must appears in the query parameters and the data type of the parameter value must match the pattern specific by the tag value is also required. The required parameters in this meta tag data is combine with ``|`` symbol as delimiter. The string pattern of the parameter value in this meta tag value is show below:
 
-   + ``i32`` means the query parameter its value should be an integer value
-   + ``boolean`` means the query parameter its value should be a logical value in text like 1/0/true/false/T/F, etc
-   + ``string`` means the query parameter its value should not be empty!
+  + ``i32`` means the query parameter its value should be an integer value
+  + ``boolean`` means the query parameter its value should be a logical value in text like 1/0/true/false/T/F, etc
+  + ``string`` means the query parameter its value should not be empty!
 
 If the parameter value validation is not success based on the pattern that define on your web app, then a ``400 bad request`` http error will be triggered.
 
 + ``cache`` tag can let you to controlling of the cache behaviour in the user browser. All of the controller response from the php is not cachable by default, but you could try this meta tag value to send a cache header to the user browser to force the browser cache the current resource, if the current resource is static file or something. All of the avaiable cache controls in this meta tag value are:
 
-   + ``no-cache`` tells the user browser do not cache current server resource.
-   + ``max-age=<seconds>`` tells the user browser to cache of the current server resource. Specifies the maximum amount of time a resource will be considered fresh. Contrary to Expires, this directive is relative to the time of the request.
-   + ``must-revalidate`` indicates that once a resource has become stale (e.g. max-age has expired), a cache must not use the response to satisfy subsequent requests for this resource without successful validation on the origin server.
-   + ``no-store`` the cache should not store anything about the client request or server response.
-   + ``no-transform`` No transformations or conversions should be made to the resource. The Content-Encoding, Content-Range, Content-Type headers must not be modified by a proxy. A non-transparent proxy or browser feature such as Google's Light Mode might, for example, convert between image formats in order to save cache space or to reduce the amount of traffic on a slow link. The no-transform directive disallows this.
-   + ``public`` indicates that the response may be cached by any cache, even if the response would normally be non-cacheable (e.g. if the response does not contain a max-age directive or the Expires header).
-   + ``private`` indicates that the response is intended for a single user and must not be stored by a shared cache. A private cache may store the response.
-   + ``proxy-revalidate`` same as must-revalidate, but it only applies to shared caches (e.g., proxies) and is ignored by a private cache.
-   + ``s-maxage=<seconds>`` takes precedence over max-age or the Expires header, but it only applies to shared caches (e.g., proxies) and is ignored by a private cache.
+  + ``no-cache`` tells the user browser do not cache current server resource.
+  + ``max-age=<seconds>`` tells the user browser to cache of the current server resource. Specifies the maximum amount of time a resource will be considered fresh. Contrary to Expires, this directive is relative to the time of the request.
+  + ``must-revalidate`` indicates that once a resource has become stale (e.g. max-age has expired), a cache must not use the response to satisfy subsequent requests for this resource without successful validation on the origin server.
+  + ``no-store`` the cache should not store anything about the client request or server response.
+  + ``no-transform`` No transformations or conversions should be made to the resource. The Content-Encoding, Content-Range, Content-Type headers must not be modified by a proxy. A non-transparent proxy or browser feature such as Google's Light Mode might, for example, convert between image formats in order to save cache space or to reduce the amount of traffic on a slow link. The no-transform directive disallows this.
+  + ``public`` indicates that the response may be cached by any cache, even if the response would normally be non-cacheable (e.g. if the response does not contain a max-age directive or the Expires header).
+  + ``private`` indicates that the response is intended for a single user and must not be stored by a shared cache. A private cache may store the response.
+  + ``proxy-revalidate`` same as must-revalidate, but it only applies to shared caches (e.g., proxies) and is ignored by a private cache.
+  + ``s-maxage=<seconds>`` takes precedence over max-age or the Expires header, but it only applies to shared caches (e.g., proxies) and is ignored by a private cache.
 
 + ``method`` tag tells the php web server how to accept the current http request. If the tag value of this ``method`` data tag is ``GET``, then it means only the GET request will be acceptted, POST method will trigger a ``405 method not allowed`` http error response. This meta data only supports GET or POST method.
 + ``debugger`` meta tag will turn on/off the php debugger for current web app. Note that the php debug only works for the html view controller, which means the ``@uses view`` configuration should be appears on your current web app controller. 
 + ``rate`` tag for restrict the user access of a specifci server resource, you can restrict the user request number in a time span, the time value has 3 kinds of unit: min, hour, day. And you can specific the request number for these time spans units, like:
-   + ``60/min`` means user request number was limits to 60 http request every minute, once the request number is exceed 60 in one minute, then your server will returns a 429 error code.
-   + ``1500/hour`` means user request number was limits to 1500 http request every hour, once the request number is exceed 1500 in one hour, then your server will returns a 429 error code.
-   + ``3000/day`` means user request number was limits to 3000 http request every day(or 24 hours). once the request number is exceed 3000 in 24 hours, then your server will returns a 429 error code. 
+  + ``60/min`` means user request number was limits to 60 http request every minute, once the request number is exceed 60 in one minute, then your server will returns a 429 error code.
+  + ``1500/hour`` means user request number was limits to 1500 http request every hour, once the request number is exceed 1500 in one hour, then your server will returns a 429 error code.
+  + ``3000/day`` means user request number was limits to 3000 http request every day(or 24 hours). once the request number is exceed 3000 in 24 hours, then your server will returns a 429 error code.
 
-### Examples
++ ``xframe`` tag for used to indicate whether or not a browser should be allowed to render a page in a ``<frame>``, ``<iframe>``, ``<embed>`` or ``<object>``. Sites can use this to avoid clickjacking attacks, by ensuring that their content is not embedded into other sites. There are three options for this meta data tag:
+  + ``deny`` for the page cannot be displayed in a frame, regardless of the site attempting to do so.
+  + ``sameorigin`` for the page can only be displayed in a frame on the same origin as the page itself.
+  + ``<domain>`` for the page can only be displayed in specific domain. Example as for a page in domain ``abc.com``, it can be displayed in sub domain like ``test.abc.com`` when config this meta data in value as ``@xframe test.abc.com``.
+
+## Examples
 
 Examples of the web app meta data usage are show bellow:
 
