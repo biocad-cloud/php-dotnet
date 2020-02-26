@@ -14,13 +14,19 @@ class FileSystem {
 	 * 
 	 * @param string $path The given file path string value.
 	*/
-	public static function BaseName($path) {
+	public static function BaseName($path, $withoutExtensionName = true) {
 		# 因为为了兼容文件夹路径，所以path字符串在最开始需要trim操作
 		$path = str_replace("\\", "/", trim($path, "/"));
 		$path = explode("/", $path);
 		$fileName = $path[count($path) - 1];
-		$fileName = explode(".", $fileName);
-		$tokens   = [];
+
+		if (!$withoutExtensionName) {
+			return $fileName;
+		} else {
+			$fileName = explode(".", $fileName);
+		}
+
+		$tokens = [];
 
 		if (count($fileName) == 1) {
 			// 没有拓展名，则返回自身的文件名
