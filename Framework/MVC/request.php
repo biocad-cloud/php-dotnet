@@ -73,7 +73,11 @@ class WebRequest {
     }
 
     /**
-     * Get a file path components that comes from the url query parameter or post arguments
+     * Get a file path components that comes from the url query 
+     * parameter or post arguments
+     * 
+     * @param boolean $raw If required raw value, then the un-processed query data will be returned
+     *     otherwise the trimmed and urldecoded string data will be returned.
     */
     public static function getPath($queryKey, $default = NULL, $raw = FALSE) {
         $value = self::get($queryKey, $default);
@@ -81,13 +85,18 @@ class WebRequest {
         if (empty($value)) {
             return $default;
         } else {
-            # strip parent path visits
-            # avoid unexpected file access problem.
-            # pattern for visit parent path is /../
-            $value = str_replace('/../', "/", $value);
-            $value = ltrim($value, "./");
+            if ($raw) {
+                return $value;
+            } else {
+                $value = urldecode($value);
+                # strip parent path visits
+                # avoid unexpected file access problem.
+                # pattern for visit parent path is /../
+                $value = str_replace('/../', "/", $value);
+                $value = ltrim($value, "./");
 
-            return $value;
+                return $value;
+            }
         }
     }
 
