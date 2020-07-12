@@ -433,6 +433,10 @@ class FileSystem {
 	 * @return string 经过自动格式优化过后的大小显示字符串
 	*/
 	public static function Lanudry($bytes) {
+		if ($bytes < 1024) {
+			return "$bytes B";
+		} 
+
 		$symbols = ["B", "KB", "MB", "GB", "TB"];
 		$exp     = floor( log($bytes) / log(1000) );
 		$symbol  = $symbols[$exp];

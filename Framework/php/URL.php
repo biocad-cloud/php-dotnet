@@ -135,7 +135,13 @@ class URL {
 
         foreach ($queryParts as $param) {
             $item = explode('=', $param);
-            $params[$item[0]] = $item[1];
+
+            if (count($item) <= 1) {
+                $params["query"] = $item[1];
+                console::warn("there is an invalid query part in your given url query: '$param' in '$query'");
+            } else {
+                $params[$item[0]] = $item[1];
+            }            
         }
 
         return $params;

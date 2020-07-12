@@ -108,7 +108,7 @@ namespace Microsoft\VisualBasic\Data\csv {
                 \error_log("[\"$path\"] not exists or contains no data!");
                 return null;
             } else {
-                foreach(self::doParseObjects($file_handle, $headers) as $obj) {
+                foreach(self::doParseObjects($file_handle, $headers, 2048, $delimiter) as $obj) {
                     $line_of_text[] = $obj;
                 }                
             }

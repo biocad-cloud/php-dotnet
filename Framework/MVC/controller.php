@@ -335,6 +335,7 @@ abstract class controller {
                 // 否则下面的反射调用代码会出错
                 exit(0);
             } else {
+                # breakpoint($_GET);
                 # 其他的情况目前都被判定为404错误
                 # 不存在，则抛出404
                 $this->handleNotFound();
@@ -480,6 +481,8 @@ abstract class controller {
     */
     public function handleNotFound() {
         $app = Router::getApp();
+		// 在这里进行替换，防止通过url请求注入脚本产生的安全漏洞
+		$app = str_replace("<", "&lt;", $app);
         $msg = "Web app `<strong>$app</strong>` is not available in this controller!";
 
         $this->recordNotFoundActivity();

@@ -271,6 +271,7 @@ class Utils {
             header("Content-Transfer-Encoding: binary"); 
             header('Cache-control: private');
             header("Accept-Length: $file_size");
+            header("Content-Length: $file_size");
         } else {
             header("Content-Length: $file_size");
         }        

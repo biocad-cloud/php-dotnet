@@ -166,7 +166,7 @@ class dotnet {
 
         URL::NormalizeRedirectArguments();
 
-        if ($config) {
+        if (!empty($config)) {
             # config存在赋值，则判断一下是否为字符串？
             # 如果是字符串，则使用文件的加载方式
             # 反之再判断是否为数组
@@ -303,7 +303,7 @@ class dotnet {
 
     #region "error codes"
 
-    private static function exceptionMsg($message) {
+    public static function exceptionMsg($message) {
         if (debugView::$showStackTrace) {
             $trace = StackTrace::GetCallStack();
             $exc   = dotnetException::FormatOutput($message, $trace);

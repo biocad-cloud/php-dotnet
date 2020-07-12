@@ -130,7 +130,7 @@ class controllerValidation {
             
             case "boolean":
 
-                if (!($val == "true" || $val == "false" || $val == "1" || $val == "0")) {
+                if (!($val == "1" || $val == "0" || Conversion::isBoolFactorString($val))) {
                     $this->handleBadRequest($argName, "boolean");
                 }
                 break;

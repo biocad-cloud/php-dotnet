@@ -178,6 +178,7 @@ namespace MVC\MySql {
 					->AppendLine("Error: Unable to connect to MySQL.")
 				    ->AppendLine("Debugging errno: " . mysqli_connect_errno()) 
 					->AppendLine("Debugging error: " . mysqli_connect_error())
+					->AppendLine("<code>@\mysqli_connect({$this->host}, {$this->user}, {$this->database}, {$this->port});</code>")
 					->ToString();
 					
 				\dotnet::ThrowException($msg);

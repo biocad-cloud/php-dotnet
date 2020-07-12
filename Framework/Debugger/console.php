@@ -14,13 +14,39 @@ class console {
     public static $logs;
 
     /**
+     * @var resource
+    */
+    private static $logfile;
+
+    /**
+     * Open log file for write log text content
+     * 
+     * @param string $file
+    */
+    public static function openlog($file, $truncate = false) {
+        FileSystem::CreateDirectory(dirname($file));
+
+        self::$logfile = fopen($file, "w");
+
+        if ($truncate && file_exists($file)) {
+            ftruncate(self::$logfile, 0);
+            rewind(self::$logfile);
+        }
+    }
+
+    public static function flush() {
+        fclose(self::$logfile);
+    }
+
+    /**
      * 在这个函数之中显示以及处理php的警告消息
     */
     public static function error_handler($errno, $errstr, $errfile, $errline) {
         if (IS_CLI) {
             $time = Utils::Now(false);
-            echo "[$time, ERROR::$errno] $errstr\n";
-            echo "    at $errfile line $errline\n";
+
+            self::cli_echo("[$time, ERROR::$errno] $errstr\n");
+            self::cli_echo("    at $errfile line $errline\n");
         } else {
             self::$logs[] = [
                 "code"  => $errno, 
@@ -31,6 +57,14 @@ class console {
                 "time"  => Utils::Now(false)
             ];
         }
+    }
+
+    private static function cli_echo($line) {
+        if (!empty(self::$logfile)) {
+            fwrite(self::$logfile, $line);
+        }
+
+        echo $line;
     }
 
     /**
@@ -94,7 +128,7 @@ class console {
             ];
         } else if (IS_CLI) {
             $time = Utils::Now(false);
-            echo "[$time] $msg\n";
+            self::cli_echo("[$time] $msg\n");
         }
     }
 
@@ -135,8 +169,8 @@ class console {
     public static function dump($obj, $message = "PHP object value dump:", $code = 2) {
         if (IS_CLI) {
             $time = Utils::Now(false);
-            echo "[$time] $message\n";
-            echo var_dump($obj);
+            self::cli_echo("[$time] $message\n");
+            self::cli_echo(self::cli_dump_auto($obj));
         } else if (APP_DEBUG) {
             $trace = self::backtrace();
             self::$logs[]  = [
@@ -150,6 +184,14 @@ class console {
         }        
     }
     
+    private static function cli_dump_auto($obj) {
+        if (empty(self::$logfile)) {
+            echo var_dump($obj);
+        } else {
+            return json_encode($obj) . "\n";
+        }
+    }
+
     /**
      * @param boolean $var_dump 是进行var_dump输出还是普通的字符串输出？
     */
@@ -204,8 +246,8 @@ class console {
             $time  = Utils::Now(false);
             $trace = StackTrace::GetCallStack();
 
-            echo "[$time, ERROR::$code] $msg\n";
-            echo $trace->ToString($html = false) . "\n";
+            self::cli_echo("[$time, ERROR::$code] $msg\n");
+            self::cli_echo($trace->ToString($html = false) . "\n");
         } 
     }
 
@@ -224,8 +266,8 @@ class console {
             $time  = Utils::Now(false);
             $trace = StackTrace::GetCallStack();
 
-            echo "[$time, WARN::$code] $msg\n";
-            echo $trace->ToString($html = false) . "\n";
+            self::cli_echo("[$time, WARN::$code] $msg\n");
+            self::cli_echo($trace->ToString($html = false) . "\n");
         } 
     }
 

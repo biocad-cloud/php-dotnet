@@ -153,6 +153,8 @@ namespace MVC\MySql\Expression {
 
         /**
          * 获取进行条件判断所需要的对象的表达式
+         * 
+         * @param string $exp the expression text data
         */
         public static function KeyExpression($exp) {
             $a = strpos($exp, '(');
@@ -163,7 +165,7 @@ namespace MVC\MySql\Expression {
             if ( ($a !== false) && ($b !== false) && ($a + 1 < $b) ) {
                 # 是一个表达式
                 return $exp;
-            } else if ($c && $d) {
+            } else if ($c == "`" && $d == "`") {
                 # 是一个 `fieldName` 字段引用，也是直接返回
                 return $exp;
             } else {
