@@ -146,11 +146,13 @@ class WebResponse {
         header("Content-Type: $mime");
     }
 
+    /**
+     * send file content to client browser
+     * 
+     * @param string $path a valid file path.
+     * @param string $mime Set content-type
+    */
     public static function sendContent($path, $mime) {
-        header("Content-Type: $mime");
-        
-        # and then send file content data 
-        # back to the client.
-        echo file_get_contents($path);
+        Utils::PushDownload($path, -1, $mime);
     }
 }

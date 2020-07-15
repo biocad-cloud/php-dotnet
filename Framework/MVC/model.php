@@ -916,7 +916,7 @@ class Table {
 	 * 
 	 * @return boolean
 	*/ 
-    public function save($data, $limit1 = true) {
+    public function save($data, $limit1 = true, $safe = TRUE) {
 		$ref     = $this->schema->ref;
         $assert  = $this->getWhere();
 		$SQL     = "";
@@ -942,7 +942,13 @@ class Table {
 		if (!$assert) {
 			# 更新所有的数据？？？要不要给出警告信息
 			$SQL = $SQL . ";";
-			console::warn("Execute update entire data table! ($SQL)");
+
+			if ($safe) {
+				throw new Exception("");
+			} else {
+				console::warn("Execute update entire data table! ($SQL)");
+			}
+
 		} else {
 			if ($limit1) {
 				$SQL = $SQL . " WHERE " . $assert . " LIMIT 1;";
