@@ -25,6 +25,16 @@ class WebRequest {
         }
     }
 
+    public static function is_pattern($queryKey, $pattern) {
+        $str = self::get($queryKey);
+
+        if (empty($str)) {
+            return false;
+        } else {
+            return StringHelpers::IsPattern($str, $pattern);
+        }
+    }
+
     /**
      * 查看url查询或者POST数据之中是否存在目标数据
      * 
