@@ -612,7 +612,14 @@ class Table {
 	 * @return mixed
 	*/
     public function exec($SQL) {
-        return $this->driver->ExecuteSql($SQL);
+		$SQL = trim($SQL);
+		$tokens = explode(" ", strtolower($SQL));
+
+		if ($tokens[0] == "select") {
+			return $this->driver->Fetch($SQL);
+		} else {
+			return $this->driver->ExecuteSql($SQL);
+		} 
     }
 
 	/**
