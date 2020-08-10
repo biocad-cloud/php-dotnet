@@ -227,7 +227,6 @@ class Utils {
         while(!feof($fp) && $file_count < $file_size) { 
             $file_con    = fread($fp, $buffer); 
             $file_count += $buffer; 
-            
             echo $file_con; 
         } 
 
