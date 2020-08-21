@@ -28,7 +28,15 @@ namespace Microsoft\VisualBasic\Data\csv {
             $this->file_handle = fopen($path, 'r');
             $this->firstLine = fgets($this->file_handle);
 			# 右边肯定会存在一个\r或者\n换行符，在这里将其删除
-			$this->firstLine = rtrim($this->firstLine, "\r\n");
+            $this->firstLine = rtrim($this->firstLine, "\r\n");
+            
+            if (false === $this->file_handle) {
+                \console::error("the given file '$path' is not found on your file system!");
+            }
+        }
+
+        public function isValid() {
+            return !(false === $this->file_handle);
         }
 
         /**
@@ -103,7 +111,11 @@ namespace Microsoft\VisualBasic\Data\csv {
         }
 
         public function isEOF() {
-            return feof($this->file_handle);
+            if (!$this->isValid()) {
+                return true;
+            } else {
+                return feof($this->file_handle);
+            }
         }
 
         /**
@@ -111,6 +123,11 @@ namespace Microsoft\VisualBasic\Data\csv {
         */
         public function PopulateAllRows($tsv = false, $maxLen = 2048, $asObject = false) {
             $delimiter = $tsv ? "\t" : ",";
+
+            if (!$this->isValid()) {
+                \console::error("returns empty row collection due to the reason of missing target data file: [{$this->filepath}]!");
+                return [];
+            }
 
             if ($asObject) {
                 foreach(Extensions::doParseObjects(

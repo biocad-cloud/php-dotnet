@@ -515,11 +515,11 @@ abstract class controller {
      * 
      * @return void
     */
-    public static function success($message) {
+    public static function success($message, $debug = NULL) {
         header("HTTP/1.1 200 OK");
         header("Content-Type: application/json");
 
-        echo dotnet::successMsg($message);
+        echo dotnet::successMsg($message, $debug);
 
         if (APP_DEBUG) {
             dotnet::$debugger->WriteDebugSession();

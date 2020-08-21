@@ -932,6 +932,8 @@ class Table {
 		# UPDATE `metacardio`.`experimental_batches` SET `workspace`='2018/01/31/02-36-49/2', `note`='22222', `status`='10' WHERE `id`='3';
 		
 		foreach ($this->schema->schema as $fieldName => $def) {
+			# echo var_dump("$fieldName: " . (array_key_exists($fieldName, $data) ? "yes" : "no"));
+			
 			# 只更新存在的数据，所以在这里只需要这一个if分支即可
 			# 更新语句的值可能会存在表达式，表达式的前缀为~符号
 			if (array_key_exists($fieldName, $data)) {

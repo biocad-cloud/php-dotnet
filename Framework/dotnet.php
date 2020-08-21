@@ -34,11 +34,19 @@ class dotnet {
      * 
      * @return string The success message json with `code` is ZERO 
     */ 
-    public static function successMsg($msg) {
-		return json_encode([
-			'code' => 0,
-            'info' => $msg
-        ]);
+    public static function successMsg($msg, $debug = NULL) {
+        if (empty($debug)) {
+            return json_encode([
+                'code' => 0,
+                'info' => $msg
+            ]);
+        } else {
+            return json_encode([
+                'code'  => 0,
+                'info'  => $msg,
+                "debug" => $debug
+            ]);
+        }
 	}
     
     /**
@@ -90,12 +98,10 @@ class dotnet {
         } else if ($wwwroot && is_object($wwwroot)) {
             $injection = $wwwroot;
         }
-
         # 如果当前的服务器资源上面存在访问控制器的话，则进行用户权限的控制
         if ($injection) {
             debugView::LogEvent("Hook controller");
             self::$controller = $injection->Hook($app);
-
             # 用户访问权限控制
             if (!$injection->accessControl()) {
                  $injection->Redirect(403);
