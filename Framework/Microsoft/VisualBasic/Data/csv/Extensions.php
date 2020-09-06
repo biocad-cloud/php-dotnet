@@ -36,7 +36,7 @@ namespace Microsoft\VisualBasic\Data\csv {
          * 
          * @return boolean True for file save success, and false not. 
         */
-        public static function SaveTo($array, $path, $project = null, $encoding = "utf8") {
+        public static function SaveTo($array, $path, $project = null, $encoding = "utf8", $everyone = TRUE) {
             if (\Strings::Empty($path)) {
                 return false;
             } else {
@@ -75,7 +75,13 @@ namespace Microsoft\VisualBasic\Data\csv {
 
             fclose($fp);
 
-            return file_exists($path);
+            $result = file_exists($path);
+
+            if ($result && $everyone) {
+                chmod($path, 0777);
+            }
+
+            return $result;
         }
 
         /**

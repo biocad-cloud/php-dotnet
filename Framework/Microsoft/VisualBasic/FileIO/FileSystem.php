@@ -92,7 +92,11 @@ class FileSystem {
 	 * 
 	 * @return void This function returns nothing.
 	*/
-	public static function WriteAllText($file, $text, $append = FALSE) {
+	public static function WriteAllText($file, $text, $append = FALSE, $everyone = TRUE) {
+		if (empty($file) || $file == "/") {
+			return FALSE;
+		}
+		
 		if (!file_exists($file)) {
 			$dir = dirname($file);
 
@@ -104,7 +108,33 @@ class FileSystem {
 		if ($append) {
 			return file_put_contents($file, $text, FILE_APPEND);
 		} else {
-			return file_put_contents($file, $text);
+			$len = file_put_contents($file, $text);
+
+			if ($len === FALSE) {
+				# save to temp and then move to location?
+				$temp = "/tmp/" . basename($file);
+				$len = file_put_contents($temp, $text);
+
+				if (FALSE === $len) {
+					return FALSE;
+				} else {
+					unlink($file);
+				}
+				
+				$result = rename($temp, $file);
+
+				if ($everyone) {
+					chmod($file, 0777);
+				}				
+
+				return $result;
+			} else {
+				if ($everyone) {
+					chmod($file, 0777);
+				}	
+
+				return $len;
+			}
 		}
 	}
 		
@@ -301,7 +331,7 @@ class FileSystem {
 	*/
 	public static function CreateDirectory($directory) {
 		if (!file_exists($directory)) {
-			return mkdir($directory, 0755, true);
+			return mkdir($directory, 0777, true);
 		} else {
 			return TRUE;
 		}		
