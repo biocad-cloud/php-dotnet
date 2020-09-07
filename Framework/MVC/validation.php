@@ -33,11 +33,19 @@ class controllerValidation {
 
         if (count($whitelist) > 0) {
             # 设置了白名单，则只允许白名单上面的ip地址来源的请求进行访问
-            $user = Utils::UserIPAddress();
+            $user = explode(",", Utils::UserIPAddress()); 
+            $is_allow = false;
 
-            if (!in_array($user, $whitelist)) {
+            foreach($user as $ip) {
+                if (in_array($ip, $whitelist)) {
+                    $is_allow = TRUE;
+                    break;
+                }
+            }
+
+            if (!$is_allow) {
                 # 不在白名单中的请求都禁止访问当前的控制器
-                dotnet::AccessDenied("You ip address '$user' is not in current server resource's ip whitelist...");
+                dotnet::AccessDenied("You ip address '" . implode(", ", $user) . "' is not in current server resource's ip whitelist...");
             }
         }
     }
