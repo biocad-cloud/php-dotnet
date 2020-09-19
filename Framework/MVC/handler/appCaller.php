@@ -5,25 +5,29 @@ namespace MVC\Controller {
     class appCaller {
 
         /**
-         * get parameter names
+         * call web app controller in a dynamics way
          * 
          * @param object $appObj the web app object instance
          * @param string $app the app name(function name)
         */
-        public static function getAppArguments($appObj, $app) {
-            $reflectionMethod =  new \ReflectionMethod(new \ReflectionClass(get_class($appObj)), $app);
-            $params = $reflectionMethod->getParameters();
-            $fire_args = [];
+        public static function doCall($appObj, $app, $strict = false) {           
+            $reflectionMethod = (new \ReflectionClass(get_class($appObj)))->getMethod($app);
+            $params           = $reflectionMethod->getParameters();
+            $fire_args        = [];
 
             foreach($params as $arg) {
-                echo var_dump($arg);
-                
-                if ($_REQUEST[$arg->name]) {
-                    $fire_args[$arg->name]=$_REQUEST[$arg->name];
+                if (array_key_exists($arg->name, $_REQUEST)) {
+                    $fire_args[] = $_REQUEST[$arg->name];
+                } else if ($arg->isOptional()) {
+                    $fire_args[] = $arg->getDefaultValue();
+                } else if ($strict) {
+                    \dotnet::BadRequest("missing the required parameter '{$arg->name}' in your http request!");
                 } else {
-                    $fire_args[$arg->name]=null;
-                }
+                    $fire_args[] = null;
+                }               
             }
+
+            return $reflectionMethod->invokeArgs($appObj, $fire_args);
         }
     }
 }
