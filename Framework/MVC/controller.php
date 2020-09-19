@@ -28,19 +28,19 @@ abstract class controller {
      * 
      * @var object
     */
-    protected $appObj;
+    public $appObj;
     /**
      * (ReflectionClass) 对Web app应用的逻辑层的反射器
      * 
      * @var ReflectionClass
     */
-    protected $reflection;
+    public $reflection;
     /**
      * 对web app的逻辑实现方法
      * 
      * @var ReflectionMethod
     */    
-    protected $app_logic;
+    public $app_logic;
     /**
      * 编写在当前的这个控制器函数之上的注释文档的解析结果
      * 
