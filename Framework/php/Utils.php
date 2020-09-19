@@ -187,6 +187,8 @@ class Utils {
             return "image/jpeg";
         } else if ($ext == "png") {
             return "image/png";
+        } else if ($ext == "svg") {
+            return "image/svg+xml";
         }
 
         $result = new finfo();
