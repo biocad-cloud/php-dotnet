@@ -2,6 +2,8 @@
 
 namespace MVC\Controller {
 
+    imports("MVC.request");
+
     class appCaller {
 
         /**
@@ -16,8 +18,8 @@ namespace MVC\Controller {
             $fire_args        = [];
 
             foreach($params as $arg) {
-                if (array_key_exists($arg->name, $_REQUEST)) {
-                    $fire_args[] = $_REQUEST[$arg->name];
+                if (\WebRequest::has($arg->name)) {
+                    $fire_args[] = \WebRequest::get($arg->name);
                 } else if ($arg->isOptional()) {
                     $fire_args[] = $arg->getDefaultValue();
                 } else if ($strict) {
