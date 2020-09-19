@@ -406,7 +406,7 @@ abstract class controller {
         $bench = new \Ubench();
         $code  = $bench->run(function($controller) {
             // $controller->appObj->{Router::getApp()}();
-            \MVC\handler\appCaller::doCall($controller->appObj, Router::getApp(), true);
+            \MVC\Controller\appCaller::doCall($controller->appObj, Router::getApp(), true);
         }, $this);       
 
         debugView::LogEvent("[Finish] Handle user request");
