@@ -227,7 +227,6 @@ class Utils {
         while(!feof($fp) && $file_count < $file_size) { 
             $file_con    = fread($fp, $buffer); 
             $file_count += $buffer; 
-            
             echo $file_con; 
         } 
 
@@ -271,6 +270,7 @@ class Utils {
             header("Content-Transfer-Encoding: binary"); 
             header('Cache-control: private');
             header("Accept-Length: $file_size");
+            header("Content-Length: $file_size");
         } else {
             header("Content-Length: $file_size");
         }        

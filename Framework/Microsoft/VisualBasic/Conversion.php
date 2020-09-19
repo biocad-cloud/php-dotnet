@@ -78,6 +78,24 @@ class Conversion {
     ];
 
     /**
+     * 判断目标字符串是否是一个用于表示一个逻辑值的字符串格式
+     * 
+     * @param string $str 任意的非空字符串
+     * @return boolean 字符串是否表示一个逻辑值？
+    */
+    public static function isBoolFactorString($str) {
+        if (empty($str) || $str == "") {
+            return false;
+        } else if (array_key_exists(strtolower($str), Conversion::$TRUEs)) {
+            return true;
+        } else if (array_key_exists(strtolower($str), Conversion::$FALSEs)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * 将具有特定含义的字符串表达式转换为逻辑值
      * 
      * @param string $str 大小写不敏感

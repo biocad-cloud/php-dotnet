@@ -64,7 +64,15 @@ function not_between($a, $b) { return "~NOT " . substr(between($a, $b), 1); }
  * 
  * @param array $value 这个参数应该是一个数组，而非键值对
 */
-function in($values) { return "~IN ('". join("', '", $values) ."')"; }
+function in($values) { 
+    if (is_array($values)) {
+        return "~IN ('". join("', '", $values) ."')"; 
+    } else if (is_object($values) && get_class($values) == "IEnumerator") {
+        return "~IN ('". join("', '", $values->ToArray()) ."')"; 
+    } else {
+        return $values;
+    }
+}
 # function in(...$values) { return "~IN ('". join("', '", $values) ."')"; }
 
 /**

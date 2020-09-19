@@ -10,7 +10,7 @@ namespace Microsoft\VisualBasic\Data\csv {
          * @param array $data
          * @param boolean $bootstrap Add bootstrap class to the generated html table?
         */
-        public static function ToHTMLTable($data, $project = null, $bootstrap = true) {
+        public static function ToHTMLTable($data, $project = null, $bootstrap = true, $topN = -1, $rotate = false, $columnWidth = NULL) {
             $project = self::FieldProjects($data, $project);
             $project = self::Extract($project);
             $theads = "";
@@ -22,9 +22,11 @@ namespace Microsoft\VisualBasic\Data\csv {
 
             $project = $project["fields"];
             $rows    = "";
+            $topN    = $topN > 0 ? min($topN, count($data) - 1) : (count($data) - 1);
 
-            foreach($data as $array) {
+            for($i = 0; $i < $topN; $i++) {
                 $td = "";
+                $array = $data[$i];
 
                 foreach($project as $field) {
                     $td = $td . "<td>{$array[$field]}</td>";
@@ -41,7 +43,13 @@ namespace Microsoft\VisualBasic\Data\csv {
                 $bootstrap = "";
             }
 
-            return "<table class='$bootstrap'>
+            if ($rotate) {
+                $rotate = "transform:rotate(270deg) !important;";
+            } else {
+                $rotate = "";
+            }
+
+            return "<table class='$bootstrap' style='$rotate'>
                         <thead>
                             <tr>$theads</tr>
                         </thead>

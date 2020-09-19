@@ -66,7 +66,11 @@ class HtmlMinifier {
         $html = preg_replace(array_keys($filters), array_values($filters), $html);
 
         if (strlen($html) == 0 && $sizeOf > 0) {
-            \console::log("The page is not minify as there is a syntax error in your html file, please check for your file.");
+            $msg = "The page is not minify as there is a syntax error in your html file, please check for your file.";
+            $raw = "<!-- $msg -->" . $raw;
+
+            \console::warn($msg);
+
             return $raw;
         } else {
             return $html;

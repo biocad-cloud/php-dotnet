@@ -612,7 +612,14 @@ class Table {
 	 * @return mixed
 	*/
     public function exec($SQL) {
-        return $this->driver->ExecuteSql($SQL);
+		$SQL = trim($SQL);
+		$tokens = explode(" ", strtolower($SQL));
+
+		if ($tokens[0] == "select") {
+			return $this->driver->Fetch($SQL);
+		} else {
+			return $this->driver->ExecuteSql($SQL);
+		} 
     }
 
 	/**
@@ -916,7 +923,7 @@ class Table {
 	 * 
 	 * @return boolean
 	*/ 
-    public function save($data, $limit1 = true) {
+    public function save($data, $limit1 = true, $safe = TRUE) {
 		$ref     = $this->schema->ref;
         $assert  = $this->getWhere();
 		$SQL     = "";
@@ -925,6 +932,8 @@ class Table {
 		# UPDATE `metacardio`.`experimental_batches` SET `workspace`='2018/01/31/02-36-49/2', `note`='22222', `status`='10' WHERE `id`='3';
 		
 		foreach ($this->schema->schema as $fieldName => $def) {
+			# echo var_dump("$fieldName: " . (array_key_exists($fieldName, $data) ? "yes" : "no"));
+			
 			# 只更新存在的数据，所以在这里只需要这一个if分支即可
 			# 更新语句的值可能会存在表达式，表达式的前缀为~符号
 			if (array_key_exists($fieldName, $data)) {
@@ -942,7 +951,13 @@ class Table {
 		if (!$assert) {
 			# 更新所有的数据？？？要不要给出警告信息
 			$SQL = $SQL . ";";
-			console::warn("Execute update entire data table! ($SQL)");
+
+			if ($safe) {
+				throw new Exception("");
+			} else {
+				console::warn("Execute update entire data table! ($SQL)");
+			}
+
 		} else {
 			if ($limit1) {
 				$SQL = $SQL . " WHERE " . $assert . " LIMIT 1;";

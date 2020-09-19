@@ -25,6 +25,32 @@ class WebRequest {
         }
     }
 
+    public static function is_pattern($queryKey, $pattern) {
+        $str = self::get($queryKey);
+
+        if (empty($str)) {
+            return false;
+        } else {
+            return StringHelpers::IsPattern($str, $pattern);
+        }
+    }
+
+    /**
+     * 查看url查询或者POST数据之中是否存在目标数据
+     * 
+     * @param string $queryKey
+     * @return boolean
+    */
+    public static function has($queryKey, $empty_as_missing = TRUE) {
+        if (array_key_exists($queryKey, $_GET)) {
+            return $empty_as_missing ? $_GET[$queryKey] != "" : TRUE;
+        } else if (IS_POST && array_key_exists($queryKey, $_POST)) {
+            return $empty_as_missing ? $_POST[$queryKey] != "" : TRUE;
+        } else {
+            return FALSE;
+        }
+    }
+
     /**
      * Get a logical value 
      * 
@@ -122,10 +148,21 @@ class WebRequest {
 class WebResponse {
 
     /**
+     * send content type http header
+     * 
      * @param string $mime Set content-type
     */
     public static function content_type($mime) {
         header("Content-Type: $mime");
     }
 
+    /**
+     * send file content to client browser
+     * 
+     * @param string $path a valid file path.
+     * @param string $mime Set content-type
+    */
+    public static function sendContent($path, $mime) {
+        Utils::PushDownload($path, -1, $mime);
+    }
 }

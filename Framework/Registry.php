@@ -79,7 +79,7 @@ class DotNetRegistry {
      * Do html minifier of the cache page its content text?
     */
     public static function HtmlMinifyOfCache() {
-        return self::optFalse("CACHE.MINIFY");
+        return !self::optFalse("CACHE.MINIFY");
     }
 
     public static function AppName($default = "php.net") {
@@ -216,7 +216,7 @@ class DotNetRegistry {
         if (self::ConfigIsNothing()) {
             self::$config = array();
         } 
-        if (!array_key_exists(MVC_VIEW_ROOT, slef::$config)) {
+        if (!array_key_exists(MVC_VIEW_ROOT, self::$config)) {
             self::$config[MVC_VIEW_ROOT] = [];
         }
 

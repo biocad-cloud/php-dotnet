@@ -63,6 +63,10 @@ namespace System {
             return new \DateTime($this->ToString());
         }
 
+        public function UnixTimeStamp() {
+            return mktime($this->Hour, $this->Minute, $this->Second, $this->Month, $this->Day, $this->Year);
+        }
+
         /**
          * @param string $dateTimeStr
          * 
@@ -170,6 +174,26 @@ namespace System {
                 return "0$x";
             } else {
                 return $n;
+            }
+        }
+
+        /**
+         * 比较两个时间点的大小，越近的时间越大
+         * 
+         * @param DateTime $another
+         * 
+         * @return integer 当前的时间点比较新，1；两个时间相等，0；当前的时间点比较旧，-1
+        */
+        public function CompareTo($another) {
+            $a = $this->UnixTimeStamp();
+            $b = $another->UnixTimeStamp();
+
+            if ($a > $b) {
+                return 1;                
+            } else if ($a < $b) {
+                return -1;
+            } else {
+                return 0;
             }
         }
     }

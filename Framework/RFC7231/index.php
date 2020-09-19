@@ -33,6 +33,9 @@ class RFC7231Error {
 	
 	/**
 	 * Display an error code page.
+	 * 
+	 * @param $allow_custom enable the user custom error page template?
+	 * @param $dohttpheader send the http error code in http headers?
 	*/
 	public static function Display($code, $message, 
 		$header = "Unknown", 

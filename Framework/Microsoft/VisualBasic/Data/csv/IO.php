@@ -28,9 +28,20 @@ namespace Microsoft\VisualBasic\Data\csv {
             $this->file_handle = fopen($path, 'r');
             $this->firstLine = fgets($this->file_handle);
 			# 右边肯定会存在一个\r或者\n换行符，在这里将其删除
-			$this->firstLine = rtrim($this->firstLine, "\r\n");
+            $this->firstLine = rtrim($this->firstLine, "\r\n");
+            
+            if (false === $this->file_handle) {
+                \console::error("the given file '$path' is not found on your file system!");
+            }
         }
 
+        public function isValid() {
+            return !(false === $this->file_handle);
+        }
+
+        /**
+         * 从已缓存的首行字符串文本数据中解析出所有的列标题
+        */
         public function GetColumnHeaders($tsv = false) {
             if ($tsv) {
                 return Extensions::ParseTsvRow($this->firstLine);
@@ -100,7 +111,11 @@ namespace Microsoft\VisualBasic\Data\csv {
         }
 
         public function isEOF() {
-            return feof($this->file_handle);
+            if (!$this->isValid()) {
+                return true;
+            } else {
+                return feof($this->file_handle);
+            }
         }
 
         /**
@@ -108,6 +123,11 @@ namespace Microsoft\VisualBasic\Data\csv {
         */
         public function PopulateAllRows($tsv = false, $maxLen = 2048, $asObject = false) {
             $delimiter = $tsv ? "\t" : ",";
+
+            if (!$this->isValid()) {
+                \console::error("returns empty row collection due to the reason of missing target data file: [{$this->filepath}]!");
+                return [];
+            }
 
             if ($asObject) {
                 foreach(Extensions::doParseObjects(
@@ -152,8 +172,53 @@ namespace Microsoft\VisualBasic\Data\csv {
             return $matrix;
         }
 
+        public function getColumnIndex($col, $separator) {
+            $index = -1;
+            $col = strtolower($col);           
+
+            foreach ($this->GetColumnHeaders($separator == "\t") as $keytemp){
+                $index++;
+                
+                if ($col == strtolower($keytemp)) {
+                    break;                
+                }
+            }
+
+            return $index;
+        }
+
         /**
-         * 讲一个csv文件的某一指定的列中的数据读取出来
+         * 将一个csv文件的某一指定的列中的数据读取出来
+         * 
+         * @param string|integer $col 列标题或者列索引号
+         * @param string $separator
+         * 
+         * @return string[] 以数组的形式返回目标列的数据
+        */
+        public function readStringVector($col, $separator = null) {
+            $separator = empty($separator) ? self::delimiterFromFileName($this->filepath) : $separator;
+
+            if (\is_integer($col)) {
+                $index = $col;
+            } else {    
+                $index = $this->getColumnIndex($col, $separator);
+            } 
+            
+            $data = [];
+            
+            foreach($this->PopulateAllRows($separator == "\t") as $row) {
+                if ((empty($row) || (count($row) == 0)) && $this->isEOF()) {
+                    // do nothing
+                } else {
+                    $data[] = $row[$index];
+                }               
+            }
+
+            return $data;
+        }
+
+        /**
+         * 将一个csv文件的某一指定的列中的数据读取出来
          * 
          * @param string|integer $col 列标题或者列索引号
          * @param string|boolean $separator 分隔符，当为逻辑值的时候，true表示为tsv文件，反之为csv文件
@@ -171,37 +236,9 @@ namespace Microsoft\VisualBasic\Data\csv {
                 \dotnet::ThrowException("Unsupported separator!");
             }
             
-            $file = new FileFormat($path);
-            $index = -1;
-
-            if (\is_integer($col)) {
-                $index = $col;
-                # skip first row
-                $file->GetColumnHeaders($separator == "\t");
-            } else {    
-                $col = strtolower($col);
-                $index = 0;
-
-                foreach ($file->GetColumnHeaders($separator == "\t") as $keytemp){
-                    if ($col == strtolower($keytemp)) {
-                        break;
-                    } else {
-                        $index++;
-                    }
-                }
-            } 
-            
-            $data = [];
-            
-            foreach($file->PopulateAllRows($separator == "\t") as $row) {
-                if ((empty($row) || (count($row) == 0)) && $file->isEOF()) {
-                    // do nothing
-                } else {
-                    $data[] = $row[$index];
-                }               
-            }
-
-            return $data;
+            return using(new FileFormat($path), function($table) use ($col, $separator) {
+                return $table->readStringVector($col, $separator);
+            });        
         }
 
         /**

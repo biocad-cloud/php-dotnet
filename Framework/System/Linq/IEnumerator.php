@@ -77,7 +77,7 @@ class IEnumerator {
      * @return IEnumerator
     */
     public function GroupBy($keySelector) {
-
+        return Enumerable::GroupBy($this->sequence, $keySelector);
     }
 
     /**
@@ -304,4 +304,3 @@ class IEnumerator {
         return new ArrayList($this->sequence);
     }
 }
-?>
