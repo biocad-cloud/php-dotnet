@@ -1,5 +1,6 @@
 <?php
 
+imports("MVC.handler.appCaller");
 imports("php.DocComment");
 
 # 当前所支持的控制器函数的程序注解标签
@@ -404,7 +405,8 @@ abstract class controller {
         # 在这里执行用户的控制器函数
         $bench = new \Ubench();
         $code  = $bench->run(function($controller) {
-            $controller->appObj->{Router::getApp()}();
+            // $controller->appObj->{Router::getApp()}();
+            \MVC\handler\appCaller::doCall($controller->appObj, Router::getApp(), true);
         }, $this);       
 
         debugView::LogEvent("[Finish] Handle user request");
