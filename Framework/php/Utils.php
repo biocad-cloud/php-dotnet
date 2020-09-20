@@ -191,12 +191,16 @@ class Utils {
             return "image/svg+xml";
         }
 
-        $result = new finfo();
+        if (class_exists('finfo')) {
+            $result = new finfo();
 
-        if (is_resource($result) === true) {
-            return $result->file($file, FILEINFO_MIME_TYPE);
+            if (is_resource($result) === true) {
+                return $result->file($file, FILEINFO_MIME_TYPE);
+            } else {
+                $mime = \mime_content_type($file);
+            }
         } else {
-            $mime = \mime_content_type($file);
+            $mime = NULL;
         }
     
         if (empty($mime) || false == $mime) {
