@@ -23,6 +23,7 @@ namespace MVC\Controller {
                 } else if ($arg->isOptional()) {
                     $fire_args[] = $arg->getDefaultValue();
                 } else if ($strict) {
+                    header("Content-Type: text/html");
                     \dotnet::BadRequest("missing the required parameter '{$arg->name}' in your http request!");
                 } else {
                     $fire_args[] = null;
