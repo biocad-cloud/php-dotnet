@@ -39,6 +39,8 @@ class WebRequest {
      * 查看url查询或者POST数据之中是否存在目标数据
      * 
      * @param string $queryKey
+     * @param boolean $empty_as_missing 如果这个参数为真的话，数字0会被当作为空返回false
+     * 
      * @return boolean
     */
     public static function has($queryKey, $empty_as_missing = TRUE) {

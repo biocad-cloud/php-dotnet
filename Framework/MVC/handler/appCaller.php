@@ -18,7 +18,7 @@ namespace MVC\Controller {
             $fire_args        = [];
 
             foreach($params as $arg) {
-                if (\WebRequest::has($arg->name)) {
+                if (\WebRequest::has($arg->name, false)) {
                     $fire_args[] = \WebRequest::get($arg->name);
                 } else if ($arg->isOptional()) {
                     $fire_args[] = $arg->getDefaultValue();
@@ -31,6 +31,6 @@ namespace MVC\Controller {
             }
 
             return $reflectionMethod->invokeArgs($appObj, $fire_args);
-        }
+        }        
     }
 }
