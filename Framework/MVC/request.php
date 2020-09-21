@@ -54,13 +54,19 @@ class WebRequest {
     /**
      * Get a logical value 
      * 
+     * @param string $queryKey the url parameter name.
+     * 
      * @return boolean
     */
     public static function getBool($queryKey) {
-        $value = self::get($queryKey, false);
-        // get option value and then 
-        // try to convert string to boolean
-        return Conversion::CBool($value);
+        if (!self::has($queryKey, false)) {
+            return false;
+        } else {
+            $value = self::get($queryKey, false);
+            // get option value and then 
+            // try to convert string to boolean
+            return Conversion::CBool($value);
+        }
     }
 
     /**
