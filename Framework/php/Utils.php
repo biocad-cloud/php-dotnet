@@ -618,6 +618,21 @@ class Utils {
     }
 
     /**
+     * 判断当前的这个数据库查询结果是否是空？
+     * 
+     * @return boolean
+    */
+    public static function isDbNull($result) {
+        if (empty($result) || $result == false) {
+            return true;
+        } else if (is_array($result) && count($result) == 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * 返回目标子字符串在给定的字符串之上的所有位置的集合
      * 
      * @param string $str 待查找的一个给定的字符串
