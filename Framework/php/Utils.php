@@ -189,6 +189,8 @@ class Utils {
             return "image/png";
         } else if ($ext == "svg") {
             return "image/svg+xml";
+        } else if ($ext == "pdf") {
+            return "application/pdf";
         }
 
         if (class_exists('finfo')) {
