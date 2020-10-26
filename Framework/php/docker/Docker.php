@@ -139,4 +139,11 @@ class docker {
 
         return $stdout;
     }
+
+    public static function exec($name, $commandline) {
+        $cli = "docker exec -t $name $commandline";
+        $stdout = shell_exec($cli);
+
+        return $stdout;
+    }
 }

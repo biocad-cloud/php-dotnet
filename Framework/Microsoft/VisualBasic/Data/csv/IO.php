@@ -19,17 +19,22 @@ namespace Microsoft\VisualBasic\Data\csv {
         */
         private $file_handle;
         private $firstLine;
+        /**
+         * @var integer
+        */
+        private $maxLen;
 
         /** 
          * @param string $path The file path
         */
-        public function __construct($path, $encoding = "utf8") {
+        public function __construct($path, $encoding = "utf8", $maxLen = 4096) {
             $this->filepath = $path;
             $this->file_handle = fopen($path, 'r');
             $this->firstLine = fgets($this->file_handle);
 			# 右边肯定会存在一个\r或者\n换行符，在这里将其删除
             $this->firstLine = rtrim($this->firstLine, "\r\n");
-            
+            $this->maxLen = $maxLen;
+
             if (false === $this->file_handle) {
                 \console::error("the given file '$path' is not found on your file system!");
             }
@@ -121,7 +126,7 @@ namespace Microsoft\VisualBasic\Data\csv {
         /**
          * @param boolean $asObject 是否以对象集合的形式返回所有的行数据，这个函数默认是返回原始字符串数组的
         */
-        public function PopulateAllRows($tsv = false, $maxLen = 2048, $asObject = false) {
+        public function PopulateAllRows($tsv = false, $asObject = false) {
             $delimiter = $tsv ? "\t" : ",";
 
             if (!$this->isValid()) {
@@ -133,7 +138,7 @@ namespace Microsoft\VisualBasic\Data\csv {
                 foreach(Extensions::doParseObjects(
                     $this->file_handle, 
                     $this->GetColumnHeaders($tsv), 
-                    $maxLen, 
+                    $this->maxLen, 
                     $delimiter
                 ) as $obj) {
 
@@ -143,7 +148,7 @@ namespace Microsoft\VisualBasic\Data\csv {
                 }
             } else {
                 while (!feof($this->file_handle)) {
-                    yield fgetcsv($this->file_handle, $maxLen, $delimiter);
+                    yield fgetcsv($this->file_handle, $this->maxLen, $delimiter);
                 }
             }
         }
