@@ -230,6 +230,7 @@ class View {
 			$lang = dotnet::GetLanguageConfig()["lang"];	
 		}			
 		
+		$vars["language"] = $lang;
 		$lang = self::LoadLanguage($path, $lang, NULL);
 		$vars = self::unionPhpDocs($_DOC, $vars);
 		

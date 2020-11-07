@@ -2,7 +2,65 @@
 
 namespace PHP\WkHtmlToPdf\Options {
 
-    imports("System.Object");
+    \imports("System.Object");
+
+#region "Footers And Headers"
+
+    // /**
+    //  * Replaced by the number of the pages currently being printed
+    //  * 
+    // */
+    // \define("page", "[page]");
+    // /**
+    //  * Replaced by the number of the first page to be printed
+    // */
+    // \define("frompage", "[frompage]");
+    // /**
+    //  * Replaced by the number Of the last page To be printed
+    // */
+    // \define("topage", "[topage]");
+    // /**
+    //  * Replaced by the URL Of the page being printed
+    // */
+    // \define("webpage", "[webpage]");
+    // /**
+    //  * Replaced by the name Of the current section
+    // */
+    // \define("section", "[section]");
+    // /**
+    //  * Replaced by the name Of the current subsection
+    // */
+    // \define("subsection", "[subsection]");
+    // /**
+    //  * Replaced by the current Date In system local format
+    // */
+    // \define("date", "[date]");
+    // /**
+    //  * Replaced by the current Date In ISO 8601 extended format
+    // */
+    // \define("isodate", "[isodate]");
+    // /**
+    //  * Replaced by the current time In system local format
+    // */
+    // \define("time", "[time]");
+    // /**
+    //  * Replaced by the title Of the Of the current page Object
+    // */
+    // \define("title", "[title]");
+    // /**
+    //  * Replaced by the title Of the output document
+    // */
+    // \define("doctitle", "[doctitle]");
+    // /**
+    //  * Replaced by the number Of the page In the current site being converted
+    // */
+    // \define("sitepage", "[sitepage]");
+    // /**
+    //  * Replaced by the number Of pages In the current site being converted
+    //  */
+    // \define("sitepages", "[sitepages]");
+
+#endregion
 
     /**
      * The page decoration options: Headers And Footer Options
@@ -31,64 +89,6 @@ namespace PHP\WkHtmlToPdf\Options {
      * the number Of the last page, To appear In the upper left corner In the document.
     */
     class Decoration extends \System\TObject {
-
-#region "Footers And Headers"
-
-        /**
-         * Replaced by the number of the pages currently being printed
-         * 
-        */
-        public const page = "[page]";
-        /**
-         * Replaced by the number of the first page to be printed
-        */
-        public const frompage = "[frompage]";
-        /**
-         * Replaced by the number Of the last page To be printed
-        */
-        public const topage = "[topage]";
-        /**
-         * Replaced by the URL Of the page being printed
-        */
-        public const webpage = "[webpage]";
-        /**
-         * Replaced by the name Of the current section
-        */
-        public const section = "[section]";
-        /**
-         * Replaced by the name Of the current subsection
-        */
-        public const subsection = "[subsection]";
-        /**
-         * Replaced by the current Date In system local format
-        */
-        public const date = "[date]";
-        /**
-         * Replaced by the current Date In ISO 8601 extended format
-        */
-        public const isodate = "[isodate]";
-        /**
-         * Replaced by the current time In system local format
-        */
-        public const time = "[time]";
-        /**
-         * Replaced by the title Of the Of the current page Object
-        */
-        public const title = "[title]";
-        /**
-         * Replaced by the title Of the output document
-        */
-        public const doctitle = "[doctitle]";
-        /**
-         * Replaced by the number Of the page In the current site being converted
-        */
-        public const sitepage = "[sitepage]";
-        /**
-         * Replaced by the number Of pages In the current site being converted
-         */
-        public const sitepages = "[sitepages]";
-
-#endregion
 
         /**
          * Centered footer/header text

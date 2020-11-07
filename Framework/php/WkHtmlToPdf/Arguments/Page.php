@@ -2,12 +2,12 @@
 
 namespace PHP\WkHtmlToPdf\Options {
 
-    imports("System.Object");
+    \imports("System.Object");
 
     class handlers {
-        public const abort  = "abort";
-        public const ignore = "ignore";
-        public const skip   = "skip";
+        // public const abort  = "abort";
+        // public const ignore = "ignore";
+        // public const skip   = "skip";
     }
 
     /**

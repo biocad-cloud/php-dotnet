@@ -274,11 +274,15 @@ class dotnet {
             $lang = Strings::LCase($_GET["lang"]);
         } else if (array_key_exists("lang", $_COOKIE)) {
             $lang = Strings::LCase($_COOKIE["lang"]);
+        } else if (array_key_exists("lang", $_SESSION)) {
+            $lang = Strings::LCase($_SESSION["lang"]);
 		} else {
 			$lang = "zhCN";
-		}
-
-		if ($lang && ($lang === "enus" || $lang === "en" || $lang === "en-us")) {
+        }
+        
+        # echo "<!-- language = $lang -->";
+        
+        if ($lang && ($lang === "enus" || $lang === "en" || $lang === "en-us")) {
 			$lang = "enUS";
 		} else {
 			$lang = "zhCN";

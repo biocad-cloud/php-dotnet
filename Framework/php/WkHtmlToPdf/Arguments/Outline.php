@@ -2,7 +2,7 @@
 
 namespace PHP\WkHtmlToPdf\Options {
 
-    Imports ("System.Object");
+    \imports("System.Object");
 
     class Outline extends \System\TObject {
 

@@ -402,6 +402,10 @@ abstract class controller {
 
         $this->sendXFrameHeader();
 
+        if (WebRequest::has("lang", true)) {
+            $_SESSION["lang"] = WebRequest::get("lang");
+        }
+
         # 在这里执行用户的控制器函数
         $bench = new \Ubench();
         $code  = $bench->run(function($controller) {

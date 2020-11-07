@@ -137,7 +137,7 @@ class URL {
             $item = explode('=', $param);
 
             if (count($item) <= 1) {
-                $params["query"] = $item[1];
+                $params["query"] = "";
                 console::warn("there is an invalid query part in your given url query: '$param' in '$query'");
             } else {
                 $params[$item[0]] = $item[1];
