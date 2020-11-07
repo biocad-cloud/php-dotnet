@@ -226,11 +226,22 @@ class View {
 	public static function Load($path, $vars = NULL, $lang = null, $suppressDebug = false) {
 		global $_DOC;
 		
-		if (Strings::Empty($lang)) {
+		if (Strings::Empty($lang, true)) {
 			$lang = dotnet::GetLanguageConfig()["lang"];	
 		}			
 		
-		$vars["language"] = $lang;
+		if (!array_key_exists("html_lang", $vars)) {
+			if ($lang == "enUS") {
+				$vars["html_lang"] = "en";
+			} else {
+				$vars["html_lang"] = "zh";
+			}			
+		}
+		
+		if (!array_key_exists("language")) {
+			$vars["language"] = $lang;
+		}
+		
 		$lang = self::LoadLanguage($path, $lang, NULL);
 		$vars = self::unionPhpDocs($_DOC, $vars);
 		

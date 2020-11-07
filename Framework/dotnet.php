@@ -267,17 +267,26 @@ class dotnet {
      * 
      * 这个函数会从GET参数或者cookie之中获取语言配置信息，默认是``zhCN``中文语言
      * 
-     * @return array ``["lang" => languageName]``
+     * @return array ``["lang" => languageName]`` zhCN|enUS
     */
     public static function GetLanguageConfig() {
         if (array_key_exists("lang", $_GET)) {
             $lang = Strings::LCase($_GET["lang"]);
         } else if (array_key_exists("lang", $_COOKIE)) {
             $lang = Strings::LCase($_COOKIE["lang"]);
-        } else if (array_key_exists("lang", $_SESSION)) {
+        } else if (isset($_SESSION) && (!Utils::isDbNull($_SESSION)) && array_key_exists("lang", $_SESSION)) {
             $lang = Strings::LCase($_SESSION["lang"]);
 		} else {
-			$lang = "zhCN";
+            # try get from http request headers
+            # Accept-Language
+            $lang = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
+
+            if (!Strings::Empty($lang, true)) {
+                $lang = explode(",", $lang);
+                $lang = strtolower($lang[0]);
+            } else {
+                $lang = "zhCN";
+            }			
         }
         
         # echo "<!-- language = $lang -->";
