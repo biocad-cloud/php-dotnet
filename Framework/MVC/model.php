@@ -953,7 +953,7 @@ class Table {
 			$SQL = $SQL . ";";
 
 			if ($safe) {
-				throw new Exception("");
+				throw new Exception("update entire data table is not allowed when safe mode is turn on!");
 			} else {
 				console::warn("Execute update entire data table! ($SQL)");
 			}

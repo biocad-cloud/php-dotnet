@@ -57,8 +57,12 @@ class ZipLib {
      * @param int $exclusiveLength Number of text to be exclusived from the file path. 
      * 
      */ 
-    private static function folderToZip($folder, &$zipFile, $exclusiveLength) { 
+    private static function folderToZip($folder, &$zipFile, $exclusiveLength, $verbose = false) { 
         $handle = opendir($folder); 
+
+        if ($verbose) {
+            console::log("enter directory: $folder...");
+        }
 
         while (false !== $f = readdir($handle)) { 
             if ($f != '.' && $f != '..') { 
@@ -68,6 +72,10 @@ class ZipLib {
                 $localPath = substr($filePath, $exclusiveLength); 
 
                 if (is_file($filePath)) { 
+                    if ($verbose) {
+                        console::log("add file: $filePath");
+                    }
+
                     $zipFile->addFile($filePath, $localPath); 
                 } elseif (is_dir($filePath)) { 
                     // Add sub-directory. 
@@ -76,10 +84,15 @@ class ZipLib {
                     self::folderToZip(
                         $filePath, 
                         $zipFile, 
-                        $exclusiveLength
+                        $exclusiveLength,
+                        $verbose
                     ); 
                 }
             }
+        }
+
+        if ($verbose) {
+            console::log("exit folder: $folder...");
         }
 
         closedir($handle); 
@@ -101,7 +114,7 @@ class ZipLib {
      * 
      * @return void
      */ 
-    public static function ZipDirectory($sourcePath, $outZipPath) { 
+    public static function ZipDirectory($sourcePath, $outZipPath, $verbose = false) { 
         $pathInfo   = pathInfo($sourcePath); 
         $parentPath = $pathInfo['dirname']; 
         $dirName    = $pathInfo['basename']; 
@@ -110,8 +123,12 @@ class ZipLib {
         $z->open($outZipPath, ZIPARCHIVE::CREATE); 
         $z->addEmptyDir($dirName);
 
+        if ($verbose) {
+            console::log("compress directory files: $sourcePath -> $outZipPath");
+        }
+
         # 对目标文件夹进行zip打包
-        self::folderToZip($sourcePath, $z, strlen("$parentPath/"));
+        self::folderToZip($sourcePath, $z, strlen("$parentPath/"), $verbose);
 
         $z->close(); 
     }

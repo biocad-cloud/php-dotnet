@@ -228,10 +228,11 @@ class dotnet {
      * 
      * @return string 缓存文件夹的路径字符串
 	*/
-	public static function getMyTempDirectory() {
+	public static function getMyTempDirectory($appName = null) {
 		$temp = sys_get_temp_dir();
 
 		if (strtolower($temp) == strtolower("C:\\Windows")) {
+            
 			# 不可以写入Windows文件夹
             # 写入自己的data文件夹下面的临时文件夹
             # 因为是写在自己的文件夹之中了，所以在这里就不用再加appName了
@@ -239,10 +240,14 @@ class dotnet {
 				$temp = APP_PATH . "/data/cache";
 			} else {
 				$temp = "./data/cache";
-			}			
+            }
+            		
 		} else {
-            $appName = DotNetRegistry::AppName();
-            $temp    = "$temp/$appName"; 
+            if (Utils::isDbNull($appName)) {
+                $appName = DotNetRegistry::AppName();
+            }
+
+            $temp = "$temp/$appName"; 
         }
 
 		return $temp;
