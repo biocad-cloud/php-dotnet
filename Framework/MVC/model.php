@@ -452,7 +452,7 @@ class Table {
 	 * (这个函数影响``SELECT``, ``UPDATE``, ``DELETE``，不会影响``INSERT``操作)
      *	  
      * @param mixed $assert The assert array of the where condition or an string expression.
-	 * @param boolean $isAnd This option is only works when ``assert`` parameter is an 
+	 * @param boolean $and This option is only works when ``assert`` parameter is an 
 	 *    test condition array.
 	 * 
 	 * @return Table Returns a new ``Table`` object instance for expression chaining.
