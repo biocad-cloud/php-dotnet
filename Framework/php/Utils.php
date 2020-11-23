@@ -277,6 +277,8 @@ class Utils {
             // 告诉浏览器，这是二进制文件
             header("Content-Transfer-Encoding: binary"); 
             header('Cache-control: private');
+            header("Content-type: application/octet-stream");
+            header("Accept-Ranges: bytes");
             header("Accept-Length: $file_size");
             header("Content-Length: $file_size");
         } else {
