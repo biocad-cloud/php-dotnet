@@ -58,7 +58,12 @@ class ZipLib {
      * 
      */ 
     private static function folderToZip($folder, &$zipFile, $exclusiveLength, $verbose = false) { 
-        $handle = opendir($folder); 
+        if (!file_exists($folder)) {
+            console::error("Compress '$folder' operation abort, due to the reason of missing target folder!");
+            return;
+        } else {
+            $handle = opendir($folder); 
+        }        
 
         if ($verbose) {
             console::log("enter directory: $folder...");

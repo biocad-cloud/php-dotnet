@@ -331,6 +331,7 @@ class FileSystem {
 	*/
 	public static function CreateDirectory($directory) {
 		if (!file_exists($directory)) {
+			console::log("create directory: '$directory'.");
 			return mkdir($directory, 0777, true);
 		} else {
 			return TRUE;

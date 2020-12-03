@@ -140,6 +140,15 @@ class docker {
         return $stdout;
     }
 
+    /**
+     * Run command line in a running docker container
+     * 
+     * @param string $name the name of the virtual machine or the container id
+     * @param string $commandline the commandline the will be running in target docker container.
+     * 
+     * @return string the ``std_output`` of the commandline that running in target
+     *      container.
+    */
     public static function exec($name, $commandline) {
         $cli = "docker exec -t $name $commandline";
         $stdout = shell_exec($cli);
