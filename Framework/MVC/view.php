@@ -230,6 +230,10 @@ class View {
 			$lang = dotnet::GetLanguageConfig()["lang"];	
 		}			
 		
+		if (Utils::isDbNull($vars)) {
+			$vars = [];
+		}
+
 		if (!array_key_exists("html_lang", $vars)) {
 			if ($lang == "enUS") {
 				$vars["html_lang"] = "en";
@@ -238,7 +242,7 @@ class View {
 			}			
 		}
 		
-		if (!array_key_exists("language")) {
+		if (!array_key_exists("language", $vars)) {
 			$vars["language"] = $lang;
 		}
 		
@@ -276,6 +280,12 @@ class View {
 	 * @return array
 	*/
 	private static function unionPhpDocs($_DOC, $vars) {
+		$canonical = Utils::URL();
+
+		if (!array_key_exists("canonical", $vars)) {
+			$vars["canonical"] = $canonical;
+		}
+
 		if (empty($_DOC)) {
 			return $vars;
 		}
