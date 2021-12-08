@@ -115,6 +115,7 @@ namespace Microsoft\VisualBasic\Data\csv {
                 return null;
             } else {
                 foreach(self::doParseObjects($file_handle, $headers, 2048, $delimiter) as $obj) {
+                    # breakpoint($obj);
                     $line_of_text[] = $obj;
                 }                
             }
