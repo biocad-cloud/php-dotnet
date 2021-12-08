@@ -112,7 +112,7 @@ abstract class controller {
      * @return string ``on/off/<null>``
     */
     public function getDebuggerOption() {
-        return $this->getTagValue("debugger");
+        return $this->getTagValue("debugger") || $this->getTagValue("debug");
     }
 
     /**
