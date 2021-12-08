@@ -136,7 +136,7 @@ class Encoder
         # Allowed memory size of 4294967296 bytes exhausted (tried to allocate 20480 bytes)
 
         $keys = \array_keys($data);
-      
+
         for($i = 0; $i < \count($keys); $i++) {
             $keys[$i] = \strval($keys[$i]);
         }
@@ -170,9 +170,9 @@ class Encoder
     {
         
         $data = \is_null($data) ? $this->data : $data;
-        $data = \ksort($data); // bencode spec requires dicts to be sorted alphabetically    
-
+        $data = self::ksort($data); // bencode spec requires dicts to be sorted alphabetically    
         $dict = "";
+
         foreach ($data as $key => $value) {
             $dict .= $this->encodeString($key) . $this->doEncode($value);
         }
