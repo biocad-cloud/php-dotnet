@@ -33,7 +33,7 @@ class RFC7231Error {
 			if (!file_exists($view)) {
 				$view = dirname(__FILE__) . "/$code.html";
 			}
-breakpoint($custom);
+
 			return $view;
 		} else {
 			return dirname(__FILE__) . "/$code.html";
