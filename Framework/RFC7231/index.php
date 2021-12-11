@@ -67,7 +67,7 @@ class RFC7231Error {
 		}	
 
 		if (!Utils::isDbNull(self::$logger)) {
-			self::$logger->log($code, $message);
+			self::$logger->log($code, self::stripErrorMessage($message));
 		}
 
 		View::Push("description", $httpResponse);
@@ -81,6 +81,10 @@ class RFC7231Error {
 		exit($code);
 	}
 	
+	private static function stripErrorMessage($message) {
+		return Regex::Match($message, "[<]blockquote[>].+[<]/blockquote[>]");
+	}
+
 	public static $httpErrors = [
 		"400" => "Bad Request",
 		"404" => "Not Found",
