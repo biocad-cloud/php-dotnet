@@ -32,7 +32,10 @@ namespace MVC\Controller {
          * @param boolean strict work in strict mode?
         */
         public static function CallWithPayload($appObj, $app, $payload, $strict = false) {
+            echo "enter";
+            echo $app;
             $reflectionMethod = (new \ReflectionClass(get_class($appObj)))->getMethod($app);
+            echo "arguments";
             $params           = $reflectionMethod->getParameters();
             $fire_args        = [];
     \breakpoint($payload);
