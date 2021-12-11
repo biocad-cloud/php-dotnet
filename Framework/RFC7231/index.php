@@ -82,7 +82,7 @@ class RFC7231Error {
 	}
 	
 	private static function stripErrorMessage($message) {
-		return Regex::Match($message, "[<]blockquote[>].+[<]/blockquote[>]");
+		return Regex::Match($message, "<blockquote>.+</blockquote>");
 	}
 
 	public static $httpErrors = [
