@@ -65,10 +65,13 @@ class RFC7231Error {
 			}
 		}	
 
+		echo var_dump(self::$log);
+
 		if (!Utils::isDbNull(self::$log)) {
 			self::$log($code, $message);
 		}
-
+echo var_dump(1);
+die;
 		View::Push("description", $httpResponse);
 		View::Show(RFC7231Error::getPath($code, $allow_custom), [
 			"description" => $httpResponse,
