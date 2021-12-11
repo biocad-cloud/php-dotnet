@@ -14,7 +14,8 @@ namespace MVC\Controller {
          * @param string $app the app name(function name)
         */
         public static function doCall($appObj, $app, $strict = false) {
-            return self::CallWithPayload($appObj, $app, new WebRequest(), $strict);
+            $payload = new WebRequest();echo "get eb request payload";
+            return self::CallWithPayload($appObj, $app, $payload, $strict);
         }
 
         /**
