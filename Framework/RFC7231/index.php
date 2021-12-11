@@ -2,6 +2,7 @@
 
 imports("php.Utils");
 imports("MSDN");
+imports("RFC7231.logger");
 
 /**
  * Custom error page supports
@@ -12,9 +13,9 @@ class RFC7231Error {
 	 * a callback function with two parameters: 
 	 *    http status code/error message
 	 * 
-	 * @var callable
+	 * @var \logger
 	*/
-	public static $log;
+	public static $logger;
 
 	/**
 	 * 这个函数会自动根据注册表之中的配置结果的状态返回相对应的错误代码的页面模版文件
@@ -65,10 +66,10 @@ class RFC7231Error {
 			}
 		}	
 
-		echo var_dump(self::$log);
+		echo var_dump(self::$logger);
 
-		if (!Utils::isDbNull(self::$log)) {
-			self::$log($code, $message);
+		if (!Utils::isDbNull(self::$logger)) {
+			self::$logger->log($code, $message);
 		}
 echo var_dump(1);
 die;
