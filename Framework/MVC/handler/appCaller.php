@@ -18,8 +18,7 @@ namespace MVC\Controller {
          * @param object $appObj the web app object instance
          * @param string $app the app name(function name)
         */
-        public static function doCall($appObj, $app, $strict = false) {      
-            breakpoint($appObj);     
+        public static function doCall($appObj, $app, $strict = false) {
             return self::CallWithPayload($appObj, $app, new WebRequest(), $strict);
         }
 
@@ -36,7 +35,7 @@ namespace MVC\Controller {
             $reflectionMethod = (new \ReflectionClass(get_class($appObj)))->getMethod($app);
             $params           = $reflectionMethod->getParameters();
             $fire_args        = [];
-    
+    \breakpoint($payload);
             foreach($params as $arg) {
                 if ($payload->_has($arg->name, false)) {
                     $fire_args[] = $payload->_get($arg->name);
