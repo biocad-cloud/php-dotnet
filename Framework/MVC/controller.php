@@ -65,6 +65,10 @@ abstract class controller {
     */
     private static $hasSendContentType = false;
 
+    function __construct() {
+        
+    }
+
     /**
      * Get php function document comment 
      * 
