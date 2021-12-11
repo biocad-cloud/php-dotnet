@@ -86,7 +86,7 @@ class RFC7231Error {
 		$j = strpos($message, "</blockquote>");
 		$message = substr($message, $i + 12, $j - $i - 12);
 
-		breakpoint($message);
+		return($message);
 	}
 
 	public static $httpErrors = [
