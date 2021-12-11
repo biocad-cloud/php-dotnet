@@ -1,5 +1,7 @@
 <?php
 
+imports("MVC.handler.appCaller");
+
 class jsonRPC {
 
     private $app;
@@ -21,7 +23,7 @@ class jsonRPC {
             die;
         }
 
-        
+        return MVC\Controller\appCaller::CallWithPayload($this->app, $method, $params, TRUE);
     }
 
     private function methodNotFound($rpc) {
