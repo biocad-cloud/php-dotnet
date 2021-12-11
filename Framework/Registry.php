@@ -98,6 +98,8 @@ class DotNetRegistry {
         
         if (!defined('APP_PATH')) {
             return $dir;
+        } else if (file_exists($dir) && is_dir($dir)) {
+            return $dir;
         } else {
             return APP_PATH . "/" . $dir;
         }
