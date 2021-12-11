@@ -17,6 +17,7 @@ class jsonRPC {
         $id = $rpc["id"];
         $method = $rpc["method"];
         $params = $rpc["params"];
+        $params["rpc"] = $rpc;
 
         if (!method_exists($this->app, $method)) {
             $this->methodNotFound($rpc);
@@ -39,5 +40,38 @@ class jsonRPC {
 
     public static function handleRPC($app, $rpc) {
         return (new jsonRPC($app))->call($rpc);
+    }
+
+    public static function success($data, $id) {
+        header("HTTP/1.1 200 OK");
+        header("Content-Type: application/json");
+
+        echo json_encode([
+            "jsonrpc" => "2.0",
+            "result" => $data,
+            "id" => $id
+        ]);
+
+        if (APP_DEBUG) {
+            dotnet::$debugger->WriteDebugSession();
+        }
+
+        exit(0);
+    }
+
+    public static function error($message, $code = -32000) {
+        header("HTTP/1.1 200 OK");
+        header("Content-Type: application/json");
+
+        echo json_encode([
+            "jsonrpc" => "2.0",
+            "error" => ["code" => $code, "message" => $message]          
+        ]);
+
+        if (APP_DEBUG) {
+            dotnet::$debugger->WriteDebugSession();
+        }
+
+        exit(0);
     }
 }
