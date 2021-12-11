@@ -32,6 +32,11 @@ namespace MVC\MySql\Expression {
                 if (array_key_exists($fieldName, $data)) {
                     
                     $value = $data[$fieldName];
+
+                    if (\is_string($value)) {
+                        $value = str_replace("'", "\'", $value);
+                    }
+                    
                     # 使用转义函数进行特殊字符串的转义操作
                     # $value = mysqli_real_escape_string($mysqli_exec, $value);
     
