@@ -9,6 +9,14 @@ imports("MSDN");
 class RFC7231Error {
 	
 	/**
+	 * a callback function with two parameters: 
+	 *    http status code/error message
+	 * 
+	 * @var callable
+	*/
+	public static $log;
+
+	/**
 	 * 这个函数会自动根据注册表之中的配置结果的状态返回相对应的错误代码的页面模版文件
 	 * 如果希望能够使用自定义的错误页面，需要在传递给框架的配置数据之中写入``RFC7231``
 	 * 字段的值
@@ -56,6 +64,10 @@ class RFC7231Error {
 				header($httpResponse);	
 			}
 		}	
+
+		if (!Utils::isDbNull(self::$log)) {
+			self::$log($code, $message);
+		}
 
 		View::Push("description", $httpResponse);
 		View::Show(RFC7231Error::getPath($code, $allow_custom), [
