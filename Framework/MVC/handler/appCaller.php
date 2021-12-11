@@ -18,7 +18,8 @@ namespace MVC\Controller {
          * @param object $appObj the web app object instance
          * @param string $app the app name(function name)
         */
-        public static function doCall($appObj, $app, $strict = false) {           
+        public static function doCall($appObj, $app, $strict = false) {      
+            breakpoint($appObj);     
             return self::CallWithPayload($appObj, $app, new WebRequest(), $strict);
         }
 
