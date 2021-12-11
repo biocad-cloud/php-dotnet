@@ -2,14 +2,9 @@
 
 namespace MVC\Controller {
 
+    imports("MVC.handler.payload");
     imports("MVC.request");
-
-    interface payload {
-
-        function _has($queryKey, $empty_as_missing = TRUE);
-        function _get($queryKey, $default = null);
-    }
-
+    
     class appCaller {
 
         /**

@@ -1,5 +1,7 @@
 <?php
 
+imports("MVC.handler.payload");
+
 /**
  * The web request helper
  * 
