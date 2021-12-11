@@ -14,8 +14,10 @@ namespace MVC\Controller {
          * @param string $app the app name(function name)
         */
         public static function doCall($appObj, $app, $strict = false) {
-            $payload = new \WebRequest();echo "get eb request payload";
-            return self::CallWithPayload($appObj, $app, $payload, $strict);
+            $payload = new \WebRequest();
+            $result = self::CallWithPayload($appObj, $app, $payload, $strict);
+
+            return $result;
         }
 
         /**
@@ -28,13 +30,10 @@ namespace MVC\Controller {
          * @param boolean strict work in strict mode?
         */
         public static function CallWithPayload($appObj, $app, $payload, $strict = false) {
-            echo "enter";
-            echo $app;
             $reflectionMethod = (new \ReflectionClass(get_class($appObj)))->getMethod($app);
-            echo "arguments";
             $params           = $reflectionMethod->getParameters();
             $fire_args        = [];
-    \breakpoint($payload);
+
             foreach($params as $arg) {
                 if ($payload->_has($arg->name, false)) {
                     $fire_args[] = $payload->_get($arg->name);
