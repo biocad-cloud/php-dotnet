@@ -8,6 +8,8 @@
 */
 class WebRequest implements \MVC\Controller\payload {
 
+    function __construct() {}
+
     function _has($queryKey, $empty_as_missing = TRUE) {
         return \WebRequest::has($queryKey, $empty_as_missing);
     }
