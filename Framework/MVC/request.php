@@ -6,7 +6,15 @@
  * 这个模块主要是用来过滤掉一些可能出现的非法请求字符串
  * 降低被sql注入攻击成功的风险
 */
-class WebRequest {
+class WebRequest implements \MVC\Controller\payload {
+
+    function _has($queryKey, $empty_as_missing = TRUE) {
+        return \WebRequest::has($queryKey, $empty_as_missing);
+    }
+
+    function _get($queryKey, $default = null) {
+        return \WebRequest::get($queryKey, $default);
+    }
 
     /**
      * Get request query value from ``$_GET`` or ``$_POST`` if the http request is a post request 

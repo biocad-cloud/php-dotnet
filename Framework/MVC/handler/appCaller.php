@@ -4,6 +4,12 @@ namespace MVC\Controller {
 
     imports("MVC.request");
 
+    interface payload {
+
+        function _has($queryKey, $empty_as_missing = TRUE);
+        function _get($queryKey, $default = null);
+    }
+
     class appCaller {
 
         /**
@@ -13,13 +19,26 @@ namespace MVC\Controller {
          * @param string $app the app name(function name)
         */
         public static function doCall($appObj, $app, $strict = false) {           
+            return self::CallWithPayload($appObj, $app, new WebRequest(), $strict);
+        }
+
+        /**
+         * Run app invoke with custom payload
+         * 
+         * @param object appObj the target app object instance
+         * @param string app the method name
+         * @param \MVC\Controller\payload payload a key-value pair list that store the parameter 
+         *     data for run the given target method.
+         * @param boolean strict work in strict mode?
+        */
+        public static function CallWithPayload($appObj, $app, $payload, $strict = false) {
             $reflectionMethod = (new \ReflectionClass(get_class($appObj)))->getMethod($app);
             $params           = $reflectionMethod->getParameters();
             $fire_args        = [];
-
+    
             foreach($params as $arg) {
-                if (\WebRequest::has($arg->name, false)) {
-                    $fire_args[] = \WebRequest::get($arg->name);
+                if ($payload->_has($arg->name, false)) {
+                    $fire_args[] = $payload->_get($arg->name);
                 } else if ($arg->isOptional()) {
                     $fire_args[] = $arg->getDefaultValue();
                 } else if ($strict) {
@@ -31,6 +50,6 @@ namespace MVC\Controller {
             }
 
             return $reflectionMethod->invokeArgs($appObj, $fire_args);
-        }        
+        }
     }
 }

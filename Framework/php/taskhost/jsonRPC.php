@@ -8,8 +8,31 @@ class jsonRPC {
         $this->app = $app;
     }
 
+    /**
+     * @param rpc [jsonrpc, method, params, id]
+    */
     public function call($rpc) {
+        $id = $rpc["id"];
+        $method = $rpc["method"];
+        $params = $rpc["params"];
 
+        if (!method_exists($this->app, $method)) {
+            $this->methodNotFound($rpc);
+            die;
+        }
+
+        
+    }
+
+    private function methodNotFound($rpc) {
+        $method = $rpc["method"];
+        $id = $rpc["id"];
+
+        echo json_encode([
+            "jsonrpc" => "2.0",
+            "error" => ["code" => -32601, "message" => "method '$method' is not exists!"],
+            "id" => $id
+        ]);
     }
 
     public static function handleRPC($app, $rpc) {
