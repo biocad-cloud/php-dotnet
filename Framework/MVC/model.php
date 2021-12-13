@@ -163,12 +163,16 @@ class Table {
 	 * @return boolean
 	*/
 	private static function isValidDbConfig($config) {
-		return isset($config["DB_TABLE"]) && 
-			   isset($config["DB_NAME"])  && 
-			   isset($config["DB_USER"])  && 
-			   isset($config["DB_PWD"])   && 
-			   isset($config["DB_HOST"])  && 
-			   isset($config["DB_PORT"]);
+		if (is_array($config)) {
+			return isset($config["DB_TABLE"]) && 
+				isset($config["DB_NAME"])  && 
+				isset($config["DB_USER"])  && 
+				isset($config["DB_PWD"])   && 
+				isset($config["DB_HOST"])  && 
+				isset($config["DB_PORT"]);
+		} else {
+			return false;
+		}		
 	}
 
 	/**
