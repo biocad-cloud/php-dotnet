@@ -252,7 +252,9 @@ namespace MVC\MySql {
 		}
 
 		private static function canLoopIterates($data) {
-			if (\is_array($data) && \count($data) > 0) {
+			if (($data instanceof \mysqli_result) && $data->num_rows > 0) {
+				return TRUE;
+			} else if (\is_array($data) && \count($data) > 0) {
 				return TRUE;
 			} else if (\is_object($data) && ($data instanceof Countable) && (\count($data) > 0)) {
 				return TRUE;
