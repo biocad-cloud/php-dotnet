@@ -158,15 +158,17 @@ class Table {
 	/**
 	 * 判断目标配置信息是否是有效的数据库连接参数配置数组？
 	 * 
+	 * @param array $config the config array list.
+	 * 
 	 * @return boolean
 	*/
 	private static function isValidDbConfig($config) {
-		return array_key_exists("DB_TABLE", $config) && 
-			   array_key_exists("DB_NAME",  $config) && 
-			   array_key_exists("DB_USER",  $config) && 
-			   array_key_exists("DB_PWD",   $config) && 
-			   array_key_exists("DB_HOST",  $config) && 
-			   array_key_exists("DB_PORT",  $config);
+		return isset($config["DB_TABLE"]) && 
+			   isset($config["DB_NAME"])  && 
+			   isset($config["DB_USER"])  && 
+			   isset($config["DB_PWD"])   && 
+			   isset($config["DB_HOST"])  && 
+			   isset($config["DB_PORT"]);
 	}
 
 	/**
