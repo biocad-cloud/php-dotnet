@@ -74,7 +74,7 @@ namespace MVC\MySql\Expression {
          */
         public static function AsExpression($asserts, $op = "AND") {
             $list = [];
- 
+
             if (empty($asserts)) {
                 \console::warn("MySqli condition is nothing!");
                 return "";
@@ -177,12 +177,17 @@ namespace MVC\MySql\Expression {
         /**
          * 获取表达式的右边部分
          * 
-         * @return string
+         * @param mixed $value value in any kind of primative type.
+         * 
+         * @return string the string value with a single quote symbol 
+         *      as string value wrapper
         */
         public static function ValueExpression($value) {
             if (strlen($value) == 0) {
                 # mysql值是一个空字符串
                 return "''";
+            } else if (!\is_string($value)) {
+                return \strval($value);
             }
             
             if ($value[0] === "~") {
