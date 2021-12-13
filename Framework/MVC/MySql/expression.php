@@ -185,9 +185,9 @@ namespace MVC\MySql\Expression {
         public static function ValueExpression($value) {
             if (strlen($value) == 0) {
                 # mysql值是一个空字符串
-                return "''";
+                return "= ''";
             } else if (!\is_string($value)) {
-                return \strval($value);
+                return "= '" . \strval($value) . "'";
             }
             
             if ($value[0] === "~") {
