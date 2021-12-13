@@ -234,7 +234,7 @@ namespace MVC\MySql {
 			$this->last_mysql_expression = $SQL;
 
 			if (!\Utils::isDbNull($data)) {
-				if (is_array($data) && count($data) > 0) {
+				if (self::canLoopIterates($data)) {
 					// 只返回一条记录数据
 					while($row = mysqli_fetch_array($data, MYSQLI_ASSOC)) { 
 						return $row;
@@ -244,6 +244,16 @@ namespace MVC\MySql {
 				}
 			} else {
 				return false;
+			}
+		}
+
+		private static function canLoopIterates($data) {
+			if (\is_array($data) && \count($data) > 0) {
+				return TRUE;
+			} else if (\is_object($data) && ($data instanceof Countable) && (\count($data) > 0)) {
+				return TRUE;
+			} else {
+				return FALSE;
 			}
 		}
     }
