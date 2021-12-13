@@ -30,8 +30,8 @@ class CommandLineParser {
     */
     public static function ParseCLIArgvs() {
         $argv      = $_SERVER['argv'];
-        $script    = $argv[0];
-        $name      = $argv[1];
+        $script    = $argv[0];                   // get script file name
+        $name      = Utils::ReadValue($argv, 1); // get command name
         $arguments = [];
 
         if (APP_DEBUG && IS_CLI) {
