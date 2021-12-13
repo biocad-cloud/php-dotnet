@@ -233,11 +233,14 @@ namespace MVC\MySql {
 			
 			$this->last_mysql_expression = $SQL;
 
-			if (!empty($data) && count($data) > 0) {
-				
-				// 只返回一条记录数据
-				while($row = mysqli_fetch_array($data, MYSQLI_ASSOC)) { 
-					return $row;
+			if (!\Utils::isDbNull($data)) {
+				if (is_array($data) && count($data) > 0) {
+					// 只返回一条记录数据
+					while($row = mysqli_fetch_array($data, MYSQLI_ASSOC)) { 
+						return $row;
+					}
+				} else {
+					return false;
 				}
 			} else {
 				return false;
