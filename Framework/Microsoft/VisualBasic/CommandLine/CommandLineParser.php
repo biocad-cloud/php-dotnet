@@ -34,9 +34,15 @@ class CommandLineParser {
         $name      = $argv[1];
         $arguments = [];
 
+        if (APP_DEBUG && IS_CLI) {
+            console::log("get commandline arguments:");
+            console::dump($argv);
+        }
+
         if (Strings::InStr($name, "=") > 0) {
             # no command name
             list($key, $value) = self::parseCmdToken($name);
+
             $name = "";
             $arguments[$key] = $value;
         } else {
