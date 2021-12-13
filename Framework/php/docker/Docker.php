@@ -132,9 +132,14 @@ class docker {
         ];
         $tty = $tty ? "-t" : "";
 
-        $cli    = "%s %s --privileged=true %s %s";
-        $cli    = sprintf($cli, \docker\CommandLine::commandlineArgs("run", $args), $tty, $container, $commandline);
+        $cli = "%s %s --privileged=true %s %s";
+        $cli = sprintf($cli, \docker\CommandLine::commandlineArgs("run", $args), $tty, $container, $commandline);
         
+        if (IS_CLI && APP_DEBUG) {
+            console::log("commandline string for run docker container:");
+            console::log($cli);
+        }
+
         $stdout = shell_exec($cli);
 
         return $stdout;
