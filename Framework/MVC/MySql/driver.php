@@ -233,6 +233,10 @@ namespace MVC\MySql {
 			
 			$this->last_mysql_expression = $SQL;
 
+			if (\IS_CLI && \APP_DEBUG) {
+				\console::dump($data, "sql query raw output:");
+			}
+
 			if (!\Utils::isDbNull($data)) {
 				if (self::canLoopIterates($data)) {
 					// 只返回一条记录数据
