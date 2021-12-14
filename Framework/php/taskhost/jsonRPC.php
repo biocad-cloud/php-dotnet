@@ -39,7 +39,7 @@ class jsonRPC {
         ]);
     }
 
-    public static function handleRPC($app, $rpc) {
+    public static function handleRPC($app, $rpc) {breakpoint("new");
         return (new jsonRPC($app))->call($rpc);
     }
 
