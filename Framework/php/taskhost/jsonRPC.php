@@ -20,13 +20,11 @@ class jsonRPC {
         $params["rpc"] = $rpc;
         $payload = new MVC\Controller\JsonPayload($params);
     
-        if (!method_exists($this->app, $method)) {
-          echo "missing method: $method";
-            die;
+        if (!method_exists($this->app, $method)) {  
             $this->methodNotFound($rpc);
             die;
         }
-        echo var_dump($this->app);die;
+    
         return MVC\Controller\appCaller::CallWithPayload($this->app, $method, $payload, TRUE);
     }
 

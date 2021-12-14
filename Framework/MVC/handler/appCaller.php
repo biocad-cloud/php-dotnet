@@ -35,6 +35,7 @@ namespace MVC\Controller {
             $fire_args        = [];
 
             foreach($params as $arg) {
+                echo var_dump($arg);die;
                 if ($payload->_has($arg->name, false)) {
                     $fire_args[] = $payload->_get($arg->name);
                 } else if ($arg->isOptional()) {
