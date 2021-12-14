@@ -11,13 +11,18 @@ namespace MVC\Controller {
     class JsonPayload implements \MVC\Controller\payload {
 
         private $data;
+        private $is_array;
 
         function __construct($obj) {
-            $this->data = $obj;
+            if (!is_array($obj)) {
+                $this->data = get_object_vars($obj);
+            } else {
+                $this->data = $obj;
+            }
         }
 
-        function _has($queryKey, $empty_as_missing = TRUE) {
-            if (array_key_exists($queryKey, $this->data)) {
+        function _has($queryKey, $empty_as_missing = TRUE) {            
+            if ($this->is_array && array_key_exists($queryKey, $this->data)) {
                 return $empty_as_missing ? $this->data[$queryKey] != "" : TRUE;            
             } else {
                 return FALSE;
