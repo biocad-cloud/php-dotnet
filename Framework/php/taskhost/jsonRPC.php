@@ -14,7 +14,9 @@ class jsonRPC {
      * @param rpc [jsonrpc, method, params, id]
     */
     public function call($rpc) {
-        breakpoint("$rpc");
+        echo var_dump("$rpc");
+        echo "===========================";
+        die;
         $id = $rpc["id"];
         $method = $rpc["method"];
         $params = $rpc["params"];
