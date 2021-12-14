@@ -42,7 +42,8 @@ class jsonRPC {
         ]);
     }
 
-    public static function handleRPC($app, $rpc) {
+    public static function handleRPC($app, $rpc) {echo var_dump("$rpc");
+        echo "===========================";
         return (new jsonRPC($app))->call($rpc);
     }
 
