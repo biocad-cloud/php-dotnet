@@ -17,7 +17,7 @@ class jsonRPC {
         $id = $rpc["id"];
         $method = $rpc["method"];
         $params = $rpc["params"];
-        $params["rpc"] = $rpc;
+        $params["rpc"] = $rpc;breakpoint($params);
         $payload = new MVC\Controller\JsonPayload($params);
 
         if (!method_exists($this->app, $method)) {
