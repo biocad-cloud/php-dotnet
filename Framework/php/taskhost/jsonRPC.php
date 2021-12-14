@@ -16,7 +16,7 @@ class jsonRPC {
     public function call($rpc) {
         $id = $rpc["id"];
         $method = $rpc["method"];
-        $params = $rpc["params"];
+        $params = $rpc["params"];echo var_dump($params);die;
         $params["rpc"] = $rpc;
         $payload = new MVC\Controller\JsonPayload($params);
 
