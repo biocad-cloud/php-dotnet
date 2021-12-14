@@ -34,13 +34,13 @@ namespace MVC\Controller {
             $params           = $reflectionMethod->getParameters();
             $fire_args        = [];
 
-            foreach($params as $arg) {
-                echo var_dump($arg);die;
+            foreach($params as $arg) {               
                 if ($payload->_has($arg->name, false)) {
                     $fire_args[] = $payload->_get($arg->name);
                 } else if ($arg->isOptional()) {
                     $fire_args[] = $arg->getDefaultValue();
-                } else if ($strict) {
+                } else if ($strict) {echo "missing";
+                    echo var_dump($arg);die;
                     header("Content-Type: text/html");
                     \dotnet::BadRequest("missing the required parameter '{$arg->name}' in your http request!");
                 } else {
