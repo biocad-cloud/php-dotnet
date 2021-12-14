@@ -14,6 +14,7 @@ class jsonRPC {
      * @param rpc [jsonrpc, method, params, id]
     */
     public function call($rpc) {
+        breakpoint("$rpc");
         $id = $rpc["id"];
         $method = $rpc["method"];
         $params = $rpc["params"];
@@ -39,7 +40,7 @@ class jsonRPC {
         ]);
     }
 
-    public static function handleRPC($app, $rpc) {breakpoint("new");
+    public static function handleRPC($app, $rpc) {
         return (new jsonRPC($app))->call($rpc);
     }
 
