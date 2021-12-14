@@ -33,7 +33,7 @@ namespace MVC\Controller {
             $reflectionMethod = (new \ReflectionClass(get_class($appObj)))->getMethod($app);
             $params           = $reflectionMethod->getParameters();
             $fire_args        = [];
-\breakpoint($payload);
+echo var_dump($payload);
             foreach($params as $arg) {
                 if ($payload->_has($arg->name, false)) {
                     $fire_args[] = $payload->_get($arg->name);
