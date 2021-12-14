@@ -14,7 +14,7 @@ class jsonRPC {
      * @param rpc [jsonrpc, method, params, id]
     */
     public function call($rpc) {
-        echo var_dump("$rpc");
+        echo var_dump($rpc);
         echo "===========================";
         die;
         $id = $rpc["id"];
@@ -42,8 +42,7 @@ class jsonRPC {
         ]);
     }
 
-    public static function handleRPC($app, $rpc) {echo var_dump("$rpc");
-        echo "===========================";
+    public static function handleRPC($app, $rpc) {
         return (new jsonRPC($app))->call($rpc);
     }
 
