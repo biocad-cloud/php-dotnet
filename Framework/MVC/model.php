@@ -47,6 +47,13 @@ class Table {
 	*/
     private $condition;
 	
+	/**
+	 * The mysql table name that used for query currently
+	 * 
+	 * @var string
+	*/
+	public $tableName;
+
 	#region "Table Model constructor"
 
 	/**
@@ -222,7 +229,7 @@ class Table {
 	/**
 	 * 打开一个新的和mysql数据库的链接对象实例
 	 * 
-	 * @return mysqli Returns a new mysqli connection.
+	 * @return \mysqli Returns a new mysqli connection.
 	*/
 	public function mysqli() {
 		return $this->driver->getMySqlLink();
@@ -520,11 +527,16 @@ class Table {
 	/**
 	 * LEFT JOIN
 	 * 
-	 * @param string $tableName Target table name
+	 * @param string|Table $tableName Target table name string or the Table object itself
 	 * 
 	 * @return Table
 	*/
 	public function left_join($tableName) {
+		if (!is_string($tableName)) {
+			// get table name string from the Table object
+			$tableName = $tableName->tableName;
+		}
+
 		if (strtolower($tableName) == strtolower($this->schema->tableName)) {
 			throw new Error("Can not join your self!");
 		}		

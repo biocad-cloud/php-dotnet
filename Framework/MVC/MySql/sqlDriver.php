@@ -123,7 +123,7 @@ namespace MVC\MySql {
 		 * 
 		 * @param boolean $new 指示是否返回新的mysql链接而不是使用链接缓存池之中的旧对象
 		 * 
-		 * @return mysqli 返回数据库的链接
+		 * @return \mysqli 返回数据库的链接
 		*/
 		protected function __init_MySql($new = true) {
 			if ($new) {
@@ -146,7 +146,9 @@ namespace MVC\MySql {
 		}
 
 		/**
-		 * @return mysqli
+		 * Open a new mysql connection
+		 * 
+		 * @return \mysqli
 		*/
 		private function openNew() {
 			$link = @\mysqli_connect(

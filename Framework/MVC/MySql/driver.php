@@ -88,7 +88,7 @@ namespace MVC\MySql {
 		/**
 		 * 使用这个函数来打开和mysql数据库的链接
 		 * 
-		 * @return mysqli 这个函数打开的是新的mysql数据库连接
+		 * @return \mysqli 这个函数打开的是新的mysql数据库连接
 		*/
 		public function getMySqlLink() {
 			return parent::__init_MySql(true);
@@ -104,7 +104,6 @@ namespace MVC\MySql {
 		 *     会返回新增的id编号，其他的语句返回true或者false
 		*/
 		public function ExecuteSql($SQL) {
-			
 			$mysql_exec = parent::__init_MySql(false);			
 			
 			mysqli_select_db($mysql_exec, parent::GetDatabaseName()); 
@@ -154,7 +153,7 @@ namespace MVC\MySql {
 		 * 返回False的，所以执行这类数据修改的操作的时候就不需要获取返回值
 		 * 赋值到变量了
 		 *
-		 * @param mysqli $mysql_exec: 来自于函数__init_MySql()所创建的数据库连接
+		 * @param \mysqli $mysql_exec: 来自于函数__init_MySql()所创建的数据库连接
 		 * @param string $SQL
 		 * 
 		 * @return boolean|array 如果数据库查询出错，会返回逻辑值False，反之会返回相对应的结果值
