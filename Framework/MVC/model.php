@@ -54,6 +54,13 @@ class Table {
 	*/
 	public $tableName;
 
+	/**
+	 * The mysql database name
+	 * 
+	 * @var string
+	*/
+	private $databaseName;
+
 	#region "Table Model constructor"
 
 	/**
@@ -359,6 +366,22 @@ class Table {
 	#region "condition expression"
 
 	/**
+	 * generate the expression part of force index
+	 * 
+	 * @return string the force index if the condition contains the force_index option
+	*/
+	private function get_index() {
+		if ($this->is_empty("force_index")) {
+			return "";
+		} else {
+			$index_name = $this->condition["force_index"];
+			$exp = "FORCE INDEX ($index_name)";
+
+			return $exp;
+		}
+	}
+
+	/**
 	 * @return string where expression
 	*/
     private function getWhere() {
@@ -458,6 +481,21 @@ class Table {
 		$debug = $debug . "</code></pre>";
 		
 		dotnet::ThrowException($debug);
+	}
+
+	/**
+	 * FORCE INDEX(index_name)
+	 * 
+	 * @return Table
+	*/
+	public function force_index($index_name) {
+		$condition = ["force_index" => $index_name];
+		$opt = $this->addOption($condition);
+		$next = new Table($this->driver, [
+			$this->schema->tableName => $opt
+		]);
+
+        return $next;
 	}
 
     /**
@@ -685,6 +723,7 @@ class Table {
     public function select($fields = null, $keyBy = null) {
 		$ref     = $this->schema->ref;
         $assert  = $this->getWhere();
+		$index   = $this->get_index();
 		$orderBy = $this->getOrderBy();
 		$groupBy = $this->getGroupBy();
 		$limit   = $this->getLimit();
@@ -692,9 +731,9 @@ class Table {
 		$fields  = self::getFieldString($fields);
 
         if ($assert) {
-            $SQL = "SELECT $fields FROM $ref $join WHERE $assert";
+            $SQL = "SELECT $fields FROM $ref $index $join WHERE $assert";
         } else {
-            $SQL = "SELECT $fields FROM $ref $join";
+            $SQL = "SELECT $fields FROM $ref $index $join";
 		}	
 		if ($groupBy) {
 			# 2018-12-20 如果同时出现了groupby 和 order by选项的话
@@ -757,15 +796,16 @@ class Table {
 	*/
 	public function count() {
 		$ref     = $this->schema->ref;
+		$index   = $this->get_index();
 		$assert  = $this->getWhere();
 		$groupBy = $this->getGroupBy();
 		$count   = "COUNT(*)";
 		$limit   = $this->getLimit();
 
         if ($assert) {
-            $SQL = "SELECT $count FROM $ref WHERE $assert";
+            $SQL = "SELECT $count FROM $ref $index WHERE $assert";
         } else {
-            $SQL = "SELECT $count FROM $ref";
+            $SQL = "SELECT $count FROM $ref $index";
         }
 			
 		if ($groupBy) {
@@ -796,15 +836,16 @@ class Table {
     public function find($fields = null) {
 		$ref     = $this->schema->ref;
 		$assert  = $this->getWhere();   
-		$join    = $this->buildJoin();		
+		$join    = $this->buildJoin();	
+		$index   = $this->get_index();	
 		// 排序操作会影响到limit 1的结果
 		$orderBy = $this->getOrderBy();
 		$fields  = self::getFieldString($fields);
 
         if ($assert) {
-            $SQL = "SELECT $fields FROM $ref $join WHERE $assert";
+            $SQL = "SELECT $fields FROM $ref $index $join WHERE $assert";
         } else {
-            $SQL = "SELECT $fields FROM $ref $join";
+            $SQL = "SELECT $fields FROM $ref $index $join";
         }	
 		if ($orderBy) {
 			$SQL = "$SQL $orderBy";
@@ -862,16 +903,17 @@ class Table {
 	*/
 	public function ExecuteScalar($aggregate) {
 		$ref    = $this->schema->ref;
-        $assert = $this->getWhere();        
+        $assert = $this->getWhere();      
+		$index  = $this->get_index();  
 
 		if (!$aggregate || strlen($aggregate) == 0) {
 			throw new Exception("Aggregate expression can not be nothing!");
 		}
 
         if ($assert) {
-            $SQL = "SELECT $aggregate FROM $ref WHERE $assert;";
+            $SQL = "SELECT $aggregate FROM $ref $index WHERE $assert;";
         } else {
-            $SQL = "SELECT $aggregate FROM $ref;";
+            $SQL = "SELECT $aggregate FROM $ref $index;";
         }
         
 		$single = $this->driver->ExecuteScalar($SQL);
@@ -944,6 +986,7 @@ class Table {
     public function save($data, $limit1 = true, $safe = TRUE) {
 		$ref     = $this->schema->ref;
         $assert  = $this->getWhere();
+		$index   = $this->get_index();
 		$SQL     = "";
 		$updates = [];
 		
@@ -964,7 +1007,7 @@ class Table {
 		}
 		
 		$updates = join(", ", $updates);
-		$SQL     = "UPDATE $ref SET $updates";
+		$SQL     = "UPDATE $ref $index SET $updates";
 		
 		if (!$assert) {
 			# 更新所有的数据？？？要不要给出警告信息
@@ -999,12 +1042,13 @@ class Table {
     public function delete() {
 		$ref    = $this->schema->ref;
         $assert = $this->getWhere();
-		
+		$index  = $this->get_index();
+
 		# DELETE FROM `metacardio`.`experimental_batches` WHERE `id`='4';
 		if (!$assert) {
 			dotnet::ThrowException("WHERE condition can not be null in DELETE SQL!");
 		} else {
-			$SQL = "DELETE FROM $ref WHERE $assert;";
+			$SQL = "DELETE FROM $ref $index WHERE $assert;";
 		}
 				
 		if (!$this->driver->ExecuteSql($SQL)) {
