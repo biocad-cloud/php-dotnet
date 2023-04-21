@@ -284,6 +284,19 @@ class Table {
 	}
 
 	/**
+	 * make the select output unique
+	 * 
+	 * @return Table
+	*/
+	public function distinct() {
+		$condition = $this->addOption(["distinct" => true]);
+
+		return new Table($this->driver, [
+			$this->schema->tableName => $condition
+		]);
+	}
+
+	/**
 	 * 进行分组操作
 	 * 
 	 * @param string|array $keys 进行分组操作的字段依据，可以是一个字段或者一个字段的集合
@@ -378,6 +391,14 @@ class Table {
 			$exp = "FORCE INDEX ($index_name)";
 
 			return $exp;
+		}
+	}
+
+	private function getDistinct() {
+		if ($this->is_empty("distinct")) {
+			return "";
+		} else {
+			return "DISTINCT";
 		}
 	}
 
@@ -729,11 +750,12 @@ class Table {
 		$limit   = $this->getLimit();
 		$join    = $this->buildJoin();
 		$fields  = self::getFieldString($fields);
+		$distnct = $this->getDistinct();
 
         if ($assert) {
-            $SQL = "SELECT $fields FROM $ref $index $join WHERE $assert";
+            $SQL = "SELECT $distnct $fields FROM $ref $index $join WHERE $assert";
         } else {
-            $SQL = "SELECT $fields FROM $ref $index $join";
+            $SQL = "SELECT $distnct $fields FROM $ref $index $join";
 		}	
 		if ($groupBy) {
 			# 2018-12-20 如果同时出现了groupby 和 order by选项的话
