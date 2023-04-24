@@ -54,7 +54,7 @@ namespace MVC\MySql\Expression {
 
                         if ($default) {
                             array_push($fields, "`$fieldName`");
-                            array_push($values, "'$default'");
+                            array_push($values, $default == "CURRENT_TIMESTAMP" ? $default : "'$default'");
                         } else {
                             # 这个字段需要有值，但是用户没有提供值，而且也不存在默认值
                             # 则肯定无法将这条记录插入数据库
