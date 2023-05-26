@@ -28,7 +28,7 @@ namespace MVC\Views {
             }
 
             foreach($templates as $template) {
-                $Xml    = \XmlParser::LoadFromXml($template);
+                $Xml    = php\XmlParser::LoadFromXml($template);
                 $volist = $Xml["volist"]; 
                 # 变量名称，必须要存在这个属性值，否则无法得到渲染的数据源
                 $name = \Utils::ReadValue($volist, "name");

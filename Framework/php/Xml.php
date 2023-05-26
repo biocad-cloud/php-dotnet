@@ -1,5 +1,7 @@
 <?php 
 
+namespace php;
+
 /**
  * Xml file handler
  * 
@@ -201,6 +203,4 @@ class XmlParser {
     public static function error($msg) { 
         \dotnet::ThrowException("XmlParser error: $msg"); 
     } 
-} 
-
-?> 
+}
