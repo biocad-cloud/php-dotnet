@@ -136,7 +136,7 @@ namespace MVC\MySql {
 
 			$this->last_mysql_expression = $SQL;
 
-			if (\Strings::StartWith($SQL, "INSERT INTO") && !Utils::isDbNull($out)) {
+			if (\Strings::StartWith($SQL, "INSERT INTO") && !\Utils::isDbNull($out)) {
 				# 尝试获取插入语句所产生的新的自增的id编号
 				$id = mysqli_insert_id($mysql_exec);
 
