@@ -976,9 +976,9 @@ class Table {
 	 * @return boolean|integer 返回成功或者失败的逻辑值，如果目标数据表中存在递增id主键的话，
 	 *                         则这个函数返回当前所插入的新数据行的``id``值
 	*/ 
-    public function add($data) {
+    public function add($data, $strict = true) {
 		$SQL = MVC\MySql\Expression\InsertInto::Sql($data, $this->schema); 
-		$result = $this->driver->ExecuteSql($SQL);
+		$result = $this->driver->ExecuteSql($SQL, $strict);
 		// 自增的编号字段
 		$auto_increment = $this->schema->auto_increment;
 

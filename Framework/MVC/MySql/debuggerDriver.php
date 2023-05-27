@@ -59,7 +59,7 @@ namespace MVC\MySql {
 			return parent::getLastMySql();
 		}
 
-		public function ExecuteSql($SQL) {
+		public function ExecuteSql($SQL, $strict = true) {
 			$this->last_mysql_expression = $SQL;
 			fwrite($this->buffer, "$SQL\n");
 

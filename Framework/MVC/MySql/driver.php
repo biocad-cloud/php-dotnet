@@ -103,17 +103,30 @@ namespace MVC\MySql {
 		 * @return boolean|integer ``insert`` 如果存在``auto_increment``类型的主键的话
 		 *     会返回新增的id编号，其他的语句返回true或者false
 		*/
-		public function ExecuteSql($SQL) {
+		public function ExecuteSql($SQL, $strict = true) {
 			$mysql_exec = parent::__init_MySql(false);			
 			
 			mysqli_select_db($mysql_exec, parent::GetDatabaseName()); 
 			mysqli_query($mysql_exec, "SET names 'utf8'");
 
 			$bench = new \Ubench();	
-			$out   = $bench->run(function() use ($mysql_exec, $SQL) {
-				return mysqli_query($mysql_exec, $SQL);
-			});		
+			$out   = null;
 	
+			if ($strict) {
+				// will throw exception when mysqli error happends
+				$out = $bench->run(function() use ($mysql_exec, $SQL) {
+					return mysqli_query($mysql_exec, $SQL);
+				});		
+			} else {
+				try {
+					$out = $bench->run(function() use ($mysql_exec, $SQL) {
+						return mysqli_query($mysql_exec, $SQL);
+					});		
+				} catch (Exception $e) {
+					$out = false;
+				}
+			}
+
 			if (APP_DEBUG) {
 				\dotnet::$debugger->add_mysql_history($SQL, $bench->getTime(), "writes");
 			}
@@ -123,7 +136,7 @@ namespace MVC\MySql {
 
 			$this->last_mysql_expression = $SQL;
 
-			if (\Strings::StartWith($SQL, "INSERT INTO")) {
+			if (\Strings::StartWith($SQL, "INSERT INTO") && !Utils::isDbNull($out)) {
 				# 尝试获取插入语句所产生的新的自增的id编号
 				$id = mysqli_insert_id($mysql_exec);
 
