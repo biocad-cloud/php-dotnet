@@ -61,6 +61,9 @@ class debugView {
         $template = debugView::Template();  
         $vars     = debugView::union();
 
+        if (is_null($_SESSION)) {
+            $_SESSION = [];
+        }
         if (!array_key_exists(DEBUG_SESSION, $_SESSION)) {
             $_SESSION[DEBUG_SESSION] = [];
         }

@@ -282,6 +282,10 @@ class dotnetDebugger {
 	 * ```
 	*/
 	private static function getCheckpointValue($data, $key, $checkpoint) {
+		if (is_null($data)) {
+			$data = [];
+		}
+
 		$times          = array_keys($data);
 		$lastCheckPoint = -999999;
 		$logs           = [];
