@@ -151,8 +151,15 @@ namespace MVC\MySql {
 		 * @return \mysqli
 		*/
 		private function openNew() {
+			$phost = $this->host;
 			$link = @\mysqli_connect(
-				$this->host,   
+				// 20230808 PHP-MySQLi connection randomly fails with "Cannot assign requested address"
+				// using persistent connection mode, which can be activated in mysqli by pre-fixing 
+				// the database hostname with a 'p:'
+				//
+				// $link = mysqli_connect('p:localhost', 'fake_user', 'my_password', 'my_db');
+				//
+				"p:$phost",   
 				$this->user,
 				$this->password, 
 				$this->database, 
