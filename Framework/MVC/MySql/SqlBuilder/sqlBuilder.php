@@ -14,6 +14,8 @@ function eq($value) { return "~= " . LogicalExpression::AutoValue($value) ; }
 */
 function not_eq($value) { return "~<> " . LogicalExpression::AutoValue($value); }
 
+function not_null() {return "~ is not null";}
+
 /**
  * 大于，在数据库查询之中判断目标字段是否大于给定值
 */
