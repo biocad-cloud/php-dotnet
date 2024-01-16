@@ -763,7 +763,7 @@ class Utils {
      * @param string $thumbImage 输出的缩略图文件路径
      * @param integer $thumbWidth
     */
-    public static function ImageThumbs($rawImage, $thumbImage, $thumbWidth = 120, $ext) {
+    public static function ImageThumbs($rawImage, $thumbImage, $thumbWidth = 120, $ext = null) {
         // load image and get image size
         $img = self::LoadImage($rawImage, $ext);
 
