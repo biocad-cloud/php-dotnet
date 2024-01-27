@@ -229,7 +229,7 @@ class dotnet {
      * @return string 缓存文件夹的路径字符串
 	*/
 	public static function getMyTempDirectory($appName = null) {
-		$temp = sys_get_temp_dir();
+		$temp = DotNetRegistry::Read("TEMP", sys_get_temp_dir());
 
 		if (strtolower($temp) == strtolower("C:\\Windows")) {
             
@@ -240,8 +240,7 @@ class dotnet {
 				$temp = APP_PATH . "/data/cache";
 			} else {
 				$temp = "./data/cache";
-            }
-            		
+            }        
 		} else {
             if (Utils::isDbNull($appName)) {
                 $appName = DotNetRegistry::AppName();
