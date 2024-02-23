@@ -41,7 +41,7 @@ namespace MVC\MySql\Expression {
                     # $value = mysqli_real_escape_string($mysqli_exec, $value);
     
                     array_push($fields, "`$fieldName`");
-                    array_push($values, "'$value'");
+                    array_push($values, WhereAssert::AutoValue($value));
                     
                 } else if ($auto_increment && \Strings::LCase($fieldName) == \Strings::LCase($auto_increment) ) {
                     # Do Nothing
