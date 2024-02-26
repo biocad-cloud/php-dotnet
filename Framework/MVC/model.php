@@ -688,11 +688,12 @@ class Table {
 	 * 
 	 * @return mixed
 	*/
-    public function exec($SQL) {
-		$SQL = trim($SQL);
-		$tokens = explode(" ", strtolower($SQL));
+    public function exec($SQL, $fetch_data = Null) {
+		$SQL      = trim($SQL);
+		$tokens   = explode(" ", strtolower($SQL));
+		$is_fetch = !Utils::isDbNull($fetch_data);
 
-		if ($tokens[0] == "select") {
+		if ($is_fetch || ($tokens[0] == "select")) {
 			return $this->driver->Fetch($SQL);
 		} else {
 			return $this->driver->ExecuteSql($SQL);
