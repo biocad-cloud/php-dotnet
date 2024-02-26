@@ -96,7 +96,7 @@ class StringBuilder implements ArrayAccess {
      * 
      * @return boolean
     */
-    public function offsetExists($offset) {
+    public function offsetExists($offset): bool {
         if ($offset < 0 || $offset >= strlen($this->buffer)) {
             return false;
         } else {

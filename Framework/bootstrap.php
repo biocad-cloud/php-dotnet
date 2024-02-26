@@ -99,7 +99,7 @@ namespace PhpDotNet {
                 include_once($module);
             } else {
                 # 目标源文件不存在？
-                throw new \Exception("Module php file '${$module}' was not found!");
+                throw new \Exception("Module php file '$module' was not found!");
             }            
                     
             if (!APP_DEBUG) {
