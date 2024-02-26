@@ -20,7 +20,7 @@ abstract class ICollection implements ArrayAccess, Countable {
      * 
      * @return integer 序列之中的元素的数量
     */
-    public function count() {
+    public function count(): int {
         return \count($this->__data);
     }
 
@@ -33,9 +33,10 @@ abstract class ICollection implements ArrayAccess, Countable {
 
     function __get($name) {
         if($name === 'Count')
-            return $this->count($this->__data);
+            return \count($this->__data);
         user_error("Invalid property: " . __CLASS__ . "->$name");
     }
+    
     function __set($name, $value) {
         user_error("Can't set property: " . __CLASS__ . "->$name");
     }
@@ -60,6 +61,8 @@ abstract class ICollection implements ArrayAccess, Countable {
 
     /**
 	 * 将当前的这个字典对象序列化为json字符串，以返回给客户端浏览器
+     * 
+     * @return string
 	*/
 	public function GetJson() {
 		return json_encode($this->__data);
@@ -67,19 +70,19 @@ abstract class ICollection implements ArrayAccess, Countable {
 
     #region "implements ArrayAccess"
 
-    public function offsetSet($offset, $value) {
+    public function offsetSet($offset, $value): void {
         $this->__data[$offset] = $value;
     }
 
-    public function offsetExists($offset) {
+    public function offsetExists($offset): bool {
         return isset($this->__data[$offset]);
     }
 
-    public function offsetUnset($offset) {
+    public function offsetUnset($offset): void {
         unset($this->__data[$offset]);
     }
 
-    public function offsetGet($offset) {
+    public function offsetGet($offset): mixed {
         if (isset($this->__data[$offset])) {
            return $this->__data[$offset];
         } else {

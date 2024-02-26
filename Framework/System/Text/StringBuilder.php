@@ -93,7 +93,7 @@ class StringBuilder implements ArrayAccess {
      * @param integer $offset Char at index
      * @param string $value A char(string with one character)
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         $this->buffer[$offset] = $value;
     }
@@ -117,7 +117,7 @@ class StringBuilder implements ArrayAccess {
      * 
      * @param integer $offset
      */
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         $this->buffer[$offset] = " ";
     }
