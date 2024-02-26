@@ -2,25 +2,26 @@
 
 /**
  * Represents a mutable string of characters.
-*/
+ */
 class StringBuilder implements ArrayAccess {
 
     /**
      * 最终所生成的字符串数据
      * 
      * @var string 
-    */
+     */
     protected $buffer;
 
     /**
      * @var string
-    */
+     */
     private $newLine;
 
     /**
      * @param string $string The initialize string buffer
-    */
-    public function __construct($string = NULL, $newLine = PHP_EOL) {
+     */
+    public function __construct($string = NULL, $newLine = PHP_EOL)
+    {
         if (!$string) {
             $this->buffer = "";
         } else {
@@ -35,8 +36,9 @@ class StringBuilder implements ArrayAccess {
      * @param string $replaceValue
      * 
      * @return StringBuilder
-    */
-    public function Replace($find, $replaceValue) {
+     */
+    public function Replace($find, $replaceValue)
+    {
         $this->buffer = str_replace($find, $replaceValue, $this->buffer);
         return $this;
     }
@@ -46,8 +48,9 @@ class StringBuilder implements ArrayAccess {
      * and the default line terminator, to the end of this instance.
      * 
      * @return StringBuilder
-    */
-    public function AppendLine($str = "") {
+     */
+    public function AppendLine($str = "")
+    {
         return $this->Append($str . $this->newLine);
     }
 
@@ -57,16 +60,18 @@ class StringBuilder implements ArrayAccess {
      * @param string $str The text for append into buffer.
      * 
      * @return StringBuilder return current object instance.
-    */
-    public function Append($str) {
+     */
+    public function Append($str)
+    {
         $this->buffer = $this->buffer . $str;
         return $this;
     }
 
     /**
      * Removes all characters from the current StringBuilder instance.
-    */
-    public function Clear() {
+     */
+    public function Clear()
+    {
         $this->buffer = "";
     }
 
@@ -76,18 +81,20 @@ class StringBuilder implements ArrayAccess {
      * 将当前的这个StringBuilder对象之中的字符串缓冲字符串输出
      * 
      * @return string 最终所拼接出来的文本字符串数据
-    */
-    public function ToString() {
+     */
+    public function ToString()
+    {
         return $this->buffer;
     }
-    
+
     #region "implements ArrayAccess: charAt index function"
 
     /**
      * @param integer $offset Char at index
      * @param string $value A char(string with one character)
-    */
-    public function offsetSet($offset, $value) {
+     */
+    public function offsetSet($offset, $value)
+    {
         $this->buffer[$offset] = $value;
     }
 
@@ -95,8 +102,9 @@ class StringBuilder implements ArrayAccess {
      * @param integer $offset index should be positive integer and in range of the string length.
      * 
      * @return boolean
-    */
-    public function offsetExists($offset): bool {
+     */
+    public function offsetExists($offset): bool
+    {
         if ($offset < 0 || $offset >= strlen($this->buffer)) {
             return false;
         } else {
@@ -108,8 +116,9 @@ class StringBuilder implements ArrayAccess {
      * Will replace the char in position offset to a blank space
      * 
      * @param integer $offset
-    */
-    public function offsetUnset($offset) {
+     */
+    public function offsetUnset($offset)
+    {
         $this->buffer[$offset] = " ";
     }
 
@@ -118,8 +127,9 @@ class StringBuilder implements ArrayAccess {
      * 
      * @param integer $offset
      * @return string
-    */
-    public function offsetGet($offset) {
+     */
+    public function offsetGet($offset): mixed
+    {
         if ($this->offsetExists($offset)) {
             return $this->buffer[$offset];
         } else {
