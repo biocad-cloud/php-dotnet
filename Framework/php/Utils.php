@@ -353,7 +353,7 @@ class Utils {
         } else {
             $milliseconds = time();
             $seconds      = $milliseconds / 1000;
-            $remainder    = round($seconds - ($seconds >> 0), 3) * 1000;
+            $remainder    = round($seconds - (((int) $seconds) >> 0), 3) * 1000.0;
 
             return date('Y:m:d H:i:s.', $milliseconds) . $remainder;
         }        
