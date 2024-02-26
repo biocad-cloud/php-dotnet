@@ -521,7 +521,7 @@ abstract class controller {
      * 在完成了这个函数的调用之后，服务器将会返回成功代码
      * 并退出当前的脚本执行状态
      * 
-     * @param string $message 需要通过json进行传递的消息文本
+     * @param mixed $message 需要通过json进行传递的消息文本
      * 
      * @return void
     */
