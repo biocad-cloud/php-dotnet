@@ -190,6 +190,13 @@ class Table {
 	}
 
 	/**
+	 * get current used mysql driver
+	*/
+	public function getDriver() {
+		return $this->driver;
+	}
+
+	/**
 	 * 不通过内部的配置数据而是通过外部传递过来的新的配置数组
 	 * 来进行初始化
 	*/
