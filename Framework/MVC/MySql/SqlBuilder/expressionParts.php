@@ -31,17 +31,22 @@ namespace MVC\MySql\Expression {
             $s = "";
 
             foreach($option as $tableName => $on) {
-                $tbls = array_keys($on);
-                $tbl1 = $tbls[0]; $tbl1 = "`$tbl1`.`{$on[$tbl1]}`";
-                $tbl2 = $tbls[1]; $tbl2 = "`$tbl2`.`{$on[$tbl2]}`";
-                
+                if (is_array($on)) {
+                    $tbls = array_keys($on);
+                    $tbl1 = $tbls[0]; $tbl1 = "`$tbl1`.`{$on[$tbl1]}`";
+                    $tbl2 = $tbls[1]; $tbl2 = "`$tbl2`.`{$on[$tbl2]}`";
+                    $s = "($tbl1 = $tbl2)";
+                } else {
+                    $s = $on;
+                }
+
                 if (strpos($tableName, " ") !== false) {
                     # maybe table name alias
-                    $s = "$tableName ON ($tbl1 = $tbl2)";
+                    $s = " $tableName  ON ($s)";
                 } else {
-                    $s = "`$tableName` ON ($tbl1 = $tbl2)";
+                    $s = "`$tableName` ON ($s)";
                 }
-                
+
                 array_push($exp, $s);
             }
 

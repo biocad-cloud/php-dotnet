@@ -650,7 +650,11 @@ class Table {
 		if (!array_key_exists("left_join", $this->condition)) {
 			throw new Error("Unable to find join condition target table!");
 		} else if (!is_array($equals)) {
-			throw new Error("Join condition expression must be an array!");
+			// 
+			// 20240308 allow string for more complicated expression
+			if (!is_string($equals)) {
+				throw new Error("Join condition expression must be an array or string expression value!");
+			}
 		}
 
 		$opts = Utils::ArrayCopy($this->condition["left_join"]);
