@@ -21,6 +21,8 @@ class Utils {
         foreach($array as $key => $value) {
             return $value;
         }
+
+        return null;
     }
 
     public static function getRealFileType($filename) {
