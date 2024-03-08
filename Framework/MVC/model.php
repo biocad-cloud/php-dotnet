@@ -191,6 +191,8 @@ class Table {
 
 	/**
 	 * get current used mysql driver
+	 * 
+	 * @return MVC\MySql\MySqlExecDriver
 	*/
 	public function getDriver() {
 		return $this->driver;
