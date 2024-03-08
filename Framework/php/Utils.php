@@ -499,7 +499,10 @@ class Utils {
             }
 
         } else {
-            throw new dotnetException("Input object should be an array or std object!");
+            $array = json_encode($array);
+            $msg = "Input object($array) should be an array or std object!";
+
+            throw new dotnetException($msg);
         }
     }
     
