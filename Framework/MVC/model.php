@@ -358,7 +358,7 @@ class Table {
 			# asc/desc only allows one field name
 			if (!empty($order) && $order != false) {
 				$keys = trim(str_replace($order, "", $keys));
-				$key  = "`$keys`";
+				# $key  = "`$keys`";
 
 				if (trim($order) == "asc") {
 					$desc = false;
