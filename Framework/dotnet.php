@@ -230,9 +230,13 @@ class dotnet {
 	*/
 	public static function getMyTempDirectory($appName = null) {
 		$temp = DotNetRegistry::Read("TEMP", sys_get_temp_dir());
+        $temp_check = strtolower($temp);
 
-		if (strtolower($temp) == strtolower("C:\\Windows")) {
-            
+		if (($temp_check == "c:\\\\windows") 
+            || ($temp_check == "c:\\\\windows\\") 
+            || ($temp_check == "c:\\windows") 
+            || ($temp_check == "c:\\windows\\")) {
+       
 			# 不可以写入Windows文件夹
             # 写入自己的data文件夹下面的临时文件夹
             # 因为是写在自己的文件夹之中了，所以在这里就不用再加appName了
@@ -240,7 +244,7 @@ class dotnet {
 				$temp = APP_PATH . "/data/cache";
 			} else {
 				$temp = "./data/cache";
-            }        
+            }           
 		} else {
             if (Utils::isDbNull($appName)) {
                 $appName = DotNetRegistry::AppName();

@@ -439,8 +439,9 @@ class FileSystem {
 	 * @return string The temp file path.
 	*/
 	public static function TempFileName($prefix = "tmp") {
-		$tmp = tempnam(sys_get_temp_dir(), $prefix);
-
+		$tmp_dir = dotnet::getMyTempDirectory() ?? sys_get_temp_dir();  
+		$tmp = tempnam($tmp_dir, $prefix);
+		
 		if ($tmp == false) {
 			# 没有权限在临时文件夹之中创建？？
 			$tmp_dir = "./data/temp";
