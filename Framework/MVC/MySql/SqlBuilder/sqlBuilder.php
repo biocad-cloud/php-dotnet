@@ -72,7 +72,7 @@ function in($values) {
     } else if (is_object($values) && get_class($values) == "IEnumerator") {
         return "~IN ('". join("', '", $values->ToArray()) ."')"; 
     } else {
-        return $values;
+        return "~IN ($values)";
     }
 }
 # function in(...$values) { return "~IN ('". join("', '", $values) ."')"; }
