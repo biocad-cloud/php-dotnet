@@ -246,11 +246,11 @@ class View {
 			$vars["language"] = $lang;
 		}
 		
-		$lang = self::LoadLanguage($path, $lang, NULL);
+		$langVars = self::LoadLanguage($path, $lang, NULL);
 		$vars = self::unionPhpDocs($_DOC, $vars);
 		
 		if (file_exists($path)) {
-			$html = self::loadTemplate($path, $lang);
+			$html = self::loadTemplate($path, $langVars, $lang);
 
 			if (APP_DEBUG && strlen($html) == 0) {
 				console::warn("The raw template data is empty! Please check for file <strong>$path</strong>.");
@@ -321,10 +321,11 @@ class View {
 	 * 
 	 * @param string $path The file path of the html template file
 	 * @param array $language 这个函数除了加载模板文件，还会将语言文本数据渲染到模板上面
+	 * @param string $lang_name the language name
 	 * 
 	 * @return string
 	*/
-	private static function loadTemplate($path, $language) {
+	private static function loadTemplate($path, $language, $lang_name) {
 		$usingCache = DotNetRegistry::Read("CACHE", false);
 
 		if ($usingCache && !Strings::Empty($path)) {
@@ -336,7 +337,7 @@ class View {
 		
 			# 不使用缓存，需要进行页面模板的拼接渲染
 			$html  = file_get_contents($path);
-			$html  = View::interpolate_includes($html, $path, $language);
+			$html  = View::interpolate_includes($html, $path, $lang_name);
 			$html  = View::valueAssign($html, $language);
 
 			debugView::LogEvent("Cache=disabled");
