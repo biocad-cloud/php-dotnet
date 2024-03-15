@@ -37,7 +37,7 @@ class ViewCache {
         console::log("Cache file will save at: <code>$cache</code>");
         console::log("Template size = <strong>" . strlen($html) . "</strong> characters.");
 
-        $cachePage = View::interpolate_includes($html, $path);
+        $cachePage = View::interpolate_includes($html, $path, $language);
         $cachePage = View::valueAssign($cachePage, $language);
 
         console::log("Cache data created!");

@@ -336,7 +336,7 @@ class View {
 		
 			# 不使用缓存，需要进行页面模板的拼接渲染
 			$html  = file_get_contents($path);
-			$html  = View::interpolate_includes($html, $path);
+			$html  = View::interpolate_includes($html, $path, $language);
 			$html  = View::valueAssign($html, $language);
 
 			debugView::LogEvent("Cache=disabled");
@@ -459,7 +459,7 @@ class View {
 	 * 
 	 * @param path html模版文件的文件位置
 	*/
-	public static function interpolate_includes($html, $path) {
+	public static function interpolate_includes($html, $path, $lang) {
 		if (!$path) {
 			console::log("No path value was provided, skip template fragments interpolation...");
 			return $html;
@@ -492,13 +492,15 @@ class View {
 				# 可能在当前的文档碎片里面还会存在依赖
 				# 则继续递归下去
 				$include = file_get_contents($path);
-				$include = self::interpolate_includes($include, $path);
+				$include = self::interpolate_includes($include, $path, $lang);
+				$langVars = self::LoadLanguage($path, $lang);
 
 				if (empty($include)) {
 					$include = "";
 				}
 
 				$html = Strings::Replace($html, $s, $include);
+				$html = self::valueAssign($html, $langVars);
 
 				console::log(strlen($html) . " characters.");
 			}
