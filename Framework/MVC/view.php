@@ -524,6 +524,21 @@ class View {
 			\console::warn("The raw template data is nothing!");
 		}
 
+		switch($vars["language"]) {
+			case "enUS": 
+				$vars["locale"] = "en-US";
+				break;
+			case "zhCN":
+				$vars["locale"] = "zh-CN";
+				break;
+			case "frFR":
+				$vars["locale"] = "fr-FR";
+				break;
+
+			default:
+				$vars["locale"] = "en-US";
+		}
+
 		# 变量的名称$name的值为名称字符串，例如 id
 		# 而在html文件之中需要进行申明的形式则是 {$id}
 		# 需要在这里需要进行额外的字符串链接操作才能够正常的替换掉目标		
