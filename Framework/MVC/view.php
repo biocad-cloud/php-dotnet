@@ -211,31 +211,6 @@ class View {
 		debugView::AddItem("benchmark.template", $bench->getTime(true));
 		debugView::LogEvent("[Finish] Render html view");
 	}
-	
-	private static function MapLanguageCode($lang) {
-		$lang = strtolower($lang ?? "");
-
-		switch($lang) {
-			case "en":
-			case "en-us":
-			case "enus":
-				return "en";
-
-			case "zh":
-			case "zh-cn":
-			case "zhcn":
-			case "zhchs":
-			case "zhhans":
-				return "zh";
-			
-			case "fr":
-			case "fr-fr":
-				return "fr";
-
-			default:
-				return "en";
-		}
-	}
 
 	/**
 	 * 加载指定路径的html文档并对其中的占位符利用vars字典进行填充
@@ -260,7 +235,7 @@ class View {
 		}
 
 		if (!array_key_exists("html_lang", $vars)) {
-			$vars["html_lang"] = self::MapLanguageCode($lang);			
+			$vars["html_lang"] = dotnet::MapLanguageCode($lang);			
 		}
 		
 		if (!array_key_exists("language", $vars)) {
@@ -295,7 +270,7 @@ class View {
 	 * 如果需要进行填充的话，需要html文档之中有title，description，authors变量
 	 * title变量是单独的<title>标签标记，description和authors则写入在<meta>标签里面
 	 * 
-	 * @param DocComment $_DOC
+	 * @param \PHP\DocComment $_DOC
 	 * @param array $vars
 	 * 
 	 * @return array

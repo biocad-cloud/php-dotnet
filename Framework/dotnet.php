@@ -299,14 +299,39 @@ class dotnet {
         
         # echo "<!-- language = $lang -->";
         
-        if ($lang && ($lang === "enus" || $lang === "en" || $lang === "en-us")) {
-			$lang = "enUS";
+        if ($lang) {
+			$lang = self::MapLanguageCode($lang);
 		} else {
 			$lang = "zhCN";
 		}
 		
 		return ["lang" => $lang];
     }
+
+	public static function MapLanguageCode($lang) {
+		$lang = strtolower($lang ?? "");
+
+		switch($lang) {
+			case "en":
+			case "en-us":
+			case "enus":
+				return "enUS";
+
+			case "zh":
+			case "zh-cn":
+			case "zhcn":
+			case "zhchs":
+			case "zhhans":
+				return "zhCN";
+			
+			case "fr":
+			case "fr-fr":
+				return "frFR";
+
+			default:
+				return "enUS";
+		}
+	}
 
     /**
      * 对于这个函数额调用者而言，就是获取调用者所在的脚本的文件夹位置
