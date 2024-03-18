@@ -753,9 +753,9 @@ class Table {
 	 * @param array|string $fields A string array.
 	 * @param string $keyBy 如果这个参数不是空的话，则返回来的数组将会使用这个字段的值作为index key.
 	 * 
-	 * @return array|boolean 当查询出错的时候，这个函数是会返回一个逻辑值false的
+	 * @return array|boolean|string 当查询出错的时候，这个函数是会返回一个逻辑值false的
 	*/
-    public function select($fields = null, $keyBy = null) {
+    public function select($fields = null, $keyBy = null, $sql_expr = false) {
 		$ref     = $this->schema->ref;
         $assert  = $this->getWhere();
 		$index   = $this->get_index();
@@ -781,6 +781,10 @@ class Table {
 		}	
 		if ($limit) {
 			$SQL = "$SQL $limit";
+		}
+
+		if ($sql_expr) {
+			return $SQL . ";";
 		}
 
 		$data = $this->driver->Fetch($SQL . ";");
