@@ -212,6 +212,31 @@ class View {
 		debugView::LogEvent("[Finish] Render html view");
 	}
 	
+	private static function MapLanguageCode($lang) {
+		$lang = strtolower($lang ?? "");
+
+		switch($lang) {
+			case "en":
+			case "en-us":
+			case "enus":
+				return "en";
+
+			case "zh":
+			case "zh-cn":
+			case "zhcn":
+			case "zhchs":
+			case "zhhans":
+				return "zh";
+			
+			case "fr":
+			case "fr-fr":
+				return "fr";
+
+			default:
+				return "en";
+		}
+	}
+
 	/**
 	 * 加载指定路径的html文档并对其中的占位符利用vars字典进行填充
 	 * 这个函数还会额外的处理includes关系
@@ -235,11 +260,7 @@ class View {
 		}
 
 		if (!array_key_exists("html_lang", $vars)) {
-			if ($lang == "enUS") {
-				$vars["html_lang"] = "en";
-			} else {
-				$vars["html_lang"] = "zh";
-			}			
+			$vars["html_lang"] = self::MapLanguageCode($lang);			
 		}
 		
 		if (!array_key_exists("language", $vars)) {
