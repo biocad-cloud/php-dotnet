@@ -233,6 +233,7 @@ namespace MVC\MySql {
 			mysqli_select_db($mysql_exec, parent::GetDatabaseName()); 
 			mysqli_query($mysql_exec, "SET names 'utf8'");
 			mysqli_query($mysql_exec, "SET SESSION group_concat_max_len = 10000000");
+			mysqli_query($mysql_exec, "SET SESSION sort_buffer_size = 2097152");
 
 			$bench = new \Ubench();
 			$data = $bench->run(function() use ($mysql_exec, $SQL) {
