@@ -17,6 +17,39 @@ class DbPaging {
     */
 
     /**
+     * get total page number of current array based on the current given page size
+     * 
+     * @param array $array any kind of the given array data
+     * @param integer $page_size the page size
+     * 
+     * @return integer the total page numbers of current array
+    */
+    public static function totalArrayPages($array, $page_size) {
+        // calculate total pages
+        return ceil( count($array) / $page_size ); 
+    }
+
+    /**
+     * get page data from array
+     * 
+     * @param array $array any kind of the data array
+     * @param integer $page the page number
+     * @param integer $page_size the page size
+     * 
+     * @param array the page data
+    */
+    public static function array_page($array, $page = 1, $page_size = 100) {
+        $start = ($page - 1) * $page_size;
+        $size = count($array);
+
+        if ($page_size > ($size - $start)) {
+            $page_size = $size - $start;
+        }
+
+        return array_slice($array, $start, $page_size);
+    }
+
+    /**
      * 返回分页数据
      * 
      * @param string|array $tableName 数据表的名字或者数据库配置
@@ -92,4 +125,3 @@ class DbPaging {
         }
     }
 }
-?>
