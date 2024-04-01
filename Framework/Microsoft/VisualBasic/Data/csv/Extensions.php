@@ -39,6 +39,9 @@ namespace Microsoft\VisualBasic\Data\csv {
         public static function SaveTo($array, $path, $project = null, $encoding = "utf8", $everyone = TRUE) {
             if (\Strings::Empty($path)) {
                 return false;
+            } else if (count($array) == 0) {
+                \console::warn("table no data to write!");
+                return false;
             } else {
                 # 2018-4-10 直接引用其他的模块似乎会因为namespace的缘故而产生错误：
                 # <b>Fatal error</b>:  Class 'Microsoft\VisualBasic\Data\csv\FileSystem' not found
