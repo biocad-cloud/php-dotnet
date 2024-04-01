@@ -36,7 +36,7 @@ namespace MVC\MySql {
 		 * 
 		 * @param string $configName 当这个参数为空的时候，默认使用master的配置
 		 * 
-		 * @return MySqlExecDriver
+		 * @return MySqlExecDriver|string
 		*/
 		public static function LoadDriver($configName = null) {
 			if (empty($configName) || strlen($configName) == 0) {
@@ -113,16 +113,21 @@ namespace MVC\MySql {
 			$out   = null;
 	
 			if ($strict) {
-				// will throw exception when mysqli error happends
-				$out = $bench->run(function() use ($mysql_exec, $SQL) {
-					return mysqli_query($mysql_exec, $SQL);
-				});		
+				try {
+					// will throw exception when mysqli error happends
+					$out = $bench->run(function() use ($mysql_exec, $SQL) {
+						return mysqli_query($mysql_exec, $SQL);
+					});		
+				} catch (\Exception $e) {
+					$e = new \Exception("sql_query: {$SQL}", 500, $e);
+					throw $e;
+				}
 			} else {
 				try {
 					$out = $bench->run(function() use ($mysql_exec, $SQL) {
 						return mysqli_query($mysql_exec, $SQL);
 					});		
-				} catch (Exception $e) {
+				} catch (\Exception $e) {
 					$out = false;
 				}
 			}
@@ -178,10 +183,17 @@ namespace MVC\MySql {
 			mysqli_query($mysql_exec, "SET names 'utf8'");
 
 			$bench = new \Ubench();
-			$data  = $bench->run(function() use ($mysql_exec, $SQL) {
-				return mysqli_query($mysql_exec, $SQL);
-			});			
-
+			$data  = null;
+			
+			try {
+				$data = $bench->run(function() use ($mysql_exec, $SQL) {
+					return mysqli_query($mysql_exec, $SQL);
+				});	
+			} catch (\Exception $e) {
+				$e = new \Exception("sql_query: {$SQL}", 500, $e);
+				throw $e;
+			}
+		
 			if (APP_DEBUG) {
 				\dotnet::$debugger->add_mysql_history($SQL, $bench->getTime(), "queries");
 			}
