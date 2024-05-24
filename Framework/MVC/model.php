@@ -813,14 +813,20 @@ class Table {
 	 * 这个函数通过一个数组返回目标列的所有数据，返回来的列数据一般是一个字符串数组
 	 * 
 	 * @param string $fieldName 数据表之中的列名称
+	 * @param boolean $sql_expr just returns the sql expression for current query, debug used.
+	 * 
 	 * @return string[] 返回来的列的数据
 	*/
-	public function project($fieldName) {
-		$data  = $this->select([$fieldName]);
+	public function project($fieldName, $sql_expr = false) {
+		$data  = $this->select([$fieldName], null, $sql_expr);
 		$array = [];
 
-		foreach($data as $row) {
-			array_push($array, $row[$fieldName]);
+		if ($sql_expr) {
+			return $data;
+		} else {
+			foreach($data as $row) {
+				array_push($array, $row[$fieldName]);
+			}	
 		}
 
 		return $array;
