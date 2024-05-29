@@ -41,7 +41,9 @@ class StringHelpers {
      * 判断目标字符串是否是目标正则表达式所表示的模式
      * 
      * @param string $str
-     * @param string $pattern 不需要添加//，这个函数会自动添加/包裹字符串
+     * @param string $pattern 不需要添加``//``，这个函数会自动添加/包裹字符串。但是对于一些转义任然需要双斜杠，
+     *    例如，在正则表达式中使用``\d+``匹配一个数字，任然需要使用双斜杠防止进行转义：``\\d+``
+     * 
      * 
      * @return boolean
     */
