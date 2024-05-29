@@ -56,7 +56,13 @@ class StringHelpers {
             PREG_OFFSET_CAPTURE
         );
 
-        if (empty($matches) || $matches === false || count($matches) !== 1) {
+        # 20240529 matches maybe more than one result if the
+        # regexp matches has hits
+        # so test the matches is empty or not at here?
+        if (empty($matches) 
+            || $matches === false 
+            || count($matches) == 0) {
+
             return false;
         } else {
             $pattern = $matches[0];
