@@ -37,10 +37,13 @@ class Restrictions {
         }
 
         $str = "<h3>Resource: {$this->user} @ {$this->resource}</h3>";
-        $str = "<p>your http requests rate has been reached our limitation:
+        $str = "<p>your http requests rate has reached our limitation:
                     <ul>
                         $limits
                     </ul>
+                </p>
+                <p>
+                this error has been reported to the website administrator.
                 </p>";
 
         return $str;
