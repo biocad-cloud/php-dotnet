@@ -161,7 +161,9 @@ class Restrictions {
     */
     private function getVisits() {
         $uid    = "{$this->user} @ {$this->resource}";
-        $logs   = dotnet::getMyTempDirectory() . "/visits/{$this->user}.log";
+        $key    = substr($this->user, 1, 3);
+        $key2   = substr($this->user, 3, 3);
+        $logs   = dotnet::getMyTempDirectory() . "/visits/{$key}/{$key2}/{$this->user}.log";
         $visits = FileSystem::ReadAllText($logs, "{}");
         $visits = json_decode($visits);
         $now    = time();
