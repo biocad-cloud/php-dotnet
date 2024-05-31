@@ -33,11 +33,11 @@ class Restrictions {
         $limits = "";
 
         foreach($this->rates as $time => $limit) {
-            $limits .= "<li>{$time} = {$limit}</li>";
+            $limits .= "<li>{$limit} requests/{$time}</li>";
         }
 
         $str = "<h3>Resource: {$this->user} @ {$this->resource}</h3>";
-        $str = "<p>Rate Limiting:
+        $str = "<p>your http requests rate has been reached our limitation:
                     <ul>
                         $limits
                     </ul>
