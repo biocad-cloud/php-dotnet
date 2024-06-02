@@ -17,11 +17,16 @@ class Restrictions {
     var $rates;
 
     /**
-     * 当前用户的唯一标识符
+     * 当前用户的唯一标识符(md5 hashed)
      * 
      * @var string
     */
     var $user;
+    /**
+     * @var string
+    */
+    var $source_id;
+
     /**
      * 当前所访问的服务器资源的唯一标记
      * 
@@ -74,9 +79,10 @@ class Restrictions {
             $user = "NA";
         }
 
-        $this->rates    = $rates;
-        $this->resource = $controller->ref;
-        $this->user     = $user;
+        $this->rates     = $rates;
+        $this->resource  = $controller->ref;
+        $this->user      = md5($user);
+        $this->source_id = $user;
 
         if (APP_DEBUG) {
             console::log("User visit restrict resource: <code>{$this->user} @ {$this->resource}</code>");
@@ -164,7 +170,7 @@ class Restrictions {
         $key    = substr($this->user, 1, 2);
         $key2   = substr($this->user, 3, 3);
         $logs   = dotnet::getMyTempDirectory() . "/visits/{$key}/{$key2}/{$this->user}.log";
-        $visits = FileSystem::ReadAllText($logs, "{}");
+        $visits = FileSystem::ReadAllText($logs, json_encode(["source" => $this->source_id]));
         $visits = json_decode($visits);
         $now    = time();
 
