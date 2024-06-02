@@ -161,7 +161,7 @@ class Restrictions {
     */
     private function getVisits() {
         $uid    = "{$this->user} @ {$this->resource}";
-        $key    = substr($this->user, 1, 3);
+        $key    = substr($this->user, 1, 2);
         $key2   = substr($this->user, 3, 3);
         $logs   = dotnet::getMyTempDirectory() . "/visits/{$key}/{$key2}/{$this->user}.log";
         $visits = FileSystem::ReadAllText($logs, "{}");
