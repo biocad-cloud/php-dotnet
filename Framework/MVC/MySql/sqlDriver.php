@@ -151,20 +151,28 @@ namespace MVC\MySql {
 		 * @return \mysqli
 		*/
 		private function openNew() {
+			// error_reporting(0);
+
 			$phost = $this->host;
-			$link = @\mysqli_connect(
-				// 20230808 PHP-MySQLi connection randomly fails with "Cannot assign requested address"
-				// using persistent connection mode, which can be activated in mysqli by pre-fixing 
-				// the database hostname with a 'p:'
-				//
-				// $link = mysqli_connect('p:localhost', 'fake_user', 'my_password', 'my_db');
-				//
-				"p:$phost",   
-				$this->user,
-				$this->password, 
-				$this->database, 
-				$this->port
-			);
+			$link = false;
+
+			try {
+				$link = @\mysqli_connect(
+					// 20230808 PHP-MySQLi connection randomly fails with "Cannot assign requested address"
+					// using persistent connection mode, which can be activated in mysqli by pre-fixing 
+					// the database hostname with a 'p:'
+					//
+					// $link = mysqli_connect('p:localhost', 'fake_user', 'my_password', 'my_db');
+					//
+					"p:$phost",   
+					$this->user,
+					$this->password, 
+					$this->database, 
+					$this->port
+				);
+			} catch (\Exception $e) {
+				$link = false;
+			}
 						
 			# 2018-07-27
 			# 如果连接最新版本的mysql的时候，出现错误
@@ -186,12 +194,16 @@ namespace MVC\MySql {
 				$msg = (new \StringBuilder("", "<br />"))
 					->AppendLine("Error: Unable to connect to MySQL.")
 				    ->AppendLine("Debugging errno: " . mysqli_connect_errno()) 
-					->AppendLine("Debugging error: " . mysqli_connect_error())
-					->AppendLine("<code>@\mysqli_connect({$this->host}, {$this->user}, {$this->database}, {$this->port});</code>")
-					->ToString();
+					->AppendLine("Debugging error: " . mysqli_connect_error())					
+					;
 					
-				\dotnet::ThrowException($msg);
+				if (defined("APP_DEBUG")) {
+					if (APP_DEBUG) {
+						$msg->AppendLine("<code>@\mysqli_connect({$this->host}, {$this->user}, {$this->database}, {$this->port});</code>");
+					}
+				}
 
+				\dotnet::ThrowException($msg->ToString());
 			} else {
 				return $link;
 			}
