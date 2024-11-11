@@ -61,6 +61,7 @@ namespace Microsoft\VisualBasic\Data\csv {
             $project = TableView::FieldProjects($array, $project);
             $project = TableView::Extract($project);
             $fields  = $project["fields"];
+            $convert_encoding = $encoding != "utf8";
 
             fputcsv($fp, $project["title"]);
 
@@ -70,7 +71,13 @@ namespace Microsoft\VisualBasic\Data\csv {
 
                 # 按照给定的projection投影的顺序进行重排序
                 foreach ($fields as $key) {
-                    array_push($list, $obj[$key]);
+                    array_push($list,\strval( $obj[$key]));
+                }
+
+                if ($convert_encoding) {
+                    $list = array_map(function($item) use ($encoding) {
+                        return iconv('UTF-8', $encoding , $item);
+                    }, $list);
                 }
 
                 fputcsv($fp, $list);
