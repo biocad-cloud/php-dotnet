@@ -818,16 +818,21 @@ class Table {
 	 * @return string[] 返回来的列的数据
 	*/
 	public function project($fieldName, $sql_expr = false) {
-		$data  = $this->select([$fieldName], null, $sql_expr);
-		$array = [];
-
+		$data = $this->select([$fieldName], null, $sql_expr);
+		
 		if ($sql_expr) {
 			return $data;
 		} else {
-			foreach($data as $row) {
-				array_push($array, $row[$fieldName]);
-			}	
-		}
+			return self::project_column($data, $fieldName);
+		}		
+	}
+
+	public static function project_column($data, $fieldName) {
+		$array = [];
+
+		foreach($data as $row) {
+			array_push($array, $row[$fieldName]);
+		}	
 
 		return $array;
 	}
