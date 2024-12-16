@@ -55,6 +55,8 @@ class RFC7231Error {
 			ob_end_clean();
 		}
 
+		header('Content-Type: text/html; charset=utf-8');
+
 		if (!is_integer($code)) {
 			$msg = "Error code must be an " . \PhpDotNet\MSDN::link("System.Int32") . " numeric type!";
 			dotnet::ThrowException($msg);
