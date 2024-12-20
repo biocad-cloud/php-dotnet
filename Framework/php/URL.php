@@ -103,7 +103,7 @@ class URL {
      * 
      * @param boolean $raw This function returns the refer url string or parsed url object?
      * 
-     * @return string Get the previous page that navigate to current page.
+     * @return string|URL Get the previous page that navigate to current page.
     */
     public static function HttpRefer($raw = true) {
         if ($raw) {
