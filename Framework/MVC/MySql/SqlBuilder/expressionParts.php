@@ -40,7 +40,7 @@ namespace MVC\MySql\Expression {
                     $s = $on;
                 }
 
-                if (strpos($tableName, " ") !== false) {
+                if ((strpos($tableName, " ") !== false) || (strpos($tableName, "`") !== false)) {
                     # maybe table name alias
                     $s = " $tableName  ON ($s)";
                 } else {

@@ -528,8 +528,12 @@ abstract class controller {
     public static function success($message, $debug = NULL) {
         header("HTTP/1.1 200 OK");
         header("Content-Type: application/json");
+        header('Content-Encoding: gzip');
 
-        echo dotnet::successMsg($message, $debug);
+        $jsonData = dotnet::successMsg($message, $debug);
+        $compressedData = gzencode($jsonData);
+
+        echo $compressedData;
 
         if (APP_DEBUG) {
             dotnet::$debugger->WriteDebugSession();

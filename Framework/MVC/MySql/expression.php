@@ -165,8 +165,15 @@ namespace MVC\MySql\Expression {
             if ( ($a !== false) && ($b !== false) && ($a + 1 < $b) ) {
                 # 是一个表达式
                 return $exp;
-            } else if ($c == "`" && $d == "`") {
+
+                // 20241227
+                // check if first char or last char is symbol wrapper ` ?
+            } else if ($c == "`" || $d == "`") {
                 # 是一个 `fieldName` 字段引用，也是直接返回
+                # possible left join situation
+                # `table`.fieldName
+                # table.`fieldName`
+                # `table`.`fieldName`
                 return $exp;
             } else {
                 # 是一个字段名
