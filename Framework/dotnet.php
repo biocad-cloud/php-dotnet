@@ -327,6 +327,10 @@ class dotnet {
 			case "fr":
 			case "fr-fr":
 				return "frFR";
+            
+            case "ru":
+            case "ru-RU":
+                return "ruRU";
 
 			default:
 				return "enUS";
