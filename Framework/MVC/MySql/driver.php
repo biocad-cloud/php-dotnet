@@ -284,7 +284,7 @@ namespace MVC\MySql {
 				return TRUE;
 			} else if (\is_array($data) && \count($data) > 0) {
 				return TRUE;
-			} else if (\is_object($data) && ($data instanceof Countable) && (\count($data) > 0)) {
+			} else if (\is_object($data) && ($data instanceof \Countable) && (\count($data) > 0)) {
 				return TRUE;
 			} else {
 				return FALSE;
