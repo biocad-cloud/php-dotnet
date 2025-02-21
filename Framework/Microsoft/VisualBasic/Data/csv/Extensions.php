@@ -69,7 +69,7 @@ namespace Microsoft\VisualBasic\Data\csv {
             fclose($fp);
 
             header('Content-Type: text/csv');
-            header('Content-Disposition: attachment; filename="{$filename}"');
+            header('Content-Disposition: attachment; filename="' . $filename . '"');
             
             echo $csvContent;
         }
