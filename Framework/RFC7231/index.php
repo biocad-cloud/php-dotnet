@@ -57,6 +57,10 @@ class RFC7231Error {
 
 		header('Content-Type: text/html; charset=utf-8');
 
+		if ($code == 429) {
+			header("Retry-After: 3600");
+		}
+
 		if (!is_integer($code)) {
 			$msg = "Error code must be an " . \PhpDotNet\MSDN::link("System.Int32") . " numeric type!";
 			dotnet::ThrowException($msg);
