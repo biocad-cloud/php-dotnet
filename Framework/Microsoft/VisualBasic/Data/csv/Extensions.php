@@ -25,37 +25,11 @@ namespace Microsoft\VisualBasic\Data\csv {
             return self::SaveTo($data, $path, null, $encoding);
         }
 
-        /**
-         * Save array collection as a csv file.
-         * 
-         * @param array $array The object array collection.
-         * @param string $path The saved csv file path.
-         * @param callable $project A dictionary table that specific the columns and 
-         *                 corresponding field names, column orders, etc.
-         * @param string $encoding The csv file text encoding, default is `utf8`.
-         * 
-         * @return boolean True for file save success, and false not. 
-        */
-        public static function SaveTo($array, $path, $project = null, $encoding = "utf8", $everyone = TRUE) {
-            if (\Strings::Empty($path)) {
-                return false;
-            } else if (count($array) == 0) {
+        public static function SaveStream($array, $fp, $project = null, $encoding = "utf8") {
+            if (count($array) == 0) {
                 \console::warn("table no data to write!");
                 return false;
-            } else {
-                # 2018-4-10 直接引用其他的模块似乎会因为namespace的缘故而产生错误：
-                # <b>Fatal error</b>:  Class 'Microsoft\VisualBasic\Data\csv\FileSystem' not found
-                # 所以在这里就直接使用这个函数的代码了
-                $directory = dirname($path);
             }
-
-            if (!file_exists($directory)) {
-                mkdir($directory, 0755, true);
-            } else {
-                # do nothing
-            }	
-
-            $fp = fopen($path, 'w');
 
             # 写入第一行标题行
             $project = TableView::FieldProjects($array, $project);
@@ -83,8 +57,57 @@ namespace Microsoft\VisualBasic\Data\csv {
                 fputcsv($fp, $list);
             }
 
+            return true;
+        }
+
+        public static function PushStream($array, $filename = "data.csv", $project = null, $encoding = "utf8") {
+            $fp = fopen('php://memory', 'w');
+
+            self::SaveStream($array,$fp,$project,$encoding);
+            rewind($fp);
+            $csvContent = stream_get_contents($fp);
             fclose($fp);
 
+            header('Content-Type: text/csv');
+            header('Content-Disposition: attachment; filename="' . $filename . '"');
+            
+            echo $csvContent;
+        }
+
+        /**
+         * Save array collection as a csv file.
+         * 
+         * @param array $array The object array collection.
+         * @param string $path The saved csv file path.
+         * @param callable $project A dictionary table that specific the columns and 
+         *                 corresponding field names, column orders, etc.
+         * @param string $encoding The csv file text encoding, default is `utf8`.
+         * 
+         * @return boolean True for file save success, and false not. 
+        */
+        public static function SaveTo($array, $path, $project = null, $encoding = "utf8", $everyone = TRUE) {
+            if (\Strings::Empty($path)) {
+                \console::warn("empty path string for save csv table file!");
+                return false;
+            } else {
+                # 2018-4-10 直接引用其他的模块似乎会因为namespace的缘故而产生错误：
+                # <b>Fatal error</b>:  Class 'Microsoft\VisualBasic\Data\csv\FileSystem' not found
+                # 所以在这里就直接使用这个函数的代码了
+                $directory = dirname($path);
+            }
+
+            if (!file_exists($directory)) {
+                mkdir($directory, 0755, true);
+            } else {
+                # do nothing
+            }	
+
+            $fp = fopen($path, 'w');
+            
+            // save table to a current file stream
+            self::SaveStream($array,$fp,$project,$encoding);
+
+            fclose($fp);
             $result = file_exists($path);
 
             if ($result && $everyone) {

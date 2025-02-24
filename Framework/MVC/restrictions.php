@@ -195,6 +195,10 @@ class Restrictions {
             }
         }
 
+        if (Utils::isDbNull($visits)) {
+            $visits = (object) [];
+        }
+
         $visits->{$uid} = $q->ToArray();
         FileSystem::WriteAllText($logs, json_encode($visits));
 
