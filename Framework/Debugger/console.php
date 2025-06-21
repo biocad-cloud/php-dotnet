@@ -247,7 +247,7 @@ class console {
             $trace = StackTrace::GetCallStack();
 
             self::cli_echo("[$time, ERROR::$code] $msg\n");
-            self::cli_echo($trace->ToString($html = false) . "\n");
+            self::cli_echo($trace->ToString(false) . "\n");
         } 
     }
 
@@ -267,7 +267,7 @@ class console {
             $trace = StackTrace::GetCallStack();
 
             self::cli_echo("[$time, WARN::$code] $msg\n");
-            self::cli_echo($trace->ToString($html = false) . "\n");
+            self::cli_echo($trace->ToString(false) . "\n");
         } 
     }
 

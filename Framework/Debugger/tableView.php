@@ -18,17 +18,17 @@ class ArrayToTextTable {
     private $rows;
 
     /** 
-     * @var int The column width settings
+     * @var int[] The column width settings
     */
     private $cs = array();
 
     /**
-     * @var int The Row lines settings
+     * @var int[] The Row lines settings
     */
     private $rs = array();
 
     /**
-     * @var int The Column index of keys
+     * @var int[] The Column index of keys
     */
     private $keys = array();
 
@@ -59,7 +59,7 @@ class ArrayToTextTable {
         $this->rows =& $rows;
         $this->cs=array();
         $this->rs=array();
- 
+
         if(!$xc = count($this->rows)) return false; 
         $this->keys = array_keys($this->rows[0]);
         $columns = count($this->keys);
@@ -75,7 +75,7 @@ class ArrayToTextTable {
      * @param bool $bool
     */
     public function showHeaders($bool) {
-       if($bool) $this->setHeading(); 
+        if($bool) $this->setHeading(); 
     } 
     
     /**
