@@ -629,6 +629,8 @@ class Utils {
     /**
      * 判断当前的这个数据库查询结果是否是空？
      * 
+     * check result is null/logical false/or empty array?
+     * 
      * @return boolean
     */
     public static function isDbNull($result) {

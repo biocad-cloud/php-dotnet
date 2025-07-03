@@ -18,7 +18,13 @@ class Regex {
      * @return string An object that contains information about the match.
     */
     public static function Match($input, $pattern, $options = PREG_PATTERN_ORDER, $flags = null) {
-        return self::Matches($input, $pattern, $options, $flags)[0];
+        $hit = self::Matches($input, $pattern, $options, $flags);
+        
+        if (Utils::isDbNull($hit)) {
+            return null;
+        } else {
+            return $hit[0];
+        }
     }
 
     /**
