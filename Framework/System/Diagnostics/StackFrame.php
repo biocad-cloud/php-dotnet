@@ -59,7 +59,7 @@ class StackFrame {
      * 该信息通常从可执行文件的调试符号中提取。
     */
     public function GetFileName() {
-        $file = $this->frame["file"];
+        $file = Utils::ReadValue($this->frame, "file", "~[unknown-file]");
         
         # 在非调试模式下，将服务器的文件系统信息隐藏掉
         if (!APP_DEBUG) {
@@ -88,7 +88,7 @@ class StackFrame {
      * 该信息通常从可执行文件的调试符号中提取。
     */
     public function GetFileLineNumber() {
-        return $this->frame["line"];
+        return Utils::ReadValue($this->frame, "line","n/a");
     }
 
     /** 

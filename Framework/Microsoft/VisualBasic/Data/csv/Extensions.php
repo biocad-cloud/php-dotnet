@@ -1,3 +1,4 @@
+
 <?php
 
 namespace Microsoft\VisualBasic\Data\csv {
@@ -263,3 +264,4 @@ namespace Microsoft\VisualBasic\Data\csv {
         }
     }
 }
+

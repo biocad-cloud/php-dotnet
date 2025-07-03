@@ -59,7 +59,7 @@ class ArrayToTextTable {
         $this->rows =& $rows;
         $this->cs=array();
         $this->rs=array();
-
+ 
         if(!$xc = count($this->rows)) return false; 
         $this->keys = array_keys($this->rows[0]);
         $columns = count($this->keys);
@@ -75,7 +75,7 @@ class ArrayToTextTable {
      * @param bool $bool
     */
     public function showHeaders($bool) {
-        if($bool) $this->setHeading(); 
+       if($bool) $this->setHeading(); 
     } 
     
     /**
