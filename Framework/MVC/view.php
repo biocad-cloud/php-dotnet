@@ -513,6 +513,7 @@ class View {
 	 * @param array $vars 需要进行渲染的数据
 	*/
 	public static function valueAssign($html, $vars) {
+		$default_lang = "enUS";
 		# 在这里需要按照键名称长度倒叙排序，防止出现可能的错误替换
 		// $vars = Enumerable::OrderByKeyDescending($vars, function($key) {
 		// 		return strlen($key);
@@ -524,7 +525,7 @@ class View {
 			\console::warn("The raw template data is nothing!");
 		}
 
-		switch($vars["language"]) {
+		switch(Utils::ReadValue($vars,"language", $default_lang)) {
 			case "enUS": 
 				$vars["locale"] = "en-US";
 				break;
