@@ -191,6 +191,9 @@ class Strings {
 		if (is_array($replacement)) {
 			throw new Exception("replacement is array!");
 		}
+		if (Utils::isDbNull($replacement)) {
+			$replacement = "";
+		}
 
 		if (is_array($str)) {
 			$result = [];
