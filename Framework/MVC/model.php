@@ -884,7 +884,11 @@ class Table {
 	 * 
 	 * @return boolean|array 如果查询成功，则返回行数据，反之返回一个逻辑值false来表示失败
 	*/
-    public function find($fields = null) {
+    public function find($fields = null) {		
+		return $this->driver->ExecuteScalar($this->find_sql($fields));
+	}
+	
+	public function find_sql($fields = null) {
 		$ref     = $this->schema->ref;
 		$assert  = $this->getWhere();   
 		$join    = $this->buildJoin();	
@@ -902,11 +906,9 @@ class Table {
 			$SQL = "$SQL $orderBy";
 		}	
 
-		$SQL = "$SQL LIMIT 1;";
-
-		return $this->driver->ExecuteScalar($SQL);
+		return "$SQL LIMIT 1;";
 	}
-	
+
 	/**
 	 * 获取数据库之中的随机的一条记录，这个数据库必须要存在一个自增的id列作为主键
 	 * 
