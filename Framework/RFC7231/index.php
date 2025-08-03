@@ -121,26 +121,44 @@ class RFC7231Error {
 	
 	#region "Framework prefix error code page entry"
 
+	/**
+	 * Not Found
+	*/
 	public static function err404($message = NULL, $allow_custom = true) {
 		self::Display(404, $message, "", $allow_custom);
 	}
 	
+	/**
+	 * Forbidden
+	*/
 	public static function err403($message = NULL, $allow_custom = true) {
 		self::Display(403, $message, "", $allow_custom);
 	}
 	
+	/**
+	 * Method not allowed
+	*/
 	public static function err405($message = NULL, $allow_custom = true) {
 		self::Display(405, $message, "", $allow_custom);
 	}
 
+	/**
+	 * Internal Server Error
+	*/
 	public static function err500($message = NULL, $allow_custom = true) {
 		self::Display(500, $message, "", $allow_custom);
 	}
 
+	/**
+	 * Too Many Requests
+	*/
 	public static function err429($message = NULL, $allow_custom = true) {
 		self::Display(429, $message, "", $allow_custom);
 	}
 
+	/**
+	 * Bad Request
+	*/
 	public static function err400($message = NULL, $allow_custom = true) {
 		self::Display(400, $message, "", $allow_custom);
 	}
