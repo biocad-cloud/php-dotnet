@@ -940,7 +940,7 @@ class Table {
 	 * @return mixed The reuqired field value. 
 	*/
 	public function findfield($name) {
-		$single = $this->find();
+		$single = $this->find($name);
 
 		if ($single) {
 			return $single[$name];
