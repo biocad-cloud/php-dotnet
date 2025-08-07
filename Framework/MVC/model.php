@@ -796,19 +796,23 @@ class Table {
 		}
 
 		if (!empty($keyBy) && strlen($keyBy) > 0) {
-			$out = [];
-
-			foreach($data as $row) {
-				$key       = strval($row[$keyBy]);
-				$out[$key] = $row;
-			}
-
-			return $out;
+			return self::asKeyTable($data, $keyBy);
 		} else {
 			return $data;
 		}
     }
 	
+	public static function asKeyTable($data, $keyBy) {
+		$out = [];
+
+		foreach($data as $row) {
+			$key       = strval($row[$keyBy]);
+			$out[$key] = $row;
+		}
+
+		return $out;
+	}
+
 	/**
 	 * 这个函数通过一个数组返回目标列的所有数据，返回来的列数据一般是一个字符串数组
 	 * 
