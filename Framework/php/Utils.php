@@ -643,6 +643,14 @@ class Utils {
         }
     }
 
+    public static function count($result) {
+        if (self::isDbNull($result)) {
+            return "0";
+        } else {
+            return count($result);
+        }
+    }
+
     /**
      * 返回目标子字符串在给定的字符串之上的所有位置的集合
      * 
