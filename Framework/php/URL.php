@@ -168,7 +168,7 @@ class URL {
      * 
 	 * @param string $url 默认为当前的URL
      * @param boolean $parseURLQuery 是否同时也将query部分解析为数组？默认是不解析，即保持为字符串
-     * @return URL 如果$stdClass参数为true的话，则会返回一个对象而不是一个数组。这个函数默认返回一个数组
+     * @return URL|array 如果$stdClass参数为true的话，则会返回一个对象而不是一个数组。这个函数默认返回一个数组
     */
     public static function mb_parse_url($url = null, $parseURLQuery = false, $stdClass = false) {
         if (Strings::Empty($url)) {
@@ -229,5 +229,46 @@ class URL {
                 }
             }
         }
+    }
+
+    /**
+     * 生成带有分页参数的 URL
+     * @param int $pageNo 目标页码
+     * @return string 完整的 URL (例如: /metabolites/?topic=bladder&page=2)
+     */
+    public static function buildPageUrl($pageNo) {
+        // 1. 获取当前 URL 的路径部分 (不包含 ? 后面的参数)
+        // 例如: /metabolites/
+        $baseUrl = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+        // 2. 获取当前所有的 GET 查询参数
+        // $_GET 是一个关联数组，包含当前 URL 中所有的参数
+        $currentParams =$_GET["query"]; 
+        // 3. 设置/覆盖 page 参数
+        // 无论 page 是否存在，都将其设置为目标页码
+        $currentParams['page'] =$pageNo;
+
+        foreach(array_keys($currentParams) as $key) {
+            $currentParams[$key] = urldecode($currentParams[$key]);
+        }
+
+        // 4. 构建查询字符串
+        // http_build_query 会自动处理 URL 编码和参数拼接
+        $queryString = http_build_query($currentParams);
+
+        // 5. 拼接完整 URL
+        // 注意：这里始终会带有 page 参数。如果你希望在第1页时省略 page=1，需要加个 if 判断
+        if ($pageNo == 1) {
+            // 如果是第1页，可以选择移除 page 参数让URL更干净（可选）
+            unset($currentParams['page']);
+            // 重新构建不带 page 的参数
+            $queryString = http_build_query($currentParams);
+        }
+
+        // 如果参数为空（没有任何查询参数），直接返回基础路径
+        if (empty($queryString)) {
+            return $baseUrl;
+        }
+
+        return $baseUrl . '?' .$queryString;
     }
 }
