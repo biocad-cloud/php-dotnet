@@ -101,7 +101,8 @@ class RFC7231Error {
 		"403" => "Forbidden",
 		"405" => "Method not allowed",
 		"500" => "Internal Server Error",
-		"429" => "Too Many Requests"
+		"429" => "Too Many Requests",
+		"204" => "No Content"
 	]; 
 
 	/**
@@ -120,6 +121,13 @@ class RFC7231Error {
 	}
 	
 	#region "Framework prefix error code page entry"
+
+	/**
+	 * Not Found
+	*/
+	public static function err204($message = NULL, $allow_custom = true) {
+		self::Display(204, $message, "", $allow_custom);
+	}
 
 	/**
 	 * Not Found
