@@ -208,7 +208,7 @@ abstract class controller {
      * @return string[] 函数返回方法列表
     */
     public function getMethods() {
-        $method = $this->getTagValue("method");
+        $method = Strings::UCase($this->getTagValue("method"));
 
         if (empty($method)) {
             return ["GET"];
