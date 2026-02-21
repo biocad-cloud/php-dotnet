@@ -1116,4 +1116,12 @@ class Table {
 	}
 
 	#endregion
+
+	public static function make_fulltext_strips($q) {
+		$q = str_replace(">", " ", $q);
+		$q = str_replace("-", " ", $q);
+		$q = str_replace('"', " ", $q);
+
+		return $q;
+	}
 }
