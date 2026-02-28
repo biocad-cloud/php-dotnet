@@ -1117,11 +1117,15 @@ class Table {
 
 	#endregion
 
-	public static function make_fulltext_strips($q) {
-		$q = str_replace(">", " ", $q);
-		$q = str_replace("-", " ", $q);
-		$q = str_replace('"', " ", $q);
+	public static function make_fulltext_strips($term) {
+		$term = str_replace("'"," ", $term);
+        $term = str_replace('"'," ", $term);
+        $term = str_replace("-"," ", $term);
+        $term = str_replace("+"," ", $term);
+        $term = str_replace("<"," ", $term);
+        $term = str_replace(">"," ", $term);
+        $term = str_replace("?"," ", $term);
 
-		return $q;
+		return $term;
 	}
 }
