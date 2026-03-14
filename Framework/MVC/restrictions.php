@@ -65,11 +65,10 @@ class Restrictions {
      *     可以根据实际需求进行自定义
     */
     public function __construct($user, $controller) {
+        $rates = $controller->getRateLimits();
+        $this->rates = explode(",", $rates);
         $rates = [];
 
-        $this->rates = $controller->getRateLimits();
-        $this->rates = explode(",", $this->rates);
-       
         foreach($this->rates as $limit) {
             $limit = explode("/", $limit);
             $rates[strtolower($limit[1])] = floatval($limit[0]);
