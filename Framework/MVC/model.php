@@ -644,6 +644,8 @@ class Table {
 	/**
 	 * LEFT JOIN ... ON
 	 * 
+	 * @param string|array $equals
+	 * 
 	 * @return Table
 	*/
 	public function on($equals) {
