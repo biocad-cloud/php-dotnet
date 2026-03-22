@@ -22,11 +22,11 @@ class RestrictionMySQL {
      * 数据库连接配置
      * 请根据实际情况修改以下常量
     */
-    const DB_HOST = 'localhost';
-    const DB_USER = 'root';
-    const DB_PASS = 'password';
-    const DB_NAME = 'database_name';
-    const DB_TABLE = 'user_rate_limits';
+    private static $DB_HOST = 'localhost';
+    private static $DB_USER = 'root';
+    private static $DB_PASS = 'password';
+    private static $DB_NAME = 'database_name';
+    private static $DB_TABLE = 'user_rate_limits';
 
     /**
      * 访问量的控制指的是在一段时间内用户的对某一资源的访问次数的限制
@@ -63,7 +63,7 @@ class RestrictionMySQL {
     */
     private function getDB() {
         if (self::$db === null) {
-            self::$db = new mysqli(self::DB_HOST, self::DB_USER, self::DB_PASS, self::DB_NAME);
+            self::$db = new mysqli(self::$DB_HOST, self::$DB_USER, self::$DB_PASS, self::$DB_NAME);
             if (self::$db->connect_error) {
                 // 在生产环境中，建议记录日志而不是直接抛出异常，这里为了调试方便使用die
                 RFC7231Error::err500("Access Controller Database Connection Failed: " . self::$db->connect_error);
@@ -117,6 +117,7 @@ class RestrictionMySQL {
             $user = "NA";
         }
 
+        $this->setup_db();
         $this->rates     = $rates;
         $this->resource  = $controller->ref; // 假设 controller 有 ref 属性
         $this->user      = md5($user);
@@ -130,6 +131,24 @@ class RestrictionMySQL {
                 console::dump($this->rates);
             }
         }
+    }
+
+    private function setup_db() {
+        $dbName = DotNetRegistry::Read("user_audit");
+
+        if (array_key_exists($dbName, DotNetRegistry::$config)) {
+			$config = DotNetRegistry::$config[$dbName];
+
+            self::$DB_HOST = $config["DB_HOST"];
+            self::$DB_NAME = $config["DB_NAME"];
+            self::$DB_USER = $config["DB_USER"];
+            self::$DB_PASS = $config["DB_PWD"];
+            
+		} else {
+			# 无效的配置参数信息
+			$msg = "Invalid database name config or database config '$dbName' is not exists!";
+			dotnet::ThrowException($msg);
+		}
     }
 
     #region "Get resource restriction values"
@@ -166,13 +185,13 @@ class RestrictionMySQL {
         // 1. 清理当前用户当前资源的过期数据（超过1天的）
         // 这一步替代了原逻辑中文件读取时的队列清理过程
         $expireTime = $now - self::DAY;
-        $stmt = $db->prepare("DELETE FROM " . self::DB_TABLE . " WHERE user_hash = ? AND resource = ? AND visit_time < ?");
+        $stmt = $db->prepare("DELETE FROM " . self::$DB_TABLE . " WHERE user_hash = ? AND resource = ? AND visit_time < ?");
         $stmt->bind_param("ssi", $this->user, $this->resource, $expireTime);
         $stmt->execute();
         $stmt->close();
 
         // 2. 记录当前访问
-        $stmt = $db->prepare("INSERT INTO " . self::DB_TABLE . " (user_hash, resource, visit_time) VALUES (?, ?, ?)");
+        $stmt = $db->prepare("INSERT INTO " . self::$DB_TABLE . " (user_hash, resource, visit_time) VALUES (?, ?, ?)");
         $stmt->bind_param("ssi", $this->user, $this->resource, $now);
         $stmt->execute();
         $stmt->close();
@@ -188,7 +207,7 @@ class RestrictionMySQL {
                     SUM(CASE WHEN visit_time >= ? THEN 1 ELSE 0 END) as min_count,
                     SUM(CASE WHEN visit_time >= ? THEN 1 ELSE 0 END) as hour_count,
                     COUNT(*) as day_count
-                FROM " . self::DB_TABLE . " 
+                FROM " . self::$DB_TABLE . " 
                 WHERE user_hash = ? AND resource = ? AND visit_time >= ?";
         
         $stmt = $db->prepare($sql);
