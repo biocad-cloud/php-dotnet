@@ -56,7 +56,7 @@ abstract class controller {
      * 
      * @var string
     */
-    public $ref;
+    protected $ref;
 
     /**
      * 指示控制器是否已经发送了content-type http头信息
