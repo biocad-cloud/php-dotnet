@@ -103,7 +103,14 @@ class RestrictionMySQL {
         // 兼容原有逻辑：获取限制配置
         // 假设 $controller 拥有 getRateLimits 方法
         $rates = $controller->getRateLimits();
-        $this->rates = explode(",", $rates);
+        
+        if (strlen( $rates) == 0) {
+            $this->rates = [];
+            return;
+        } else {
+            $this->rates = explode(",", $rates);
+        }
+        
         $rates = [];
 
         foreach($this->rates as $limit) {
@@ -143,7 +150,7 @@ class RestrictionMySQL {
             self::$DB_NAME = $config["DB_NAME"];
             self::$DB_USER = $config["DB_USER"];
             self::$DB_PASS = $config["DB_PWD"];
-            
+
 		} else {
 			# 无效的配置参数信息
 			$msg = "Invalid database name config or database config '$dbName' is not exists!";
@@ -179,6 +186,11 @@ class RestrictionMySQL {
      * @return boolean true表示已经超过了限制阈值，false表示正常
     */
     public function Check() {
+        if (count($this->rates) == 0) {
+            // 当前的控制器上没有设定相关的限制，直接跳过检查
+            return false;
+        }
+
         $now = time();
         $db = $this->getDB();
 
