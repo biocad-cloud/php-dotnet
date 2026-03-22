@@ -86,8 +86,8 @@ class RestrictionMySQL {
                         $limits
                     </ul>
                 </p>
-                <p>
-                this error has been reported to the website administrator.
+                <p style='color:red;'>
+                <strong>this error has been reported to the website administrator.</strong>
                 </p>";
 
         return $str;
