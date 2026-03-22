@@ -203,8 +203,8 @@ class RestrictionMySQL {
         $stmt->close();
 
         // 2. 记录当前访问
-        $stmt = $db->prepare("INSERT INTO " . self::$DB_TABLE . " (user_hash, resource, visit_time) VALUES (?, ?, ?)");
-        $stmt->bind_param("ssi", $this->user, $this->resource, $now);
+        $stmt = $db->prepare("INSERT INTO " . self::$DB_TABLE . " (user_hash, resource, visit_time, ipaddress) VALUES (?, ?, ?, ?)");
+        $stmt->bind_param("ssis", $this->user, $this->resource, $now, Utils::UserIPAddress());
         $stmt->execute();
         $stmt->close();
 
